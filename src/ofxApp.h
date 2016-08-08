@@ -52,6 +52,8 @@
 #include "ofxTuio.h"
 #include "ofxSuperLog.h"
 #include "ofxScreenSetup.h"
+#include "ofxRemoteUIServer.h"
+#include "ofxTimeMeasurements.h"
 #include "AppBaseClasses.h"
 #include "AppStaticTextures.h"
 
