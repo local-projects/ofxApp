@@ -17,43 +17,24 @@
 	//#define OFX_APP_NAME MyApp /*you define your App's name in your PREPROCESSOR MACROS*/
 #endif
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//this is all to achieve variable includes given a user specified macro name for the app
-//http://stackoverflow.com/questions/32066204/construct-path-for-include-directive-with-macro
-//http://stackoverflow.com/questions/1489932/how-to-concatenate-twice-with-the-c-preprocessor-and-expand-a-macro-as-in-arg
-//this is to directly include your AppColorsBasic.h, AppHobalsBasic.h, AppFontsBasic.h subclasses.
-
-#define OFX_APP_IDENT(x) x
-#define OFX_APP_XSTR(x) #x
-#define OFX_APP_STR(x) OFX_APP_XSTR(x)
-#define OFX_APP_INCLUDE(x,y) OFX_APP_STR(OFX_APP_IDENT(x)OFX_APP_IDENT(y))
-
-//lots of indirection for this to work...
-#define OFX_APP_PASTER(x,y) x ## y
-#define OFX_APP_EVALUATOR(x,y)  OFX_APP_PASTER(x,y)
-#define OFX_APP_CLASS_NAME(class) OFX_APP_EVALUATOR(OFX_APP_NAME,class)
-
-#define OFX_COLORS_FILENAME Colors.h
-#define OFX_FONTS_FILENAME Fonts.h
-#define OFX_GLOBALS_FILENAME Globals.h
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
+#include "ofxAppMacros.h"
 #include "ofMain.h"
 #include "ofxJsonSettings.h"
 
 //some macro magic to include the user defined subclasses of AppColorsBasic, AppFontsBasic, AppGlobalsBasic
 //it takes the user defined macro (ie OFX_APP_NAME=myApp) and creates an #include "myAppColors.h"
-#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_COLORS_FILENAME)
-#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_FONTS_FILENAME)
-#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_GLOBALS_FILENAME)
+#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_COLORS_FILENAME) 	//include myAppColors.h
+#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_FONTS_FILENAME)	//include myAppFonts.h
+#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_GLOBALS_FILENAME) //include myAppGlobals.h
+#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_STATES_FILENAME)	//include myAppStates.h
+#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_CONTENT_FILENAME)	//include myAppContent.h
 
 #include "ofxTuio.h"
 #include "ofxSuperLog.h"
 #include "ofxScreenSetup.h"
 #include "AppBaseClasses.h"
 #include "AppStaticTextures.h"
+#include "ofxDrawableStateMachine.h"
 
 class ofxApp : public HasAssets{
 
@@ -70,6 +51,17 @@ public:
 
 	ofxApp();
 
+	// APP STATES //////////////////////////////////////////////////////////////////////////////////
+	//here we create an enum by including differnt files -
+	// 1st #include is the most essential states defined as part of the ofxApp
+	// 2nd #include is for you to define your own custom states - whatever you need for your app
+	// for this to work, you must do as stated above: create pre-Proc Macro (OFX_APP_NAME=myApp) naming your app
+ 	//and create a file named "myAppStates.h" which contains your extra states
+	enum AppState{
+		#include "AppStatesBasic.h"
+		#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_STATES_FILENAME)
+	};
+
 	void setup();
 	void loadStaticAssets();
 	void postSetup();
@@ -77,9 +69,10 @@ public:
 	void loadSettings();
 	void saveSettings();
 
+	void update(float dt);
+
 
 	ofxJsonSettings& settings(){return ofxJsonSettings::get();}
-
 
 	// Crazy Macro magic here!! Beware!!
 	// this compounds some classnames to match whatever you decided to name your app;
@@ -97,21 +90,27 @@ public:
 
 	ofxScreenSetup screenSetup;
 
-	// convinience getters for settings //
+	// Convinience Getters for App Settings ////////////////////////////////////////////////////////
 	inline bool& getBool(const string & key, bool defaultVal = true);
 	inline int& getInt(const string & key, int defaultVal = 0);
 	inline float& getFloat(const string & key, float defaultVal = 0.0);
 	inline string& getString(const string & key, string defaultVal = "uninited!");
 
-	// tuio //
+	// TUIO ////////////////////////////////////////////////////////////////////////////////////////
 	virtual void tuioAdded(ofxTuioCursor & tuioCursor){};
 	virtual void tuioRemoved(ofxTuioCursor & tuioCursor){};
 	virtual void tuioUpdated(ofxTuioCursor & tuioCursor){};
 	ofxTuioCursor getTuioAtMouse(int x, int y);
 
-	void update(ofEventArgs & args);
 
-	//rui callback
+
+
+	// STATE MACHINE ///////////////////////////////////////////////////////////////////////////////
+	ofxDrawableStateMachine<AppState> appState; //App State Machine
+	virtual void updateStateMachine(float dt);
+
+
+	// CALLBACKS ///////////////////////////////////////////////////////////////////////////////////
 	void remoteUIClientDidSomething(RemoteUIServerCallBackArg & arg);
 
 protected:
@@ -130,6 +129,7 @@ protected:
 	OFX_APP_CLASS_NAME(Colors)			colorsStorage;
 	OFX_APP_CLASS_NAME(Globals)			globalsStorage;
 	OFX_APP_CLASS_NAME(Fonts)			fontStorage;
+	OFX_APP_CLASS_NAME(Content)			contentStorage;
 
 	bool 								isSetup = false;
 	bool								hasLoadedSettings = false;

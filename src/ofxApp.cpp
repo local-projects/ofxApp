@@ -31,19 +31,17 @@ void ofxApp::setup(){
 		ofSetFrameRate(getInt("App/frameRate"));
 		ofBackground(colors().bgColor);
 
-		ofAddListener(ofEvents().update, this, &ofxApp::update);
+		//ofAddListener(ofEvents().update, this, &ofxApp::update);
 	}
 }
 
 void ofxApp::loadStaticAssets(){
-
 	string texturesPath = getString("Assets/textures");
 	assertFileExists(texturesPath);
 	textures().loadTexturesInDir(texturesPath);
 }
 
 void ofxApp::postSetup(){
-
 	setupRuiWatches();
 	setupApp();
 }
@@ -78,10 +76,56 @@ void ofxApp::saveSettings(){
 }
 
 
-void ofxApp::update(ofEventArgs & args){
+void ofxApp::update(float dt){
 
+	contentStorage.update(dt);
+	updateStateMachine(dt);
 }
 
+
+void ofxApp::updateStateMachine(float dt){
+
+	switch (appState.getState()) {
+
+		case LOADING_CONTENT:
+			appState.updateState( contentStorage.getPercentDone(), contentStorage.getStatus());
+
+			if(appState.isReadyToProceed() ){ //slow down the state machine to handle error / retry
+
+				if( appState.hasError() && appState.ranOutOfErrorRetries()){ //give up!
+					ofLogError("ofxApp") << "json failed to load too many times! Giving Up!";
+					appState.setState(LOADING_CONTENT_FAILED);
+					break;
+				}else{
+					if(contentStorage.isContentReady()){ //see if we are done (optional)
+						ofLogNotice("ofxApp") << "json loaded ok!";
+						appState.setState(POST_LOADING_CONTENT);
+						break;
+					}
+				}
+
+				if(contentStorage.foundError()){
+					appState.setError("failed to load!", 3.0/*sec*/, 5/*retry max*/); //report an error, retry!
+					ofLogError("ofxApp") << "json failed to load! (" << appState.getNumTimesRetried() << ")";
+					appState.setState(LOADING_CONTENT, false); //note "false" << do not clear errors (to keep track of # of retries)
+				}
+			}
+			break;
+
+		case LOADING_CONTENT_FAILED:
+			appState.updateState( -1, "error while loading content!");
+			if (appState.getElapsedTimeInCurrentState() > 10.0){ //hold the error screen for a while and quit
+				ofLogError("ofxApp") << "cant load json, exiting!";
+				exit(-1);
+			}
+			break;
+
+		case RUNNING:
+			appState.updateState( -1, "");
+			break;
+	}
+
+}
 
 void ofxApp::setupApp(){
 
@@ -246,20 +290,12 @@ string& ofxApp::getString(const string & key, string defaultVal){
 
 void ofxApp::remoteUIClientDidSomething(RemoteUIServerCallBackArg &arg){
 	switch (arg.action) {
-		case CLIENT_CONNECTED: cout << "CLIENT_CONNECTED" << endl; break;
-		case CLIENT_DISCONNECTED: cout << "CLIENT_DISCONNECTED" << endl; break;
 		case CLIENT_UPDATED_PARAM:
 			if(arg.paramName == "showMouse"){
 				if(arg.param.boolVal) ofShowCursor();
 				else ofHideCursor();
 			}
 			break;
-		case CLIENT_DID_SET_PRESET: cout << "CLIENT_DID_SET_PRESET" << endl; break;
-		case CLIENT_SAVED_PRESET: cout << "CLIENT_SAVED_PRESET" << endl; break;
-		case CLIENT_DELETED_PRESET: cout << "CLIENT_DELETED_PRESET" << endl; break;
-		case CLIENT_SAVED_STATE: cout << "CLIENT_SAVED_STATE" << endl; break;
-		case CLIENT_DID_RESET_TO_XML: cout << "CLIENT_DID_RESET_TO_XML" << endl; break;
-		case CLIENT_DID_RESET_TO_DEFAULTS: cout << "CLIENT_DID_RESET_TO_DEFAULTS" << endl; break;
 		default:
 			break;
 	}
