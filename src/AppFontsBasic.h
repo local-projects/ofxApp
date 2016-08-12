@@ -50,6 +50,9 @@ public:
 	ofxFontStash veraMono;
 	ofxFontStash veraMonoBold;
 
+	string getMonoSpacedFontFile(){return veraMonoFile;}
+	string getMonoSpacedBolFontFile(){return veraMonoBoldFile;}
+
 protected:
 
 	const string veraMonoFile = "fonts/VeraMono.ttf";

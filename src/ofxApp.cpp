@@ -9,18 +9,28 @@
 #include "ofxApp.h"
 
 //ofxApp app; //app global in your subclass!
+using namespace ofxApp;
 
-ofxApp::ofxApp(){
+App::App(){
 
 }
 
-void ofxApp::setup(){
+void App::setup(ofxApp::ContentConfig cfg){
 
 	if(isSetup){
-		ofLogError("ofxApp") << "Trying to setup() ofxApp a second time!";
-	}else{
-		fonts().setup();
 
+		ofLogError("ofxApp") << "Trying to setup() ofxApp a second time!";
+
+	}else{
+
+		contentCfg = cfg;
+		ofLogNotice("ofxApp") << "setup()";
+		ofxSimpleHttp::createSslContext();
+		setupStateMachine();
+		ofNotifyEvent(eventConfigStateMachine);
+		appState.setState(SETTING_UP);
+		setupListeners();
+		fonts().setup();
 		setupLogging();
 		setupRemoteUI();
 		globals().setupRemoteUIParams();
@@ -28,26 +38,60 @@ void ofxApp::setup(){
 		colors().setupRemoteUIParams();
 		textures().setup();
 		setupTuio();
-		ofSetFrameRate(getInt("App/frameRate"));
-		ofBackground(colors().bgColor);
-
-		//ofAddListener(ofEvents().update, this, &ofxApp::update);
+		setupOF();
+		ofNotifyEvent(eventConfigContentURLs); //the listener is responsible for setting up the contentStorage object b4 we start loading content
+		appState.setState(LOADING_STATIC_TEXTURES); //start loading content
 	}
 }
 
-void ofxApp::loadStaticAssets(){
-	string texturesPath = getString("Assets/textures");
-	assertFileExists(texturesPath);
-	textures().loadTexturesInDir(texturesPath);
+
+void App::setupOF(){
+	ofSetFrameRate(getInt("App/frameRate"));
+	ofBackground(colors().bgColor);
+	dt = 1.0f / ofGetTargetFrameRate();
 }
 
-void ofxApp::postSetup(){
+
+void App::setupListeners(){
+
+	ofAddListener(ofEvents().update, this, &App::update);
+	//listen to content manager state changes
+	ofAddListener(contentStorage.eventStateChanged, this, &App::onContentManagerStateChanged);
+	ofAddListener(ofEvents().keyPressed, this, &App::onKeyPressed);
+	ofAddListener(ofEvents().draw, this, &App::draw);
+	ofAddListener(textures().eventAllTexturesLoaded, this, &App::onStaticTexturesLoaded);
+}
+
+void App::setupStateMachine(){
+
+	//listen to state machine changes
+	ofAddListener(appState.eventStateChanged, this, &App::onStateChanged);
+	ofAddListener(appState.eventStateError, this, &App::onStateError);
+	ofAddListener(appState.eventDraw, this, &App::onDrawLoadingScreenStatus);
+
+	appState.setup(fonts().getMonoSpacedFontFile(), "", ofColor::black, ofColor::white);
+	appState.SET_NAME_AND_COLOR_FOR_STATE(SETTING_UP, ofColor(0,0,255), ofColor(0,0,128));
+	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_STATIC_TEXTURES, ofColor(0,0,255), ofColor(0,0,128));
+	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_CONTENT, ofColor(0,0,255), ofColor(0,0,128));
+	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_CONTENT_FAILED, ofColor(255,0,0), ofColor(128,0,0));
+	appState.SET_NAME_AND_COLOR_FOR_STATE(SETUP_USER_APP, ofColor::white, ofColor::grey);
+	appState.SET_NAME_AND_COLOR_FOR_STATE(RUNNING, ofColor::white, ofColor::grey);
+
+}
+
+void App::startLoadingStaticAssets(){
+	string texturesPath = getString("Assets/textures");
+	assertFileExists(texturesPath);
+	textures().loadTexturesInDir(texturesPath, true/*async*/);
+}
+
+void App::postSetup(){
 	setupRuiWatches();
 	setupApp();
 }
 
 
-void ofxApp::loadSettings(){
+void App::loadSettings(){
 
 	assertFileExists(settingsFile);
 
@@ -66,7 +110,7 @@ void ofxApp::loadSettings(){
 }
 
 
-void ofxApp::saveSettings(){
+void App::saveSettings(){
 	ofLogNotice("ofxApp") << "saveSettings() to " << settingsFile;
 	settings().save(ofToDataPath(settingsFile, true));
 	string settingsString = settings().getAsJsonString();
@@ -76,58 +120,7 @@ void ofxApp::saveSettings(){
 }
 
 
-void ofxApp::update(float dt){
-
-	contentStorage.update(dt);
-	updateStateMachine(dt);
-}
-
-
-void ofxApp::updateStateMachine(float dt){
-
-	switch (appState.getState()) {
-
-		case LOADING_CONTENT:
-			appState.updateState( contentStorage.getPercentDone(), contentStorage.getStatus());
-
-			if(appState.isReadyToProceed() ){ //slow down the state machine to handle error / retry
-
-				if( appState.hasError() && appState.ranOutOfErrorRetries()){ //give up!
-					ofLogError("ofxApp") << "json failed to load too many times! Giving Up!";
-					appState.setState(LOADING_CONTENT_FAILED);
-					break;
-				}else{
-					if(contentStorage.isContentReady()){ //see if we are done (optional)
-						ofLogNotice("ofxApp") << "json loaded ok!";
-						appState.setState(POST_LOADING_CONTENT);
-						break;
-					}
-				}
-
-				if(contentStorage.foundError()){
-					appState.setError("failed to load!", 3.0/*sec*/, 5/*retry max*/); //report an error, retry!
-					ofLogError("ofxApp") << "json failed to load! (" << appState.getNumTimesRetried() << ")";
-					appState.setState(LOADING_CONTENT, false); //note "false" << do not clear errors (to keep track of # of retries)
-				}
-			}
-			break;
-
-		case LOADING_CONTENT_FAILED:
-			appState.updateState( -1, "error while loading content!");
-			if (appState.getElapsedTimeInCurrentState() > 10.0){ //hold the error screen for a while and quit
-				ofLogError("ofxApp") << "cant load json, exiting!";
-				exit(-1);
-			}
-			break;
-
-		case RUNNING:
-			appState.updateState( -1, "");
-			break;
-	}
-
-}
-
-void ofxApp::setupApp(){
+void App::setupApp(){
 
 	RUI_NEW_GROUP("APP");
 	bool & showMouse = getBool("App/showMouse");
@@ -137,10 +130,10 @@ void ofxApp::setupApp(){
 
 	ofxScreenSetup::ScreenMode mode = ofxScreenSetup::ScreenMode((int)getInt("App/window/windowMode"));
 	screenSetup.setScreenMode(mode);
-
 }
 
-void ofxApp::setupLogging(){
+
+void App::setupLogging(){
 
 	#if defined(__has_feature) /*this triggers asan for some reason - dont clean longs when asan is ON*/
 		#if !__has_feature(address_sanitizer)
@@ -163,7 +156,7 @@ void ofxApp::setupLogging(){
 }
 
 
-void ofxApp::setupRemoteUI(){
+void App::setupRemoteUI(){
 	RUI_SET_CONFIGS_DIR(configsDir);
 	RUI_GET_INSTANCE()->setUiColumnWidth(getInt("RemoteUI/columnWidth", 280));
 	RUI_GET_INSTANCE()->setBuiltInUiScale(getFloat("RemoteUI/uiScale", 1.0));
@@ -178,12 +171,12 @@ void ofxApp::setupRemoteUI(){
 	ofLogNotice("ofxApp") << "RemoteUI will save settings on quit: " << ruiSaveOnQuit;
 	RUI_GET_INSTANCE()->setShowUIDuringEdits(getBool("RemoteUI/showUiDuringEdits"));
 
-	ofAddListener(RUI_GET_OF_EVENT(), this, &ofxApp::remoteUIClientDidSomething);
+	ofAddListener(RUI_GET_OF_EVENT(), this, &App::onRemoteUINotification);
 	RUI_SETUP();
 }
 
 
-void ofxApp::setupRuiWatches(){
+void App::setupRuiWatches(){
 
 	ofxJSON paramWatches = settings().getJson("RemoteUI/paramWatches");
 	if(paramWatches.size()){
@@ -199,7 +192,7 @@ void ofxApp::setupRuiWatches(){
 }
 
 
-void ofxApp::setupTimeMeasurements(){
+void App::setupTimeMeasurements(){
 	TIME_SAMPLE_SET_CONFIG_DIR(configsDir);
 	TIME_SAMPLE_SET_FRAMERATE(getInt("App/frameRate", 60));
 	TIME_SAMPLE_SET_ENABLED(getBool("TimeMeasurements/enabled", true));
@@ -222,73 +215,213 @@ void ofxApp::setupTimeMeasurements(){
 }
 
 
-void ofxApp::setupTuio(int port){
+void App::setupTuio(int port){
 	if(getBool("tuio/enabled")){
 		int port = getInt("tuio/port");
 		ofLogNotice("ofxApp") << "Listening for TUIO events at port " << port;
 		tuioClient.start(port); //TODO - make sure we do it only once!
-		ofAddListener(tuioClient.cursorAdded, this, &ofxApp::tuioAdded);
-		ofAddListener(tuioClient.cursorRemoved, this, &ofxApp::tuioRemoved);
-		ofAddListener(tuioClient.cursorUpdated, this, &ofxApp::tuioUpdated);
+		ofAddListener(tuioClient.cursorAdded, this, &App::tuioAdded);
+		ofAddListener(tuioClient.cursorRemoved, this, &App::tuioRemoved);
+		ofAddListener(tuioClient.cursorUpdated, this, &App::tuioUpdated);
 	}
 }
 
 
-ofxTuioCursor ofxApp::getTuioAtMouse(int x, int y){
+void App::update(ofEventArgs &){
+
+	contentStorage.update(dt);
+	updateStateMachine(dt);
+}
+
+void App::onStaticTexturesLoaded(){
+	ofLogNotice("ofxApp")<< "All Static Textures Loaded!";
+	appState.setState(LOADING_CONTENT);
+}
+
+
+//////////////////// LOADING SCREEN /////////////////////////////////////////////////////////////////
+#pragma Draw Loading Screen
+
+void App::draw(ofEventArgs &){
+
+	ofSetupScreen();
+	appState.draw(ofGetCurrentViewport());
+}
+
+void App::onDrawLoadingScreenStatus(ofRectangle & area){
+
+	switch (appState.getState()) {
+
+		case LOADING_STATIC_TEXTURES:{
+			ofTexture * tex = textures().getLatestLoadedTex();
+			float progress = textures().getNumLoadedTextures() / float(textures().getNumTextures());
+			appState.updateState( progress, "");
+			if(tex){
+				ofRectangle tr = ofRectangle(0,0,tex->getWidth(), tex->getHeight());
+				tr.scaleTo(area, OF_SCALEMODE_FIT);
+				tex->draw(tr);
+				ofPushStyle();
+				ofSetColor(0);
+				fonts().veraMono.draw(ofToString(textures().getTotalMemUsed(), 1) + "MBytes used", loadingScreenFontSize, 101, 101);
+				ofSetColor(255);
+				fonts().veraMono.draw(ofToString(textures().getTotalMemUsed(), 1) + "MBytes used", loadingScreenFontSize, 100, 100);
+				ofPopStyle();
+			}
+		}break;
+
+		default:
+			break;
+	}
+}
+
+
+#pragma mark State Machine
+
+void App::updateStateMachine(float dt){
+
+	switch (appState.getState()) {
+
+		case LOADING_CONTENT:
+			appState.updateState( contentStorage.getPercentDone(), contentStorage.getStatus());
+
+			if(appState.isReadyToProceed() ){ //slow down the state machine to handle error / retry
+
+				if( appState.hasError() && appState.ranOutOfErrorRetries()){ //give up!
+					ofLogError("ofxApp") << "json failed to load too many times! Giving Up!";
+					appState.setState(LOADING_CONTENT_FAILED);
+					break;
+				}else{
+					if(contentStorage.isContentReady()){ //see if we are done (optional)
+						ofLogNotice("ofxApp") << "json loaded ok!";
+						appState.setState(SETUP_USER_APP);
+						break;
+					}
+				}
+
+				if(contentStorage.foundError()){
+
+					appState.setError("failed to load!",
+									  getInt("StateMachine/onErrorWaitTimeSec",5)/*sec*/,
+									  getInt("StateMachine/onErrorRetryCount",5)/*retry max*/
+									  ); //report an error, retry!
+
+					ofLogError("ofxApp") << "json failed to load! (" << appState.getNumTimesRetried() << ")";
+					appState.setState(LOADING_CONTENT, false); //note "false" << do not clear errors (to keep track of # of retries)
+				}
+			}
+			break;
+
+		case LOADING_CONTENT_FAILED:
+			appState.updateState( -1, "error while loading content!");
+			if (appState.getElapsedTimeInCurrentState() > 10.0){ //hold the error screen for a while and quit
+				ofLogError("ofxApp") << "cant load json, exiting!";
+				exit(-1);
+			}
+			break;
+
+		case RUNNING:
+			appState.updateState( -1, "");
+			break;
+
+		default: break;
+	}
+}
+
+
+void App::onStateChanged(ofxStateMachine<AppState>::StateChangedEventArgs& change){
+
+	ofLogNotice("ofxApp") 	<< "State Changed from " << appState.getNameForState(change.oldState)
+							<< " to " << appState.getNameForState(change.newState);
+
+	switch(change.newState){
+
+		case LOADING_STATIC_TEXTURES:
+			startLoadingStaticAssets();
+			break;
+
+		case LOADING_CONTENT:{
+			string jsonURL = getString("content/urls/jsonContentURL");
+			string jsonDir = getString("content/jsonDownloadDir");
+			std::pair<string,string> credentials;
+			credentials.first = getString("downloads/credentials/username");
+			credentials.second = getString("downloads/credentials/password");
+			int numConcurrentDownloads = getInt("downloads/maxConcurrentDownloads");
+			int numThreads = getInt("App/maxThreads");
+			int timeOutSecs = getInt("downloads/timeOutSec");
+			int speedLimitKBs = getInt("downloads/speedLimitKb");
+			float idleTimeAfterDl = getFloat("downloads/idleTimeAfterEachDownloadSec");
+			ofxSimpleHttp::ProxyConfig proxy;
+			proxy.useProxy = getBool("downloads/proxy/useProxy");
+			proxy.host = getBool("downloads/proxy/proxyHost");
+			proxy.port = getInt("downloads/proxy/proxyPort");
+			proxy.login = getInt("downloads/proxy/proxyUser");
+			proxy.password = getInt("downloads/proxy/proxyPassword");
+
+			ofxAssets::DownloadPolicy downloadPolicy;
+			downloadPolicy.fileMissing = getBool("content/AssetDownloadPolicy/fileMissing");
+			downloadPolicy.fileTooSmall = getBool("content/AssetDownloadPolicy/fileTooSmall");
+			downloadPolicy.fileExistsAndNoSha1Provided = getBool("content/AssetDownloadPolicy/fileExistsAndNoSha1Provided");
+			downloadPolicy.fileExistsAndProvidedSha1Missmatch = getBool("content/AssetDownloadPolicy/fileExistsAndProvidedSha1Missmatch");
+			downloadPolicy.fileExistsAndProvidedSha1Match = getBool("content/AssetDownloadPolicy/fileExistsAndProvidedSha1Match");
+
+			ofxAssets::UsagePolicy usagePolicy;
+			usagePolicy.fileMissing = getBool("content/AssetUsagePolicy/fileMissing");
+			usagePolicy.fileTooSmall = getBool("content/AssetUsagePolicy/fileTooSmall");
+			usagePolicy.fileExistsAndNoSha1Provided = getBool("content/AssetUsagePolicy/fileExistsAndNoSha1Provided");
+			usagePolicy.fileExistsAndProvidedSha1Missmatch = getBool("content/AssetUsagePolicy/fileExistsAndProvidedSha1Missmatch");
+			usagePolicy.fileExistsAndProvidedSha1Match = getBool("content/AssetUsagePolicy/fileExistsAndProvidedSha1Match");
+
+			contentStorage.setup(
+								 	jsonURL,
+								 	jsonDir,
+									numThreads,
+									numConcurrentDownloads,
+								 	speedLimitKBs,
+								 	timeOutSecs,
+								 	idleTimeAfterDl,
+								 	credentials,
+								 	proxy,
+									downloadPolicy,
+								 	usagePolicy,
+									contentCfg
+								 );
+			}
+			contentStorage.fetchContent();
+			break;
+
+		case LOADING_CONTENT_FAILED:
+			appState.setProgressBarExtraInfo("");
+			break;
+
+		case SETUP_USER_APP:
+			ofNotifyEvent(eventSetupUserApp);
+			break;
+
+		case RUNNING:{
+			break;
+		}
+
+		default:break;
+	}
+}
+
+
+void App::onStateError(ofxStateMachine<AppState>::ErrorStateEventArgs& error){
+
+}
+
+void App::onContentManagerStateChanged(string&){
+
+}
+
+
+ofxTuioCursor App::getTuioAtMouse(int x, int y){
 	float r = 1;
 	return ofxTuioCursor( 0,0, x / (float)ofGetWidth(),  r * y / (float)ofGetHeight());
 }
 
 
-bool& ofxApp::getBool(const string & key, bool defaultVal){
-	if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << "getting Bool Value for " << key;
-	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
-	if(ofxApp::one().settings().exists(key)){
-		return ofxApp::one().settings().getBool(key);
-	}else{
-		ofLogError("ofxApp") << "Requesting setting that does not exist! " << key;
-		if(QUIT_ON_MISSING_SETTING) exit(-1);
-		return defaultVal;
-	}
-}
-
-int& ofxApp::getInt(const string & key, int defaultVal){
-	if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << "getting Int Value for " << key;
-	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
-	if(ofxApp::one().settings().exists(key)){
-		return ofxApp::one().settings().getInt(key);
-	}else{
-		ofLogError("ofxApp") << "Requesting setting that does not exist! " << key;
-		if(QUIT_ON_MISSING_SETTING) exit(-1);
-		return defaultVal;
-	}
-}
-
-float& ofxApp::getFloat(const string & key, float defaultVal){
-	if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << "getting Float Value for " << key;
-	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
-	if(ofxApp::one().settings().exists(key)){
-		return ofxApp::one().settings().getFloat(key);
-	}else{
-		ofLogError("ofxApp") << "Requesting setting that does not exist! " << key;
-		if(QUIT_ON_MISSING_SETTING) exit(-1);
-		return defaultVal;
-	}
-}
-
-string& ofxApp::getString(const string & key, string defaultVal){
-	if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << "getting String Value for " << key;
-	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
-	if(ofxApp::one().settings().exists(key)){
-		return ofxApp::one().settings().getString(key);
-	}else{
-		ofLogError("ofxApp") << "Requesting setting that does not exist! " << key;
-		if(QUIT_ON_MISSING_SETTING) exit(-1);
-		return defaultVal;
-	}
-}
-
-void ofxApp::remoteUIClientDidSomething(RemoteUIServerCallBackArg &arg){
+void App::onRemoteUINotification(RemoteUIServerCallBackArg &arg){
 	switch (arg.action) {
 		case CLIENT_UPDATED_PARAM:
 			if(arg.paramName == "showMouse"){
@@ -298,5 +431,69 @@ void ofxApp::remoteUIClientDidSomething(RemoteUIServerCallBackArg &arg){
 			break;
 		default:
 			break;
+	}
+}
+
+
+void App::onKeyPressed(ofKeyEventArgs & a){
+	switch(a.key){
+		case 'w': screenSetup.cycleToNextScreenMode(); break;
+	}
+}
+
+
+
+///////////////////// SETTINGS //////////////////////////////////////////////////////////////////////
+#pragma mark Settings
+
+bool& App::getBool(const string & key, bool defaultVal){
+	if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << "getting Bool Value for " << key;
+	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
+	if(settings().exists(key)){
+		return settings().getBool(key);
+	}else{
+		ofLogError("ofxApp") << "Requesting setting that does not exist! " << key;
+		if(QUIT_ON_MISSING_SETTING) exit(-1);
+		static auto def = defaultVal;
+		return def; //mmmm....
+	}
+}
+
+int& App::getInt(const string & key, int defaultVal){
+	if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << "getting Int Value for " << key;
+	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
+	if(settings().exists(key)){
+		return settings().getInt(key);
+	}else{
+		ofLogError("ofxApp") << "Requesting setting that does not exist! " << key;
+		if(QUIT_ON_MISSING_SETTING) exit(-1);
+		static auto def = defaultVal;
+		return def; //mmmm....
+	}
+}
+
+float& App::getFloat(const string & key, float defaultVal){
+	if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << "getting Float Value for " << key;
+	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
+	if(settings().exists(key)){
+		return settings().getFloat(key);
+	}else{
+		ofLogError("ofxApp") << "Requesting setting that does not exist! " << key;
+		if(QUIT_ON_MISSING_SETTING) exit(-1);
+		static auto def = defaultVal;
+		return def; //mmmm....
+	}
+}
+
+string& App::getString(const string & key, string defaultVal){
+	if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << "getting String Value for " << key;
+	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
+	if(settings().exists(key)){
+		return settings().getString(key);
+	}else{
+		ofLogError("ofxApp") << "Requesting setting that does not exist! " << key;
+		if(QUIT_ON_MISSING_SETTING) exit(-1);
+		static auto def = defaultVal;
+		return def; //mmmm....
 	}
 }

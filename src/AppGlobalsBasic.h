@@ -27,7 +27,6 @@ public:
 		RUI_SHARE_PARAM(debug);
 	 };
 
-	
 public:
 
 	bool debug = false;

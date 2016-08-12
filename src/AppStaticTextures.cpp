@@ -12,13 +12,25 @@ AppStaticTextures::AppStaticTextures(){
 }
 
 void AppStaticTextures::setup(){
-	missingTex.allocate(1,1,GL_RGBA);
+	if(!missingTex.isAllocated()){
+		missingTex.allocate(16,16,GL_RGBA);
+		ofAddListener(ofEvents().update, this, &AppStaticTextures::onUpdate);
+	}else{
+		ofLogError("AppStaticTextures") << "Already setup! Trying to setup twice?!";
+	}
 }
 
-void AppStaticTextures::loadTexturesInDir(const string& imgDirPath){
-	dirPath = imgDirPath;
-	dirPath = ofFilePath::addTrailingSlash(dirPath);
-	loadTexturesInDirectory(imgDirPath, true);
+void AppStaticTextures::loadTexturesInDir(const string& imgDirPath, bool async){
+	if(!isLoading){
+		isLoading = true;
+		loadAsync = async;
+		dirPath = imgDirPath;
+		dirPath = ofFilePath::addTrailingSlash(dirPath);
+		loadTexturesInDirectory(imgDirPath, true);
+		if(async == false) isLoading = false;
+	}else{
+		ofLogError("AppStaticTextures") << "Already loading async!";
+	}
 }
 
 void AppStaticTextures::loadTexturesInDirectory(const string& path, bool recursive){
@@ -37,13 +49,17 @@ void AppStaticTextures::loadTexturesInDirectory(const string& path, bool recursi
 		string ext = ofToLower(file.getExtension());
 		if (ext == "png" || ext == "jpg" || ext == "jpeg" || ext == "gif" || ext == "tga" || ext == "tiff" || ext == "psd") {
 			string filepath = path + "/" + file.getBaseName() + "." + file.getExtension();
-			loadTexture(filepath);
+			if(loadAsync){
+				pendingToLoad.push_back(filepath);
+			}else{
+				loadTexture(filepath); //load in place
+			}
 		}
 	}
 }
 
 
-void AppStaticTextures::loadTexture(const string& filePath){
+ofxAutoTexture* AppStaticTextures::loadTexture(const string& filePath){
 
 	string lowercaseFilePath = ofToLower(filePath);
 	bool useTex2D = ofIsStringInString(lowercaseFilePath, filenameHintTex2D);
@@ -74,24 +90,50 @@ void AppStaticTextures::loadTexture(const string& filePath){
 	if (it != textures.end()){
 		ofLogError("AppStaticTextures") << "file name collision! " << filePath << " >> " << texName;
 		ofLogError("AppStaticTextures") << "skipping texture at path: '" << filePath << "'";
-		return;
+		return NULL;
 	}
 
 	ofxAutoTexture * tex = new ofxAutoTexture();
 	bool loaded = tex->loadFromFile(filePath);
 	if(loaded){
 
-		ofLogNotice("AppStaticTextures") << "loaded static texture from '" << filePath << "'";
-		ofLogNotice("AppStaticTextures") << "name: '" << texName << "'  size: [" << tex->getWidth() << "x" << tex->getHeight() << "]";
 		textures[texName] = tex;
 		float memUsedForThisOne = memUse(tex);
 		memUsed += memUsedForThisOne;
+		ofLogNotice("AppStaticTextures") 	<< "loaded static texture from '" << filePath << "'";
+		ofLogNotice("AppStaticTextures") 	<< "name: '" << texName << "'  size: [" << tex->getWidth()
+											<< "x" << tex->getHeight() << "]  mem: "
+											<< ofToString(memUsedForThisOne,1) << "Mb";
+		return tex;
 	}else{
 		delete tex;
 		ofLogError("AppStaticTextures") << "FAILED to load static texture from " << filePath;
+		return NULL;
 	}
 }
 
+
+void AppStaticTextures::onUpdate(ofEventArgs & ){
+
+	if(pendingToLoad.size() /* && ofGetFrameNum()%10 == 1*/){
+		string currentFile = pendingToLoad.front();
+		pendingToLoad.erase(pendingToLoad.begin());
+		ofxAutoTexture * tex = loadTexture(currentFile);
+		loadedInOrder.push_back(tex);
+		if(pendingToLoad.size() == 0){
+			ofNotifyEvent(eventAllTexturesLoaded, this);
+		}
+	}
+}
+
+
+ofTexture * AppStaticTextures::getLatestLoadedTex(){
+	if(loadedInOrder.size()){
+		return loadedInOrder.back();
+	}else{
+		return NULL;
+	}
+}
 
 float AppStaticTextures::memUse(ofTexture * tex){
 
@@ -126,7 +168,7 @@ ofTexture* AppStaticTextures::getTexture(string fullPath){
 	
 	auto it = textures.find(fullPath);
 	if (it == textures.end()){
-		ofLogError("AppStaticTextures") << "requestnig a missing texture! " << fullPath;
+		ofLogError("AppStaticTextures") << "requesting a missing texture! " << fullPath;
 		return &missingTex;
 	}
 	return it->second;

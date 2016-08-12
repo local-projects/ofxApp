@@ -63,28 +63,46 @@ class AppStaticTextures{
 public:
 
 	void setup();
-	
+
 	AppStaticTextures();
 
-	void loadTexturesInDir(const string& imgDirPath);
-	ofTexture* getTexture(string fullPath);
+	void loadTexturesInDir(const string& imgDirPath, bool async); 	//if async == true: starts loading textures
+																	//will load one file per frame to keep the process
+																	//interactive. Will trigger eventAllTexturesLoaded
+																	//when done
+	ofTexture* getTexture(string textureName);
 
 	static float memUse(ofTexture * tex); //in MBytes
 
-	float getTotalMemUsed(){return memUsed;}
-	void drawAll(const ofRectangle & rect);
+	int getNumTextures(){ return pendingToLoad.size() + textures.size();}
+	int getNumLoadedTextures(){ return textures.size();}
+	float getTotalMemUsed(){ return memUsed;} //in MBytes
+	ofTexture * getLatestLoadedTex(); //use to monitor async loading progress
+
+	void drawAll(const ofRectangle & rect); //debug call to see all textures in one giant grid
+											//mostly to check texture names
+
+	ofEvent<void> eventAllTexturesLoaded;
 
 protected:
 
-	void loadTexture(const string& filename);
+	void onUpdate(ofEventArgs & );
+
+	ofxAutoTexture* loadTexture(const string& filename);
 	void loadTexturesInDirectory(const string& path, bool recursive);
 
 	string dirPath; //path to where the textures are
+
+	vector<string> pendingToLoad; //list of file paths still pending to load
+	vector<ofxAutoTexture*> loadedInOrder;
+
 	unordered_map<string, ofxAutoTexture*> textures;
 
 	const string filenameHintTex2D = "_t2d";
 	const string filenameHintMipMap = "_mip";
 
 	float memUsed = 0; //MBytes
+	bool loadAsync = false;
+	bool isLoading = false;
 	ofTexture missingTex;
 };

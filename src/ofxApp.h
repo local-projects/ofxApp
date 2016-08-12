@@ -17,8 +17,8 @@
 	//#define OFX_APP_NAME MyApp /*you define your App's name in your PREPROCESSOR MACROS*/
 #endif
 
-#include "ofxAppMacros.h"
 #include "ofMain.h"
+#include "ofxAppMacros.h"
 #include "ofxJsonSettings.h"
 
 //some macro magic to include the user defined subclasses of AppColorsBasic, AppFontsBasic, AppGlobalsBasic
@@ -38,7 +38,9 @@
 #include "AppStaticTextures.h"
 #include "ofxDrawableStateMachine.h"
 
-class ofxApp : public HasAssets{
+namespace ofxApp{
+
+class App : public HasAssets{
 
 public:
 
@@ -46,12 +48,7 @@ public:
 	const string LogsDir = "logs";
 	const string configsDir = "configs";
 
-	static ofxApp& one(){
-		static ofxApp instance; // Instantiated on first use.
-		return instance;
-	}
-
-	ofxApp();
+	App();
 
 	// APP STATES //////////////////////////////////////////////////////////////////////////////////
 	//here we create an enum by including differnt files -
@@ -64,17 +61,14 @@ public:
 		#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_STATES_FILENAME)
 	};
 
-	void setup();
-	void loadStaticAssets();
+	void setup(ofxApp::ContentConfig cfg);
 	void postSetup();
 
 	void loadSettings();
 	void saveSettings();
 
-	void update(float dt);
-
-
-	ofxJsonSettings& settings(){return ofxJsonSettings::get();}
+	void update(ofEventArgs &);
+	void draw(ofEventArgs &);
 
 	// Crazy Macro magic here!! Beware!!
 	// this compounds some classnames to match whatever you decided to name your app;
@@ -84,19 +78,19 @@ public:
 	OFX_APP_CLASS_NAME(Colors) & colors(){return colorsStorage;}
 	OFX_APP_CLASS_NAME(Globals) & globals(){return globalsStorage;}
 	OFX_APP_CLASS_NAME(Fonts) & fonts(){return fontStorage;}
-
+	OFX_APP_CLASS_NAME(Content) & content(){return contentStorage;}
+	ofxJsonSettings& settings(){return ofxJsonSettings::get();}
 	AppStaticTextures & textures(){return texStorage;}
-
 	ofPtr<ofxSuperLog> logger(){return ofxSuperLog::getLogger();}
 	ofxTuioClient & tuio(){ return tuioClient;}
 
 	ofxScreenSetup screenSetup;
 
 	// Convinience Getters for App Settings ////////////////////////////////////////////////////////
-	inline bool& getBool(const string & key, bool defaultVal = true);
-	inline int& getInt(const string & key, int defaultVal = 0);
-	inline float& getFloat(const string & key, float defaultVal = 0.0);
-	inline string& getString(const string & key, string defaultVal = "uninited!");
+	bool& getBool(const string & key, bool defaultVal = true);
+	int& getInt(const string & key, int defaultVal = 0);
+	float& getFloat(const string & key, float defaultVal = 0.0);
+	string& getString(const string & key, string defaultVal = "uninited!");
 
 	// TUIO ////////////////////////////////////////////////////////////////////////////////////////
 	virtual void tuioAdded(ofxTuioCursor & tuioCursor){};
@@ -104,25 +98,40 @@ public:
 	virtual void tuioUpdated(ofxTuioCursor & tuioCursor){};
 	ofxTuioCursor getTuioAtMouse(int x, int y);
 
-
-
-
 	// STATE MACHINE ///////////////////////////////////////////////////////////////////////////////
 	ofxDrawableStateMachine<AppState> appState; //App State Machine
 	virtual void updateStateMachine(float dt);
+	virtual void onDrawLoadingScreenStatus(ofRectangle & area); //override to customize loading screen
 
+	virtual void onStateChanged(ofxStateMachine<AppState>::StateChangedEventArgs& change);
+	virtual void onStateError(ofxStateMachine<AppState>::ErrorStateEventArgs& error);
+	virtual void onContentManagerStateChanged(string&);
 
 	// CALLBACKS ///////////////////////////////////////////////////////////////////////////////////
-	void remoteUIClientDidSomething(RemoteUIServerCallBackArg & arg);
+	void onRemoteUINotification(RemoteUIServerCallBackArg & arg);
+	void onStaticTexturesLoaded();
+	void onKeyPressed(ofKeyEventArgs&);
+
+	// EVENTS //////////////////////////////////////////////////////////////////////////////////////
+	//your app must add listeners to these events
+	ofEvent<void> eventConfigStateMachine;
+	ofEvent<void> eventConfigContentURLs;
+	ofEvent<void> eventSetupUserApp;
+
 
 protected:
 
+	void setupListeners();
+	void setupStateMachine();
 	void setupTimeMeasurements();
+	void setupOF();
 	void setupRemoteUI();
 	void setupLogging();
 	void setupTuio(int port = 3333);
 	void setupApp();
 	void setupRuiWatches();
+
+	void startLoadingStaticAssets();
 
 	ofxTuioClient						tuioClient;
 	AppStaticTextures					texStorage;
@@ -136,7 +145,11 @@ protected:
 	bool 								isSetup = false;
 	bool								hasLoadedSettings = false;
 	//bool								shouldQuit;
+
+	const int 							loadingScreenFontSize = 22;
+	float								dt;
+	ofxApp::ContentConfig 				contentCfg;
 };
 
-
+}
 //extern ofxApp app; //all global parameters are here - add yor "ofxApp" subclass!
