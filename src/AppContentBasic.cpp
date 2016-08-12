@@ -106,7 +106,6 @@ void AppContentBasic::setState(ContentState s){
 			break;
 
 		case FILTER_OBJECTS_WITH_BAD_ASSETS:{
-
 			vector<int> badObjects;
 			vector<string> badObjectsIds;
 
@@ -129,19 +128,19 @@ void AppContentBasic::setState(ContentState s){
 				delete parsedObjects[badObjects[i]];
 				parsedObjects.erase(parsedObjects.begin() + badObjects[i]);
 			}
-
 			setState(SETUP_TEXTURED_OBJECTS);
 		}break;
 
-
-		case SETUP_TEXTURED_OBJECTS: //in the main thread!
+		case SETUP_TEXTURED_OBJECTS:
 			for(int i = 0; i < parsedObjects.size(); i++){
-				//parsedObjects[i]->setupTexturedObject();
+				auto setupTexObjuserLambda = contentCfg.setupTexturedObjectUserLambda;
+				//call the User Supplied Lambda to setup the user's TexturedObject
+				setupTexObjuserLambda( parsedObjects[i] );
 			}
-			setState(CONTENT_READY);
+			setState(JSON_CONTENT_READY);
 			break;
 
-		case CONTENT_READY:
+		case JSON_CONTENT_READY:
 			break;
 
 		default: break;
@@ -149,17 +148,6 @@ void AppContentBasic::setState(ContentState s){
 
 	string name = getNameForState(state);
 	ofNotifyEvent(eventStateChanged, name);
-}
-
-
-
-bool AppContentBasic::foundError(){
-	return state == JSON_DOWNLOAD_FAILED || state == JSON_PARSE_FAILED;
-}
-
-
-bool AppContentBasic::isContentReady(){
-
 }
 
 
@@ -179,7 +167,7 @@ string AppContentBasic::getStatus(){
 		case DOWNLOADING_ASSETS: r =  plainFormat + dlc.getDrawableInfo(true, false); break;
 		case FILTER_OBJECTS_WITH_BAD_ASSETS: r = ""; break;
 		case SETUP_TEXTURED_OBJECTS: r = ""; break;
-		case CONTENT_READY: r = "READY"; break;
+		case JSON_CONTENT_READY: r = "READY"; break;
 	}
 	return r;
 }
@@ -251,7 +239,6 @@ void AppContentBasic::assetCheckFinished(){
 }
 
 
-
 string AppContentBasic::getNameForState(AppContentBasic::ContentState state){
 
 	switch (state) {
@@ -265,8 +252,7 @@ string AppContentBasic::getNameForState(AppContentBasic::ContentState state){
 		case DOWNLOADING_ASSETS: return "DOWNLOADING_ASSETS";
 		case FILTER_OBJECTS_WITH_BAD_ASSETS: return "FILTER_OBJECTS_WITH_BAD_ASSETS";
 		case SETUP_TEXTURED_OBJECTS: return "SETUP_TEXTURED_OBJECTS";
-		case CONTENT_READY: return "CONTENT_READY";
-		case LOAD_CUSTOM_USER_CONTENT: return "LOAD_CUSTOM_USER_CONTENT";
+		case JSON_CONTENT_READY: return "JSON_CONTENT_READY";
 		case NUM_CONTENT_MANAGER_STATES: return "NUM_CONTENT_MANAGER_STATES";
 	}
 	return "UNKNOWN STATE";

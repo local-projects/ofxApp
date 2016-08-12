@@ -7,27 +7,25 @@
 //
 
 #include "ofxApp.h"
+#include "ofxThreadSafeLog.h"
 
-//ofxApp app; //app global in your subclass!
+ofxApp::App app; //app global in your subclass!
+
 using namespace ofxApp;
 
 App::App(){
 
 }
 
-void App::setup(ofxApp::ContentConfig cfg){
+void App::setup(ofxApp::ContentConfig cfg, ofxAppDelegate * delegate){
 
-	if(isSetup){
-
-		ofLogError("ofxApp") << "Trying to setup() ofxApp a second time!";
-
-	}else{
-
+	if(!this->delegate){
+		this->delegate = delegate;
+		setupWindow();
 		contentCfg = cfg;
 		ofLogNotice("ofxApp") << "setup()";
 		ofxSimpleHttp::createSslContext();
 		setupStateMachine();
-		ofNotifyEvent(eventConfigStateMachine);
 		appState.setState(SETTING_UP);
 		setupListeners();
 		fonts().setup();
@@ -39,8 +37,9 @@ void App::setup(ofxApp::ContentConfig cfg){
 		textures().setup();
 		setupTuio();
 		setupOF();
-		ofNotifyEvent(eventConfigContentURLs); //the listener is responsible for setting up the contentStorage object b4 we start loading content
 		appState.setState(LOADING_STATIC_TEXTURES); //start loading content
+	}else{
+		ofLogError("ofxApp") << "Trying to setup() ofxApp a second time!";
 	}
 }
 
@@ -51,6 +50,17 @@ void App::setupOF(){
 	dt = 1.0f / ofGetTargetFrameRate();
 }
 
+void App::setupWindow(){
+	ofxScreenSetup::ScreenMode mode = ofxScreenSetup::ScreenMode((int)getInt("App/window/windowMode"));
+	screenSetup.setScreenMode(mode);
+
+	//setup mullions user settings
+	bool mullionsVisible = getBool("App/mullions/visibleAtStartup");
+	mullions.setup(getInt("App/mullions/numX"), getInt("App/mullions/numY"));
+	if(mullionsVisible) mullions.enable();
+	else mullions.disable();
+}
+
 
 void App::setupListeners(){
 
@@ -58,7 +68,7 @@ void App::setupListeners(){
 	//listen to content manager state changes
 	ofAddListener(contentStorage.eventStateChanged, this, &App::onContentManagerStateChanged);
 	ofAddListener(ofEvents().keyPressed, this, &App::onKeyPressed);
-	ofAddListener(ofEvents().draw, this, &App::draw);
+	ofAddListener(ofEvents().draw, this, &App::draw, OF_EVENT_ORDER_AFTER_APP);
 	ofAddListener(textures().eventAllTexturesLoaded, this, &App::onStaticTexturesLoaded);
 }
 
@@ -70,24 +80,20 @@ void App::setupStateMachine(){
 	ofAddListener(appState.eventDraw, this, &App::onDrawLoadingScreenStatus);
 
 	appState.setup(fonts().getMonoSpacedFontFile(), "", ofColor::black, ofColor::white);
+	//this creates strings for each of the ENUM states
 	appState.SET_NAME_AND_COLOR_FOR_STATE(SETTING_UP, ofColor(0,0,255), ofColor(0,0,128));
 	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_STATIC_TEXTURES, ofColor(0,0,255), ofColor(0,0,128));
-	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_CONTENT, ofColor(0,0,255), ofColor(0,0,128));
-	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_CONTENT_FAILED, ofColor(255,0,0), ofColor(128,0,0));
+	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_JSON_CONTENT, ofColor(0,0,255), ofColor(0,0,128));
+	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_JSON_CONTENT_FAILED, ofColor(255,0,0), ofColor(128,0,0));
+	appState.SET_NAME_AND_COLOR_FOR_STATE(LOAD_CUSTOM_USER_CONTENT, ofColor(255,0,0), ofColor(128,0,0));
 	appState.SET_NAME_AND_COLOR_FOR_STATE(SETUP_USER_APP, ofColor::white, ofColor::grey);
 	appState.SET_NAME_AND_COLOR_FOR_STATE(RUNNING, ofColor::white, ofColor::grey);
-
 }
 
 void App::startLoadingStaticAssets(){
 	string texturesPath = getString("Assets/textures");
 	assertFileExists(texturesPath);
 	textures().loadTexturesInDir(texturesPath, true/*async*/);
-}
-
-void App::postSetup(){
-	setupRuiWatches();
-	setupApp();
 }
 
 
@@ -127,9 +133,6 @@ void App::setupApp(){
 	RUI_SHARE_PARAM(showMouse);
 	bool & enableMouse = getBool("App/enableMouse");;
 	RUI_SHARE_PARAM(enableMouse);
-
-	ofxScreenSetup::ScreenMode mode = ofxScreenSetup::ScreenMode((int)getInt("App/window/windowMode"));
-	screenSetup.setScreenMode(mode);
 }
 
 
@@ -152,7 +155,11 @@ void App::setupLogging(){
 	ofxSuperLog::getLogger()->setUseScreenColors(true);
 	//set a nice font for the on screen logger
 	ofxSuperLog::getLogger()->setFont(&(fonts().veraMono), getFloat("logging/uiScale", 1.0) * getFloat("logging/fontSize"));
-	ofxSuperLog::getLogger()->setDisplayWidth(getFloat("logging/logPanelWidth"));
+	ofxSuperLog::getLogger()->setDisplayWidth(getFloat("logging/screenLogPanelWidth"));
+
+	//asset manager uses this separate logger to create an "asset report"  file after every launch
+ 	//stating status of every downloaded asset (ie missing sha1, sha1 missmatch, etc)
+	ofxThreadSafeLog::one()->setPrintToConsole(getBool("logging/ThreadSafeLog/alsoPrintToConsole"));
 }
 
 
@@ -228,14 +235,13 @@ void App::setupTuio(int port){
 
 
 void App::update(ofEventArgs &){
-
 	contentStorage.update(dt);
 	updateStateMachine(dt);
 }
 
 void App::onStaticTexturesLoaded(){
 	ofLogNotice("ofxApp")<< "All Static Textures Loaded!";
-	appState.setState(LOADING_CONTENT);
+	appState.setState(LOADING_JSON_CONTENT);
 }
 
 
@@ -243,10 +249,15 @@ void App::onStaticTexturesLoaded(){
 #pragma Draw Loading Screen
 
 void App::draw(ofEventArgs &){
-
-	ofSetupScreen();
-	appState.draw(ofGetCurrentViewport());
+	if(appState.getState() != RUNNING){
+		ofSetupScreen();
+		appState.draw(ofGetCurrentViewport());
+	}
+	ofSetColor(0);
+	mullions.draw();
+	ofSetColor(255);
 }
+
 
 void App::onDrawLoadingScreenStatus(ofRectangle & area){
 
@@ -269,8 +280,12 @@ void App::onDrawLoadingScreenStatus(ofRectangle & area){
 			}
 		}break;
 
-		default:
+		case LOAD_CUSTOM_USER_CONTENT:
+		case SETUP_USER_APP:
+			delegate->drawLoadingScreenForUserProcess(appState.getState(), area);
 			break;
+
+		default: break;
 	}
 }
 
@@ -281,19 +296,20 @@ void App::updateStateMachine(float dt){
 
 	switch (appState.getState()) {
 
-		case LOADING_CONTENT:
+		case LOADING_JSON_CONTENT:
+
 			appState.updateState( contentStorage.getPercentDone(), contentStorage.getStatus());
 
 			if(appState.isReadyToProceed() ){ //slow down the state machine to handle error / retry
 
 				if( appState.hasError() && appState.ranOutOfErrorRetries()){ //give up!
 					ofLogError("ofxApp") << "json failed to load too many times! Giving Up!";
-					appState.setState(LOADING_CONTENT_FAILED);
+					appState.setState(LOADING_JSON_CONTENT_FAILED);
 					break;
 				}else{
 					if(contentStorage.isContentReady()){ //see if we are done (optional)
-						ofLogNotice("ofxApp") << "json loaded ok!";
-						appState.setState(SETUP_USER_APP);
+						ofLogNotice("ofxApp") << "JSON content loaded!";
+						appState.setState(LOAD_CUSTOM_USER_CONTENT);
 						break;
 					}
 				}
@@ -306,12 +322,12 @@ void App::updateStateMachine(float dt){
 									  ); //report an error, retry!
 
 					ofLogError("ofxApp") << "json failed to load! (" << appState.getNumTimesRetried() << ")";
-					appState.setState(LOADING_CONTENT, false); //note "false" << do not clear errors (to keep track of # of retries)
+					appState.setState(LOADING_JSON_CONTENT, false); //note "false" << do not clear errors (to keep track of # of retries)
 				}
 			}
 			break;
 
-		case LOADING_CONTENT_FAILED:
+		case LOADING_JSON_CONTENT_FAILED:
 			appState.updateState( -1, "error while loading content!");
 			if (appState.getElapsedTimeInCurrentState() > 10.0){ //hold the error screen for a while and quit
 				ofLogError("ofxApp") << "cant load json, exiting!";
@@ -323,12 +339,27 @@ void App::updateStateMachine(float dt){
 			appState.updateState( -1, "");
 			break;
 
+		case LOAD_CUSTOM_USER_CONTENT:
+			if(delegate->isUserProcessDone(LOAD_CUSTOM_USER_CONTENT)){
+				ofLogNotice("ofxApp") << "done loading Custom User Content!";
+				appState.setState(SETUP_USER_APP);
+			}
+			break;
+
+		case SETUP_USER_APP:
+			if(delegate->isUserProcessDone(SETUP_USER_APP)){
+				ofLogNotice("ofxApp") << "done Setup User App!";
+				appState.setState(RUNNING);
+			}
+			break;
+
+
 		default: break;
 	}
 }
 
 
-void App::onStateChanged(ofxStateMachine<AppState>::StateChangedEventArgs& change){
+void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& change){
 
 	ofLogNotice("ofxApp") 	<< "State Changed from " << appState.getNameForState(change.oldState)
 							<< " to " << appState.getNameForState(change.newState);
@@ -339,7 +370,7 @@ void App::onStateChanged(ofxStateMachine<AppState>::StateChangedEventArgs& chang
 			startLoadingStaticAssets();
 			break;
 
-		case LOADING_CONTENT:{
+		case LOADING_JSON_CONTENT:{
 			string jsonURL = getString("content/urls/jsonContentURL");
 			string jsonDir = getString("content/jsonDownloadDir");
 			std::pair<string,string> credentials;
@@ -389,12 +420,24 @@ void App::onStateChanged(ofxStateMachine<AppState>::StateChangedEventArgs& chang
 			contentStorage.fetchContent();
 			break;
 
-		case LOADING_CONTENT_FAILED:
-			appState.setProgressBarExtraInfo("");
+		case LOADING_JSON_CONTENT_FAILED:
+			delegate->contentIsReady(content().getParsedObjects());
+			appState.setProgressBarExtraInfo("CONTENT LOAD FAILED");
+			break;
+
+		case LOAD_CUSTOM_USER_CONTENT:
+			ofLogNotice("ofxApp") << "start loading Custom User Content...";
+			delegate->startUserProcess(LOAD_CUSTOM_USER_CONTENT);
 			break;
 
 		case SETUP_USER_APP:
-			ofNotifyEvent(eventSetupUserApp);
+			ofLogNotice("ofxApp") << "start loading Custom User Content...";
+			delegate->startUserProcess(SETUP_USER_APP);
+			break;
+
+		case POST_USER_SETUP:
+			setupRuiWatches();
+			setupApp();
 			break;
 
 		case RUNNING:{
@@ -406,12 +449,14 @@ void App::onStateChanged(ofxStateMachine<AppState>::StateChangedEventArgs& chang
 }
 
 
-void App::onStateError(ofxStateMachine<AppState>::ErrorStateEventArgs& error){
-
+void App::onStateError(ofxStateMachine<ofxApp::State>::ErrorStateEventArgs& error){
+	ofLogError("ofxApp") << "Error '" << error.errorMsg << "' during state '" << appState.getNameForState(error.state) << "'";
 }
 
-void App::onContentManagerStateChanged(string&){
 
+#pragma mark !!
+void App::onContentManagerStateChanged(string& s){
+	appState.setProgressBarExtraInfo(": " + s); // add our sub-state name to the loading screen
 }
 
 
@@ -438,6 +483,8 @@ void App::onRemoteUINotification(RemoteUIServerCallBackArg &arg){
 void App::onKeyPressed(ofKeyEventArgs & a){
 	switch(a.key){
 		case 'w': screenSetup.cycleToNextScreenMode(); break;
+		case 'l':  ofxSuperLog::getLogger()->setScreenLoggingEnabled(!ofxSuperLog::getLogger()->isScreenLoggingEnabled()); break;
+		case 'm': mullions.toggle(); break;
 	}
 }
 

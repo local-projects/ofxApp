@@ -20,9 +20,3 @@
 
 // down here the default basic states for an ofxApp
 
-	SETTING_UP,
-	LOADING_STATIC_TEXTURES,
-	LOADING_CONTENT,
-	LOADING_CONTENT_FAILED,
-	SETUP_USER_APP, //in most cases, you will pick it up at this state and either go RUNNING or your Custom States
-	RUNNING,

@@ -15,10 +15,17 @@
 #include "ofxMtJsonParser.h"
 #include "AssetChecker.h"
 #include "ofxAppStructs.h"
+#include "TexturedObject.h"
 
 //all your content objects will have to subclass this class
-class ContentObject : public ParsedObject, public AssetHolder{
+class ContentObject : public ParsedObject, public AssetHolder, public TexturedObject{
 
+	public:
+
+		// Imposed by TexturedObject //
+		ofVec2f getTextureDimensions(TexturedObjectSize, int){ return ofVec2f(0,0);}
+		string getLocalTexturePath(TexturedObjectSize, int){ return "";}
+		void deleteWithGC(){} //this is effectively the destructor of the object
 };
 
 
@@ -38,8 +45,7 @@ public:
 		DOWNLOADING_ASSETS,
 		FILTER_OBJECTS_WITH_BAD_ASSETS,
 		SETUP_TEXTURED_OBJECTS,
-		CONTENT_READY,
-		LOAD_CUSTOM_USER_CONTENT,
+		JSON_CONTENT_READY,
 		NUM_CONTENT_MANAGER_STATES
 	};
 
@@ -57,15 +63,19 @@ public:
 			   const ofxApp::ContentConfig & contentCfg
 			   );
 
-	virtual void fetchContent(); //start the process here
-	virtual void update(float dt);
+	void fetchContent(); //start the process here
 
-	virtual bool foundError();
-	virtual bool isContentReady();
-	virtual string getStatus();
-	virtual float getPercentDone();
-	virtual bool isBusy();
-	virtual bool customUserContentIsReady() = 0;
+	void update(float dt);
+
+	bool foundError(){ return state == JSON_DOWNLOAD_FAILED || state == JSON_PARSE_FAILED; };
+	bool isContentReady(){ return state == JSON_CONTENT_READY; };
+
+	string getStatus();
+	float getPercentDone();
+	bool isBusy();
+
+	//call this only if isContentReady() == true
+	vector<ContentObject*> getParsedObjects(){return parsedObjects;};
 
 	void onDrawStateMachineStatus(ofRectangle & drawableArea);
 
