@@ -115,7 +115,7 @@ void AppContentBasic::setState(ContentState s){
 				bool hasEnoughAssets = parsedObjects[i]->getNumAssets() > 0;
 
 				if(!assetsOK) ofLogError("AppContentBasic") << "object " << parsedObjects[i]->getObjectUUID() << " assets NOT OK!";
-				if(!hasEnoughAssets) ofLogError("AppContentBasic") << "object " << parsedObjects[i]->getObjectUUID() << " has no assets!";
+				if(!hasEnoughAssets) ofLogError("AppContentBasic") << "object '" << parsedObjects[i]->getObjectUUID() << "' has no assets!";
 
 				if (!assetsOK || !hasEnoughAssets /*|| isBlocked*/){
 					badObjects.push_back(i);
