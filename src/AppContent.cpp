@@ -7,17 +7,18 @@
 
 #include "AppContent.h"
 
-void AppContent::setup(string jsonSrc,
-							string jsonDestinationDir_,
-							int numThreads_,
-							int numConcurrentDownloads,
-							int speedLimitKBs,
-							int timeout,
-							float idleTimeAfterEachDownload,
-							const std::pair<string,string> & credentials,
-							const ofxSimpleHttp::ProxyConfig & proxyConfig,
-							const ofxApp::UserLambdas & contentCfg){
+void AppContent::setup(	string jsonSrc,
+						string jsonDestinationDir_,
+						int numThreads_,
+						int numConcurrentDownloads,
+						int speedLimitKBs,
+						int timeout,
+						float idleTimeAfterEachDownload,
+						const std::pair<string,string> & credentials,
+						const ofxSimpleHttp::ProxyConfig & proxyConfig,
+						const ofxApp::UserLambdas & contentCfg){
 
+	parsedObjects.clear();
 	this->jsonURL = jsonSrc;
 	this->contentCfg = contentCfg;
 	this->jsonDestinationDir = jsonDestinationDir_;
@@ -63,6 +64,11 @@ void AppContent::update(float dt){
 				ofLogNotice("AppContent") << "finished asset downloads!";
 				setState(FILTER_OBJECTS_WITH_BAD_ASSETS);
 			}break;
+		case FILTER_OBJECTS_WITH_BAD_ASSETS:
+			if(timeInState > 2){ //show this on screen for a sec
+				setState(SETUP_TEXTURED_OBJECTS);
+			}
+			break;
 	}
 }
 
@@ -104,9 +110,9 @@ void AppContent::setState(ContentState s){
 			break;
 
 		case FILTER_OBJECTS_WITH_BAD_ASSETS:{
+			objectsWithBadAssets.clear();
 			vector<int> badObjects;
 			vector<string> badObjectsIds;
-
 			for(int i = 0; i < parsedObjects.size(); i++){
 
 				bool assetsOK = parsedObjects[i]->areAllAssetsOK();
@@ -118,6 +124,7 @@ void AppContent::setState(ContentState s){
 				if (!assetsOK || !hasEnoughAssets ){
 					badObjects.push_back(i);
 					badObjectsIds.push_back(parsedObjects[i]->getObjectUUID());
+					objectsWithBadAssets += badObjectsIds.back() + "\n";
 				}
 			}
 
@@ -126,7 +133,7 @@ void AppContent::setState(ContentState s){
 				delete parsedObjects[badObjects[i]];
 				parsedObjects.erase(parsedObjects.begin() + badObjects[i]);
 			}
-			setState(SETUP_TEXTURED_OBJECTS);
+			objectsWithBadAssets = "\nRemoved " + ofToString(badObjects.size()) + " objects:\n\n" + objectsWithBadAssets;
 		}break;
 
 		case SETUP_TEXTURED_OBJECTS:
@@ -152,8 +159,8 @@ void AppContent::setState(ContentState s){
 string AppContent::getStatus(){
 
 	string r;
-	string plainFormat = " %0.9 #0x888888 \n"; //text format for logging on screen - see ofxFontStash.h drawMultiLineColumn()
-	string errorFormat = " %0.9 #0xBB0000 \n"; //text format for logging on screen - see ofxFontStash.h drawMultiLineColumn()
+	string plainFormat = " %0.8 #0x888888 \n"; //text format for logging on screen - see ofxFontStash.h drawMultiLineColumn()
+	string errorFormat = " %0.8 #0xBB0000 \n"; //text format for logging on screen - see ofxFontStash.h drawMultiLineColumn()
 
 	switch (state) {
 		case DOWNLOADING_JSON: r = plainFormat + jsonParser.getHttp().drawableString(); break;
@@ -163,7 +170,7 @@ string AppContent::getStatus(){
 		case CHECKING_ASSET_STATUS: r = plainFormat + assetChecker.getDrawableState(); break;
 		case JSON_PARSE_FAILED: r = errorFormat +  errorMessage; break;
 		case DOWNLOADING_ASSETS: r =  plainFormat + dlc.getDrawableInfo(true, false); break;
-		case FILTER_OBJECTS_WITH_BAD_ASSETS: r = plainFormat; break;
+		case FILTER_OBJECTS_WITH_BAD_ASSETS: r = plainFormat + objectsWithBadAssets; break;
 		case SETUP_TEXTURED_OBJECTS: r = plainFormat; break;
 		case JSON_CONTENT_READY: r = plainFormat + "READY"; break;
 	}

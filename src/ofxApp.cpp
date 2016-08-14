@@ -375,6 +375,7 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 
 			string jsonURL = getString("content/urls/jsonContentURL");
 			string jsonDir = getString("content/jsonDownloadDir");
+
 			std::pair<string,string> credentials;
 			credentials.first = getString("downloads/credentials/username");
 			credentials.second = getString("downloads/credentials/password");
@@ -384,12 +385,12 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 			int speedLimitKBs = getInt("downloads/speedLimitKb");
 			float idleTimeAfterDl = getFloat("downloads/idleTimeAfterEachDownloadSec");
 
-			ofxSimpleHttp::ProxyConfig proxy;
-			proxy.useProxy = getBool("downloads/proxy/useProxy");
-			proxy.host = getString("downloads/proxy/proxyHost");
-			proxy.port = getInt("downloads/proxy/proxyPort");
-			proxy.login = getString("downloads/proxy/proxyUser");
-			proxy.password = getString("downloads/proxy/proxyPassword");
+			ofxSimpleHttp::ProxyConfig proxyCfg;
+			proxyCfg.useProxy = getBool("downloads/proxy/useProxy");
+			proxyCfg.host = getString("downloads/proxy/proxyHost");
+			proxyCfg.port = getInt("downloads/proxy/proxyPort");
+			proxyCfg.login = getString("downloads/proxy/proxyUser");
+			proxyCfg.password = getString("downloads/proxy/proxyPassword");
 
 			assetDownloadPolicy.fileMissing = getBool("content/AssetDownloadPolicy/fileMissing");
 			assetDownloadPolicy.fileTooSmall = getBool("content/AssetDownloadPolicy/fileTooSmall");
@@ -412,7 +413,7 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 								 	timeOutSecs,
 								 	idleTimeAfterDl,
 								 	credentials,
-								 	proxy,
+								 	proxyCfg,
 									contentCfg
 								 );
 			}

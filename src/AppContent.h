@@ -112,6 +112,7 @@ protected:
 	string jsonDestinationDir; //where the json will be downloaded to
 	string errorMessage;
 	int numThreads = 4;
+	string objectsWithBadAssets;
 
 };
 

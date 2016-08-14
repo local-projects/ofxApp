@@ -94,6 +94,7 @@ void AppFonts::loadOfxAppFont(const string & key, ofxFontStash & font){
 					retinaScale 	//ui Scale (per-char texture upscale)
 					);
 
+
 	}else{
 		ofLogFatalError("AppFonts") << "Missing required ofxApp font! Check you AppSettings.json file in \"Fonts/ofxApp/" << key << "\"";
 		terminateApp();
