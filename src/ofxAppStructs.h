@@ -10,12 +10,14 @@
 #include "ofMain.h"
 #include "ofxAppMacros.h"
 #include "ofxMtJsonParser.h"
+#include "ofxAssets.h"
 
 class ContentObject;
 
 namespace ofxApp{
 
-	struct ContentConfig{
+	//user created lambdas to do custom actions at the crucial points
+	struct UserLambdas{
 		std::function<void (ofxMtJsonParserThread::JsonStructureData &)> describeJsonUserLambda;
 		std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> parseSingleObjectUserLambda;
 		std::function<void (ContentObject*)> setupTexturedObjectUserLambda;

@@ -14,7 +14,7 @@
 //this is all to achieve variable includes given a user specified macro name for the app
 //http://stackoverflow.com/questions/32066204/construct-path-for-include-directive-with-macro
 //http://stackoverflow.com/questions/1489932/how-to-concatenate-twice-with-the-c-preprocessor-and-expand-a-macro-as-in-arg
-//this is to directly include your AppColorsBasic.h, AppHobalsBasic.h, AppFontsBasic.h subclasses.
+//this is to directly include your AppColorsBasic.h, AppHobalsBasic.h, AppFonts.h subclasses.
 
 #define OFX_APP_IDENT(x) x
 #define OFX_APP_XSTR(x) #x
@@ -27,9 +27,6 @@
 #define OFX_APP_CLASS_NAME(class) OFX_APP_EVALUATOR(OFX_APP_NAME,class)
 
 #define OFX_COLORS_FILENAME Colors.h
-#define OFX_FONTS_FILENAME Fonts.h
 #define OFX_GLOBALS_FILENAME Globals.h
-#define OFX_STATES_FILENAME States.h
-#define OFX_CONTENT_FILENAME Content.h
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

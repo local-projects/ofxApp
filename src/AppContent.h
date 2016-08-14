@@ -1,5 +1,5 @@
 //
-//  AppContentBasic.h
+//  AppContent.h
 //
 //  Created by Oriol Ferrer Mesià aug/2016
 //
@@ -9,7 +9,7 @@
 
 #include "ofMain.h"
 #include "AppBaseClasses.h"
-#include "ofxAsset.h"
+#include "ofxAssets.h"
 #include "ofxSimpleHttp.h"
 #include "ofxDownloadCentral.h"
 #include "ofxMtJsonParser.h"
@@ -30,7 +30,7 @@ class ContentObject : public ParsedObject, public AssetHolder, public TexturedOb
 
 
 
-class AppContentBasic{
+class AppContent{
 
 public:
 
@@ -58,9 +58,7 @@ public:
 			   float idleTimeAfterEachDownload,
 			   const std::pair<string,string> & credentials,
 			   const ofxSimpleHttp::ProxyConfig & proxyConfig,
-			   const ofxAssets::DownloadPolicy & downloadPolicy,
-			   const ofxAssets::UsagePolicy & usagePolicy,
-			   const ofxApp::ContentConfig & contentCfg
+			   const ofxApp::UserLambdas & contentCfg
 			   );
 
 	void fetchContent(); //start the process here
@@ -89,7 +87,7 @@ public:
 	void assetCheckFinished();
 
 	int getNumStates(){return NUM_CONTENT_MANAGER_STATES;}
-	string getNameForState(AppContentBasic::ContentState state);
+	string getNameForState(AppContent::ContentState state);
 
 	// EVENTS //////////////////////////////////////////////////////////////////////////////////////
 
@@ -104,7 +102,7 @@ protected:
 	int totalAssetsToDownload = 0;
 
 	ofxMtJsonParser jsonParser;
-	ofxApp::ContentConfig contentCfg;
+	ofxApp::UserLambdas contentCfg;
 
 	vector<ContentObject*> parsedObjects;
 	AssetChecker assetChecker;

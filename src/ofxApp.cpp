@@ -13,13 +13,12 @@ ofxApp::App app; //app global in your subclass!
 
 using namespace ofxApp;
 
-App::App(){
-
-}
-
-void App::setup(ofxApp::ContentConfig cfg, ofxAppDelegate * delegate){
+void App::setup(ofxApp::UserLambdas cfg, ofxAppDelegate * delegate){
 
 	if(!this->delegate){
+
+		fontStorage = new AppFonts();
+		contentStorage = new AppContent();
 		this->delegate = delegate;
 		setupWindow();
 		contentCfg = cfg;
@@ -66,7 +65,7 @@ void App::setupListeners(){
 
 	ofAddListener(ofEvents().update, this, &App::update);
 	//listen to content manager state changes
-	ofAddListener(contentStorage.eventStateChanged, this, &App::onContentManagerStateChanged);
+	ofAddListener(contentStorage->eventStateChanged, this, &App::onContentManagerStateChanged);
 	ofAddListener(ofEvents().keyPressed, this, &App::onKeyPressed);
 	ofAddListener(ofEvents().draw, this, &App::draw, OF_EVENT_ORDER_AFTER_APP);
 	ofAddListener(textures().eventAllTexturesLoaded, this, &App::onStaticTexturesLoaded);
@@ -79,7 +78,9 @@ void App::setupStateMachine(){
 	ofAddListener(appState.eventStateError, this, &App::onStateError);
 	ofAddListener(appState.eventDraw, this, &App::onDrawLoadingScreenStatus);
 
-	appState.setup(fonts().getMonoSpacedFontFile(), "", ofColor::black, ofColor::white);
+	string boldFontPath = getString("Fonts/ofxApp/monospacedBold/fontFile");
+	assertFileExists(boldFontPath);
+	appState.setup(boldFontPath, "", ofColor::black, ofColor::white);
 	//this creates strings for each of the ENUM states
 	appState.SET_NAME_AND_COLOR_FOR_STATE(SETTING_UP, ofColor(0,0,255), ofColor(0,0,128));
 	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_STATIC_TEXTURES, ofColor(0,0,255), ofColor(0,0,128));
@@ -91,7 +92,7 @@ void App::setupStateMachine(){
 }
 
 void App::startLoadingStaticAssets(){
-	string texturesPath = getString("Assets/textures");
+	string texturesPath = getString("StaticAssets/textures");
 	assertFileExists(texturesPath);
 	textures().loadTexturesInDir(texturesPath, true/*async*/);
 }
@@ -105,8 +106,7 @@ void App::loadSettings(){
 	bool ok = settings().load(ofToDataPath(settingsFile, true));
 	if(!ok){
 		ofLogError("ofxApp") << "Could not load settings from " << ofToDataPath(settingsFile, true);
-		ofLogError("ofxApp") << "Exiting!";
-		exit(-1);
+		terminateApp();
 	}
 	string settingsString = settings().getAsJsonString();
 	ofLogNotice("ofxApp") << "///////////////////////////////////////////////////////////////////////////////////////";
@@ -154,7 +154,7 @@ void App::setupLogging(){
 	ofxSuperLog::getLogger()->setMaxNumLogLines(getInt("logging/maxScreenLines"));
 	ofxSuperLog::getLogger()->setUseScreenColors(true);
 	//set a nice font for the on screen logger
-	ofxSuperLog::getLogger()->setFont(&(fonts().veraMono), getFloat("logging/uiScale", 1.0) * getFloat("logging/fontSize"));
+	ofxSuperLog::getLogger()->setFont(&(fonts().getMonoFont()), getFloat("logging/uiScale", 1.0) * getFloat("logging/fontSize"));
 	ofxSuperLog::getLogger()->setDisplayWidth(getFloat("logging/screenLogPanelWidth"));
 
 	//asset manager uses this separate logger to create an "asset report"  file after every launch
@@ -235,7 +235,7 @@ void App::setupTuio(int port){
 
 
 void App::update(ofEventArgs &){
-	contentStorage.update(dt);
+	contentStorage->update(dt);
 	updateStateMachine(dt);
 }
 
@@ -273,9 +273,9 @@ void App::onDrawLoadingScreenStatus(ofRectangle & area){
 				tex->draw(tr);
 				ofPushStyle();
 				ofSetColor(0);
-				fonts().veraMono.draw(ofToString(textures().getTotalMemUsed(), 1) + "MBytes used", loadingScreenFontSize, 101, 101);
+				fonts().getMonoBoldFont().draw(ofToString(textures().getTotalMemUsed(), 1) + "MBytes used", loadingScreenFontSize, 101, 101);
 				ofSetColor(255);
-				fonts().veraMono.draw(ofToString(textures().getTotalMemUsed(), 1) + "MBytes used", loadingScreenFontSize, 100, 100);
+				fonts().getMonoBoldFont().draw(ofToString(textures().getTotalMemUsed(), 1) + "MBytes used", loadingScreenFontSize, 100, 100);
 				ofPopStyle();
 			}
 		}break;
@@ -297,8 +297,7 @@ void App::updateStateMachine(float dt){
 	switch (appState.getState()) {
 
 		case LOADING_JSON_CONTENT:
-
-			appState.updateState( contentStorage.getPercentDone(), contentStorage.getStatus());
+			appState.updateState( contentStorage->getPercentDone(), contentStorage->getStatus());
 
 			if(appState.isReadyToProceed() ){ //slow down the state machine to handle error / retry
 
@@ -307,31 +306,33 @@ void App::updateStateMachine(float dt){
 					appState.setState(LOADING_JSON_CONTENT_FAILED);
 					break;
 				}else{
-					if(contentStorage.isContentReady()){ //see if we are done (optional)
+					if(contentStorage->isContentReady()){ //see if we are done (optional)
 						ofLogNotice("ofxApp") << "JSON content loaded!";
 						appState.setState(LOAD_CUSTOM_USER_CONTENT);
 						break;
 					}
 				}
 
-				if(contentStorage.foundError()){
+				if(contentStorage->foundError()){
 
-					appState.setError("failed to load!",
-									  getInt("StateMachine/onErrorWaitTimeSec",5)/*sec*/,
-									  getInt("StateMachine/onErrorRetryCount",5)/*retry max*/
-									  ); //report an error, retry!
-
+					int numRetries = getInt("StateMachine/onErrorRetryCount", 5);
+					int delaySeconds = getInt("StateMachine/onErrorWaitTimeSec", 5);
+					appState.setError("failed to load!", delaySeconds /*sec*/, numRetries /*retry max*/); //report an error, retry!
 					ofLogError("ofxApp") << "json failed to load! (" << appState.getNumTimesRetried() << ")";
-					appState.setState(LOADING_JSON_CONTENT, false); //note "false" << do not clear errors (to keep track of # of retries)
+					if(numRetries > 0){ //if no retry allowed, jump to fail state directly
+						appState.setState(LOADING_JSON_CONTENT, false); //note "false" << do not clear errors (to keep track of # of retries)
+					}else{
+						appState.setState(LOADING_JSON_CONTENT_FAILED);
+					}
 				}
 			}
 			break;
 
 		case LOADING_JSON_CONTENT_FAILED:
 			appState.updateState( -1, "error while loading content!");
-			if (appState.getElapsedTimeInCurrentState() > 10.0){ //hold the error screen for a while and quit
+			if (appState.getElapsedTimeInCurrentState() > 15){ //hold the error screen for a while and quit
 				ofLogError("ofxApp") << "cant load json, exiting!";
-				exit(-1);
+				terminateApp();
 			}
 			break;
 
@@ -371,6 +372,7 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 			break;
 
 		case LOADING_JSON_CONTENT:{
+
 			string jsonURL = getString("content/urls/jsonContentURL");
 			string jsonDir = getString("content/jsonDownloadDir");
 			std::pair<string,string> credentials;
@@ -381,28 +383,27 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 			int timeOutSecs = getInt("downloads/timeOutSec");
 			int speedLimitKBs = getInt("downloads/speedLimitKb");
 			float idleTimeAfterDl = getFloat("downloads/idleTimeAfterEachDownloadSec");
+
 			ofxSimpleHttp::ProxyConfig proxy;
 			proxy.useProxy = getBool("downloads/proxy/useProxy");
-			proxy.host = getBool("downloads/proxy/proxyHost");
+			proxy.host = getString("downloads/proxy/proxyHost");
 			proxy.port = getInt("downloads/proxy/proxyPort");
-			proxy.login = getInt("downloads/proxy/proxyUser");
-			proxy.password = getInt("downloads/proxy/proxyPassword");
+			proxy.login = getString("downloads/proxy/proxyUser");
+			proxy.password = getString("downloads/proxy/proxyPassword");
 
-			ofxAssets::DownloadPolicy downloadPolicy;
-			downloadPolicy.fileMissing = getBool("content/AssetDownloadPolicy/fileMissing");
-			downloadPolicy.fileTooSmall = getBool("content/AssetDownloadPolicy/fileTooSmall");
-			downloadPolicy.fileExistsAndNoSha1Provided = getBool("content/AssetDownloadPolicy/fileExistsAndNoSha1Provided");
-			downloadPolicy.fileExistsAndProvidedSha1Missmatch = getBool("content/AssetDownloadPolicy/fileExistsAndProvidedSha1Missmatch");
-			downloadPolicy.fileExistsAndProvidedSha1Match = getBool("content/AssetDownloadPolicy/fileExistsAndProvidedSha1Match");
+			assetDownloadPolicy.fileMissing = getBool("content/AssetDownloadPolicy/fileMissing");
+			assetDownloadPolicy.fileTooSmall = getBool("content/AssetDownloadPolicy/fileTooSmall");
+			assetDownloadPolicy.fileExistsAndNoSha1Provided = getBool("content/AssetDownloadPolicy/fileExistsAndNoSha1Provided");
+			assetDownloadPolicy.fileExistsAndProvidedSha1Missmatch = getBool("content/AssetDownloadPolicy/fileExistsAndProvidedSha1Missmatch");
+			assetDownloadPolicy.fileExistsAndProvidedSha1Match = getBool("content/AssetDownloadPolicy/fileExistsAndProvidedSha1Match");
 
-			ofxAssets::UsagePolicy usagePolicy;
-			usagePolicy.fileMissing = getBool("content/AssetUsagePolicy/fileMissing");
-			usagePolicy.fileTooSmall = getBool("content/AssetUsagePolicy/fileTooSmall");
-			usagePolicy.fileExistsAndNoSha1Provided = getBool("content/AssetUsagePolicy/fileExistsAndNoSha1Provided");
-			usagePolicy.fileExistsAndProvidedSha1Missmatch = getBool("content/AssetUsagePolicy/fileExistsAndProvidedSha1Missmatch");
-			usagePolicy.fileExistsAndProvidedSha1Match = getBool("content/AssetUsagePolicy/fileExistsAndProvidedSha1Match");
+			assetUsagePolicy.fileMissing = getBool("content/AssetUsagePolicy/fileMissing");
+			assetUsagePolicy.fileTooSmall = getBool("content/AssetUsagePolicy/fileTooSmall");
+			assetUsagePolicy.fileExistsAndNoSha1Provided = getBool("content/AssetUsagePolicy/fileExistsAndNoSha1Provided");
+			assetUsagePolicy.fileExistsAndProvidedSha1Missmatch = getBool("content/AssetUsagePolicy/fileExistsAndProvidedSha1Missmatch");
+			assetUsagePolicy.fileExistsAndProvidedSha1Match = getBool("content/AssetUsagePolicy/fileExistsAndProvidedSha1Match");
 
-			contentStorage.setup(
+			contentStorage->setup(
 								 	jsonURL,
 								 	jsonDir,
 									numThreads,
@@ -412,20 +413,19 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 								 	idleTimeAfterDl,
 								 	credentials,
 								 	proxy,
-									downloadPolicy,
-								 	usagePolicy,
 									contentCfg
 								 );
 			}
-			contentStorage.fetchContent();
+			contentStorage->fetchContent();
 			break;
 
 		case LOADING_JSON_CONTENT_FAILED:
-			delegate->contentIsReady(content().getParsedObjects());
-			appState.setProgressBarExtraInfo("CONTENT LOAD FAILED");
+			appState.setProgressBarExtraInfo(" - CONTENT LOAD FAILED");
+			ofxSuperLog::getLogger()->setScreenLoggingEnabled(true); //show log if json error
 			break;
 
 		case LOAD_CUSTOM_USER_CONTENT:
+			delegate->contentIsReady(content().getParsedObjects());
 			ofLogNotice("ofxApp") << "start loading Custom User Content...";
 			delegate->startUserProcess(LOAD_CUSTOM_USER_CONTENT);
 			break;
@@ -440,11 +440,9 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 			setupApp();
 			break;
 
-		case RUNNING:{
-			break;
-		}
+		case RUNNING: break;
 
-		default:break;
+		default: break;
 	}
 }
 
@@ -489,7 +487,6 @@ void App::onKeyPressed(ofKeyEventArgs & a){
 }
 
 
-
 ///////////////////// SETTINGS //////////////////////////////////////////////////////////////////////
 #pragma mark Settings
 
@@ -500,11 +497,12 @@ bool& App::getBool(const string & key, bool defaultVal){
 		return settings().getBool(key);
 	}else{
 		ofLogError("ofxApp") << "Requesting setting that does not exist! " << key;
-		if(QUIT_ON_MISSING_SETTING) exit(-1);
+		if(QUIT_ON_MISSING_SETTING) terminateApp();
 		static auto def = defaultVal;
 		return def; //mmmm....
 	}
 }
+
 
 int& App::getInt(const string & key, int defaultVal){
 	if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << "getting Int Value for " << key;
@@ -513,7 +511,7 @@ int& App::getInt(const string & key, int defaultVal){
 		return settings().getInt(key);
 	}else{
 		ofLogError("ofxApp") << "Requesting setting that does not exist! " << key;
-		if(QUIT_ON_MISSING_SETTING) exit(-1);
+		if(QUIT_ON_MISSING_SETTING) terminateApp();
 		static auto def = defaultVal;
 		return def; //mmmm....
 	}
@@ -526,7 +524,7 @@ float& App::getFloat(const string & key, float defaultVal){
 		return settings().getFloat(key);
 	}else{
 		ofLogError("ofxApp") << "Requesting setting that does not exist! " << key;
-		if(QUIT_ON_MISSING_SETTING) exit(-1);
+		if(QUIT_ON_MISSING_SETTING) terminateApp();
 		static auto def = defaultVal;
 		return def; //mmmm....
 	}
@@ -539,7 +537,20 @@ string& App::getString(const string & key, string defaultVal){
 		return settings().getString(key);
 	}else{
 		ofLogError("ofxApp") << "Requesting setting that does not exist! " << key;
-		if(QUIT_ON_MISSING_SETTING) exit(-1);
+		if(QUIT_ON_MISSING_SETTING) terminateApp();
+		static auto def = defaultVal;
+		return def; //mmmm....
+	}
+}
+
+ofColor& App::getColor(const string & key, ofColor defaultVal){
+	if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << "getting Color Value for " << key;
+	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
+	if(settings().exists(key)){
+		return settings().getColor(key);
+	}else{
+		ofLogError("ofxApp") << "Requesting setting that does not exist! " << key;
+		if(QUIT_ON_MISSING_SETTING) terminateApp();
 		static auto def = defaultVal;
 		return def; //mmmm....
 	}

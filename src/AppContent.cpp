@@ -1,13 +1,13 @@
 //
-//  AppContentBasic.cpp
+//  AppContent.cpp
 //
 //  Created by Oriol Ferrer Mesià aug/2016
 //
 //
 
-#include "AppContentBasic.h"
+#include "AppContent.h"
 
-void AppContentBasic::setup(string jsonSrc,
+void AppContent::setup(string jsonSrc,
 							string jsonDestinationDir_,
 							int numThreads_,
 							int numConcurrentDownloads,
@@ -16,14 +16,13 @@ void AppContentBasic::setup(string jsonSrc,
 							float idleTimeAfterEachDownload,
 							const std::pair<string,string> & credentials,
 							const ofxSimpleHttp::ProxyConfig & proxyConfig,
-							const ofxAssets::DownloadPolicy & downloadPolicy,
-							const ofxAssets::UsagePolicy & usagePolicy,
-							const ofxApp::ContentConfig & contentCfg){
+							const ofxApp::UserLambdas & contentCfg){
 
 	this->jsonURL = jsonSrc;
 	this->contentCfg = contentCfg;
 	this->jsonDestinationDir = jsonDestinationDir_;
 	this->numThreads = numThreads_;
+
 	//config the http downloader if you need to (proxy, etc)
 	dlc.setMaxConcurrentDownloads(numConcurrentDownloads);
 	dlc.setSpeedLimit(speedLimitKBs);
@@ -33,25 +32,24 @@ void AppContentBasic::setup(string jsonSrc,
 	dlc.setProxyConfiguration(proxyConfig);
 
 	//subscribe to parsing events
-	ofAddListener(jsonParser.eventJsonDownloaded, this, 	&AppContentBasic::jsonDownloaded);
-	ofAddListener(jsonParser.eventJsonDownloadFailed, this, &AppContentBasic::jsonDownloadFailed);
-	ofAddListener(jsonParser.eventJsonInitialCheckOK, this, &AppContentBasic::jsonInitialCheckOK);
-	ofAddListener(jsonParser.eventJsonParseFailed, this, 	&AppContentBasic::jsonParseFailed);
-	ofAddListener(jsonParser.eventAllObjectsParsed, this, 	&AppContentBasic::jsonContentReady);
+	ofAddListener(jsonParser.eventJsonDownloaded, this, 	&AppContent::jsonDownloaded);
+	ofAddListener(jsonParser.eventJsonDownloadFailed, this, &AppContent::jsonDownloadFailed);
+	ofAddListener(jsonParser.eventJsonInitialCheckOK, this, &AppContent::jsonInitialCheckOK);
+	ofAddListener(jsonParser.eventJsonParseFailed, this, 	&AppContent::jsonParseFailed);
+	ofAddListener(jsonParser.eventAllObjectsParsed, this, 	&AppContent::jsonContentReady);
 }
 
 
-
-void AppContentBasic::fetchContent(){
-	if(state == IDLE){
+void AppContent::fetchContent(){
+	if(state == IDLE || state == JSON_PARSE_FAILED ){
 		setState(DOWNLOADING_JSON);
 	}else{
-		ofLogError("AppContentBasic") << "Can't fetch content now!";
+		ofLogError("AppContent") << "Can't fetch content now!";
 	}
 }
 
 
-void AppContentBasic::update(float dt){
+void AppContent::update(float dt){
 
 	timeInState += ofGetLastFrameTime();
 	jsonParser.update();
@@ -62,7 +60,7 @@ void AppContentBasic::update(float dt){
 
 		case DOWNLOADING_ASSETS:
 			if(!dlc.isBusy()){ //downloader finished!
-				ofLogNotice("AppContentBasic") << "finished asset downloads!";
+				ofLogNotice("AppContent") << "finished asset downloads!";
 				setState(FILTER_OBJECTS_WITH_BAD_ASSETS);
 			}break;
 	}
@@ -70,7 +68,7 @@ void AppContentBasic::update(float dt){
 
 
 
-void AppContentBasic::setState(ContentState s){
+void AppContent::setState(ContentState s){
 
 	state = s;
 	timeInState = 0;
@@ -79,7 +77,7 @@ void AppContentBasic::setState(ContentState s){
 
 		case DOWNLOADING_JSON:
 			//start the download and parse process
-			jsonParser.downloadAndParse(	jsonURL,
+			jsonParser.downloadAndParse(jsonURL,
 										jsonDestinationDir,	//directory where to save
 										numThreads,			//num threads
 										contentCfg.describeJsonUserLambda,
@@ -91,7 +89,7 @@ void AppContentBasic::setState(ContentState s){
 			//sadly we need to cast our objects to AssetHolder* objects to check them
 			vector<AssetHolder*> assetObjs;
 			assetObjs.insert(assetObjs.begin(), parsedObjects.begin(), parsedObjects.end());
-			ofAddListener(assetChecker.eventFinishedCheckingAllAssets, this, &AppContentBasic::assetCheckFinished);
+			ofAddListener(assetChecker.eventFinishedCheckingAllAssets, this, &AppContent::assetCheckFinished);
 			assetChecker.checkAssets(assetObjs, numThreads);
 		}break;
 
@@ -110,21 +108,21 @@ void AppContentBasic::setState(ContentState s){
 			vector<string> badObjectsIds;
 
 			for(int i = 0; i < parsedObjects.size(); i++){
+
 				bool assetsOK = parsedObjects[i]->areAllAssetsOK();
 				bool hasEnoughAssets = parsedObjects[i]->getNumAssets() > 0;
 
-				if(!assetsOK) ofLogError("AppContentBasic") << "object " << parsedObjects[i]->getObjectUUID() << " assets NOT OK!";
-				if(!hasEnoughAssets) ofLogError("AppContentBasic") << "object '" << parsedObjects[i]->getObjectUUID() << "' has no assets!";
+				if(!assetsOK) ofLogError("AppContent") << "object " << parsedObjects[i]->getObjectUUID() << " assets NOT OK!";
+				if(!hasEnoughAssets) ofLogError("AppContent") << "object '" << parsedObjects[i]->getObjectUUID() << "' has no assets!";
 
-				if (!assetsOK || !hasEnoughAssets /*|| isBlocked*/){
+				if (!assetsOK || !hasEnoughAssets ){
 					badObjects.push_back(i);
 					badObjectsIds.push_back(parsedObjects[i]->getObjectUUID());
 				}
 			}
 
-			//drop object with no asset
 			for(int i = badObjects.size() - 1; i >= 0; i--){
-				ofLogError("AppContentBasic") << "Dropping object " << parsedObjects[i]->getObjectUUID();
+				ofLogError("AppContent") << "Dropping object " << parsedObjects[i]->getObjectUUID();
 				delete parsedObjects[badObjects[i]];
 				parsedObjects.erase(parsedObjects.begin() + badObjects[i]);
 			}
@@ -151,29 +149,29 @@ void AppContentBasic::setState(ContentState s){
 }
 
 
-string AppContentBasic::getStatus(){
+string AppContent::getStatus(){
 
 	string r;
-	string plainFormat = " %0.75 #0x888888 \n"; //text format for logging on screen - see ofxFontStash.h drawMultiLineColumn()
-	string errorFormat = " %0.75 #0xBB0000 \n"; //text format for logging on screen - see ofxFontStash.h drawMultiLineColumn()
+	string plainFormat = " %0.9 #0x888888 \n"; //text format for logging on screen - see ofxFontStash.h drawMultiLineColumn()
+	string errorFormat = " %0.9 #0xBB0000 \n"; //text format for logging on screen - see ofxFontStash.h drawMultiLineColumn()
 
 	switch (state) {
 		case DOWNLOADING_JSON: r = plainFormat + jsonParser.getHttp().drawableString(); break;
 		case JSON_DOWNLOAD_FAILED: r = errorFormat + errorMessage; break;
-		case CHECKING_JSON: r = ""; break;
-		case PARSING_JSON: r = ""; break;
-		case CHECKING_ASSET_STATUS: r = ""; break;
+		case CHECKING_JSON: r = plainFormat + jsonParser.getDrawableState(); break;
+		case PARSING_JSON: r = plainFormat + jsonParser.getDrawableState(); break;
+		case CHECKING_ASSET_STATUS: r = plainFormat + assetChecker.getDrawableState(); break;
 		case JSON_PARSE_FAILED: r = errorFormat +  errorMessage; break;
 		case DOWNLOADING_ASSETS: r =  plainFormat + dlc.getDrawableInfo(true, false); break;
-		case FILTER_OBJECTS_WITH_BAD_ASSETS: r = ""; break;
-		case SETUP_TEXTURED_OBJECTS: r = ""; break;
-		case JSON_CONTENT_READY: r = "READY"; break;
+		case FILTER_OBJECTS_WITH_BAD_ASSETS: r = plainFormat; break;
+		case SETUP_TEXTURED_OBJECTS: r = plainFormat; break;
+		case JSON_CONTENT_READY: r = plainFormat + "READY"; break;
 	}
 	return r;
 }
 
 
-float AppContentBasic::getPercentDone(){
+float AppContent::getPercentDone(){
 	float p = -1.0f;
 	switch (state) {
 		case DOWNLOADING_JSON: p = jsonParser.getHttp().getCurrentDownloadProgress(); break;
@@ -190,39 +188,39 @@ float AppContentBasic::getPercentDone(){
 }
 
 
-bool AppContentBasic::isBusy(){
+bool AppContent::isBusy(){
 
 }
 
 // CALBACKS ////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Callbacks
 
-void AppContentBasic::jsonDownloaded(ofxSimpleHttpResponse & arg){
-	ofLogNotice("AppContentBasic") << "JSON download OK!";
+void AppContent::jsonDownloaded(ofxSimpleHttpResponse & arg){
+	ofLogNotice("AppContent") << "JSON download OK!";
 	setState(CHECKING_JSON);
 }
 
 
-void AppContentBasic::jsonDownloadFailed(ofxSimpleHttpResponse & arg){
-	ofLogError("AppContentBasic") << "JSON download failed!";
-	errorMessage = arg.reasonForStatus;
+void AppContent::jsonDownloadFailed(ofxSimpleHttpResponse & arg){
+	ofLogError("AppContent") << "JSON download failed!";
+	errorMessage = arg.reasonForStatus + " (" + arg.url + ")";
 	setState(JSON_DOWNLOAD_FAILED);
 }
 
 
-void AppContentBasic::jsonInitialCheckOK(){
-	ofLogNotice("AppContentBasic") << "JSON Initial Check OK!";
+void AppContent::jsonInitialCheckOK(){
+	ofLogNotice("AppContent") << "JSON Initial Check OK!";
 	setState(PARSING_JSON);
 }
 
 
-void AppContentBasic::jsonParseFailed(){
-	ofLogError("AppContentBasic") << "json Parse Failed!";
+void AppContent::jsonParseFailed(){
+	ofLogError("AppContent") << "json Parse Failed!";
 	setState(JSON_PARSE_FAILED);
 }
 
 
-void AppContentBasic::jsonContentReady(vector<ParsedObject*> &parsedObjects_){
+void AppContent::jsonContentReady(vector<ParsedObject*> &parsedObjects_){
 	ofLogNotice("PgContentManager") << "json Content Ready! " << parsedObjects.size() << " Objects received.";
 	//parsedObjects = parsedObjects_;
 	parsedObjects.reserve(parsedObjects_.size());
@@ -233,13 +231,13 @@ void AppContentBasic::jsonContentReady(vector<ParsedObject*> &parsedObjects_){
 }
 
 
-void AppContentBasic::assetCheckFinished(){
-	ofLogNotice("AppContentBasic") << "Asset Check Finished!";
+void AppContent::assetCheckFinished(){
+	ofLogNotice("AppContent") << "Asset Check Finished!";
 	setState(DOWNLOADING_ASSETS);
 }
 
 
-string AppContentBasic::getNameForState(AppContentBasic::ContentState state){
+string AppContent::getNameForState(AppContent::ContentState state){
 
 	switch (state) {
 		case IDLE: return "IDLE";

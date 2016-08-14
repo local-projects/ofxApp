@@ -19,7 +19,8 @@
 
 #include "ofMain.h"
 #include "AppBaseClasses.h"
-#include "AppContentBasic.h"
+#include "AppContent.h"
+#include "AppFonts.h"
 #include "AppStaticTextures.h"
 #include "ofxAppMacros.h"
 
@@ -32,16 +33,16 @@
 #include "ofxTimeMeasurements.h"
 #include "ofxDrawableStateMachine.h"
 
-//some macro magic to include the user defined subclasses of AppColorsBasic, AppFontsBasic, AppGlobalsBasic
-//it takes the user defined macro (ie OFX_APP_NAME=myApp) and creates an #include "myAppColors.h"
-#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_COLORS_FILENAME) 	//include myAppColors.h
-#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_FONTS_FILENAME)	//include myAppFonts.h
-#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_GLOBALS_FILENAME) //include myAppGlobals.h
-#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_STATES_FILENAME)	//include myAppStates.h
+//some macro magic to include the user defined subclasses of AppColorsBasic, AppFonts, AppGlobalsBasic
+//it takes the user defined macro (ie OFX_APP_NAME=MyApp) and creates an #include "MyAppColors.h"
+#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_COLORS_FILENAME) 	//include MyAppColors.h
+//#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_FONTS_FILENAME)	//include MyAppFonts.h
+#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_GLOBALS_FILENAME) //include MyAppGlobals.h
+//#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_STATES_FILENAME)	//include MyAppStates.h
 
 namespace ofxApp{
 
-class App : public HasAssets{
+class App : public HasAssets, public CanTerminate{
 
 public:
 
@@ -49,9 +50,7 @@ public:
 	const string LogsDir = "logs";
 	const string configsDir = "configs";
 
-	App();
-
-	void setup(ofxApp::ContentConfig cfg, ofxAppDelegate * delegate);
+	void setup(ofxApp::UserLambdas cfg, ofxAppDelegate * delegate);
 
 	void update(ofEventArgs &);
 	void draw(ofEventArgs &);
@@ -63,9 +62,9 @@ public:
 	//  OFX_APP_NAME=MyApp
 	OFX_APP_CLASS_NAME(Colors) & colors(){return colorsStorage;}
 	OFX_APP_CLASS_NAME(Globals) & globals(){return globalsStorage;}
-	OFX_APP_CLASS_NAME(Fonts) & fonts(){return fontStorage;}
+	AppFonts & fonts(){return *fontStorage;}
 
-	AppContentBasic & content(){return contentStorage;}
+	AppContent & content(){return *contentStorage;}
 	ofxJsonSettings& settings(){return ofxJsonSettings::get();}
 	AppStaticTextures & textures(){return texStorage;}
 	ofPtr<ofxSuperLog> logger(){return ofxSuperLog::getLogger();}
@@ -73,13 +72,22 @@ public:
 
 	ofxScreenSetup screenSetup;
 
-	// Convinience Getters for App Settings ////////////////////////////////////////////////////////
+	// Convinience methods ////////////////////////////////////////////////////////
+	// SETTINGS //
 	bool& getBool(const string & key, bool defaultVal = true);
 	int& getInt(const string & key, int defaultVal = 0);
 	float& getFloat(const string & key, float defaultVal = 0.0);
 	string& getString(const string & key, string defaultVal = "uninited!");
+	ofColor& getColor(const string & key, ofColor defaultVal = ofColor::red);
+
 	void loadSettings();
 	void saveSettings();
+
+	ofxApp::State getState(){return appState.getState();}
+
+	//those are cfgs coming from the main config file
+	ofxAssets::DownloadPolicy getAssetDownloadPolicy(){ return assetDownloadPolicy; }
+	ofxAssets::UsagePolicy getAssetUsagePolicy(){ return assetUsagePolicy;}
 
 
 	// TUIO ////////////////////////////////////////////////////////////////////////////////////////
@@ -88,21 +96,10 @@ public:
 	virtual void tuioUpdated(ofxTuioCursor & tuioCursor){};
 	ofxTuioCursor getTuioAtMouse(int x, int y);
 
-	// STATE MACHINE ///////////////////////////////////////////////////////////////////////////////
-	ofxDrawableStateMachine<ofxApp::State> appState; //App State Machine
-	virtual void updateStateMachine(float dt);
-	virtual void onDrawLoadingScreenStatus(ofRectangle & area); //override to customize loading screen
-
-	virtual void onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& change);
-	virtual void onStateError(ofxStateMachine<ofxApp::State>::ErrorStateEventArgs& error);
-	virtual void onContentManagerStateChanged(string&);
-
-
 	// CALLBACKS ///////////////////////////////////////////////////////////////////////////////////
 	void onRemoteUINotification(RemoteUIServerCallBackArg & arg);
 	void onStaticTexturesLoaded();
 	void onKeyPressed(ofKeyEventArgs&);
-
 
 protected:
 
@@ -116,29 +113,40 @@ protected:
 	void setupTuio(int port = 3333);
 	void setupApp();
 	void setupRuiWatches();
-
 	void startLoadingStaticAssets();
+
+
+	// STATE MACHINE ///////////////////////////////////////////////////////////////////////////////
+	virtual void updateStateMachine(float dt);
+	virtual void onDrawLoadingScreenStatus(ofRectangle & area); //override to customize loading screen
+
+	virtual void onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& change);
+	virtual void onStateError(ofxStateMachine<ofxApp::State>::ErrorStateEventArgs& error);
+	virtual void onContentManagerStateChanged(string&);
 
 	ofxTuioClient						tuioClient;
 	AppStaticTextures					texStorage;
 	ofxMullion							mullions;
 
+	ofxAssets::DownloadPolicy		assetDownloadPolicy;
+	ofxAssets::UsagePolicy			assetUsagePolicy;
+
 	//crazy macro magic - beware! read a few lines above to see what's going on
-	OFX_APP_CLASS_NAME(Colors)			colorsStorage;
-	OFX_APP_CLASS_NAME(Globals)			globalsStorage;
-	OFX_APP_CLASS_NAME(Fonts)			fontStorage;
-	AppContentBasic						contentStorage;
+	OFX_APP_CLASS_NAME(Colors)				colorsStorage;
+	OFX_APP_CLASS_NAME(Globals)				globalsStorage;
+	AppFonts *								fontStorage;
+	AppContent *							contentStorage;
+	ofxDrawableStateMachine<ofxApp::State>	appState; //App State Machine
 
-	bool								hasLoadedSettings = false;
-	//bool								shouldQuit;
+	bool									hasLoadedSettings = false;
+	//bool									shouldQuit;
 
-	const int 							loadingScreenFontSize = 22;
-	float								dt;
-	ofxApp::ContentConfig 				contentCfg;
+	const int								loadingScreenFontSize = 22;
+	float									dt;
+	ofxApp::UserLambdas						contentCfg;
 
-	ofxAppDelegate *					delegate = nullptr;
+	ofxAppDelegate *						delegate = nullptr;
 };
-
 }
 
 extern ofxApp::App app; //all global parameters are here - add yor "ofxApp" subclass!

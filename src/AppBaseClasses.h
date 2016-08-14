@@ -10,10 +10,22 @@
 #include "ofMain.h"
 #include "ofxRemoteUIServer.h"
 #include "ofxAppStructs.h"
+#include "ofxThreadSafeLog.h"
+#include "ofxSimpleHttp.h"
 
 class HasRuiParams{
 public:
 	virtual void setupRemoteUIParams() = 0;
+};
+
+class CanTerminate{
+public:
+	virtual void terminateApp(){
+		ofxSimpleHttp::destroySslContext();
+		ofLogError("ofxApp") << "terminateApp()!";
+		ofxThreadSafeLog::one()->close();
+		exit(-1);
+	};
 };
 
 
@@ -31,7 +43,7 @@ public:
 	}
 };
 
-//if you use ofxApp, your app must follow this protocol, so make sure your app
+//to use ofxApp, your app must follow this protocol, so make sure your app
 //is a subclass of ofxAppDelegate
 
 class ofxAppDelegate{
