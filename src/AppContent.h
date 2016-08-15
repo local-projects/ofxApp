@@ -58,7 +58,8 @@ public:
 			   float idleTimeAfterEachDownload,
 			   const std::pair<string,string> & credentials,
 			   const ofxSimpleHttp::ProxyConfig & proxyConfig,
-			   const ofxApp::UserLambdas & contentCfg
+			   const ofxApp::UserLambdas & contentCfg,
+			   const ofxAssets::ObjectUsagePolicy objectUsagePolicy
 			   );
 
 	void fetchContent(); //start the process here
@@ -103,6 +104,7 @@ protected:
 
 	ofxMtJsonParser jsonParser;
 	ofxApp::UserLambdas contentCfg;
+	ofxAssets::ObjectUsagePolicy objectUsagePolicy;
 
 	vector<ContentObject*> parsedObjects;
 	AssetChecker assetChecker;

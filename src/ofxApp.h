@@ -91,9 +91,6 @@ public:
 
 
 	// TUIO ////////////////////////////////////////////////////////////////////////////////////////
-	virtual void tuioAdded(ofxTuioCursor & tuioCursor){};
-	virtual void tuioRemoved(ofxTuioCursor & tuioCursor){};
-	virtual void tuioUpdated(ofxTuioCursor & tuioCursor){};
 	ofxTuioCursor getTuioAtMouse(int x, int y);
 
 	// CALLBACKS ///////////////////////////////////////////////////////////////////////////////////
@@ -110,10 +107,12 @@ protected:
 	void setupOF();
 	void setupRemoteUI();
 	void setupLogging();
-	void setupTuio(int port = 3333);
+	void setupTuio();
 	void setupApp();
 	void setupRuiWatches();
 	void startLoadingStaticAssets();
+	void setMouseEvents(bool enabled);
+	void loadSettingsBundles();
 
 
 	// STATE MACHINE ///////////////////////////////////////////////////////////////////////////////
@@ -128,8 +127,14 @@ protected:
 	AppStaticTextures					texStorage;
 	ofxMullion							mullions;
 
+	// Settings budles ////////
+
+	ofxSimpleHttp::ProxyConfig		proxyCfg;
+	std::pair<string,string>		credentials; //http
+
 	ofxAssets::DownloadPolicy		assetDownloadPolicy;
 	ofxAssets::UsagePolicy			assetUsagePolicy;
+	ofxAssets::ObjectUsagePolicy	objectUsagePolicy;
 
 	//crazy macro magic - beware! read a few lines above to see what's going on
 	OFX_APP_CLASS_NAME(Colors)				colorsStorage;

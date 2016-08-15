@@ -16,11 +16,13 @@ void AppContent::setup(	string jsonSrc,
 						float idleTimeAfterEachDownload,
 						const std::pair<string,string> & credentials,
 						const ofxSimpleHttp::ProxyConfig & proxyConfig,
-						const ofxApp::UserLambdas & contentCfg){
+						const ofxApp::UserLambdas & contentCfg,
+					    const ofxAssets::ObjectUsagePolicy objectUsagePolicy){
 
 	parsedObjects.clear();
 	this->jsonURL = jsonSrc;
 	this->contentCfg = contentCfg;
+	this->objectUsagePolicy = objectUsagePolicy;
 	this->jsonDestinationDir = jsonDestinationDir_;
 	this->numThreads = numThreads_;
 
@@ -64,11 +66,14 @@ void AppContent::update(float dt){
 				ofLogNotice("AppContent") << "finished asset downloads!";
 				setState(FILTER_OBJECTS_WITH_BAD_ASSETS);
 			}break;
+
 		case FILTER_OBJECTS_WITH_BAD_ASSETS:
 			if(timeInState > 2){ //show this on screen for a sec
 				setState(SETUP_TEXTURED_OBJECTS);
 			}
 			break;
+
+		default: break;
 	}
 }
 
@@ -110,21 +115,65 @@ void AppContent::setState(ContentState s){
 			break;
 
 		case FILTER_OBJECTS_WITH_BAD_ASSETS:{
+
 			objectsWithBadAssets.clear();
+
 			vector<int> badObjects;
 			vector<string> badObjectsIds;
+
 			for(int i = 0; i < parsedObjects.size(); i++){
 
-				bool assetsOK = parsedObjects[i]->areAllAssetsOK();
-				bool hasEnoughAssets = parsedObjects[i]->getNumAssets() > 0;
+				//do some asset integrity tests...
+				bool allAssetsOK = parsedObjects[i]->areAllAssetsOK();
+				bool needsAllAssetsToBeOk = objectUsagePolicy.allObjectAssetsAreOK;
+				int numImgAssets = parsedObjects[i]->getAssetDescriptorsForType(ofxAssets::IMAGE).size();
+				int numVideoAssets = parsedObjects[i]->getAssetDescriptorsForType(ofxAssets::VIDEO).size();
+				int numAudioAssets = parsedObjects[i]->getAssetDescriptorsForType(ofxAssets::AUDIO).size();
 
-				if(!assetsOK) ofLogError("AppContent") << "object " << parsedObjects[i]->getObjectUUID() << " assets NOT OK!";
-				if(!hasEnoughAssets) ofLogError("AppContent") << "object '" << parsedObjects[i]->getObjectUUID() << "' has no assets!";
+				bool rejectObject = false;
+				string rejectionReason;
 
-				if (!assetsOK || !hasEnoughAssets ){
+				//apply all policy rules to decide if object is rejected or not
+				if(needsAllAssetsToBeOk){
+					if(!allAssetsOK){
+						rejectObject = true;
+						auto brokenAssets = parsedObjects[i]->getBrokenAssets();
+						rejectionReason = ofToString(brokenAssets.size()) + " Broken Asset(s)";
+					}
+				}
+
+				if(numImgAssets < objectUsagePolicy.minNumberOfImageAssets){
+					rejectObject = true;
+					if(rejectionReason.size()) rejectionReason += " | ";
+					rejectionReason += "Not Enough Images";
+					ofLogError("AppContent") << "Rejecting Object '" << parsedObjects[i]->getObjectUUID()
+						<< "' because doesnt have the min # of images! (" << numImgAssets << "/"
+						<< objectUsagePolicy.minNumberOfImageAssets << ")" ;
+				}
+
+				if(numVideoAssets > objectUsagePolicy.minNumberOfVideoAssets){
+					rejectObject = true;
+					if(rejectionReason.size()) rejectionReason += " | ";
+					rejectionReason += "Not Enough Videos";
+					ofLogError("AppContent") << "Rejecting Object '" << parsedObjects[i]->getObjectUUID()
+					<< "' because doesnt have the min # of Videos! (" << numVideoAssets << "/"
+					<< objectUsagePolicy.minNumberOfVideoAssets << ")" ;
+				}
+
+				if(numAudioAssets > objectUsagePolicy.minNumberOfAudioAssets){
+					rejectObject = true;
+					if(rejectionReason.size()) rejectionReason += " | ";
+					rejectionReason += "Not Enough AudioFiles";
+					ofLogError("AppContent") << "Rejecting Object '" << parsedObjects[i]->getObjectUUID()
+					<< "' because doesnt have the min # of Audio Files! (" << numAudioAssets << "/"
+					<< objectUsagePolicy.minNumberOfAudioAssets << ")" ;
+
+				}
+
+				if (rejectObject){
 					badObjects.push_back(i);
 					badObjectsIds.push_back(parsedObjects[i]->getObjectUUID());
-					objectsWithBadAssets += badObjectsIds.back() + "\n";
+					objectsWithBadAssets += badObjectsIds.back() + " : " + rejectionReason + "\n";
 				}
 			}
 
@@ -133,7 +182,9 @@ void AppContent::setState(ContentState s){
 				delete parsedObjects[badObjects[i]];
 				parsedObjects.erase(parsedObjects.begin() + badObjects[i]);
 			}
+
 			objectsWithBadAssets = "\nRemoved " + ofToString(badObjects.size()) + " objects:\n\n" + objectsWithBadAssets;
+
 		}break;
 
 		case SETUP_TEXTURED_OBJECTS:
@@ -173,6 +224,7 @@ string AppContent::getStatus(){
 		case FILTER_OBJECTS_WITH_BAD_ASSETS: r = plainFormat + objectsWithBadAssets; break;
 		case SETUP_TEXTURED_OBJECTS: r = plainFormat; break;
 		case JSON_CONTENT_READY: r = plainFormat + "READY"; break;
+		default: break;
 	}
 	return r;
 }
@@ -259,6 +311,7 @@ string AppContent::getNameForState(AppContent::ContentState state){
 		case SETUP_TEXTURED_OBJECTS: return "SETUP_TEXTURED_OBJECTS";
 		case JSON_CONTENT_READY: return "JSON_CONTENT_READY";
 		case NUM_CONTENT_MANAGER_STATES: return "NUM_CONTENT_MANAGER_STATES";
+		default: break;
 	}
 	return "UNKNOWN STATE";
 }

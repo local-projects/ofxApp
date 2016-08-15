@@ -17,9 +17,10 @@ void App::setup(ofxApp::UserLambdas cfg, ofxAppDelegate * delegate){
 
 	if(!this->delegate){
 
+		this->delegate = delegate;
 		fontStorage = new AppFonts();
 		contentStorage = new AppContent();
-		this->delegate = delegate;
+		loadSettingsBundles();
 		setupWindow();
 		contentCfg = cfg;
 		ofLogNotice("ofxApp") << "setup()";
@@ -47,7 +48,33 @@ void App::setupOF(){
 	ofSetFrameRate(getInt("App/frameRate"));
 	ofBackground(colors().bgColor);
 	dt = 1.0f / ofGetTargetFrameRate();
+
+	bool showMouse = getBool("App/showMouse");
+	if(showMouse) ofShowCursor();
+	else ofHideCursor();
+
+	setMouseEvents(getBool("App/showMouse"));
 }
+
+void App::setMouseEvents(bool enabled){
+
+	if(enabled){
+		if(!ofEvents().mousePressed.isEnabled()){
+			ofEvents().mousePressed.enable();
+			ofEvents().mouseReleased.enable();
+			ofEvents().mouseDragged.enable();
+			ofLogWarning("ofxApp") << "Disabled Mouse Events";
+		}
+	}else{
+		if(ofEvents().mousePressed.isEnabled()){
+			ofEvents().mousePressed.disable();
+			ofEvents().mouseReleased.disable();
+			ofEvents().mouseDragged.disable();
+			ofLogWarning("ofxApp") << "Enabled Mouse Events";
+		}
+	}
+}
+
 
 void App::setupWindow(){
 	ofxScreenSetup::ScreenMode mode = ofxScreenSetup::ScreenMode((int)getInt("App/window/windowMode"));
@@ -183,6 +210,37 @@ void App::setupRemoteUI(){
 }
 
 
+void App::loadSettingsBundles(){
+
+	std::pair<string,string> credentials;
+	credentials.first = getString("downloads/credentials/username");
+	credentials.second = getString("downloads/credentials/password");
+
+	ofxSimpleHttp::ProxyConfig proxyCfg;
+	proxyCfg.useProxy = getBool("downloads/proxy/useProxy");
+	proxyCfg.host = getString("downloads/proxy/proxyHost");
+	proxyCfg.port = getInt("downloads/proxy/proxyPort");
+	proxyCfg.login = getString("downloads/proxy/proxyUser");
+	proxyCfg.password = getString("downloads/proxy/proxyPassword");
+
+	assetDownloadPolicy.fileMissing = getBool("content/AssetDownloadPolicy/fileMissing");
+	assetDownloadPolicy.fileTooSmall = getBool("content/AssetDownloadPolicy/fileTooSmall");
+	assetDownloadPolicy.fileExistsAndNoSha1Provided = getBool("content/AssetDownloadPolicy/fileExistsAndNoSha1Provided");
+	assetDownloadPolicy.fileExistsAndProvidedSha1Missmatch = getBool("content/AssetDownloadPolicy/fileExistsAndProvidedSha1Missmatch");
+	assetDownloadPolicy.fileExistsAndProvidedSha1Match = getBool("content/AssetDownloadPolicy/fileExistsAndProvidedSha1Match");
+
+	assetUsagePolicy.fileMissing = getBool("content/AssetUsagePolicy/fileMissing");
+	assetUsagePolicy.fileTooSmall = getBool("content/AssetUsagePolicy/fileTooSmall");
+	assetUsagePolicy.fileExistsAndNoSha1Provided = getBool("content/AssetUsagePolicy/fileExistsAndNoSha1Provided");
+	assetUsagePolicy.fileExistsAndProvidedSha1Missmatch = getBool("content/AssetUsagePolicy/fileExistsAndProvidedSha1Missmatch");
+	assetUsagePolicy.fileExistsAndProvidedSha1Match = getBool("content/AssetUsagePolicy/fileExistsAndProvidedSha1Match");
+
+	objectUsagePolicy.allObjectAssetsAreOK = getBool("content/ObjectUsagePolicy/allAssetsAreOK");
+	objectUsagePolicy.minNumberOfImageAssets = getBool("content/ObjectUsagePolicy/minNumberImgAssets");
+	objectUsagePolicy.minNumberOfVideoAssets = getBool("content/ObjectUsagePolicy/minNumberVideoAssets");
+	objectUsagePolicy.minNumberOfAudioAssets = getBool("content/ObjectUsagePolicy/minNumberAudioAssets");
+}
+
 void App::setupRuiWatches(){
 
 	ofxJSON paramWatches = settings().getJson("RemoteUI/paramWatches");
@@ -222,15 +280,17 @@ void App::setupTimeMeasurements(){
 }
 
 
-void App::setupTuio(int port){
+void App::setupTuio(){
 	if(getBool("tuio/enabled")){
 		int port = getInt("tuio/port");
 		ofLogNotice("ofxApp") << "Listening for TUIO events at port " << port;
 		tuioClient.start(port); //TODO - make sure we do it only once!
-		ofAddListener(tuioClient.cursorAdded, this, &App::tuioAdded);
-		ofAddListener(tuioClient.cursorRemoved, this, &App::tuioRemoved);
-		ofAddListener(tuioClient.cursorUpdated, this, &App::tuioUpdated);
 	}
+}
+
+ofxTuioCursor App::getTuioAtMouse(int x, int y){
+	float r = 1;
+	return ofxTuioCursor( 0,0, x / (float)ofGetWidth(),  r * y / (float)ofGetHeight());
 }
 
 
@@ -354,7 +414,6 @@ void App::updateStateMachine(float dt){
 			}
 			break;
 
-
 		default: break;
 	}
 }
@@ -375,37 +434,13 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 
 			string jsonURL = getString("content/urls/jsonContentURL");
 			string jsonDir = getString("content/jsonDownloadDir");
-
-			std::pair<string,string> credentials;
-			credentials.first = getString("downloads/credentials/username");
-			credentials.second = getString("downloads/credentials/password");
 			int numConcurrentDownloads = getInt("downloads/maxConcurrentDownloads");
 			int numThreads = getInt("App/maxThreads");
 			int timeOutSecs = getInt("downloads/timeOutSec");
 			int speedLimitKBs = getInt("downloads/speedLimitKb");
 			float idleTimeAfterDl = getFloat("downloads/idleTimeAfterEachDownloadSec");
 
-			ofxSimpleHttp::ProxyConfig proxyCfg;
-			proxyCfg.useProxy = getBool("downloads/proxy/useProxy");
-			proxyCfg.host = getString("downloads/proxy/proxyHost");
-			proxyCfg.port = getInt("downloads/proxy/proxyPort");
-			proxyCfg.login = getString("downloads/proxy/proxyUser");
-			proxyCfg.password = getString("downloads/proxy/proxyPassword");
-
-			assetDownloadPolicy.fileMissing = getBool("content/AssetDownloadPolicy/fileMissing");
-			assetDownloadPolicy.fileTooSmall = getBool("content/AssetDownloadPolicy/fileTooSmall");
-			assetDownloadPolicy.fileExistsAndNoSha1Provided = getBool("content/AssetDownloadPolicy/fileExistsAndNoSha1Provided");
-			assetDownloadPolicy.fileExistsAndProvidedSha1Missmatch = getBool("content/AssetDownloadPolicy/fileExistsAndProvidedSha1Missmatch");
-			assetDownloadPolicy.fileExistsAndProvidedSha1Match = getBool("content/AssetDownloadPolicy/fileExistsAndProvidedSha1Match");
-
-			assetUsagePolicy.fileMissing = getBool("content/AssetUsagePolicy/fileMissing");
-			assetUsagePolicy.fileTooSmall = getBool("content/AssetUsagePolicy/fileTooSmall");
-			assetUsagePolicy.fileExistsAndNoSha1Provided = getBool("content/AssetUsagePolicy/fileExistsAndNoSha1Provided");
-			assetUsagePolicy.fileExistsAndProvidedSha1Missmatch = getBool("content/AssetUsagePolicy/fileExistsAndProvidedSha1Missmatch");
-			assetUsagePolicy.fileExistsAndProvidedSha1Match = getBool("content/AssetUsagePolicy/fileExistsAndProvidedSha1Match");
-
-			contentStorage->setup(
-								 	jsonURL,
+			contentStorage->setup(	jsonURL,
 								 	jsonDir,
 									numThreads,
 									numConcurrentDownloads,
@@ -414,11 +449,11 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 								 	idleTimeAfterDl,
 								 	credentials,
 								 	proxyCfg,
-									contentCfg
+									contentCfg,
+									objectUsagePolicy
 								 );
-			}
-			contentStorage->fetchContent();
-			break;
+			contentStorage->fetchContent(); //this starts the AppContent process! TODO multiple sources!
+			}break;
 
 		case LOADING_JSON_CONTENT_FAILED:
 			appState.setProgressBarExtraInfo(" - CONTENT LOAD FAILED");
@@ -459,12 +494,6 @@ void App::onContentManagerStateChanged(string& s){
 }
 
 
-ofxTuioCursor App::getTuioAtMouse(int x, int y){
-	float r = 1;
-	return ofxTuioCursor( 0,0, x / (float)ofGetWidth(),  r * y / (float)ofGetHeight());
-}
-
-
 void App::onRemoteUINotification(RemoteUIServerCallBackArg &arg){
 	switch (arg.action) {
 		case CLIENT_UPDATED_PARAM:
@@ -472,6 +501,11 @@ void App::onRemoteUINotification(RemoteUIServerCallBackArg &arg){
 				if(arg.param.boolVal) ofShowCursor();
 				else ofHideCursor();
 			}
+
+			if(arg.paramName == "enableMouse"){
+				setMouseEvents(arg.param.boolVal);
+			}
+
 			break;
 		default:
 			break;
