@@ -172,7 +172,7 @@ void App::setupLogging(){
 			}
 		#endif
 	#endif
-	bool logToConsole = true; //getSBool("logging/deleteOldLogs");
+	bool logToConsole = getBool("logging/toConsole");
 	bool logToScreen = getBool("logging/toScreen");
 	ofSetLogLevel(OF_LOG_NOTICE);
 	ofSetLoggerChannel(ofxSuperLog::getLogger(logToConsole, logToScreen, LogsDir));
@@ -180,8 +180,10 @@ void App::setupLogging(){
 	ofxSuperLog::getLogger()->setMaximized(true);
 	ofxSuperLog::getLogger()->setMaxNumLogLines(getInt("logging/maxScreenLines"));
 	ofxSuperLog::getLogger()->setUseScreenColors(true);
-	//set a nice font for the on screen logger
-	ofxSuperLog::getLogger()->setFont(&(fonts().getMonoFont()), getFloat("logging/uiScale", 1.0) * getFloat("logging/fontSize"));
+
+	if(getBool("logging/useFontStash")){ //set a nice font for the on screen logger if using fontstash
+		ofxSuperLog::getLogger()->setFont(&(fonts().getMonoBoldFont()), getFloat("logging/uiScale", 1.0) * getInt("logging/fontSize"));
+	}
 	ofxSuperLog::getLogger()->setDisplayWidth(getFloat("logging/screenLogPanelWidth"));
 
 	//asset manager uses this separate logger to create an "asset report"  file after every launch

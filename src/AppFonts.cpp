@@ -78,7 +78,7 @@ void AppFonts::loadOfxAppFont(const string & key, ofxFontStash & font){
 	if(settings.exists("Fonts/ofxApp/" + key)){
 
 		string fontFile = settings.getString("Fonts/ofxApp/" + key + "/fontFile");
-		int atlasSize = settings.getInt("Fonts/ofxApp/" + key + "/atlasSie");
+		int atlasSize = settings.getInt("Fonts/ofxApp/" + key + "/atlasSize");
 		float lineH = settings.getFloat("Fonts/ofxApp/" + key + "/lineHeight");
 		bool mipmaps = settings.getBool("Fonts/ofxApp/" + key + "/mipmaps");
 		int mipMapPadding = settings.getInt("Fonts/ofxApp/" + key + "/mipmapPadding");
@@ -86,6 +86,7 @@ void AppFonts::loadOfxAppFont(const string & key, ofxFontStash & font){
 
 		assertFileExists(fontFile);
 
+		ofLogNotice("AppFonts") << "Loading ofxApp Font'" << fontFile << "'";
 		font.setup(	fontFile,
 					lineH, 		//line height
 					atlasSize, 		//tex atlas size

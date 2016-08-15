@@ -1,0 +1,1299 @@
+{
+	"data": {
+		"53603249c3fc6b0981d482b3": {
+			"category": "PROFILE",
+			"created_at": "2014-04-29 23:14:17.516000",
+			"description": "Meet sophomore Victoria Robinson, who enrolled at Case Western Reserve at the age of 15.",
+			"event_date_time": "",
+			"image": null,
+			"location": "",
+			"title": "Student Profile: Victoria Robinson",
+			"updated_at": "2014-05-29 02:11:05.091000",
+			"video": {
+				"chksum": "802983db9a5f5f2f87894e827474af3522ff5924",
+				"uri": "http://129.22.220.12/asset/videos/victoria.mov"
+			},
+			"weight": 0.5
+		},
+		"53603249c3fc6b0981d482b4": {
+			"category": "PROFILE",
+			"created_at": "2014-04-29 23:14:17.517000",
+			"description": "Girl Talk\u2014aka Gregg Gillis (CWR \u201904)\u2014got his start in a residence hall. The engineering student turned mashup master is known for his inventive samples of music, from Britney Spears to Public Enemy. ",
+			"event_date_time": "",
+			"image": {
+				"chksum": "32f20d70f34491c7e7912f1ce385be3b8f6ed89d",
+				"uri": "http://129.22.220.12/asset/images/GTbyj.caldwell4.jpg"
+			},
+			"location": "",
+			"title": "Alumni Profile: Gregg Gillis",
+			"updated_at": "2014-05-19 17:49:05.524000",
+			"video": null,
+			"weight": 0.5
+		},
+		"53603249c3fc6b0981d482b5": {
+			"category": "PROFILE",
+			"created_at": "2014-04-29 23:14:17.519000",
+			"description": "Love \u201cArrested Development\u201d and \u201cCaptain America 2\u201d? Well, did you know the directors, the Russo brothers, got their start at CWRU\u2014before hitting it big on the big (and small) screen?",
+			"event_date_time": "",
+			"image": {
+				"chksum": "f0459c1c6c92d88f9218d0cd52764ecf65f3e77f",
+				"uri": "http://129.22.220.12/asset/images/russo-brothers.jpg"
+			},
+			"location": "",
+			"title": "Alumni Profile: The Russo Brothers",
+			"updated_at": "2014-05-19 17:49:59.421000",
+			"video": null,
+			"weight": 0.5
+		},
+		"53603249c3fc6b0981d482be": {
+			"category": "FUN_FACT",
+			"created_at": "2014-04-29 23:14:17.529000",
+			"description": "Case Western Reserve counts 16 Nobel Laureates among its faculty and alumni?",
+			"event_date_time": "",
+			"image": {
+				"chksum": "2902e2ce68459671d3ccd976936cb184eed4df9a",
+				"uri": "http://129.22.220.12/asset/images/Nobel_medal.jpg"
+			},
+			"location": "",
+			"title": "Did you know?",
+			"updated_at": "2014-05-21 18:29:00.986000",
+			"video": null,
+			"weight": 0.5
+		},
+		"53603249c3fc6b0981d482bf": {
+			"category": "FUN_FACT",
+			"created_at": "2014-04-29 23:14:17.530000",
+			"description": "In 1896, CWRU physicist Dayton Miller conducted the first full X-ray of the human body: his own.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "3bef90e754892dedecd6be211c4c2dc31b92ded8",
+				"uri": "http://129.22.220.12/asset/images/x-ray.jpg"
+			},
+			"location": "",
+			"title": "A new view",
+			"updated_at": "2014-05-19 17:37:32.567000",
+			"video": null,
+			"weight": 0.5
+		},
+		"53603249c3fc6b0981d482c0": {
+			"category": "FUN_FACT",
+			"created_at": "2014-04-29 23:14:17.530000",
+			"description": "CWRU anthropologist Donald Johanson discovered \u201cLucy\u201d\u2014who was, at the time, the earliest known hominid ancestor of present-day man.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "9f9b94f95fff7406b9a2950b837d0ce899afeacd",
+				"uri": "http://129.22.220.12/asset/images/Lucy_blackbg.jpg"
+			},
+			"location": "",
+			"title": "Uncovering our roots",
+			"updated_at": "2014-05-19 17:38:39.463000",
+			"video": null,
+			"weight": 0.5
+		},
+		"53603249c3fc6b0981d482c5": {
+			"category": "NEWS",
+			"created_at": "2014-04-29 23:14:17.537000",
+			"description": "The university\u2019s Squire Valleevue Farm in Hunting Valley, which harvests food for the campus dining halls, now is supplying healthy fare to another kitchen: the one that feeds the animals at the Cleveland Metroparks Zoo.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "091d8ad9573653f834209b4dbc69b29d6bc6f186",
+				"uri": "http://129.22.220.12/asset/images/gorilla.jpg"
+			},
+			"location": "",
+			"title": "University Farm feeds zoo animals",
+			"updated_at": "2014-08-22 19:03:52.669000",
+			"video": null,
+			"weight": 0.5
+		},
+		"53603249c3fc6b0981d482c6": {
+			"category": "PROFILE",
+			"created_at": "2014-04-29 23:14:17.538000",
+			"description": "Meet anthropology major Cherry Bharati, who has combined her love of photography with her travels abroad.",
+			"event_date_time": "",
+			"image": null,
+			"location": "",
+			"title": "Student Profile: Cherry Bharati",
+			"updated_at": "2014-05-29 22:58:18.377000",
+			"video": {
+				"chksum": "d6e2b57e595f7cee0dc44e764084cc7212117487",
+				"uri": "http://129.22.220.12/asset/videos/cherry.mov"
+			},
+			"weight": 0.5
+		},
+		"53603249c3fc6b0981d482c7": {
+			"category": "PROFILE",
+			"created_at": "2014-04-29 23:14:17.539000",
+			"description": "Colin Morlock is a biomedical engineering major, past president of his fraternity and an accomplished long distance runner. One way he tries to fit it all into a 24-hour day? Running at night.",
+			"event_date_time": "",
+			"image": null,
+			"location": "",
+			"title": "Student Profile: Colin Morlock",
+			"updated_at": "2014-05-29 02:10:57.482000",
+			"video": {
+				"chksum": "82d49b71d8e65034ffbb2706a13e01da1b729308",
+				"uri": "http://129.22.220.12/asset/videos/collin.mov"
+			},
+			"weight": 0.5
+		},
+		"537a42201fe3e319bde5ce95": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-19 17:40:48.331000",
+			"description": "Physicist Albert Michelson and chemist Edward Morley conducted the Michelson-Morley Experiment in 1887, which inspired Albert Einstein\u2019s work in relativity.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "bdaf969a362c67914549b9acba1b72bef9293bac",
+				"uri": "http://129.22.220.12/asset/images/Michelson-Morley_Experiment_Plaque.JPG"
+			},
+			"location": "",
+			"title": "Inspiring Einstein",
+			"updated_at": "2014-05-19 17:41:16.943000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a426f1fe3e319bde5ce98": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-19 17:42:07.334000",
+			"description": "In 1895, faculty member Edward W. Morley published the atomic weight of oxygen\u2014the basis for calculating the weights of all other elements.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "c413449d6ae5a7543973c99844dfa496453e0615",
+				"uri": "http://129.22.220.12/asset/images/oxygen.jpg"
+			},
+			"location": "",
+			"title": "Weighing the elements",
+			"updated_at": "2014-05-19 17:42:07.335000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a428f1fe3e319bde5ce9a": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-19 17:42:39.012000",
+			"description": "Surgeon and faculty member George Crile performed the first modern blood transfusion in 1905.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "06a0212a8d7f2dfc113b243b00559bc6df1090e6",
+				"uri": "http://129.22.220.12/asset/images/blood-transfusion.jpg"
+			},
+			"location": "",
+			"title": "Helping in an emergency",
+			"updated_at": "2014-05-19 17:42:39.012000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a42ad1fe3e319bde5ce9c": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-19 17:43:09.656000",
+			"description": "In 1915, alumnus and pediatrics professor Henry Gerstenberger created the first simulated milk formula for infants.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "a919012ad9fa593f38b9f6672deff83e111a3140",
+				"uri": "http://129.22.220.12/asset/images/bottle.jpg"
+			},
+			"location": "",
+			"title": "Drink up",
+			"updated_at": "2014-05-19 17:43:09.656000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a42c21fe3e319bde5ce9e": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-19 17:43:30.648000",
+			"description": "Professor Claude Beck completes the first: removal of a heart tumor, surgical treatment of coronary artery disease, defibrillation of a human heart and reversal of an otherwise fatal heart attack.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "d49c388fc2445093cfb4c7ae1fc562ef8e2cb1da",
+				"uri": "http://129.22.220.12/asset/images/claude-beck.jpg"
+			},
+			"location": "",
+			"title": "A series of firsts",
+			"updated_at": "2014-05-19 17:43:30.648000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a42dd1fe3e319bde5cea0": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-19 17:43:57.075000",
+			"description": "In 1961, Professor Austin Weisberger conducted the first successful genetic alteration of human cells in a test tube, showing how living cells can be manipulated with DNA from other cells.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "c41144ce7b4f5841d27183d6c2d6438ec08a9c65",
+				"uri": "http://129.22.220.12/asset/images/test-tubes.jpg"
+			},
+			"location": "",
+			"title": "Testing in test tubes",
+			"updated_at": "2014-05-19 17:43:57.075000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a43381fe3e319bde5cea2": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-19 17:45:28.753000",
+			"description": "In 1986, a man paralyzed from the neck down could grasp and lift a coffee mug\u2014thanks to the development of the first implantable electrode stimulator system by professor P. Hunter Peckham.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "3b3fe1b8d42c4e06fad714a3b13945d5efe43901",
+				"uri": "http://129.22.220.12/asset/images/Close-up_of_a_persons_hand_holding_a_cup_of_coffee_gws45252380.jpg"
+			},
+			"location": "",
+			"title": "Re-creating movement",
+			"updated_at": "2014-05-19 17:45:28.753000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a43941fe3e319bde5cea3": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-19 17:47:00.475000",
+			"description": "The School of Law's Frederick K. Cox International Law Center launched its new War Crimes Research Portal in 2004 to provide easier access to information about humanitarian and war-crime trials.",
+			"event_date_time": "",
+			"image": null,
+			"location": "",
+			"title": "Researching war crimes",
+			"updated_at": "2014-05-19 17:47:00.475000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a43cc1fe3e319bde5cea5": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-19 17:47:56.596000",
+			"description": "In 2011, Professor Stuart Rowan created a self-healing polymer that makes scratches\u2014on cars, floors, furniture and more\u2014disappear with UV light.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "0aac5da1fcd450a4d9800f563912862d5c83f111",
+				"uri": "http://129.22.220.12/asset/images/car-scratch.jpg"
+			},
+			"location": "",
+			"title": "Remove a scratch in a flash",
+			"updated_at": "2014-05-19 17:47:56.596000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a43e21fe3e319bde5cea7": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-19 17:48:18.374000",
+			"description": "The nation\u2019s first free, open-access community computer system, Cleveland Free-Net, originated in 1986 at CWRU.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "e7cf852a3aad1d0ae205fe8ba702b6f981818f00",
+				"uri": "http://129.22.220.12/asset/images/free-net.jpg"
+			},
+			"location": "",
+			"title": "Internet access",
+			"updated_at": "2014-05-20 20:37:57.229000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a43fd1fe3e319bde5cea9": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-19 17:48:45.173000",
+			"description": "The Class of 2017 is so global that the list of top 10 hometowns is led by Beijing, which had 31 students arrive in Cleveland this month. Shanghai ranked No. 3 and Seoul tied for No. 10.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "319f812b462b1639751090d1d4e043c00ea4b68e",
+				"uri": "http://129.22.220.12/asset/images/flags.jpg"
+			},
+			"location": "",
+			"title": "International appeal",
+			"updated_at": "2014-05-23 16:47:55.593000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a44e11fe3e319bde5ceab": {
+			"category": "PROFILE",
+			"created_at": "2014-05-19 17:52:33.261000",
+			"description": "The next time you open your inbox, thank CWRU alum Paul Buchheit, (CWR '98; GRS '98, computer engineering): Google employee No. 23 and the inventor of Gmail.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "8c02e4e24732bc5c3765a80d53bcaadfb413f041",
+				"uri": "http://129.22.220.12/asset/images/buchheit.jpg"
+			},
+			"location": "",
+			"title": "Alumni Profile: Paul Buchheit",
+			"updated_at": "2014-05-19 17:52:33.261000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a44f81fe3e319bde5cead": {
+			"category": "PROFILE",
+			"created_at": "2014-05-19 17:52:56.818000",
+			"description": "Did you know...the man who helped bring Harry Potter to the big screen\u2014Barry Meyer (LAW \u201867), former CEO of Warner Bros.\u2014is among our alumni ranks?",
+			"event_date_time": "",
+			"image": {
+				"chksum": "84beb6597975bf94992c41135eb39cfebced12d7",
+				"uri": "http://129.22.220.12/asset/images/Barry-Meyer.jpg"
+			},
+			"location": "",
+			"title": "Alumni Profile: Barry Meyer",
+			"updated_at": "2014-05-19 17:52:56.818000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a45331fe3e319bde5ceaf": {
+			"category": "PROFILE",
+			"created_at": "2014-05-19 17:53:55.630000",
+			"description": "We train women leaders in science: Julie Gerberding (WRC '77, MED '81) became the first female director of the Centers for Disease Control and Prevention. Today, she is president of Merck Vaccines.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "518b3457055242e31559dcce202432ede80417a6",
+				"uri": "http://129.22.220.12/asset/images/jGerberding4_08jpeg.jpg"
+			},
+			"location": "",
+			"title": "Alumni Profile: Julie Gerberding",
+			"updated_at": "2014-05-19 17:53:55.630000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a45461fe3e319bde5ceb1": {
+			"category": "PROFILE",
+			"created_at": "2014-05-19 17:54:14.739000",
+			"description": "Tune in: Get your news fix from alumna Susie Gharib (FSM '72), co-anchor of the \u201cNightly Business Report\u201d on CNBC.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "d8be9bbac9cefa343dea5b3f924eb3976a420b38",
+				"uri": "http://129.22.220.12/asset/images/Susie-Gharib-2013.jpg"
+			},
+			"location": "",
+			"title": "Alumni Profile: Susie Gharib",
+			"updated_at": "2014-05-19 17:54:14.739000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a455f1fe3e319bde5ceb3": {
+			"category": "PROFILE",
+			"created_at": "2014-05-19 17:54:39.397000",
+			"description": "Did you know Don Shula (GRS \u201954, physical education) was not only the coach of the Miami Dolphins for 33 years and the winningest coach in professional football\u2014he also is a CWRU alum!",
+			"event_date_time": "",
+			"image": {
+				"chksum": "8716b017e4e683b6a8290bf36592d05cdc741fe1",
+				"uri": "http://129.22.220.12/asset/images/Don-Shula_USO-Tour.jpg"
+			},
+			"location": "",
+			"title": "Alumni Profile: Don Shula",
+			"updated_at": "2014-05-19 17:54:39.397000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a45741fe3e319bde5ceb5": {
+			"category": "PROFILE",
+			"created_at": "2014-05-19 17:55:00.206000",
+			"description": "You can thank CWRU alum Craig Newmark (GRS \u201977) for helping you find anything from a job to a used car on his popular advertising website\u2014Craigslist\u2014that he founded in 1995.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "c3fa27288021051d236f775ecd0f22cbe22fd70d",
+				"uri": "http://129.22.220.12/asset/images/Craig-newmark.jpg"
+			},
+			"location": "",
+			"title": "Alumni Profile: Craig Newmark",
+			"updated_at": "2014-05-19 17:55:00.206000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a45881fe3e319bde5ceb7": {
+			"category": "PROFILE",
+			"created_at": "2014-05-19 17:55:20.524000",
+			"description": "Heard of Dow Chemical Co.? Herbert Dow was an 1888 graduate of Case School of Applied Science; nine years after commencement, he founded one of the world\u2019s largest chemical manufacturing companies.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "7050f0dab7c9fbad5dce3c22b0402a0cba73f152",
+				"uri": "http://129.22.220.12/asset/images/dow-chemical.jpg"
+			},
+			"location": "",
+			"title": "Alumni Profile: Herbert Dow",
+			"updated_at": "2014-05-19 17:55:20.524000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a459a1fe3e319bde5ceb8": {
+			"category": "PROFILE",
+			"created_at": "2014-05-19 17:55:38.888000",
+			"description": "Want to lead a major company? You\u2019re in the right place. Parker Hannifin Corp. CEO Donald Washkewicz (MGT \u201979) honed his business skills at the Weatherhead School of Management.",
+			"event_date_time": "",
+			"image": null,
+			"location": "",
+			"title": "Alumni Profile: Donald Washkewicz",
+			"updated_at": "2014-05-19 17:55:38.888000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a45ba1fe3e319bde5ceba": {
+			"category": "PROFILE",
+			"created_at": "2014-05-19 17:56:10.712000",
+			"description": "Tinkham Veale II\u2019s (CIT \u201937) strong support of CWRU began soon after graduation, and his $20 million commitment in 2010 to help build this university center allows us to enhance campus life for all.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "6500189406ec070f186ccbd082c72b673392251a",
+				"uri": "http://129.22.220.12/asset/images/Tink-Veale-7168.jpg"
+			},
+			"location": "",
+			"title": "Donor Profile: Tinkham Veale II",
+			"updated_at": "2014-08-22 19:19:33.881000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a45d81fe3e319bde5cebc": {
+			"category": "PROFILE",
+			"created_at": "2014-05-19 17:56:40.339000",
+			"description": "The Kelvin and Eleanor Smith Foundation bolstered the university center with a $7 million commitment. A longtime supporter of CWRU, the foundation also helped launch the Kelvin Smith Library in 1996.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "2ed0dbdf5d555492b8a109978c61cc34166e6632",
+				"uri": "http://129.22.220.12/asset/images/Smith_and_wife.jpg"
+			},
+			"location": "",
+			"title": "Donor: Kelvin and Eleanor Smith",
+			"updated_at": "2014-08-22 19:05:36.234000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a45fc1fe3e319bde5cebe": {
+			"category": "PROFILE",
+			"created_at": "2014-05-19 17:57:16.011000",
+			"description": "The Kent H. Smith Foundation committed a $10.5 million challenge grant to attract donors to the university center project. Smith (CIT \u201917) founded Lubrizol Corp. and was an acting president of CIT.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "8805fe84a5744c4a78cb68f070821e78294104f9",
+				"uri": "http://129.22.220.12/asset/images/Kent-H-Smith.jpg"
+			},
+			"location": "",
+			"title": "Donor: Kent H. Smith Foundation",
+			"updated_at": "2014-08-22 19:05:46.125000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a529e1fe3e319bde5ced4": {
+			"category": "PROFILE",
+			"created_at": "2014-05-19 18:51:10.332000",
+			"description": "When the Inamori Foundation committed $10 million to create the Inamori International Center for Ethics and Excellence, the goal was to house the space in a university center\u2014where it soon will live.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "d784a46a3c991ec02fd733aecb75a66f66fb4023",
+				"uri": "http://129.22.220.12/asset/images/Inamori02milner.jpg"
+			},
+			"location": "",
+			"title": "Donor Profile: Inamori Foundation",
+			"updated_at": "2014-08-22 19:06:18.090000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a57331fe3e319bde5ced6": {
+			"category": "PROFILE",
+			"created_at": "2014-05-19 19:10:43.900000",
+			"description": "The Flora Stone Mather Alumnae Association\u2019s $1 million challenge grant aimed to endow the Flora Stone Mather Center for Women. On its 10th anniversary, it finds a new home in the university center.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "024af2e7dee1a16d25687d3da55e31fdfc11cb25",
+				"uri": "http://129.22.220.12/asset/images/mather-arch.jpg"
+			},
+			"location": "",
+			"title": "Donor: Flora Stone Mather Alumnae",
+			"updated_at": "2014-08-22 19:06:31.420000",
+			"video": null,
+			"weight": 0.25
+		},
+		"537a5b201fe3e319bde5ced8": {
+			"category": "PROFILE",
+			"created_at": "2014-05-19 19:27:28.730000",
+			"description": "Frank & Jocelyne Linsalata\u2019s recent $4 million pledge to expand Alumni House came after a $3 million gift\u2014$2 million of which was dedicated to the university center and the remainder for scholarships.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "89a7a971a8306d001ed63e6d569a7fb9d63031a3",
+				"uri": "http://129.22.220.12/asset/images/Linsalatas.jpg"
+			},
+			"location": "",
+			"title": "Donors: Frank & Jocelyne Linsalata",
+			"updated_at": "2014-08-22 19:06:44.826000",
+			"video": null,
+			"weight": 0.25
+		},
+		"537a62251fe3e319bde5ceda": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-19 19:57:25.693000",
+			"description": "Did you know Case Western Reserve University students represent all 50 states and 93 countries?",
+			"event_date_time": "",
+			"image": {
+				"chksum": "f29bdb5a0f71f48276f0f158f4345fd008462485",
+				"uri": "http://129.22.220.12/asset/images/CWRU-students-Nord.jpg"
+			},
+			"location": "",
+			"title": "A worldly view of CWRU",
+			"updated_at": "2014-05-21 18:28:16.539000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a62971fe3e319bde5cedc": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-19 19:59:19.289000",
+			"description": "As a students, you can be part of more than 220 student organizations, 17 varsity athletic teams or Greek Life\u2014of which about 30% of students are involved.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "1a6ebb97074458a69922169329b2ed7d120e122e",
+				"uri": "http://129.22.220.12/asset/images/soccer.jpg"
+			},
+			"location": "",
+			"title": "Get involved, CWRU!",
+			"updated_at": "2014-05-19 19:59:19.289000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a63381fe3e319bde5cedd": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-19 20:02:00.152000",
+			"description": "According to 2013 lists, Case Western Reserve is fourth in the \u201cWashington Monthly\u201d guide to colleges that contribute to the national good and No. 37 in the \u201cU.S. News and World Report\u201d rankings.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "b020e8df3843038385ee053cc9f0e03a6109af26",
+				"uri": "http://129.22.220.12/asset/images/CWRU-sign.jpg"
+			},
+			"location": "",
+			"title": "How we stack up",
+			"updated_at": "2014-05-19 20:02:00.152000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a63a51fe3e319bde5cedf": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-19 20:03:49.801000",
+			"description": "Our 155-acre, urban campus is located in Cleveland's University Circle, home to nearly 50 cultural, medical, educational, religious and social service institutions.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "50928e83dc3b6934c74aeafc8cbf92a2ff62073b",
+				"uri": "http://129.22.220.12/asset/images/CWRU-Aerial-View-Of-Downtown-Cleveland.jpg"
+			},
+			"location": "",
+			"title": "About our campus",
+			"updated_at": "2014-05-19 20:03:49.801000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a651d1fe3e319bde5cee1": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-19 20:10:05.598000",
+			"description": "This building was designed to meet LEED Silver standards\u2014and it will use 30 percent less energy than a standard building of its type.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "589c96924ebf17f8074861a5df4a635d30746bca",
+				"uri": "http://129.22.220.12/asset/images/TVUC-interior.jpg"
+			},
+			"location": "",
+			"title": "University Center Fact: Green Build",
+			"updated_at": "2014-05-19 20:10:05.598000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a67401fe3e319bde5cee3": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-19 20:19:12.940000",
+			"description": "The building\u2019s green vegetative roof provides improved insulation and storm water retention, and the photovoltaic solar array supplies electricity to the building, minimizing its carbon footprint.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "49be29f614dd470b2aacaefb72d78ff049c424a4",
+				"uri": "http://129.22.220.12/asset/images/roof-TVUC.jpg"
+			},
+			"location": "",
+			"title": "University Center Fact: The Roof",
+			"updated_at": "2014-05-19 20:19:12.940000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a68431fe3e319bde5cee5": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-19 20:23:31.052000",
+			"description": "The extensive use of daylighting and occupancy sensors in this building reduces electrical consumption, and hydronic systems offer efficient heating and cooling with minimal energy use.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "bbd56f93305e6db02a48159e6691cd4eca320155",
+				"uri": "http://129.22.220.12/asset/images/TVUC-exterior.jpg"
+			},
+			"location": "",
+			"title": "University Center Fact: Energy",
+			"updated_at": "2014-05-19 20:23:31.052000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a6c131fe3e319bde5cee6": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-19 20:39:47.590000",
+			"description": "This wall is designed to innovate, inspire and connect. The top is composed of 32 LED panels and supports gesture-based interaction, while the bottom allows you to interact via 60 digital microtiles.",
+			"event_date_time": "",
+			"image": null,
+			"location": "",
+			"title": "University Center Fact: The Wall",
+			"updated_at": "2014-05-19 20:39:47.590000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a6d2b1fe3e319bde5cee7": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-19 20:44:27.441000",
+			"description": "In the university center, food service uses pulping and water extraction technology, reducing waste products significantly, and takes organic material to the farm for composting and reclamation.",
+			"event_date_time": "",
+			"image": null,
+			"location": "",
+			"title": "Building Fact: Reducing Waste",
+			"updated_at": "2014-05-19 20:44:27.441000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537a75fd1fe3e319bde5d2d9": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-19 21:22:05.089000",
+			"description": "About one-fourth of CWRU undergraduate students participate in study-abroad programs\u2014a number that\u2019s well above the national average. Still, CWRU has pledged to increase this number to 50 percent.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "442bf2997637ca26ee2392a35470f5715424c235",
+				"uri": "http://129.22.220.12/asset/images/study-abroad-CWRU.jpg"
+			},
+			"location": "",
+			"title": "Going abroad",
+			"updated_at": "2014-08-22 19:08:50.061000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537b6a021fe3e31edee5cea3": {
+			"category": "PROFILE",
+			"created_at": "2014-05-20 14:43:14.514000",
+			"description": "Amy Backus is CWRU\u2019s first permanent female athletic director. Coming from Yale University, she brings a 25 years of experience as a basketball coach and a decade of work in athletics administration.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "fea92e04f4691f4e9d3b1cb27aebdefee576c456",
+				"uri": "http://129.22.220.12/asset/images/Amy-Backus.jpg"
+			},
+			"location": "",
+			"title": "Staff Profile: Amy Backus",
+			"updated_at": "2014-05-20 14:43:14.514000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537b6d561fe3e31edee5cea7": {
+			"category": "NEWS",
+			"created_at": "2014-05-20 14:57:26.936000",
+			"description": "To enhance campus safety, CWRU police launched CWRU Shield, a free smartphone app to provide dispatchers essential information quickly in an emergency. Download on the App Store or Google Play.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "470d2d97746e4871fa113fd914806957379cebd4",
+				"uri": "http://129.22.220.12/asset/images/CWRU-Shield.jpg"
+			},
+			"location": "",
+			"title": "Stay safe with CWRU Shield app",
+			"updated_at": "2014-05-20 14:57:26.936000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537b6ee91fe3e31edee5cea9": {
+			"category": "NEWS",
+			"created_at": "2014-05-20 15:04:09.249000",
+			"description": "Undergraduates are set to get a new housing option in the fall of 2015: a 290-bed, five-story, $40 million residence hall on East 115th Street across from Nobby\u2019s Ballpark.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "e098999b659cb11d2103ad1d44c0d953be4c1e8e",
+				"uri": "http://129.22.220.12/asset/images/rendering-courtyard.jpg"
+			},
+			"location": "",
+			"title": "New residence hall on the way",
+			"updated_at": "2014-05-20 15:04:09.249000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537b71c11fe3e31edee5cead": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-20 15:16:17.681000",
+			"description": "Alumni of the undergraduate Class of 2013 have the highest rate of employment or post-graduation study of CWRU graduates in recent years: 88 percent are employed full-time or seeking advanced degrees.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "71215ee2b682f67c58eee18ac1181062eface427",
+				"uri": "http://129.22.220.12/asset/images/nurse.jpg"
+			},
+			"location": "",
+			"title": "Where are our alumni now?",
+			"updated_at": "2014-05-20 15:16:17.681000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537b738f1fe3e31edee5ceae": {
+			"category": "PROFILE",
+			"created_at": "2014-05-20 15:23:59.240000",
+			"description": "In 1852\u2014three years after the first woman in the U.S. graduated from med school\u2014Nancy Elizabeth Talbot Clark was the first woman to graduate from Western Reserve's 9-year-old medical school.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "3e339118040288a076e989a802ef7341ea0850b3",
+				"uri": "http://129.22.220.12/asset/images/Nancy-Talbot-Clark.jpg"
+			},
+			"location": "",
+			"title": "Alumni Profile: Nancy Talbot Clark",
+			"updated_at": "2014-05-20 20:27:40.162000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537b744e1fe3e31edee5ceaf": {
+			"category": "PROFILE",
+			"created_at": "2014-05-20 15:27:10.569000",
+			"description": "In 1876\u201450 years after its establishment\u2014Viola Smith Buell became the first woman to graduate from Western Reserve College.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "6598443d12225afc63edb66e94981370453c0e78",
+				"uri": "http://129.22.220.12/asset/images/viola-smith-buell.jpg"
+			},
+			"location": "",
+			"title": "Alumni Profile: Viola Smith Buell",
+			"updated_at": "2014-05-20 20:28:28.228000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537b86571fe3e31edee5ceb0": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-20 16:44:07.991000",
+			"description": "In 1893, the first Case School of Applied Science bag rush was held. After the annual battle between freshmen and sophomores, the winner flew their class banner on the college pole for the week.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "d3991ad32a78b101ff58fa6fb758a7206ce46ae4",
+				"uri": "http://129.22.220.12/asset/images/bag-rush.jpg"
+			},
+			"location": "",
+			"title": "CWRU traditions: Bag rush",
+			"updated_at": "2014-05-20 20:31:37.698000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537b866c1fe3e31edee5ceb1": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-20 16:44:28.449000",
+			"description": "Eldred Hall served as the first student union of Adelbert College. Built as a YMCA in 1897, the building now is home to our theater department.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "53ae6b3d3a921ea57deedc3b012fe05b51bd7ff6",
+				"uri": "http://129.22.220.12/asset/images/EldredHall2.jpg"
+			},
+			"location": "",
+			"title": "CWRU history: Eldred Hall",
+			"updated_at": "2014-05-20 16:54:26.703000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537b86871fe3e31edee5ceb2": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-20 16:44:55.188000",
+			"description": "In the Adelbert College Step Ceremony, held on the steps of what is now Adelbert Hall, the junior class passed the mace of authority to the sophomore class. Wrestling matches followed in the gym.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "c350a9fa96284ef15cc962ef57e4396aeb0d584c",
+				"uri": "http://129.22.220.12/asset/images/adelbert-steps.jpg"
+			},
+			"location": "",
+			"title": "CWRU traditions: Adelbert Step",
+			"updated_at": "2014-05-20 20:30:30.522000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537b88941fe3e31edee5ceb4": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-20 16:53:40.785000",
+			"description": "In 1910, the first Hudson Relay was held. The 26-mile relay race among the four classes was run from the original Western Reserve campus in Hudson to the newer campus in Cleveland.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "e25a2152b7974fec35c1474354644c2b3b099b90",
+				"uri": "http://129.22.220.12/asset/images/Hudson-Relays-old.jpg"
+			},
+			"location": "",
+			"title": "CWRU traditions: Hudson Relays",
+			"updated_at": "2014-05-20 20:29:10.509000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537b88dd1fe3e31edee5ceb6": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-20 16:54:53.699000",
+			"description": "Flag rush pitted the sophomores against the freshmen. The sophs' job was to defend the flagpole with the flag against the freshmen, who sought to conquer the flagpole and claim the flag as their own.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "87953540848692171d75ea38fe5fe83bc606f2cf",
+				"uri": "http://129.22.220.12/asset/images/Flag-Rush.jpg"
+			},
+			"location": "",
+			"title": "CWRU traditions: Flag rush",
+			"updated_at": "2014-05-21 18:31:46.549000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537b88ef1fe3e31edee5ceb7": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-20 16:55:11.283000",
+			"description": "The Case School of Applied Science pushball contest pitted first-years and sophomores against each other. The object of the hour-long event was to push the ball as close to the goal line as possible.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "db8f6712c81b65629e38d1162b8ac6ea156efa46",
+				"uri": "http://129.22.220.12/asset/images/Pushball.jpg"
+			},
+			"location": "",
+			"title": "CWRU traditions: Pushball",
+			"updated_at": "2014-05-21 18:31:21.275000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537b89061fe3e31edee5ceb8": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-20 16:55:34.113000",
+			"description": "The annual Martha Washington Party at the College for Women was a masquerade where students dressed in costume. The minuet, danced by the juniors, was the special event of the evening.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "241a18942cd80246ce9b7c0f2e8eda31830aa77c",
+				"uri": "http://129.22.220.12/asset/images/martha-washington.jpg"
+			},
+			"location": "",
+			"title": "Traditions: Martha Washington Party",
+			"updated_at": "2014-05-20 20:31:06.359000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537b89171fe3e31edee5ceb9": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-20 16:55:51.065000",
+			"description": "Stunt Night was held annually at the College for Women. Each class presented an original stunt and song, and cups were awarded to the winner.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "4cd7ff7889b36945c8992b99493bf06ea977c85d",
+				"uri": "http://129.22.220.12/asset/images/stunt-night.jpg"
+			},
+			"location": "",
+			"title": "CWRU traditions: Stunt Night",
+			"updated_at": "2014-05-20 20:29:53.542000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537b89361fe3e31edee5cebb": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-20 16:56:22.885000",
+			"description": "In 1941, Western Reserve University defeated the Arizona State Teachers College at the Sun Bowl in El Paso, Texas, 26-13\u2014the only time the university has appeared in a college football bowl game.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "3f2cf084e1eabac05ec403821c95178c67925d4a",
+				"uri": "http://129.22.220.12/asset/images/Sun-Bowl.jpg"
+			},
+			"location": "",
+			"title": "CWRU history: Bowl game victory",
+			"updated_at": "2014-05-20 16:56:22.885000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537b8a121fe3e31edee5cebd": {
+			"category": "FUN_FACT",
+			"created_at": "2014-05-20 17:00:02.537000",
+			"description": "In 2004, CWRU hosted a nationally televised vice presidential debate between John Edwards and Dick Cheney.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "7fa9819c11974f81c8d170bb8e35e3bc0fdeedb1",
+				"uri": "http://129.22.220.12/asset/images/debate.jpg"
+			},
+			"location": "",
+			"title": "CWRU history: The national debate",
+			"updated_at": "2014-05-20 17:00:02.537000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537b9b601fe3e31edee5cec6": {
+			"category": "PROFILE",
+			"created_at": "2014-05-20 18:13:52.226000",
+			"description": "The building\u2019s south entrance is named in honor of Katie and Charles \u201cBud\u201d Koch, past chair of the board of trustees. Their gift acknowledges the family\u2019s multigenerational relationship with CWRU.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "a595e4adb78232190ee3fd48b2364e931532b667",
+				"uri": "http://129.22.220.12/asset/images/BOT098milner.jpg"
+			},
+			"location": "",
+			"title": "Donor Profile: Charles & Katie Koch",
+			"updated_at": "2014-09-02 20:03:50.790000",
+			"video": null,
+			"weight": 0.25
+		},
+		"537ba0cf1fe3e31edee5cec9": {
+			"category": "PROFILE",
+			"created_at": "2014-05-20 18:37:03.279000",
+			"description": "Looking for a good book? Check out the mystery novels from Richard North Patterson (LAW '71), who wrote \u201cDark Lady,\u201d \u201cSilent Witness,\u201d \u201cDegree of Guilt\u201d and Edgar Award-winning \u201cThe Lasko Tangent.\u201d",
+			"event_date_time": "",
+			"image": {
+				"chksum": "c74b2f1a2c7af5b533e398616b9abf075003e5c3",
+				"uri": "http://129.22.220.12/asset/images/RichardNpatterson-682x1024.jpg"
+			},
+			"location": "",
+			"title": "Alumni: Richard North Patterson",
+			"updated_at": "2014-05-20 18:37:03.279000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537ba4be1fe3e31edee5cecb": {
+			"category": "PROFILE",
+			"created_at": "2014-05-20 18:53:50.841000",
+			"description": "In 2012, Elizabeth A. Davis (GRS \u201906, theater) earned a Tony Award nomination her performance as Reza in \u201cOnce.\u201d This was Davis\u2019s first Tony nomination\u2014and first Broadway role.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "613a22a7eb2c277b65f16248b718b7d8abdc7529",
+				"uri": "http://129.22.220.12/asset/images/Elizabeth-Davis.jpg"
+			},
+			"location": "",
+			"title": "Alumni Profile: Elizabeth A. Davis",
+			"updated_at": "2014-05-20 18:53:50.841000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537ba6911fe3e31edee5cecd": {
+			"category": "PROFILE",
+			"created_at": "2014-05-20 19:01:37.017000",
+			"description": "Sad \u201cMad Men\u201d is coming to an end? So are we. We\u2019ll miss the enterprising nature of Harry Crane\u2014played by Rich Sommer (GRS \u201904, theater). (Fun fact: He met his wife, Virginia, at CWRU.)",
+			"event_date_time": "",
+			"image": {
+				"chksum": "0620a01d466307f8ef51922687a4ae116fb04703",
+				"uri": "http://129.22.220.12/asset/images/Rich-Sommer.jpg"
+			},
+			"location": "",
+			"title": "Alumni Profile: Rich Sommer",
+			"updated_at": "2014-05-20 19:01:37.017000",
+			"video": null,
+			"weight": 0.5
+		},
+		"537baa671fe3e31edee5cecf": {
+			"category": "PROFILE",
+			"created_at": "2014-05-20 19:17:59.712000",
+			"description": "Running comfortably? Thank Marion Frank Rudy (CIT '50), the engineer who patented a cushioning system based on an inert gas encapsulated in polyurethane plastic. Nike trademarked it as the Air sole. ",
+			"event_date_time": "",
+			"image": {
+				"chksum": "f10f6ff1c394a7aaa7663d86cd2a1379edb79783",
+				"uri": "http://129.22.220.12/asset/images/frankrudy.jpg"
+			},
+			"location": "",
+			"title": "Alumni Profile: Marion Frank Rudy",
+			"updated_at": "2014-05-20 19:17:59.712000",
+			"video": null,
+			"weight": 0.5
+		},
+		"54f4b8293d246102ee2304a8": {
+			"category": "NEWS",
+			"created_at": "2015-03-02 19:21:13.723000",
+			"description": "Global design firm Nottingham Spirk\u2014famed for its invention of the Swiffer, among other consumer items\u2014and CWRU announced an effort to inspire product development through faculty partnerships and a first-floor innovation space at think[box].",
+			"event_date_time": "",
+			"image": {
+				"chksum": "4a60778884751b1cbb39491f080bca91ec26d2e1",
+				"uri": "http://129.22.220.12/asset/images/thinkbox.jpg"
+			},
+			"location": "",
+			"title": "Partners in Innovation",
+			"updated_at": "2015-03-02 19:21:13.723000",
+			"video": null,
+			"weight": 0.5
+		},
+		"54f4b9e63d246102efa1a6d1": {
+			"category": "NEWS",
+			"created_at": "2015-03-02 19:28:38.210000",
+			"description": "All students who plan to participate in the 2015 commencement ceremony must register by 5 p.m. on April 1 at case.edu/commencement/graduates/registration.html. The ceremony is Sunday, May 17.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "aa9c03cb9007412e73b26774d77a1a5f11dab7f5",
+				"uri": "http://129.22.220.12/asset/images/graduation.jpg"
+			},
+			"location": "",
+			"title": "Get Ready to Walk!",
+			"updated_at": "2015-03-02 19:28:38.210000",
+			"video": null,
+			"weight": 0.5
+		},
+		"54f5d2293d246100fd8f0acd": {
+			"category": "FUN_FACT",
+			"created_at": "2015-03-03 15:24:25.395000",
+			"description": "Adelbert Gymnasium was originally built as a World War I armory\u2014but it was never used for this purpose because it wasn\u2019t completed until 1919. It then went on to become home to the Western Reserve University Red Cats\u2019 athletic program.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "462a35dc7f3ba7a38b56aa32e10651d7fccd5ac3",
+				"uri": "http://129.22.220.12/asset/images/CWRU-Adelbert-Gym2.jpg"
+			},
+			"location": "",
+			"title": "CWRU History: Adelbert Gymnasium",
+			"updated_at": "2015-03-03 15:24:25.395000",
+			"video": null,
+			"weight": 0.5
+		},
+		"54f5d2493d2461061a24f269": {
+			"category": "FUN_FACT",
+			"created_at": "2015-03-03 15:24:57.102000",
+			"description": "Adelbert Hall was once considered the oldest building on campus (originally built in 1882), but a fire in 1991 destroyed the inside of the building, thus ending Adelbert\u2019s reign.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "bd647940779435436d04610bba444aff2a0ae945",
+				"uri": "http://129.22.220.12/asset/images/CWRU-Adelbert4.jpg"
+			},
+			"location": "",
+			"title": "CWRU History: Adelbert Hall",
+			"updated_at": "2015-03-03 15:24:57.102000",
+			"video": null,
+			"weight": 0.5
+		},
+		"54f5d26c3d2461061c2003ed": {
+			"category": "FUN_FACT",
+			"created_at": "2015-03-03 15:25:32.237000",
+			"description": "Case Western Reserve University owns the 400-acre Squire Valleevue and Valley Ridge Farms in Hunting Valley, Ohio. The farm serves as a place of research, education and recreation.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "ab1478b65ee019ecd7b623d071e79cd9216c1850",
+				"uri": "http://129.22.220.12/asset/images/Bank-Barn-051608.jpg"
+			},
+			"location": "",
+			"title": "University Farm",
+			"updated_at": "2015-03-03 15:25:32.237000",
+			"video": null,
+			"weight": 0.5
+		},
+		"54f5d2dd3d246100fd8f0acf": {
+			"category": "FUN_FACT",
+			"created_at": "2015-03-03 15:27:25.139000",
+			"description": "In 2009, the Farm Food Program began, bringing local, fresh food from University Farm to campus dining halls. In 2012-13 alone, the farm delivered more than 4,500 pounds of produce to dining halls and cafeterias across campus.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "5b4e7ef461aae023c6b8657cad16247873ec45fd",
+				"uri": "http://129.22.220.12/asset/images/produce.jpg"
+			},
+			"location": "",
+			"title": "Locally grown",
+			"updated_at": "2015-03-03 15:41:08.658000",
+			"video": null,
+			"weight": 0.5
+		},
+		"54f5d3123d246106185fcefc": {
+			"category": "FUN_FACT",
+			"created_at": "2015-03-03 15:28:18.166000",
+			"description": "Case Western Reserve University sponsors 14 club sports, such as archery, kendo and table tennis, to help bridge the gap between intramural sports and intercollegiate athletics.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "d47ca1edeb419d668c6b24bf1180750884aa54d9",
+				"uri": "http://129.22.220.12/asset/images/sportinggoods.jpg"
+			},
+			"location": "",
+			"title": "Sports Clubs",
+			"updated_at": "2015-03-03 15:37:47.300000",
+			"video": null,
+			"weight": 0.5
+		},
+		"54f5d3ab3d24610619b84460": {
+			"category": "FUN_FACT",
+			"created_at": "2015-03-03 15:30:51.747000",
+			"description": "During the school year, students can explore Cleveland with the Free Access Program. The program allows students to visit many Cleveland establishments for free, such as the Rock and Roll Hall of Fame. ",
+			"event_date_time": "",
+			"image": {
+				"chksum": "50928e83dc3b6934c74aeafc8cbf92a2ff62073b",
+				"uri": "http://129.22.220.12/asset/images/CWRU-Aerial-View-Of-Downtown-Cleveland.jpg"
+			},
+			"location": "",
+			"title": "Experience Cleveland",
+			"updated_at": "2015-03-03 15:30:51.747000",
+			"video": null,
+			"weight": 0.5
+		},
+		"54f5d3e83d2461061bb9fa44": {
+			"category": "FUN_FACT",
+			"created_at": "2015-03-03 15:31:52.136000",
+			"description": "Severance Hall\u2014located next to Case Western Reserve\u2014is home to the world-renowned Cleveland Orchestra. The Office of Student Affairs sponsors a weekly drawing for students to receive free tickets.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "c6fe42f1dddd5feb48ea5e82fb31a60bbbc2abeb",
+				"uri": "http://129.22.220.12/asset/images/Severance-Hall.jpg"
+			},
+			"location": "",
+			"title": "World-Renowned Orchestra",
+			"updated_at": "2015-03-03 15:31:52.136000",
+			"video": null,
+			"weight": 0.5
+		},
+		"54f5d40e3d2461061c2003ef": {
+			"category": "FUN_FACT",
+			"created_at": "2015-03-03 15:32:30.136000",
+			"description": "Kelvin Smith Library has a collection of nearly 1.7 million items, which include books, journals, microfilm, scripts, electronic content, media, theses and dissertations.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "7cda88dcbadb5576dac1e4d01facbf3e8c0b254d",
+				"uri": "http://129.22.220.12/asset/images/CWRU-Smith-Library.jpg"
+			},
+			"location": "",
+			"title": "Reading Material",
+			"updated_at": "2015-03-03 15:32:30.136000",
+			"video": null,
+			"weight": 0.5
+		},
+		"54f5d438473acb007e37d3d4": {
+			"category": "FUN_FACT",
+			"created_at": "2015-03-03 15:33:12.097000",
+			"description": "When Western Reserve College was founded in 1826, it was the first college in Northeast Ohio. The campus stood in Hudson, Ohio, which is about 30 miles southeast of where CWRU is today. ",
+			"event_date_time": "",
+			"image": {
+				"chksum": "c40fe581690484129eb8d5c3e979937695c06432",
+				"uri": "http://129.22.220.12/asset/images/hudson_campus.jpg"
+			},
+			"location": "",
+			"title": "CWRU\u2019s Roots",
+			"updated_at": "2015-03-03 15:33:12.097000",
+			"video": null,
+			"weight": 0.5
+		},
+		"54f5d4953d2461061bb9fa46": {
+			"category": "FUN_FACT",
+			"created_at": "2015-03-03 15:34:45.005000",
+			"description": "In the 1850s, abolitionist Frederick Douglass gave the annual commencement speech at Western Reserve College. ",
+			"event_date_time": "",
+			"image": {
+				"chksum": "7c0df4944cc138bbcd46e0f7a1309d3c9a3e5b23",
+				"uri": "http://129.22.220.12/asset/images/Frederick_Douglass_c1860s.jpg"
+			},
+			"location": "",
+			"title": "Did you know?",
+			"updated_at": "2015-03-03 15:40:36.621000",
+			"video": null,
+			"weight": 0.5
+		},
+		"54f5d4b43d2461061c2003f1": {
+			"category": "FUN_FACT",
+			"created_at": "2015-03-03 15:35:16.660000",
+			"description": "New England Patriots head coach Bill Belichick\u2019s late father, Steve Belichick, was a standout athlete at Western Reserve and was part of the football team that won the Sun Bowl in 1941. His name now graces the varsity weight room at the Wyant Center.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "6d64b0bb302a7a7f0a3d61ae2f9177faf6290daf",
+				"uri": "http://129.22.220.12/asset/images/belichik-11.jpg"
+			},
+			"location": "",
+			"title": "Did you know?",
+			"updated_at": "2015-03-03 15:35:16.660000",
+			"video": null,
+			"weight": 0.5
+		},
+		"54f5d5753d24610617edfcd4": {
+			"category": "FUN_FACT",
+			"created_at": "2015-03-03 15:38:29.316000",
+			"description": "Case Western Reserve has two official mascots: the Spartan and Spartie, a life-size plush mascot. The Spartan often appears at more formal events, while Spartie attends livelier and louder events.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "27961369b04e5cd6036dd4e8d5a39926a85e0944",
+				"uri": "http://129.22.220.12/asset/images/spartie_spartan.jpg"
+			},
+			"location": "",
+			"title": "Spartan Spirit",
+			"updated_at": "2015-03-03 15:39:58.617000",
+			"video": null,
+			"weight": 0.5
+		},
+		"54f5d6ac3d2461061bb9fa48": {
+			"category": "PROFILE",
+			"created_at": "2015-03-03 15:43:40.633000",
+			"description": "T. Keith Glennan served as president of Case Institute of Technology from 1947 through 1966. In 1958, while on leave, he became the first administrator of NASA\u2014a role he held until 1961.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "23b6e807fd5553a43e2697021ca173b18cfafcc0",
+				"uri": "http://129.22.220.12/asset/images/T_Keith_Glennan.jpeg"
+			},
+			"location": "",
+			"title": "Our Presidents: T. Keith Glennan",
+			"updated_at": "2015-03-03 15:43:40.633000",
+			"video": null,
+			"weight": 0.5
+		},
+		"54fee9cf3d24610242e0634d": {
+			"category": "NEWS",
+			"created_at": "2015-03-10 12:55:43.726000",
+			"description": "Course load got you feeling like you\u2019re swimming upstream? With Summer Session you can reduce your course load for next year or make sure you graduate on time. And summer courses numbered 1-399 are half-price! Visit summer.case.edu for info.",
+			"event_date_time": "",
+			"image": {
+				"chksum": "a8fed0ce0cdbfd2621f6cf7fbeb3d1d05773bf5c",
+				"uri": "http://129.22.220.12/asset/images/Carpe-summer-15.jpg"
+			},
+			"location": "",
+			"title": "Carpe Summer!",
+			"updated_at": "2015-03-10 12:55:43.726000",
+			"video": null,
+			"weight": 0.5
+		},
+		"55018e4b3d246102165e9d48": {
+			"category": "EVENT",
+			"created_at": "2015-03-12 13:02:03.433000",
+			"description": "Spend an evening with Etgar Keret, Israeli author and director, for the Herbert and Marianna Luxenberg Siegal College Israel Lecture in memory of Nili Adler. The event is free and open to the public; preferred seating available by donation.",
+			"event_date_time": "Wednesday, March 25, at 7 p.m.",
+			"image": {
+				"chksum": "c890e25dacc39815cd7834b3e54f0d6a31ddf4b4",
+				"uri": "http://129.22.220.12/asset/images/Etgar-Keret-Photo.jpg"
+			},
+			"location": "Siegal Facility Beachwood",
+			"title": "An evening of discussion",
+			"updated_at": "2015-03-12 13:02:03.433000",
+			"video": null,
+			"weight": 0.5
+		},
+		"550870e23d2461024f1637f7": {
+			"category": "EVENT",
+			"created_at": "2015-03-17 18:22:26.890000",
+			"description": "All undergraduates are invited to participate in the annual Salsa Dancing Social, hosted by the Salsa Dance Club. The evening will start with beginner lessons, followed by social dancing. Students are invited to enjoy snacks, socializing and dance.",
+			"event_date_time": "Friday, March 27, at 8 p.m.",
+			"image": {
+				"chksum": "738cc1dbdfd5b0afdf8db50f30e98564c6125b6a",
+				"uri": "http://129.22.220.12/asset/images/socialflyer.jpg"
+			},
+			"location": "The Spot",
+			"title": "Learn to salsa dance",
+			"updated_at": "2015-03-17 18:22:26.890000",
+			"video": null,
+			"weight": 0.5
+		},
+		"5508826c3d2461024d60fd9b": {
+			"category": "EVENT",
+			"created_at": "2015-03-17 19:37:16.292000",
+			"description": "La Alianza will host a cultural show \u201cLa Fiesta: We Are Latin America,\u201d with dinner and performances. Tickets are $5 for undergrads, $10 for graduate students and $15 for faculty, staff and community members and available for purchase on Tapingo.",
+			"event_date_time": "Saturday, March 21, at 5:30 p.m.",
+			"image": {
+				"chksum": "65e19c5a6791fb3fcea303e07c209a2196f54d38",
+				"uri": "http://129.22.220.12/asset/images/La_Fiesta_Final_Poster.jpg"
+			},
+			"location": "Thwing Ballroom",
+			"title": "Latin American cultural show",
+			"updated_at": "2015-03-17 19:37:16.292000",
+			"video": null,
+			"weight": 0.5
+		},
+		"550885bd3d246100cd6ae222": {
+			"category": "EVENT",
+			"created_at": "2015-03-17 19:51:25.261000",
+			"description": "Students from all disciplines an invited to attend an interactive discussion forum with hands-on activities directed toward healthcare improvement. The event will also feature networking and food. RSVP to sck46@case.edu.",
+			"event_date_time": "Thursday, April 2, from 5 to 7 p.m.",
+			"image": {
+				"chksum": "b40f19379ea35b61214d146979f10bb592d2bb3b",
+				"uri": "http://129.22.220.12/asset/images/IHI_Spring_2015_Event.jpg"
+			},
+			"location": "Biomedical Research Building Lobby",
+			"title": "Attend US healthcare discussion",
+			"updated_at": "2015-03-17 19:51:25.261000",
+			"video": null,
+			"weight": 0.5
+		},
+		"5509a658473acb0080f65b62": {
+			"category": "EVENT",
+			"created_at": "2015-03-18 16:22:48.454000",
+			"description": "Zeta Beta Tau will host a one-mile underwear run. Registration fee is $5 and donation of two articles of clothing. All proceeds will go to the Children\u2019s Miracle Network and clothing will be used to help children transition out of foster care.",
+			"event_date_time": "Saturday, April 4, at noon",
+			"image": {
+				"chksum": "c38a9b982eb510e980a4b7ce953cdc6d022e18ab",
+				"uri": "http://129.22.220.12/asset/images/Nearly_Naked_Mile_1.jpg"
+			},
+			"location": "Zeta Beta Tau house at 11120 Magnolia Dr.",
+			"title": "Run in the Nearly Naked Mile",
+			"updated_at": "2015-03-18 17:18:00.881000",
+			"video": null,
+			"weight": 0.5
+		},
+		"550c4a303d246100f9566482": {
+			"category": "EVENT",
+			"created_at": "2015-03-20 16:26:24.307000",
+			"description": "The Master of Engineering and Management Program will host a dinner and discussion event with alumni to learn more about career opportunities in engineering and management. RSVP to ramona.david@case.edu.",
+			"event_date_time": "Tuesday, March 31, from 6 to 7:30 p.m.",
+			"image": {
+				"chksum": "9255332b77b677e0860f58c81e0c7b13e8484a86",
+				"uri": "http://129.22.220.12/asset/images/MEM_Open_House_March_31.jpg"
+			},
+			"location": "Nord Hall, Room 356",
+			"title": "Connect with MEM alumni",
+			"updated_at": "2015-03-20 16:26:24.307000",
+			"video": null,
+			"weight": 0.5
+		}
+	},
+	"message": "ok",
+	"response": 200
+}
