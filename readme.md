@@ -7,6 +7,34 @@ and to name your classes & files accordingly.
 
 ```
 MyAppColors.h
-MyAppFonts.h
 MyAppGlobals.h
+```
+
+#"addons.mk" for your project
+```
+ofxOsc
+ofxXmlSettings
+ofxOpenCV
+../../ExternalAddons/ofxFontStash
+../../ExternalAddons/ofxTuio
+../../ExternalAddons/ofxJson
+../../ExternalAddons/ofxSuperLog
+../../ExternalAddons/ofxAutoTexture
+../../ExternalAddons/ofxApp
+../../ExternalAddons/ofxMTJsonParser
+../../ExternalAddons/ofxSimpleHttp
+../../ExternalAddons/ofxTagSystem
+../../ExternalAddons/ofxStateMachine
+../../ExternalAddons/ofxAssets
+../../ExternalAddons/ofxThreadSafeLog
+../../ExternalAddons/ofxProgressiveTextureLoad
+../../ExternalAddons/ofxTexturedObject
+../../ExternalAddons/ofxMullion
+../../ExternalAddons/ofxJsonSettings
+../../ExternalAddons/ofxTimeMeasurements
+../../ExternalAddons/ofxRemoteUI
+../../ExternalAddons/ofxHistoryPlot
+../../ExternalAddons/ofxAnimatable
+../../ExternalAddons/ofxScreenSetup
+
 ```

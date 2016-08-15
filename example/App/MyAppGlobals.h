@@ -1,5 +1,5 @@
 //
-//  MyAppGlobals.h
+//  MyAppColors.h
 //
 //  Created by Oriol Ferrer Mesià on 13/04/15.
 //
@@ -15,7 +15,7 @@ public:
 	
 	void setupRemoteUIParams(){
 		AppGlobalsBasic::setupRemoteUIParams();
-		RUI_NEW_GROUP("MY APP PARAMS");
+		RUI_NEW_GROUP("APP PARAMS");
 		RUI_SHARE_PARAM(myParam, 0, 1);
 	};
 

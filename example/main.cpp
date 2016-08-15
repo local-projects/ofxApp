@@ -1,14 +1,29 @@
 #include "ofMain.h"
 #include "ofApp.h"
+#include "ofxTimeMeasurements.h"
+#include "ofxApp.h"
 
 //========================================================================
 int main( ){
 
-	ofSetupOpenGL(1024,768, OF_WINDOW);			// <-------- setup the GL context
+	app.loadSettings();
 
-	// this kicks off the running of my app
-	// can be OF_WINDOW or OF_FULLSCREEN
-	// pass in width and height too:
-	ofRunApp( new ofApp());
+	//ofSetCurrentRenderer(ofGLProgrammableRenderer::TYPE);
 
+	ofGLFWWindowSettings winSettings;
+	winSettings.numSamples = app.getInt("App/numAASamples", 8);
+	winSettings.width = 1027;
+	winSettings.height = 768;
+
+
+	shared_ptr<ofAppBaseWindow> win = ofCreateWindow(winSettings);	// sets up the opengl context!
+	((ofAppGLFWWindow*)win.get())->setMultiDisplayFullscreen(true);
+
+	// 10 x 1 screens
+	//ofSetupOpenGL(&win, w, h, OF_WINDOW /*OF_FULLSCREEN*/);	// <-------- setup the GL context
+
+	TIME_SAMPLE_ADD_SETUP_HOOKS();
+
+	ofRunApp(win, shared_ptr<ofBaseApp>(new ofApp()));
+	ofRunMainLoop();
 }
