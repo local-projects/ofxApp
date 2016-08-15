@@ -173,7 +173,7 @@ void AppContent::setState(ContentState s){
 				if (rejectObject){
 					badObjects.push_back(i);
 					badObjectsIds.push_back(parsedObjects[i]->getObjectUUID());
-					objectsWithBadAssets += badObjectsIds.back() + " : " + rejectionReason + "\n";
+					objectsWithBadAssets += "Object '" + badObjectsIds.back() + "' : " + rejectionReason + "\n";
 				}
 			}
 
