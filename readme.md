@@ -14,7 +14,7 @@ MyAppGlobals.h
 ```
 ofxOsc
 ofxXmlSettings
-ofxOpenCV
+ofxOpenCv
 ../../ExternalAddons/ofxFontStash
 ../../ExternalAddons/ofxTuio
 ../../ExternalAddons/ofxJson

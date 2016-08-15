@@ -59,7 +59,11 @@ ofxAppLambdas::ofxAppLambdas(){
 		//setup our AssetHoler structures - we need to know where to download the assets to,
 		//our download and usage policies, and what assets do we own
 		static string assetsDir;
-		if(assetsDir.size() == 0) assetsDir = app.getString("content/assetsLocation");
+		if(assetsDir.size() == 0){
+			inOutData.printMutex->lock();
+			assetsDir = app.getString("content/assetsLocation");
+			inOutData.printMutex->unlock();
+		}
 		string assetsPath = assetsDir + "/" + inOutData.objectID;
 
 		ofxAssets::DownloadPolicy assetDownloadPolicy = app.getAssetDownloadPolicy();
@@ -177,7 +181,11 @@ ofxAppLambdas::ofxAppLambdas(){
 			//setup our AssetHoler structures - we need to know where to download the assets to,
 			//our download and usage policies, and what assets do we own
 			static string assetsDir;
-			if(assetsDir.size() == 0) assetsDir = app.getString("content/assetsLocation");
+			if(assetsDir.size() == 0){
+				inOutData.printMutex->lock();
+				assetsDir = app.getString("content/assetsLocation");
+				inOutData.printMutex->unlock();
+			}
 			string assetsPath = assetsDir + "/" + o->objectID;
 
 			ofxAssets::DownloadPolicy assetDownloadPolicy = app.getAssetDownloadPolicy();
