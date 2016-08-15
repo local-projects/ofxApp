@@ -167,7 +167,6 @@ void AppContent::setState(ContentState s){
 					ofLogError("AppContent") << "Rejecting Object '" << parsedObjects[i]->getObjectUUID()
 					<< "' because doesnt have the min # of Audio Files! (" << numAudioAssets << "/"
 					<< objectUsagePolicy.minNumberOfAudioAssets << ")" ;
-
 				}
 
 				if (rejectObject){
