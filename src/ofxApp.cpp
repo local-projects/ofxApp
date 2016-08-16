@@ -22,6 +22,8 @@ void App::setup(ofxApp::UserLambdas cfg, ofxAppDelegate * delegate){
 		this->delegate = delegate;
 		fontStorage = new AppFonts();
 		contentStorage = new AppContent();
+		fonts().setup();
+		setupLogging();
 		loadSettingsBundles();
 		setupTextureLoader();
 		setupWindow();
@@ -30,8 +32,6 @@ void App::setup(ofxApp::UserLambdas cfg, ofxAppDelegate * delegate){
 		setupStateMachine();
 		appState.setState(SETTING_UP);
 		setupListeners();
-		fonts().setup();
-		setupLogging();
 		setupRemoteUI();
 		globals().setupRemoteUIParams();
 		setupTimeMeasurements();
@@ -254,6 +254,9 @@ void App::loadSettingsBundles(){
 	objectUsagePolicy.minNumberOfImageAssets = getBool("content/ObjectUsagePolicy/minNumberImgAssets");
 	objectUsagePolicy.minNumberOfVideoAssets = getBool("content/ObjectUsagePolicy/minNumberVideoAssets");
 	objectUsagePolicy.minNumberOfAudioAssets = getBool("content/ObjectUsagePolicy/minNumberAudioAssets");
+
+	renderSize.x = getInt("App/renderSize/width");
+	renderSize.y = getInt("App/renderSize/height");
 }
 
 void App::setupRuiWatches(){

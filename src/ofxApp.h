@@ -98,6 +98,9 @@ public:
 	void onStaticTexturesLoaded();
 	void onKeyPressed(ofKeyEventArgs&);
 
+	// app params that come from settings json
+	ofVec2f 	renderSize;
+
 protected:
 
 	void setupListeners();
@@ -153,6 +156,7 @@ protected:
 	ofxAppDelegate *						delegate = nullptr;
 
 	const int								loadingScreenFontSize = 22;
+
 };
 }
 
