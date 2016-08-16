@@ -2,12 +2,13 @@
 //  ofxApp.cpp
 //  BaseApp
 //
-//  Created by Oriol Ferrer Mesià on 3/8/16.
+//  Created by Oriol Ferrer Mesi√† on 3/8/16.
 //
 //
 
 #include "ofxApp.h"
 #include "ofxThreadSafeLog.h"
+#include "TexturedObjectStats.h"
 
 ofxApp::App app; //app global in your subclass!
 
@@ -15,15 +16,16 @@ using namespace ofxApp;
 
 void App::setup(ofxApp::UserLambdas cfg, ofxAppDelegate * delegate){
 
+	ofLogNotice("ofxApp") << "setup()";
 	if(!this->delegate){
 
 		this->delegate = delegate;
 		fontStorage = new AppFonts();
 		contentStorage = new AppContent();
 		loadSettingsBundles();
+		setupTextureLoader();
 		setupWindow();
 		contentCfg = cfg;
-		ofLogNotice("ofxApp") << "setup()";
 		ofxSimpleHttp::createSslContext();
 		setupStateMachine();
 		appState.setState(SETTING_UP);
@@ -78,7 +80,7 @@ void App::setMouseEvents(bool enabled){
 
 void App::setupWindow(){
 	ofxScreenSetup::ScreenMode mode = ofxScreenSetup::ScreenMode((int)getInt("App/window/windowMode"));
-	screenSetup.setScreenMode(mode);
+	screenSetup.setup(getInt("App/window/customWidth"), getInt("App/window/customHeight"), mode);
 
 	//setup mullions user settings
 	bool mullionsVisible = getBool("App/mullions/visibleAtStartup");
@@ -124,6 +126,17 @@ void App::startLoadingStaticAssets(){
 	textures().loadTexturesInDir(texturesPath, true/*async*/);
 }
 
+
+void App::setupTextureLoader(){
+
+	ProgressiveTextureLoadQueue * q = ProgressiveTextureLoadQueue::instance();
+	q->setNumberSimultaneousLoads( getInt("textureLoader/maxNumberSimulataneousLoads") ); //N threads loading images in the bg
+	q->setTexLodBias( getFloat("textureLoader/textureLodBias") ); //MipMap sharpness
+	q->setTargetTimePerFrame( getFloat("textureLoader/maxTimeSpentLoadingPerFrameMs") );	//spend at most 'x' milis loading textures per frame
+	q->setScanlinesPerLoop( getInt("textureLoader/scanlinesPerLoop") );
+	q->setMaximumRequestsPerFrame( getInt("textureLoader/maxLoadRequestsPerFrame") );
+
+}
 
 void App::loadSettings(){
 
@@ -174,7 +187,7 @@ void App::setupLogging(){
 	#endif
 	bool logToConsole = getBool("logging/toConsole");
 	bool logToScreen = getBool("logging/toScreen");
-	ofSetLogLevel(OF_LOG_NOTICE);
+	ofSetLogLevel(ofLogLevel(getInt("logging/logLevel")));
 	ofSetLoggerChannel(ofxSuperLog::getLogger(logToConsole, logToScreen, LogsDir));
 	ofxSuperLog::getLogger()->setScreenLoggingEnabled(false);
 	ofxSuperLog::getLogger()->setMaximized(true);
@@ -318,6 +331,28 @@ void App::draw(ofEventArgs &){
 	ofSetColor(0);
 	mullions.draw();
 	ofSetColor(255);
+
+	//stack up stats
+	int x = 20;
+	int y = 30;
+	int lineH = 14;
+
+	if(globalsStorage.drawStaticTexturesMemStats){
+		float mb = app.textures().getTotalMemUsed();
+		ofDrawBitmapStringHighlight("Static Assets Mem Used: " + ofToString(mb, 1) + "Mb", ofVec2f(x,y), ofColor::black, ofColor::fuchsia);
+		y += lineH * 2;
+	}
+
+	if(globalsStorage.drawTextureLoaderStats){
+		TexturedObjectStats::one().draw(x, y);
+		y += lineH * 8;
+	}
+
+	if(globalsStorage.drawTextureLoaderState){
+		ProgressiveTextureLoadQueue::instance()->draw(x, y);
+		y += lineH * 4 + ProgressiveTextureLoadQueue::instance()->getNumBusy() * lineH;
+	}
+
 }
 
 
@@ -393,7 +428,7 @@ void App::updateStateMachine(float dt){
 		case LOADING_JSON_CONTENT_FAILED:
 			appState.updateState( -1, "error while loading content!");
 			if (appState.getElapsedTimeInCurrentState() > 15){ //hold the error screen for a while and quit
-				ofLogError("ofxApp") << "cant load json, exiting!";
+				ofLogFatalError("ofxApp") << "cant load json, exiting!";
 				terminateApp();
 			}
 			break;
@@ -528,12 +563,12 @@ void App::onKeyPressed(ofKeyEventArgs & a){
 #pragma mark Settings
 
 bool& App::getBool(const string & key, bool defaultVal){
-	if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << "getting Bool Value for " << key;
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
 	if(settings().exists(key)){
+		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Bool Value for '" << key << "' : " << settings().getBool(key);
 		return settings().getBool(key);
 	}else{
-		ofLogError("ofxApp") << "Requesting setting that does not exist! " << key;
+		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! " << key;
 		if(QUIT_ON_MISSING_SETTING) terminateApp();
 		static auto def = defaultVal;
 		return def; //mmmm....
@@ -542,12 +577,12 @@ bool& App::getBool(const string & key, bool defaultVal){
 
 
 int& App::getInt(const string & key, int defaultVal){
-	if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << "getting Int Value for " << key;
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
 	if(settings().exists(key)){
+		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Int Value for '" << key << "' : " << settings().getInt(key);
 		return settings().getInt(key);
 	}else{
-		ofLogError("ofxApp") << "Requesting setting that does not exist! " << key;
+		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! " << key;
 		if(QUIT_ON_MISSING_SETTING) terminateApp();
 		static auto def = defaultVal;
 		return def; //mmmm....
@@ -555,12 +590,12 @@ int& App::getInt(const string & key, int defaultVal){
 }
 
 float& App::getFloat(const string & key, float defaultVal){
-	if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << "getting Float Value for " << key;
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
 	if(settings().exists(key)){
+		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Float Value for '" << key << "' : " << settings().getFloat(key);
 		return settings().getFloat(key);
 	}else{
-		ofLogError("ofxApp") << "Requesting setting that does not exist! " << key;
+		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! " << key;
 		if(QUIT_ON_MISSING_SETTING) terminateApp();
 		static auto def = defaultVal;
 		return def; //mmmm....
@@ -568,12 +603,12 @@ float& App::getFloat(const string & key, float defaultVal){
 }
 
 string& App::getString(const string & key, string defaultVal){
-	if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << "getting String Value for " << key;
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
 	if(settings().exists(key)){
+		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << " getting String Value for '" << key << "' : " << settings().getString(key);
 		return settings().getString(key);
 	}else{
-		ofLogError("ofxApp") << "Requesting setting that does not exist! " << key;
+		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! " << key;
 		if(QUIT_ON_MISSING_SETTING) terminateApp();
 		static auto def = defaultVal;
 		return def; //mmmm....
@@ -581,12 +616,12 @@ string& App::getString(const string & key, string defaultVal){
 }
 
 ofColor& App::getColor(const string & key, ofColor defaultVal){
-	if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << "getting Color Value for " << key;
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
 	if(settings().exists(key)){
+		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Color Value for '" << key << "' : " << settings().getColor(key);
 		return settings().getColor(key);
 	}else{
-		ofLogError("ofxApp") << "Requesting setting that does not exist! " << key;
+		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! " << key;
 		if(QUIT_ON_MISSING_SETTING) terminateApp();
 		static auto def = defaultVal;
 		return def; //mmmm....

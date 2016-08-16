@@ -2,7 +2,7 @@
 //  ofxAppMacros.h
 //  BaseApp
 //
-//  Created by Oriol Ferrer Mesià on 3/8/16.
+//  Created by Oriol Ferrer Mesi√† on 3/8/16.
 //
 //
 
@@ -28,5 +28,14 @@
 
 #define OFX_COLORS_FILENAME Colors.h
 #define OFX_GLOBALS_FILENAME Globals.h
+
+
+#ifdef TARGET_WIN32
+//#define FILE_ACCES_ICON "💾"
+const string FILE_ACCES_ICON = "💾";
+#else
+//#define FILE_ACCES_ICON "💾"
+const string FILE_ACCES_ICON = "💾";
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -22,7 +22,7 @@ class CanTerminate{
 public:
 	virtual void terminateApp(){
 		ofxSimpleHttp::destroySslContext();
-		ofLogError("ofxApp") << "terminateApp()!";
+		ofLogFatalError("ofxApp") << "terminateApp()!";
 		ofxThreadSafeLog::one()->close();
 		exit(-1);
 	};
@@ -33,8 +33,8 @@ class HasAssets{
 public:
 	static void assertFileExists(string path){
 		if(!ofFile::doesFileExist(path)){
-			ofLogError("HasAssets") << "Required asset not present: '" << path << "'";
-			ofLogError("HasAssets") << "Terminating app";
+			ofLogFatalError("HasAssets") << "Required asset not present: '" << path << "'";
+			ofLogFatalError("HasAssets") << "Terminating app";
 			ofExit();
 			exit(-1);
 		}else{

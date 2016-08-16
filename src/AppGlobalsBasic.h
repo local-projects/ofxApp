@@ -22,13 +22,20 @@ public:
 	
 	virtual void setupRemoteUIParams(){
 
-		ofLogNotice("AppGlobals") << "setupRemoteUIParams()";
+		ofLogNotice("ofxApp Globals") << "setupRemoteUIParams()";
 		RUI_NEW_GROUP("AppGlobals");
 		RUI_SHARE_PARAM(debug);
+		RUI_SHARE_PARAM(drawStaticTexturesMemStats);
+		RUI_SHARE_PARAM(drawTextureLoaderStats);
+		RUI_SHARE_PARAM(drawTextureLoaderState);
+
 	 };
 
 public:
 
 	bool debug = false;
+	bool drawTextureLoaderStats  = false;
+	bool drawTextureLoaderState = false;
+	bool drawStaticTexturesMemStats = false;
 };
 

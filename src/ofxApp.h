@@ -109,6 +109,7 @@ protected:
 	void setupLogging();
 	void setupTuio();
 	void setupApp();
+	void setupTextureLoader();
 	void setupRuiWatches();
 	void startLoadingStaticAssets();
 	void setMouseEvents(bool enabled);
@@ -146,11 +147,12 @@ protected:
 	bool									hasLoadedSettings = false;
 	//bool									shouldQuit;
 
-	const int								loadingScreenFontSize = 22;
 	float									dt;
 	ofxApp::UserLambdas						contentCfg;
 
 	ofxAppDelegate *						delegate = nullptr;
+
+	const int								loadingScreenFontSize = 22;
 };
 }
 
