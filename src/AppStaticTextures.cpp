@@ -36,7 +36,13 @@ void AppStaticTextures::loadTexturesInDir(const string& imgDirPath, bool async){
 void AppStaticTextures::loadTexturesInDirectory(const string& path, bool recursive){
 
 	ofDirectory dir(path);
+	dir.allowExt("jpg"); dir.allowExt("png"); dir.allowExt("jpeg"); dir.allowExt("gif"); 
+	dir.allowExt("tga"); dir.allowExt("tiff"); dir.allowExt("tif"); dir.allowExt("psd");
 	dir.listDir();
+
+	if (dir.size() == 0) { //if no images, proceed now.
+		ofNotifyEvent(eventAllTexturesLoaded, this);
+	}
 
 	for(int i = 0; i < dir.size(); i++){
 
@@ -47,7 +53,7 @@ void AppStaticTextures::loadTexturesInDirectory(const string& path, bool recursi
 			continue;
 		}
 		string ext = ofToLower(file.getExtension());
-		if (ext == "png" || ext == "jpg" || ext == "jpeg" || ext == "gif" || ext == "tga" || ext == "tiff" || ext == "psd") {
+		if (ext == "png" || ext == "jpg" || ext == "jpeg" || ext == "gif" || ext == "tga" || ext == "tiff" || ext == "tif" || ext == "psd") {
 			string filepath = path + "/" + file.getBaseName() + "." + file.getExtension();
 			if(loadAsync){
 				pendingToLoad.push_back(filepath);
