@@ -71,7 +71,6 @@ public:
 
 	string getStatus();
 	float getPercentDone();
-	bool isBusy();
 
 	//call this only if isContentReady() == true
 	vector<ContentObject*> getParsedObjects(){return parsedObjects;};

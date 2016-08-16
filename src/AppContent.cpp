@@ -246,10 +246,6 @@ float AppContent::getPercentDone(){
 }
 
 
-bool AppContent::isBusy(){
-
-}
-
 // CALBACKS ////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Callbacks
 
