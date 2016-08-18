@@ -93,6 +93,7 @@ void App::setupWindow(){
 void App::setupListeners(){
 
 	ofAddListener(ofEvents().update, this, &App::update);
+	ofAddListener(ofEvents().exit, this, &App::exit);
 	//listen to content manager state changes
 	ofAddListener(contentStorage->eventStateChanged, this, &App::onContentManagerStateChanged);
 	ofAddListener(ofEvents().keyPressed, this, &App::onKeyPressed);
@@ -117,6 +118,7 @@ void App::setupStateMachine(){
 	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_JSON_CONTENT_FAILED, ofColor(255,0,0), ofColor(128,0,0));
 	appState.SET_NAME_AND_COLOR_FOR_STATE(LOAD_CUSTOM_USER_CONTENT, ofColor(255,0,0), ofColor(128,0,0));
 	appState.SET_NAME_AND_COLOR_FOR_STATE(SETUP_USER_APP, ofColor::white, ofColor::grey);
+	appState.SET_NAME_AND_COLOR_FOR_STATE(POST_USER_SETUP, ofColor::white, ofColor::grey);
 	appState.SET_NAME_AND_COLOR_FOR_STATE(RUNNING, ofColor::white, ofColor::grey);
 }
 
@@ -272,6 +274,7 @@ void App::setupRuiWatches(){
 			}
 		}
 	}
+	RUI_PUSH_TO_CLIENT();
 }
 
 
@@ -315,6 +318,15 @@ ofxTuioCursor App::getTuioAtMouse(int x, int y){
 void App::update(ofEventArgs &){
 	contentStorage->update(dt);
 	updateStateMachine(dt);
+}
+
+void App::exit(ofEventArgs &){
+	ofLogWarning("ofxApp") << "OF is exitting!";
+	ofLogWarning("ofxApp") << "destroying ssl context...";
+	ofxSimpleHttp::destroySslContext();
+	ofLogWarning("ofxApp") << "closing logs...";
+	ofxThreadSafeLog::one()->close();
+	ofLogWarning("ofxApp") << "done exitting!";
 }
 
 void App::onStaticTexturesLoaded(){
@@ -450,7 +462,7 @@ void App::updateStateMachine(float dt){
 		case SETUP_USER_APP:
 			if(delegate->isUserProcessDone(SETUP_USER_APP)){
 				ofLogNotice("ofxApp") << "done Setup User App!";
-				appState.setState(RUNNING);
+				appState.setState(POST_USER_SETUP);
 			}
 			break;
 
@@ -514,6 +526,7 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 		case POST_USER_SETUP:
 			setupRuiWatches();
 			setupApp();
+			appState.setState(RUNNING);
 			break;
 
 		case RUNNING: break;
@@ -541,9 +554,13 @@ void App::onRemoteUINotification(RemoteUIServerCallBackArg &arg){
 				if(arg.param.boolVal) ofShowCursor();
 				else ofHideCursor();
 			}
-
 			if(arg.paramName == "enableMouse"){
 				setMouseEvents(arg.param.boolVal);
+			}
+			if(arg.paramName == "bgColor"){
+				setMouseEvents(arg.param.boolVal);
+				colorsStorage.bgColor = arg.param.getColor();
+				RUI_PUSH_TO_CLIENT();
 			}
 
 			break;
@@ -556,8 +573,9 @@ void App::onRemoteUINotification(RemoteUIServerCallBackArg &arg){
 void App::onKeyPressed(ofKeyEventArgs & a){
 	switch(a.key){
 		case 'w': screenSetup.cycleToNextScreenMode(); break;
-		case 'l':  ofxSuperLog::getLogger()->setScreenLoggingEnabled(!ofxSuperLog::getLogger()->isScreenLoggingEnabled()); break;
+		case 'l': ofxSuperLog::getLogger()->setScreenLoggingEnabled(!ofxSuperLog::getLogger()->isScreenLoggingEnabled()); break;
 		case 'm': mullions.toggle(); break;
+		case 'd': globalsStorage.debug^= true; break;
 	}
 }
 

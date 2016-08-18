@@ -11,6 +11,7 @@
 #define VERBOSE_SETTINGS_ACCESS 	true
 #define QUIT_ON_MISSING_SETTING		true
 
+
 //Check if the user created the required macro to include his custom sub-classes for Colors, Globals and Fonts.
 #ifndef OFX_APP_NAME
 	#error You Must define an app Name for your app in the preprocessor macros; ie OFX_APP_NAME=MyApp
@@ -53,6 +54,7 @@ public:
 	void setup(ofxApp::UserLambdas cfg, ofxAppDelegate * delegate);
 
 	void update(ofEventArgs &);
+	void exit(ofEventArgs &);
 	void draw(ofEventArgs &);
 
 	// Crazy Macro magic here!! Beware!!

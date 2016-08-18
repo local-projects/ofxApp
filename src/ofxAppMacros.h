@@ -29,6 +29,7 @@
 #define OFX_COLORS_FILENAME Colors.h
 #define OFX_GLOBALS_FILENAME Globals.h
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef TARGET_WIN32
 //#define FILE_ACCES_ICON "💾"
@@ -38,4 +39,5 @@ const string FILE_ACCES_ICON = "💾";
 const string FILE_ACCES_ICON = "💾";
 #endif
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
+#define G app.globals() /*super fast access to globals*/
+
