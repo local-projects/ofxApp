@@ -23,11 +23,11 @@ public:
 	virtual void setupRemoteUIParams(){
 
 		ofLogNotice("ofxApp Globals") << "setupRemoteUIParams()";
-		RUI_NEW_GROUP("AppGlobals");
+		RUI_NEW_GROUP("OFXAPP GLOBALS");
 		RUI_SHARE_PARAM(debug);
-		RUI_SHARE_PARAM(drawStaticTexturesMemStats);
 		RUI_SHARE_PARAM(drawTextureLoaderStats);
 		RUI_SHARE_PARAM(drawTextureLoaderState);
+		RUI_SHARE_PARAM(drawStaticTexturesMemStats);
 
 	 };
 
@@ -37,5 +37,6 @@ public:
 	bool drawTextureLoaderStats  = false;
 	bool drawTextureLoaderState = false;
 	bool drawStaticTexturesMemStats = false;
+
 };
 

@@ -316,6 +316,7 @@ ofxTuioCursor App::getTuioAtMouse(int x, int y){
 
 
 void App::update(ofEventArgs &){
+	tuioClient.getMessage();
 	contentStorage->update(dt);
 	updateStateMachine(dt);
 }
