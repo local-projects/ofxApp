@@ -91,10 +91,6 @@ public:
 	ofxAssets::DownloadPolicy getAssetDownloadPolicy(){ return assetDownloadPolicy; }
 	ofxAssets::UsagePolicy getAssetUsagePolicy(){ return assetUsagePolicy;}
 
-
-	// TUIO ////////////////////////////////////////////////////////////////////////////////////////
-	ofxTuioCursor getTuioAtMouse(int x, int y);
-
 	// CALLBACKS ///////////////////////////////////////////////////////////////////////////////////
 	void onRemoteUINotification(RemoteUIServerCallBackArg & arg);
 	void onStaticTexturesLoaded();
@@ -102,6 +98,7 @@ public:
 
 	// app params that come from settings json
 	ofVec2f 	renderSize;
+	ofRectangle getRenderAreaForCurrentWindowSize();
 
 protected:
 

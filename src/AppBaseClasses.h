@@ -12,6 +12,7 @@
 #include "ofxAppStructs.h"
 #include "ofxThreadSafeLog.h"
 #include "ofxSimpleHttp.h"
+#include "ofxTuio.h"
 
 class HasRuiParams{
 public:
@@ -62,5 +63,11 @@ public:
 	virtual float getProgressForUserProcess(ofxApp::State){return -1;} //your APP should return [0..1] to report progressbar; -1 for indeterminate
 
 	virtual void contentIsReady(vector<ContentObject*>){};
+
+
+	//tuio callbacks
+	virtual void tuioAdded(ofxTuioCursor & tuioCursor){};
+	virtual void tuioRemoved(ofxTuioCursor & tuioCursor){};
+	virtual void tuioUpdated(ofxTuioCursor & tuioCursor){};
 
 };

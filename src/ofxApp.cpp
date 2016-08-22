@@ -173,7 +173,7 @@ void App::setupApp(){
 	RUI_NEW_GROUP("APP");
 	bool & showMouse = getBool("App/showMouse");
 	RUI_SHARE_PARAM(showMouse);
-	bool & enableMouse = getBool("App/enableMouse");;
+	bool & enableMouse = getBool("App/enableMouse");
 	RUI_SHARE_PARAM(enableMouse);
 }
 
@@ -306,13 +306,12 @@ void App::setupTuio(){
 		int port = getInt("tuio/port");
 		ofLogNotice("ofxApp") << "Listening for TUIO events at port " << port;
 		tuioClient.start(port); //TODO - make sure we do it only once!
+		ofAddListener(tuioClient.cursorAdded, delegate, &ofxAppDelegate::tuioAdded);
+		ofAddListener(tuioClient.cursorRemoved, delegate, &ofxAppDelegate::tuioRemoved);
+		ofAddListener(tuioClient.cursorUpdated, delegate, &ofxAppDelegate::tuioUpdated);
 	}
 }
 
-ofxTuioCursor App::getTuioAtMouse(int x, int y){
-	float r = 1;
-	return ofxTuioCursor( 0,0, x / (float)ofGetWidth(),  r * y / (float)ofGetHeight());
-}
 
 
 void App::update(ofEventArgs &){
@@ -547,6 +546,13 @@ void App::onContentManagerStateChanged(string& s){
 	appState.setProgressBarExtraInfo(": " + s); // add our sub-state name to the loading screen
 }
 
+ofRectangle App::getRenderAreaForCurrentWindowSize(){
+
+	ofRectangle win = ofRectangle(0,0, ofGetWindowWidth(), ofGetWindowHeight());
+	ofRectangle render = ofRectangle(0,0,app.renderSize.x, app.renderSize.y);
+	render.scaleTo(win);
+	return render;
+}
 
 void App::onRemoteUINotification(RemoteUIServerCallBackArg &arg){
 	switch (arg.action) {
@@ -579,6 +585,7 @@ void App::onKeyPressed(ofKeyEventArgs & a){
 		case 'd': globalsStorage.debug^= true; break;
 	}
 }
+
 
 
 ///////////////////// SETTINGS //////////////////////////////////////////////////////////////////////

@@ -24,8 +24,7 @@ void AppStaticTextures::loadTexturesInDir(const string& imgDirPath, bool async){
 	if(!isLoading){
 		isLoading = true;
 		loadAsync = async;
-		dirPath = imgDirPath;
-		dirPath = ofFilePath::addTrailingSlash(dirPath);
+		dirPath = ofFilePath::addTrailingSlash(imgDirPath);
 		loadTexturesInDirectory(imgDirPath, true);
 		if(async == false) isLoading = false;
 	}else{
@@ -36,8 +35,6 @@ void AppStaticTextures::loadTexturesInDir(const string& imgDirPath, bool async){
 void AppStaticTextures::loadTexturesInDirectory(const string& path, bool recursive){
 
 	ofDirectory dir(path);
-	dir.allowExt("jpg"); dir.allowExt("png"); dir.allowExt("jpeg"); dir.allowExt("gif"); 
-	dir.allowExt("tga"); dir.allowExt("tiff"); dir.allowExt("tif"); dir.allowExt("psd");
 	dir.listDir();
 
 	if (dir.size() == 0) { //if no images, proceed now.
