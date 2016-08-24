@@ -175,6 +175,8 @@ void App::setupApp(){
 	RUI_SHARE_PARAM(showMouse);
 	bool & enableMouse = getBool("App/enableMouse");
 	RUI_SHARE_PARAM(enableMouse);
+	RUI_PUSH_TO_CLIENT();
+	RUI_LOAD_FROM_XML();
 }
 
 
@@ -274,7 +276,6 @@ void App::setupRuiWatches(){
 			}
 		}
 	}
-	RUI_PUSH_TO_CLIENT();
 }
 
 
