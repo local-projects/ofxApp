@@ -580,11 +580,15 @@ void App::onRemoteUINotification(RemoteUIServerCallBackArg &arg){
 
 
 void App::onKeyPressed(ofKeyEventArgs & a){
+	bool didPress = false;
 	switch(a.key){
-		case 'w': screenSetup.cycleToNextScreenMode(); break;
-		case 'l': ofxSuperLog::getLogger()->setScreenLoggingEnabled(!ofxSuperLog::getLogger()->isScreenLoggingEnabled()); break;
-		case 'm': mullions.toggle(); break;
-		case 'd': globalsStorage.debug^= true; break;
+		case 'W': screenSetup.cycleToNextScreenMode(); didPress = true; break;
+		case 'L': ofxSuperLog::getLogger()->setScreenLoggingEnabled(!ofxSuperLog::getLogger()->isScreenLoggingEnabled()); didPress = true; break;
+		case 'M': mullions.toggle(); didPress = true; break;
+		case 'D': globalsStorage.debug^= true; didPress = true; break;
+	}
+	if(didPress){
+		RUI_PUSH_TO_CLIENT();
 	}
 }
 
