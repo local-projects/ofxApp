@@ -177,6 +177,7 @@ void App::setupApp(){
 	RUI_SHARE_PARAM(enableMouse);
 	RUI_PUSH_TO_CLIENT();
 	RUI_LOAD_FROM_XML();
+	setMouseEvents(enableMouse);
 }
 
 
@@ -566,8 +567,8 @@ void App::onRemoteUINotification(RemoteUIServerCallBackArg &arg){
 				setMouseEvents(arg.param.boolVal);
 			}
 			if(arg.paramName == "bgColor"){
-				setMouseEvents(arg.param.boolVal);
-				colorsStorage.bgColor = arg.param.getColor();
+				//colorsStorage.bgColor = arg.param.getColor();
+				ofBackground(colorsStorage.bgColor);
 				RUI_PUSH_TO_CLIENT();
 			}
 
