@@ -8,6 +8,11 @@
 
 #include "AppStaticTextures.h"
 
+
+string AppStaticTextures::filenameHintTex2D = "_t2d";
+string AppStaticTextures::filenameHintMipMap = "_mip";
+
+
 AppStaticTextures::AppStaticTextures(){
 }
 
@@ -22,6 +27,7 @@ void AppStaticTextures::setup(){
 
 void AppStaticTextures::loadTexturesInDir(const string& imgDirPath, bool async){
 	if(!isLoading){
+		ofLogWarning("AppStaticTextures") << "#### Start Loading all Textures in directory \"" << imgDirPath << "\" ############################################";
 		isLoading = true;
 		loadAsync = async;
 		dirPath = ofFilePath::addTrailingSlash(imgDirPath);
@@ -39,6 +45,7 @@ void AppStaticTextures::loadTexturesInDirectory(const string& path, bool recursi
 
 	if (dir.size() == 0) { //if no images, proceed now.
 		ofNotifyEvent(eventAllTexturesLoaded, this);
+		ofLogWarning("AppStaticTextures") << "No textures found in the directory! \"" << path << "\"";
 	}
 
 	for(int i = 0; i < dir.size(); i++){
@@ -69,6 +76,7 @@ ofxAutoTexture* AppStaticTextures::loadTexture(const string& filePath){
 	bool createMipMap = ofIsStringInString(lowercaseFilePath, filenameHintMipMap);
 
 	//set OF ARB global state according to file naming
+	bool usingARB = ofGetUsingArbTex();
 	if(createMipMap){
 		ofDisableArbTex();
 	}else{
@@ -98,19 +106,30 @@ ofxAutoTexture* AppStaticTextures::loadTexture(const string& filePath){
 
 	ofxAutoTexture * tex = new ofxAutoTexture();
 	bool loaded = tex->loadFromFile(filePath);
+
+	//restore of arb global state
+	if(usingARB){ofEnableArbTex();}else{ofDisableArbTex();}
+
 	if(loaded){
 
 		textures[texName] = tex;
 		float memUsedForThisOne = memUse(tex);
 		memUsed += memUsedForThisOne;
-		ofLogNotice("AppStaticTextures") 	<< "loaded static texture from '" << filePath << "'";
-		ofLogNotice("AppStaticTextures") 	<< "name: '" << texName << "'  size: [" << tex->getWidth()
-											<< "x" << tex->getHeight() << "]  mem: "
-											<< ofToString(memUsedForThisOne,1) << "Mb";
+		if(createMipMap){
+			tex->generateMipmap();
+			tex->setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+		}
+
+
+		ofLogNotice("AppStaticTextures") 	<< "Loaded '" << filePath << "' >>> "
+											<< "name:'" << texName << "' size:[" << tex->getWidth()
+											<< "x" << tex->getHeight() << "] mipmap:" << createMipMap
+											<< " format:" << ofGetGlInternalFormatName(tex->getTextureData().glInternalFormat)
+											<< " mem:" << ofToString(memUsedForThisOne, 2) << "Mb";
 		return tex;
 	}else{
 		delete tex;
-		ofLogError("AppStaticTextures") << "FAILED to load static texture from " << filePath;
+		ofLogError("AppStaticTextures") << "FAILED to load tex from \"" << filePath << "\"" ;
 		return NULL;
 	}
 }
@@ -124,6 +143,7 @@ void AppStaticTextures::onUpdate(ofEventArgs & ){
 		ofxAutoTexture * tex = loadTexture(currentFile);
 		loadedInOrder.push_back(tex);
 		if(pendingToLoad.size() == 0){
+			ofLogNotice("AppStaticTextures") << "#### Finished loading " << textures.size() << " Static Textures! Memory used: " << ofToString(memUsed,2) << "Mb ############################################";
 			ofNotifyEvent(eventAllTexturesLoaded, this);
 		}
 	}
@@ -150,10 +170,10 @@ float AppStaticTextures::memUse(ofTexture * tex){
 			h = tex->getHeight();
 		}
 
-		int numC = ofGetNumChannelsFromGLFormat(tex->texData.glInternalFormat);
+		int numC = ofGetNumChannelsFromGLFormat(ofGetGLFormatFromInternal(tex->texData.glInternalFormat));
 		float mem = w * h * numC;
 		if(tex->hasMipmap()){
-			mem += 1.3333; //mipmaps take 33% more memory
+			mem *= 1.3333; //mipmaps take 33% more memory
 		}
 		return mem / float(1024 * 1024); //return MBytes
 	}

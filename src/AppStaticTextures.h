@@ -62,6 +62,9 @@ class AppStaticTextures{
 
 public:
 
+	static string filenameHintTex2D;
+	static string filenameHintMipMap;
+
 	void setup();
 
 	AppStaticTextures();
@@ -84,6 +87,7 @@ public:
 
 	ofEvent<void> eventAllTexturesLoaded;
 
+
 protected:
 
 	void onUpdate(ofEventArgs & );
@@ -97,9 +101,6 @@ protected:
 	vector<ofxAutoTexture*> loadedInOrder;
 
 	unordered_map<string, ofxAutoTexture*> textures;
-
-	const string filenameHintTex2D = "_t2d";
-	const string filenameHintMipMap = "_mip";
 
 	float memUsed = 0; //MBytes
 	bool loadAsync = false;
