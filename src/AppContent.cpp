@@ -99,7 +99,10 @@ void AppContent::setState(ContentState s){
 		case CHECKING_ASSET_STATUS:{
 			//sadly we need to cast our objects to AssetHolder* objects to check them
 			vector<AssetHolder*> assetObjs;
-			assetObjs.insert(assetObjs.begin(), parsedObjects.begin(), parsedObjects.end());
+			//assetObjs.insert(assetObjs.begin(), parsedObjects.begin(), parsedObjects.end());
+			for (int i = 0; i < parsedObjects.size(); i++) {
+				assetObjs.push_back(dynamic_cast<AssetHolder*>(parsedObjects[i]));
+			}
 			ofAddListener(assetChecker.eventFinishedCheckingAllAssets, this, &AppContent::assetCheckFinished);
 			assetChecker.checkAssets(assetObjs, numThreads);
 		}break;
@@ -188,9 +191,9 @@ void AppContent::setState(ContentState s){
 
 		case SETUP_TEXTURED_OBJECTS:
 			for(int i = 0; i < parsedObjects.size(); i++){
-				auto setupTexObjuserLambda = contentCfg.setupTexturedObjectUserLambda;
+				auto setupTexObjUserLambda = contentCfg.setupTexturedObjectUserLambda;
 				//call the User Supplied Lambda to setup the user's TexturedObject
-				setupTexObjuserLambda( parsedObjects[i] );
+				setupTexObjUserLambda( parsedObjects[i] );
 			}
 			setState(JSON_CONTENT_READY);
 			break;
@@ -276,10 +279,13 @@ void AppContent::jsonParseFailed(){
 
 void AppContent::jsonContentReady(vector<ParsedObject*> &parsedObjects_){
 	ofLogNotice("PgContentManager") << "json Content Ready! " << parsedObjects.size() << " Objects received.";
-	//parsedObjects = parsedObjects_;
 	parsedObjects.reserve(parsedObjects_.size());
 	for(auto o : parsedObjects_){
-		parsedObjects.push_back((ContentObject*)o);
+		//parsedObjects.push_back((ContentObject*)o);		
+		//ContentObject * co = static_cast<ContentObject*>(o);
+		ContentObject * co = (ContentObject*)(o);
+
+		parsedObjects.push_back(co);
 	}
 	setState(CHECKING_ASSET_STATUS);
 }

@@ -22,6 +22,8 @@ class ContentObject : public ParsedObject, public AssetHolder, public TexturedOb
 
 	public:
 
+		virtual ~ContentObject() {};
+
 		// Imposed by TexturedObject //
 		ofVec2f getTextureDimensions(TexturedObjectSize, int){ return ofVec2f(0,0);}
 		string getLocalTexturePath(TexturedObjectSize, int){ return "";}

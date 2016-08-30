@@ -31,6 +31,9 @@ void AppStaticTextures::loadTexturesInDir(const string& imgDirPath, bool async){
 		isLoading = true;
 		loadAsync = async;
 		dirPath = ofFilePath::addTrailingSlash(imgDirPath);
+		#ifdef TARGET_WIN32 //lets make windows path prettier
+		ofStringReplace(dirPath, "\\", "/");
+		#endif
 		loadTexturesInDirectory(imgDirPath, true);
 		if(async == false) isLoading = false;
 	}else{
@@ -88,6 +91,9 @@ ofxAutoTexture* AppStaticTextures::loadTexture(const string& filePath){
 	}
 
 	string texName = ofFilePath::removeExt(filePath);
+	#ifdef TARGET_WIN32 //lets make windows path prettier
+	ofStringReplace(texName, "\\", "/");
+	#endif
 	//remove hints from filename, we dont want to have to search with those in
 	ofStringReplace(texName, filenameHintTex2D, "");
 	ofStringReplace(texName, filenameHintMipMap, "");
