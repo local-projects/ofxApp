@@ -202,7 +202,8 @@ void App::setupLogging(){
 	if(getBool("logging/useFontStash")){ //set a nice font for the on screen logger if using fontstash
 		ofxSuperLog::getLogger()->setFont(&(fonts().getMonoBoldFont()), getFloat("logging/uiScale", 1.0) * getInt("logging/fontSize"));
 	}
-	ofxSuperLog::getLogger()->setDisplayWidth(getFloat("logging/screenLogPanelWidth"));
+	float panelW = getFloat("logging/screenLogPanelWidth");
+	ofxSuperLog::getLogger()->setDisplayWidth(panelW);
 
 	//asset manager uses this separate logger to create an "asset report"  file after every launch
  	//stating status of every downloaded asset (ie missing sha1, sha1 missmatch, etc)
