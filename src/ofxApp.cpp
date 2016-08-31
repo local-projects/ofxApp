@@ -48,7 +48,7 @@ void App::setup(ofxApp::UserLambdas cfg, ofxAppDelegate * delegate){
 
 void App::setupOF(){
 	ofSetFrameRate(getInt("App/frameRate"));
-	ofBackground(colors().bgColor);
+	ofBackground(22);
 	dt = 1.0f / ofGetTargetFrameRate();
 
 	bool showMouse = getBool("App/showMouse");
@@ -178,6 +178,7 @@ void App::setupApp(){
 	RUI_PUSH_TO_CLIENT();
 	RUI_LOAD_FROM_XML();
 	setMouseEvents(enableMouse);
+	ofBackground(colorsStorage.bgColor);
 }
 
 
@@ -221,8 +222,21 @@ void App::setupRemoteUI(){
 		assertFileExists(fontFile);
 		RUI_GET_INSTANCE()->drawUiWithFontStash(fontFile, getInt("RemoteUI/fontSize", 15));
 	}
-	bool ruiSaveOnQuit = getBool("RemoteUI/saveSettingsOnQuit");
+	bool ruiSaveOnQuit = getBool("RemoteUI/saveSettingsOnExit");
 	RUI_GET_INSTANCE()->setSaveToXMLOnExit(ruiSaveOnQuit);
+
+	bool autoBackupsWhenSaving = getBool("RemoteUI/automaticBackupsOnSave");
+	RUI_GET_INSTANCE()->setAutomaticBackupsEnabled(autoBackupsWhenSaving);
+
+	bool drawNotifications = getBool("RemoteUI/drawOnScreenNotifications");
+	RUI_GET_INSTANCE()->setDrawsNotificationsAutomaticallly(drawNotifications);
+
+	float notifScreenTime = getFloat("RemoteUI/notificationsScreenTime");
+	RUI_GET_INSTANCE()->setNotificationScreenTime(notifScreenTime);
+
+	float logNotifScreenTime = getFloat("RemoteUI/logNotificationsScreenTime");
+	RUI_GET_INSTANCE()->setLogNotificationScreenTime(logNotifScreenTime);
+
 	ofLogNotice("ofxApp") << "RemoteUI will save settings on quit: " << ruiSaveOnQuit;
 	RUI_GET_INSTANCE()->setShowUIDuringEdits(getBool("RemoteUI/showUiDuringEdits"));
 

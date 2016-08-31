@@ -62,15 +62,14 @@ public:
 	// so "OFX_APP_CLASS_NAME(Colors)" becomes "MyAppColors"
 	// "MyApp" is a macro you MUST define in your pre-processor macros:
 	//  OFX_APP_NAME=MyApp
-	OFX_APP_CLASS_NAME(Colors) & colors(){return colorsStorage;}
-	OFX_APP_CLASS_NAME(Globals) & globals(){return globalsStorage;}
-	AppFonts & fonts(){return *fontStorage;}
-
-	AppContent & content(){return *contentStorage;}
-	ofxJsonSettings& settings(){return ofxJsonSettings::get();}
-	AppStaticTextures & textures(){return texStorage;}
-	ofPtr<ofxSuperLog> logger(){return ofxSuperLog::getLogger();}
-	ofxTuioClient & tuio(){ return tuioClient;}
+	OFX_APP_CLASS_NAME(Colors) & 	colors(){return colorsStorage;}
+	OFX_APP_CLASS_NAME(Globals) & 	globals(){return globalsStorage;}
+	AppFonts & 						fonts(){return *fontStorage;}
+	AppContent & 					content(){return *contentStorage;}
+	ofxJsonSettings& 				settings(){return ofxJsonSettings::get();}
+	AppStaticTextures & 			textures(){return texStorage;}
+	ofPtr<ofxSuperLog> 				logger(){return ofxSuperLog::getLogger();}
+	ofxTuioClient & 				tuio(){ return tuioClient;}
 
 	ofxScreenSetup screenSetup;
 

@@ -15,10 +15,10 @@ void AppFonts::setup(){
 	loadUseFonts();
 }
 
-ofxFontStash* AppFonts::getUserFont(const string& name){
+ofxFontStash* AppFonts::getFont(const string& name){
 
 	auto search = userFonts.find(name);
-	if (search == userFonts.end()){
+	if (search != userFonts.end()){
 		return search->second;
 	}else{
 		ofLogError("AppFonts") << "Can't find a font with that name! (" << name << ")";

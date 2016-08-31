@@ -18,7 +18,7 @@ public:
 
 	ofxFontStash& getMonoFont(){return monospaced;}
 	ofxFontStash& getMonoBoldFont(){return monospacedBold;}
-	ofxFontStash* getUserFont(const string& name);
+	ofxFontStash* getFont(const string& name);
 
 protected:
 
