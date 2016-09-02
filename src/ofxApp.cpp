@@ -384,7 +384,6 @@ void App::draw(ofEventArgs &){
 		ProgressiveTextureLoadQueue::instance()->draw(x, y);
 		y += lineH * 4 + ProgressiveTextureLoadQueue::instance()->getNumBusy() * lineH;
 	}
-
 }
 
 
@@ -393,20 +392,15 @@ void App::onDrawLoadingScreenStatus(ofRectangle & area){
 	switch (appState.getState()) {
 
 		case LOADING_STATIC_TEXTURES:{
-			ofTexture * tex = textures().getLatestLoadedTex();
+			textures().drawAll(area);
 			float progress = textures().getNumLoadedTextures() / float(textures().getNumTextures());
 			appState.updateState( progress, "");
-			if(tex){
-				ofRectangle tr = ofRectangle(0,0,tex->getWidth(), tex->getHeight());
-				tr.scaleTo(area, OF_SCALEMODE_FIT);
-				tex->draw(tr);
-				ofPushStyle();
-				ofSetColor(0);
-				fonts().getMonoBoldFont().draw(ofToString(textures().getTotalMemUsed(), 1) + "MBytes used", loadingScreenFontSize, 101, 101);
-				ofSetColor(255);
-				fonts().getMonoBoldFont().draw(ofToString(textures().getTotalMemUsed(), 1) + "MBytes used", loadingScreenFontSize, 100, 100);
-				ofPopStyle();
-			}
+			ofPushStyle();
+			ofSetColor(0);
+			fonts().getMonoBoldFont().draw(ofToString(textures().getTotalMemUsed(), 1) + "MBytes used", loadingScreenFontSize, 101, 101);
+			ofSetColor(255);
+			fonts().getMonoBoldFont().draw(ofToString(textures().getTotalMemUsed(), 1) + "MBytes used", loadingScreenFontSize, 100, 100);
+			ofPopStyle();
 		}break;
 
 		case LOAD_CUSTOM_USER_CONTENT:

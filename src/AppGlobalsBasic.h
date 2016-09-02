@@ -25,9 +25,9 @@ public:
 		ofLogNotice("ofxApp Globals") << "setupRemoteUIParams()";
 		RUI_NEW_GROUP("OFXAPP GLOBALS");
 		RUI_SHARE_PARAM(debug);
+		RUI_SHARE_PARAM(drawStaticTexturesMemStats);
 		RUI_SHARE_PARAM(drawTextureLoaderStats);
 		RUI_SHARE_PARAM(drawTextureLoaderState);
-		RUI_SHARE_PARAM(drawStaticTexturesMemStats);
 
 	 };
 

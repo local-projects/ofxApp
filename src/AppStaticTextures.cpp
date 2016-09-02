@@ -206,7 +206,7 @@ ofTexture* AppStaticTextures::getTexture(string fullPath){
 
 void AppStaticTextures::drawAll(const ofRectangle & rect){
 
-	int n = textures.size();
+	int n = getNumTextures();
 	float ar = rect.width / rect.height;
 	float nx = sqrtf(n / ar) * ar;// * ar);
 	float ny = sqrtf(n * ar) / ar;// * ((1 + ar) * 0.5));
@@ -221,7 +221,7 @@ void AppStaticTextures::drawAll(const ofRectangle & rect){
 	float xx = rect.x;
 	float yy = rect.y;
 
-	ofSetColor(11);
+	ofSetColor(0);
 	ofDrawRectangle(rect);
 	ofSetColor(255);
 
@@ -240,7 +240,5 @@ void AppStaticTextures::drawAll(const ofRectangle & rect){
 		ofDrawRectangle(frame);
 		ofFill();
 	}
-
-
 }
 
