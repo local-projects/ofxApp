@@ -53,17 +53,13 @@ ofxAppLambdas::ofxAppLambdas(){
 		o->description = description;
 		inOutData.objectID; //in this case we dont need to set the objectID back to the parser
 							//bc this json happens to be a dictionary, not a list... so its
-							//smart enought to get it from there.
+							//smart enough to get it from there.
 
 		// ASSET HOLDER SETUP //
 		//setup our AssetHoler structures - we need to know where to download the assets to,
 		//our download and usage policies, and what assets do we own
 		static string assetsDir;
-		if(assetsDir.size() == 0){
-			inOutData.printMutex->lock();
-			assetsDir = app.getString("content/assetsLocation");
-			inOutData.printMutex->unlock();
-		}
+		if(assetsDir.size() == 0) assetsDir = app.getString("content/JsonSources/CWRU/assetsLocation"); //TODO this is slooow!
 		string assetsPath = assetsDir + "/" + inOutData.objectID;
 
 		ofxAssets::DownloadPolicy assetDownloadPolicy = app.getAssetDownloadPolicy();
@@ -74,7 +70,7 @@ ofxAppLambdas::ofxAppLambdas(){
 			o->imagePath = o->addRemoteAsset(imgURL, imgSha1);
 		}
 
-		inOutData.object = o; //this is how we "return" the object to the parser;
+		inOutData.object = dynamic_cast<ParsedObject*> (o); //this is how we "return" the object to the parser;
 	};
 
 
@@ -134,6 +130,8 @@ ofxAppLambdas::ofxAppLambdas(){
 		const ofxJSONElement & jsonRef = *(inOutData.jsonObj); //pointers mess up the json syntax somehow
 
 		CH_Object * o = new CH_Object();
+
+
 		map<string, bool> isPrimary; //lets store separately if the img is primary or not - we'll use that later
 
 		try{ //do some parsing - catching exceptions
@@ -181,11 +179,7 @@ ofxAppLambdas::ofxAppLambdas(){
 			//setup our AssetHoler structures - we need to know where to download the assets to,
 			//our download and usage policies, and what assets do we own
 			static string assetsDir;
-			if(assetsDir.size() == 0){
-				inOutData.printMutex->lock();
-				assetsDir = app.getString("content/assetsLocation");
-				inOutData.printMutex->unlock();
-			}
+			if(assetsDir.size() == 0) assetsDir = app.getString("content/JsonSources/CH/assetsLocation"); //TODO this is slooow!
 			string assetsPath = assetsDir + "/" + o->objectID;
 
 			ofxAssets::DownloadPolicy assetDownloadPolicy = app.getAssetDownloadPolicy();
@@ -208,7 +202,7 @@ ofxAppLambdas::ofxAppLambdas(){
 			o = nullptr;
 		}
 
-		inOutData.object = o; //this is how we "return" the object to the parser;
+		inOutData.object = dynamic_cast<ParsedObject*> (o); //this is how we "return" the object to the parser;
 	};
 
 

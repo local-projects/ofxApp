@@ -22,9 +22,9 @@ public:
 class CanTerminate{
 public:
 	virtual void terminateApp(){
-		ofxSimpleHttp::destroySslContext();
 		ofLogFatalError("ofxApp") << "terminateApp()!";
 		ofxThreadSafeLog::one()->close();
+		ofxSimpleHttp::destroySslContext();
 		exit(-1);
 	};
 };
@@ -62,7 +62,7 @@ public:
 	virtual void drawLoadingScreenForUserProcess(ofxApp::State, const ofRectangle & r){}; //your APP can override the loading screen drawing
 	virtual float getProgressForUserProcess(ofxApp::State){return -1;} //your APP should return [0..1] to report progressbar; -1 for indeterminate
 
-	virtual void contentIsReady(vector<ContentObject*>){};
+	virtual void contentIsReady(const string & contentID, vector<ContentObject*>){};
 
 
 	//tuio callbacks

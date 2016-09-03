@@ -14,20 +14,23 @@ ofxApp::App app; //app global in your subclass!
 
 using namespace ofxApp;
 
-void App::setup(ofxApp::UserLambdas cfg, ofxAppDelegate * delegate){
+void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * delegate){
 
 	ofLogNotice("ofxApp") << "setup()";
 	if(!this->delegate){
-
 		this->delegate = delegate;
 		fontStorage = new AppFonts();
-		contentStorage = new AppContent();
+		for(auto & cfg : cfgs){
+			contentStorage[cfg.first] = new AppContent();
+			requestedContent.push_back(cfg.first);
+		}
+		currentContentID = requestedContent[0];
 		fonts().setup();
 		setupLogging();
 		loadSettingsBundles();
 		setupTextureLoader();
 		setupWindow();
-		contentCfg = cfg;
+		contentCfgs = cfgs;
 		ofxSimpleHttp::createSslContext();
 		setupStateMachine();
 		appState.setState(SETTING_UP);
@@ -95,7 +98,10 @@ void App::setupListeners(){
 	ofAddListener(ofEvents().update, this, &App::update);
 	ofAddListener(ofEvents().exit, this, &App::exit);
 	//listen to content manager state changes
-	ofAddListener(contentStorage->eventStateChanged, this, &App::onContentManagerStateChanged);
+	for(auto c : contentStorage){
+		ofAddListener(c.second->eventStateChanged, this, &App::onContentManagerStateChanged);
+	}
+
 	ofAddListener(ofEvents().keyPressed, this, &App::onKeyPressed);
 	ofAddListener(ofEvents().draw, this, &App::draw, OF_EVENT_ORDER_AFTER_APP);
 	ofAddListener(textures().eventAllTexturesLoaded, this, &App::onStaticTexturesLoaded);
@@ -142,6 +148,7 @@ void App::setupTextureLoader(){
 
 void App::loadSettings(){
 
+	TIME_SAMPLE_SET_CONFIG_DIR(configsDir);
 	assertFileExists(settingsFile);
 
 	ofLogNotice("ofxApp") << "loadSettings() from " << settingsFile;
@@ -151,9 +158,13 @@ void App::loadSettings(){
 		terminateApp();
 	}
 	string settingsString = settings().getAsJsonString();
-	ofLogNotice("ofxApp") << "///////////////////////////////////////////////////////////////////////////////////////";
-	ofLogNotice("ofxApp") << "Loaded Settings: " << endl << settingsString << endl;
-	ofLogNotice("ofxApp") << "///////////////////////////////////////////////////////////////////////////////////////";
+	logBanner("Loaded ofxApp Settings - JSON Contents follow :");
+	vector<string> jsonLines = ofSplitString(settingsString, "\n");
+	ofLogNotice("ofxApp") << " +---------------------------------------------------------------------------------------------+";
+	for(auto & l : jsonLines){
+		ofLogNotice("ofxApp") << " | " << l;
+	}
+	ofLogNotice("ofxApp") << " +--------------------------------------------------------------------------------------------+";
 	hasLoadedSettings = true;
 }
 
@@ -162,9 +173,7 @@ void App::saveSettings(){
 	ofLogNotice("ofxApp") << "saveSettings() to " << settingsFile;
 	settings().save(ofToDataPath(settingsFile, true));
 	string settingsString = settings().getAsJsonString();
-	ofLogNotice("ofxApp") << "///////////////////////////////////////////////////////////////////////////////////////";
-	ofLogNotice("ofxApp") << "Saved Settings: " << endl << settingsString << endl;
-	ofLogNotice("ofxApp") << "///////////////////////////////////////////////////////////////////////////////////////";
+	logBanner("Saved Settings: \n" + settingsString + "\n");
 }
 
 
@@ -330,10 +339,11 @@ void App::setupTuio(){
 }
 
 
-
 void App::update(ofEventArgs &){
 	tuioClient.getMessage();
-	contentStorage->update(dt);
+	for(auto c : contentStorage){
+		c.second->update(dt);
+	}
 	updateStateMachine(dt);
 }
 
@@ -345,12 +355,6 @@ void App::exit(ofEventArgs &){
 	ofxThreadSafeLog::one()->close();
 	ofLogWarning("ofxApp") << "done exitting!";
 }
-
-void App::onStaticTexturesLoaded(){
-	ofLogNotice("ofxApp")<< "All Static Textures Loaded!";
-	appState.setState(LOADING_JSON_CONTENT);
-}
-
 
 //////////////////// LOADING SCREEN /////////////////////////////////////////////////////////////////
 #pragma Draw Loading Screen
@@ -420,7 +424,8 @@ void App::updateStateMachine(float dt){
 	switch (appState.getState()) {
 
 		case LOADING_JSON_CONTENT:
-			appState.updateState( contentStorage->getPercentDone(), contentStorage->getStatus());
+
+			appState.updateState( contentStorage[currentContentID]->getPercentDone(), contentStorage[currentContentID]->getStatus());
 
 			if(appState.isReadyToProceed() ){ //slow down the state machine to handle error / retry
 
@@ -429,15 +434,22 @@ void App::updateStateMachine(float dt){
 					appState.setState(LOADING_JSON_CONTENT_FAILED);
 					break;
 				}else{
-					if(contentStorage->isContentReady()){ //see if we are done (optional)
-						ofLogNotice("ofxApp") << "JSON content loaded!";
-						appState.setState(LOAD_CUSTOM_USER_CONTENT);
+					if(contentStorage[currentContentID]->isContentReady()){ //see if we are done
+						logBanner("JSON content \"" + currentContentID + "\" loaded! " + ofToString(contentStorage[currentContentID]->getNumParsedObjects()) + " objects.");
+						loadedContent.push_back(currentContentID);
+
+						if(loadedContent.size() == contentStorage.size()){ //done loading ALL the JSON contents!
+							appState.setState(LOAD_CUSTOM_USER_CONTENT);
+						}else{
+							currentContentID = requestedContent[loadedContent.size()];
+							appState.setState(LOADING_JSON_CONTENT);
+						}
+
 						break;
 					}
 				}
 
-				if(contentStorage->foundError()){
-
+				if(contentStorage[currentContentID]->foundError()){
 					int numRetries = getInt("StateMachine/onErrorRetryCount", 5);
 					int delaySeconds = getInt("StateMachine/onErrorWaitTimeSec", 5);
 					appState.setError("failed to load!", delaySeconds /*sec*/, numRetries /*retry max*/); //report an error, retry!
@@ -459,10 +471,6 @@ void App::updateStateMachine(float dt){
 			}
 			break;
 
-		case RUNNING:
-			appState.updateState( -1, "");
-			break;
-
 		case LOAD_CUSTOM_USER_CONTENT:
 			if(delegate->isUserProcessDone(LOAD_CUSTOM_USER_CONTENT)){
 				ofLogNotice("ofxApp") << "done loading Custom User Content!";
@@ -476,6 +484,11 @@ void App::updateStateMachine(float dt){
 				appState.setState(POST_USER_SETUP);
 			}
 			break;
+
+		case RUNNING:
+			appState.updateState( -1, "");
+			break;
+
 
 		default: break;
 	}
@@ -494,28 +507,41 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 			break;
 
 		case LOADING_JSON_CONTENT:{
+			logBanner("Start Loading Content  \"" + currentContentID + "\"");
 
-			string jsonURL = getString("content/urls/jsonContentURL");
-			string jsonDir = getString("content/jsonDownloadDir");
-			int numConcurrentDownloads = getInt("downloads/maxConcurrentDownloads");
-			int numThreads = getInt("App/maxThreads");
-			int timeOutSecs = getInt("downloads/timeOutSec");
-			int speedLimitKBs = getInt("downloads/speedLimitKb");
-			float idleTimeAfterDl = getFloat("downloads/idleTimeAfterEachDownloadSec");
+			bool keyExists = settings().exists("content/JsonSources/" + currentContentID);
 
-			contentStorage->setup(	jsonURL,
-								 	jsonDir,
-									numThreads,
-									numConcurrentDownloads,
-								 	speedLimitKBs,
-								 	timeOutSecs,
-								 	idleTimeAfterDl,
-								 	credentials,
-								 	proxyCfg,
-									contentCfg,
-									objectUsagePolicy
-								 );
-			contentStorage->fetchContent(); //this starts the AppContent process! TODO multiple sources!
+			if(keyExists){
+				string jsonURL = getString("content/JsonSources/" + currentContentID + "/url");
+				string jsonDir = getString("content/JsonSources/" + currentContentID + "/jsonDownloadDir");
+				bool skipPolicyTests = getBool("content/JsonSources/" + currentContentID + "/shouldSkipObjectPolicyTests");
+
+				int numConcurrentDownloads = getInt("downloads/maxConcurrentDownloads");
+				int numThreads = getInt("App/maxThreads");
+				int timeOutSecs = getInt("downloads/timeOutSec");
+				int speedLimitKBs = getInt("downloads/speedLimitKb");
+				float idleTimeAfterDl = getFloat("downloads/idleTimeAfterEachDownloadSec");
+
+				contentStorage[currentContentID]->setup(jsonURL,
+														jsonDir,
+														numThreads,
+														numConcurrentDownloads,
+														speedLimitKBs,
+														timeOutSecs,
+														skipPolicyTests,
+														idleTimeAfterDl,
+														credentials,
+														proxyCfg,
+														contentCfgs[currentContentID],
+														objectUsagePolicy
+													  );
+
+				contentStorage[currentContentID]->fetchContent(); //this starts the AppContent process! TODO multiple sources!
+
+			}else{
+				ofLogError("ofxApp") << "Requested content ID \"content/JsonSources/" << currentContentID << "\" not found in \"" << settingsFile << "\"";
+				terminateApp();
+			}
 			}break;
 
 		case LOADING_JSON_CONTENT_FAILED:
@@ -524,7 +550,9 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 			break;
 
 		case LOAD_CUSTOM_USER_CONTENT:
-			delegate->contentIsReady(content().getParsedObjects());
+			for(auto c : contentStorage){
+				delegate->contentIsReady(c.first, c.second->getParsedObjects());
+			}
 			ofLogNotice("ofxApp") << "start loading Custom User Content...";
 			delegate->startUserProcess(LOAD_CUSTOM_USER_CONTENT);
 			break;
@@ -540,7 +568,9 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 			appState.setState(RUNNING);
 			break;
 
-		case RUNNING: break;
+		case RUNNING:
+			logBanner(" ofxApp Setup Complete! ");
+			break;
 
 		default: break;
 	}
@@ -552,18 +582,16 @@ void App::onStateError(ofxStateMachine<ofxApp::State>::ErrorStateEventArgs& erro
 }
 
 
-#pragma mark !!
 void App::onContentManagerStateChanged(string& s){
 	appState.setProgressBarExtraInfo(": " + s); // add our sub-state name to the loading screen
 }
 
-ofRectangle App::getRenderAreaForCurrentWindowSize(){
 
-	ofRectangle win = ofRectangle(0,0, ofGetWindowWidth(), ofGetWindowHeight());
-	ofRectangle render = ofRectangle(0,0,app.renderSize.x, app.renderSize.y);
-	render.scaleTo(win);
-	return render;
+void App::onStaticTexturesLoaded(){
+	ofLogNotice("ofxApp")<< "All Static Textures Loaded!";
+	appState.setState(LOADING_JSON_CONTENT);
 }
+
 
 void App::onRemoteUINotification(RemoteUIServerCallBackArg &arg){
 	switch (arg.action) {
@@ -602,6 +630,22 @@ void App::onKeyPressed(ofKeyEventArgs & a){
 }
 
 
+ofRectangle App::getRenderAreaForCurrentWindowSize(){
+
+	ofRectangle win = ofRectangle(0,0, ofGetWindowWidth(), ofGetWindowHeight());
+	ofRectangle render = ofRectangle(0,0,app.renderSize.x, app.renderSize.y);
+	render.scaleTo(win);
+	return render;
+}
+
+
+void App::logBanner(const string & log){
+	ofLogNotice("ofxApp") << "";
+	ofLogNotice("ofxApp") << cleanLogLine;
+	ofLogNotice("ofxApp") << "// " << log;
+	ofLogNotice("ofxApp") << cleanLogLine;
+	ofLogNotice("ofxApp") << "";
+}
 
 ///////////////////// SETTINGS //////////////////////////////////////////////////////////////////////
 #pragma mark Settings
@@ -612,7 +656,7 @@ bool& App::getBool(const string & key, bool defaultVal){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Bool Value for '" << key << "' : " << settings().getBool(key);
 		return settings().getBool(key);
 	}else{
-		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! " << key;
+		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! \"" << key << "\" in '" << settingsFile << "'";
 		if(QUIT_ON_MISSING_SETTING) terminateApp();
 		static auto def = defaultVal;
 		return def; //mmmm....
@@ -626,7 +670,7 @@ int& App::getInt(const string & key, int defaultVal){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Int Value for '" << key << "' : " << settings().getInt(key);
 		return settings().getInt(key);
 	}else{
-		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! " << key;
+		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! \"" << key << "\" in '" << settingsFile << "'";
 		if(QUIT_ON_MISSING_SETTING) terminateApp();
 		static auto def = defaultVal;
 		return def; //mmmm....
@@ -639,7 +683,7 @@ float& App::getFloat(const string & key, float defaultVal){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Float Value for '" << key << "' : " << settings().getFloat(key);
 		return settings().getFloat(key);
 	}else{
-		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! " << key;
+		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! \"" << key << "\" in '" << settingsFile << "'";
 		if(QUIT_ON_MISSING_SETTING) terminateApp();
 		static auto def = defaultVal;
 		return def; //mmmm....
@@ -652,7 +696,7 @@ string& App::getString(const string & key, string defaultVal){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << " getting String Value for '" << key << "' : " << settings().getString(key);
 		return settings().getString(key);
 	}else{
-		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! " << key;
+		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! \"" << key << "\" in '" << settingsFile << "'";
 		if(QUIT_ON_MISSING_SETTING) terminateApp();
 		static auto def = defaultVal;
 		return def; //mmmm....
@@ -665,7 +709,7 @@ ofColor& App::getColor(const string & key, ofColor defaultVal){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Color Value for '" << key << "' : " << settings().getColor(key);
 		return settings().getColor(key);
 	}else{
-		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! " << key;
+		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! \"" << key << "\" in '" << settingsFile << "'";
 		if(QUIT_ON_MISSING_SETTING) terminateApp();
 		static auto def = defaultVal;
 		return def; //mmmm....

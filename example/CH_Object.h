@@ -5,7 +5,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // CMS Object
 
-class CH_Object : public ParsedObject, public AssetHolder, public TexturedObject{
+class CH_Object : public ContentObject{
 public:
 	string title;
 	string description;
@@ -32,5 +32,7 @@ public:
 		return getAssetDescAtIndex(index).relativePath;
 	}
 
-	void deleteWithGC(){}; //this is effectivelly the TexturedObject destructor
+	void deleteWithGC(){
+		TexturedObject::deleteWithGC();
+	}; //this is effectivelly the TexturedObject destructor
 };

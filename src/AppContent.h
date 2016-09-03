@@ -25,11 +25,13 @@ class ContentObject : public ParsedObject, public AssetHolder, public TexturedOb
 		virtual ~ContentObject() {};
 
 		// Imposed by TexturedObject //
-		ofVec2f getTextureDimensions(TexturedObjectSize, int){ return ofVec2f(0,0);}
-		string getLocalTexturePath(TexturedObjectSize, int){ return "";}
-		void deleteWithGC(){} //this is effectively the destructor of the object
-};
+		virtual ofVec2f getTextureDimensions(TexturedObjectSize, int){ return ofVec2f(0,0);}
+		virtual string getLocalTexturePath(TexturedObjectSize, int){ return "";}
 
+		//this is effectively the destructor of the object
+		virtual void deleteWithGC(){}
+
+};
 
 
 class AppContent{
@@ -57,6 +59,7 @@ public:
 			   int numConcurrentDownloads,
 			   int speedLimitKBs,
 			   int timeout,
+			   bool shouldSkipObjectTests,
 			   float idleTimeAfterEachDownload,
 			   const std::pair<string,string> & credentials,
 			   const ofxSimpleHttp::ProxyConfig & proxyConfig,
@@ -76,6 +79,7 @@ public:
 
 	//call this only if isContentReady() == true
 	vector<ContentObject*> getParsedObjects(){return parsedObjects;};
+	int getNumParsedObjects(){ return parsedObjects.size();}
 
 	void onDrawStateMachineStatus(ofRectangle & drawableArea);
 
@@ -116,6 +120,6 @@ protected:
 	string errorMessage;
 	int numThreads = 4;
 	string objectsWithBadAssets;
-
+	bool shouldSkipObjectTests;
 };
 

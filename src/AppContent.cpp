@@ -13,6 +13,7 @@ void AppContent::setup(	string jsonSrc,
 						int numConcurrentDownloads,
 						int speedLimitKBs,
 						int timeout,
+						bool shouldSkipObjectTests,
 						float idleTimeAfterEachDownload,
 						const std::pair<string,string> & credentials,
 						const ofxSimpleHttp::ProxyConfig & proxyConfig,
@@ -25,6 +26,7 @@ void AppContent::setup(	string jsonSrc,
 	this->objectUsagePolicy = objectUsagePolicy;
 	this->jsonDestinationDir = jsonDestinationDir_;
 	this->numThreads = numThreads_;
+	this->shouldSkipObjectTests = shouldSkipObjectTests;
 
 	//config the http downloader if you need to (proxy, etc)
 	dlc.setMaxConcurrentDownloads(numConcurrentDownloads);
@@ -78,7 +80,6 @@ void AppContent::update(float dt){
 }
 
 
-
 void AppContent::setState(ContentState s){
 
 	state = s;
@@ -119,73 +120,77 @@ void AppContent::setState(ContentState s){
 
 		case FILTER_OBJECTS_WITH_BAD_ASSETS:{
 
-			objectsWithBadAssets.clear();
+			if(!shouldSkipObjectTests){
+				objectsWithBadAssets.clear();
 
-			vector<int> badObjects;
-			vector<string> badObjectsIds;
+				vector<int> badObjects;
+				vector<string> badObjectsIds;
 
-			for(int i = 0; i < parsedObjects.size(); i++){
+				for(int i = 0; i < parsedObjects.size(); i++){
 
-				//do some asset integrity tests...
-				bool allAssetsOK = parsedObjects[i]->areAllAssetsOK();
-				bool needsAllAssetsToBeOk = objectUsagePolicy.allObjectAssetsAreOK;
-				int numImgAssets = parsedObjects[i]->getAssetDescriptorsForType(ofxAssets::IMAGE).size();
-				int numVideoAssets = parsedObjects[i]->getAssetDescriptorsForType(ofxAssets::VIDEO).size();
-				int numAudioAssets = parsedObjects[i]->getAssetDescriptorsForType(ofxAssets::AUDIO).size();
+					//do some asset integrity tests...
+					bool allAssetsOK = parsedObjects[i]->areAllAssetsOK();
+					bool needsAllAssetsToBeOk = objectUsagePolicy.allObjectAssetsAreOK;
+					int numImgAssets = parsedObjects[i]->getAssetDescriptorsForType(ofxAssets::IMAGE).size();
+					int numVideoAssets = parsedObjects[i]->getAssetDescriptorsForType(ofxAssets::VIDEO).size();
+					int numAudioAssets = parsedObjects[i]->getAssetDescriptorsForType(ofxAssets::AUDIO).size();
 
-				bool rejectObject = false;
-				string rejectionReason;
+					bool rejectObject = false;
+					string rejectionReason;
 
-				//apply all policy rules to decide if object is rejected or not
-				if(needsAllAssetsToBeOk){
-					if(!allAssetsOK){
+					//apply all policy rules to decide if object is rejected or not
+					if(needsAllAssetsToBeOk){
+						if(!allAssetsOK){
+							rejectObject = true;
+							auto brokenAssets = parsedObjects[i]->getBrokenAssets();
+							rejectionReason = ofToString(brokenAssets.size()) + " Broken Asset(s)";
+						}
+					}
+
+					if(numImgAssets < objectUsagePolicy.minNumberOfImageAssets){
 						rejectObject = true;
-						auto brokenAssets = parsedObjects[i]->getBrokenAssets();
-						rejectionReason = ofToString(brokenAssets.size()) + " Broken Asset(s)";
+						if(rejectionReason.size()) rejectionReason += " | ";
+						rejectionReason += "Not Enough Images";
+						ofLogError("AppContent") << "Rejecting Object '" << parsedObjects[i]->getObjectUUID()
+							<< "' because doesnt have the min # of images! (" << numImgAssets << "/"
+							<< objectUsagePolicy.minNumberOfImageAssets << ")" ;
+					}
+
+					if(numVideoAssets > objectUsagePolicy.minNumberOfVideoAssets){
+						rejectObject = true;
+						if(rejectionReason.size()) rejectionReason += " | ";
+						rejectionReason += "Not Enough Videos";
+						ofLogError("AppContent") << "Rejecting Object '" << parsedObjects[i]->getObjectUUID()
+						<< "' because doesnt have the min # of Videos! (" << numVideoAssets << "/"
+						<< objectUsagePolicy.minNumberOfVideoAssets << ")" ;
+					}
+
+					if(numAudioAssets > objectUsagePolicy.minNumberOfAudioAssets){
+						rejectObject = true;
+						if(rejectionReason.size()) rejectionReason += " | ";
+						rejectionReason += "Not Enough AudioFiles";
+						ofLogError("AppContent") << "Rejecting Object '" << parsedObjects[i]->getObjectUUID()
+						<< "' because doesnt have the min # of Audio Files! (" << numAudioAssets << "/"
+						<< objectUsagePolicy.minNumberOfAudioAssets << ")" ;
+					}
+
+					if (rejectObject){
+						badObjects.push_back(i);
+						badObjectsIds.push_back(parsedObjects[i]->getObjectUUID());
+						objectsWithBadAssets += "Object '" + badObjectsIds.back() + "' : " + rejectionReason + "\n";
 					}
 				}
 
-				if(numImgAssets < objectUsagePolicy.minNumberOfImageAssets){
-					rejectObject = true;
-					if(rejectionReason.size()) rejectionReason += " | ";
-					rejectionReason += "Not Enough Images";
-					ofLogError("AppContent") << "Rejecting Object '" << parsedObjects[i]->getObjectUUID()
-						<< "' because doesnt have the min # of images! (" << numImgAssets << "/"
-						<< objectUsagePolicy.minNumberOfImageAssets << ")" ;
+				for(int i = badObjects.size() - 1; i >= 0; i--){
+					ofLogError("AppContent") << "Dropping object " << parsedObjects[i]->getObjectUUID();
+					delete parsedObjects[badObjects[i]];
+					parsedObjects.erase(parsedObjects.begin() + badObjects[i]);
 				}
 
-				if(numVideoAssets > objectUsagePolicy.minNumberOfVideoAssets){
-					rejectObject = true;
-					if(rejectionReason.size()) rejectionReason += " | ";
-					rejectionReason += "Not Enough Videos";
-					ofLogError("AppContent") << "Rejecting Object '" << parsedObjects[i]->getObjectUUID()
-					<< "' because doesnt have the min # of Videos! (" << numVideoAssets << "/"
-					<< objectUsagePolicy.minNumberOfVideoAssets << ")" ;
-				}
-
-				if(numAudioAssets > objectUsagePolicy.minNumberOfAudioAssets){
-					rejectObject = true;
-					if(rejectionReason.size()) rejectionReason += " | ";
-					rejectionReason += "Not Enough AudioFiles";
-					ofLogError("AppContent") << "Rejecting Object '" << parsedObjects[i]->getObjectUUID()
-					<< "' because doesnt have the min # of Audio Files! (" << numAudioAssets << "/"
-					<< objectUsagePolicy.minNumberOfAudioAssets << ")" ;
-				}
-
-				if (rejectObject){
-					badObjects.push_back(i);
-					badObjectsIds.push_back(parsedObjects[i]->getObjectUUID());
-					objectsWithBadAssets += "Object '" + badObjectsIds.back() + "' : " + rejectionReason + "\n";
-				}
+				objectsWithBadAssets = "\nRemoved " + ofToString(badObjects.size()) + " objects:\n\n" + objectsWithBadAssets;
+			}else{
+				ofLogWarning("AppContent") << "skipping Object Drop Policy Tests!!";
 			}
-
-			for(int i = badObjects.size() - 1; i >= 0; i--){
-				ofLogError("AppContent") << "Dropping object " << parsedObjects[i]->getObjectUUID();
-				delete parsedObjects[badObjects[i]];
-				parsedObjects.erase(parsedObjects.begin() + badObjects[i]);
-			}
-
-			objectsWithBadAssets = "\nRemoved " + ofToString(badObjects.size()) + " objects:\n\n" + objectsWithBadAssets;
 
 		}break;
 

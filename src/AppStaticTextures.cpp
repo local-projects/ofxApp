@@ -227,8 +227,16 @@ void AppStaticTextures::drawAll(const ofRectangle & rect){
 
 	for(auto it : textures){
 		ofRectangle frame = ofRectangle(xx,yy, rect.width / ceil(nx), rect.height / ceil(ny));
+		float pad = 0.05 * MAX(frame.width, frame.height);
+		ofRectangle paddedFrame = frame;
+		paddedFrame.x += pad;
+		paddedFrame.y += pad;
+		paddedFrame.width -= 2 * pad;
+		paddedFrame.height -= 2 * pad;
+
 		ofRectangle texR = ofRectangle(0,0,it.second->getWidth(), it.second->getHeight());
-		texR.scaleTo(frame);
+		texR.scaleTo(paddedFrame);
+		ofSetColor(255);
 		it.second->draw(texR);
 		ofDrawBitmapStringHighlight(it.first, xx + 5, yy + frame.height - 8);
 		xx += ceil(frame.width);
@@ -236,6 +244,7 @@ void AppStaticTextures::drawAll(const ofRectangle & rect){
 			yy += frame.height;
 			xx = rect.x;
 		}
+		ofSetColor(66);
 		ofNoFill();
 		ofDrawRectangle(frame);
 		ofFill();

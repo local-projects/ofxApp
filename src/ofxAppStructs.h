@@ -49,5 +49,4 @@ namespace ofxApp{
 		ofLogError("ofxApp") << "unknown ofxApp State!";
 		return "unknown ofxApp State";
 	}
-
 };

@@ -5,7 +5,8 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // CMS Object
 
-class CWRU_Object : public ParsedObject, public AssetHolder, public TexturedObject{
+class CWRU_Object : public ContentObject{
+
 public:
 	string title;
 	string description;
@@ -16,5 +17,7 @@ public:
 	//in this case we only have one img per obj to simplify the example
 	ofVec2f getTextureDimensions(TexturedObjectSize s, int index){return imgSize;};
 	string getLocalTexturePath(TexturedObjectSize, int index){return getAssetDescAtIndex(index).relativePath;}
-	void deleteWithGC(){}; //this is effectivelly the TexturedObject destructor
+	void deleteWithGC(){
+		TexturedObject::deleteWithGC();
+	}; //this is effectivelly the TexturedObject destructor
 };

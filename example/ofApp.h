@@ -5,21 +5,6 @@
 #include "CWRU_Object.h"
 #include "CH_Object.h"
 
-#define CWRU 	1
-#define CH		2
-
-/// change this between "CWRU" or "CH" for a different JSON / Parsing Example
-#define JSON_SRC CH
-/// you still need to change data/config/AppSettings.jon content:urls:jsonContentURL manually
-
-
-#if (JSON_SRC == CWRU)
-	#define USER_OBJECT CWRU_Object
-#elif (JSON_SRC == CH)
-	#define USER_OBJECT CH_Object
-#endif
-
-
 
 class ofApp : public ofBaseApp, public ofxAppDelegate{
 
@@ -47,7 +32,8 @@ public:
 	void drawLoadingScreenForUserProcess(ofxApp::State, const ofRectangle & r){};
 	float getProgressForUserProcess(ofxApp::State){return -1;}
 
-	void contentIsReady(vector<ContentObject*>);
+	void contentIsReady(const string & contentID, vector<ContentObject*>);
 
-	vector<USER_OBJECT*> contentObjects;
+	vector<CH_Object*>		chObjects;
+	vector<CWRU_Object*>	cwruObjects;
 };

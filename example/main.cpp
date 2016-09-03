@@ -6,7 +6,7 @@
 //========================================================================
 int main( ){
 
-	app.loadSettings();
+	app.loadSettings(); //ofxApp settings loaded here!
 
 	//ofSetCurrentRenderer(ofGLProgrammableRenderer::TYPE);
 
@@ -18,9 +18,6 @@ int main( ){
 
 	shared_ptr<ofAppBaseWindow> win = ofCreateWindow(winSettings);	// sets up the opengl context!
 	((ofAppGLFWWindow*)win.get())->setMultiDisplayFullscreen(true);
-
-	// 10 x 1 screens
-	//ofSetupOpenGL(&win, w, h, OF_WINDOW /*OF_FULLSCREEN*/);	// <-------- setup the GL context
 
 	TIME_SAMPLE_ADD_SETUP_HOOKS();
 

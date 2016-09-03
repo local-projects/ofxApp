@@ -6,13 +6,16 @@ void ofApp::setup(){
 	// other modules LISTENERS
 	ofAddListener(app.screenSetup.setupChanged, this, &ofApp::setupChanged);
 
+	//create my custom lambdas for parsing / preparing objects
 	ofxAppLambdas myLambdas = ofxAppLambdas();
 
-	#if (JSON_SRC == CWRU)
-	app.setup(myLambdas.cwru, this);
-	#elif (JSON_SRC == CH)
-	app.setup(myLambdas.ch, this);
-	#endif
+	map<string, ofxApp::UserLambdas> userLambdas;
+	//put them in a map - named as the "AppSettings.json" section ("content/JsonSources")
+	userLambdas["CWRU"] = myLambdas.cwru;
+	userLambdas["CH"] = myLambdas.ch;
+
+	//start the app setup process
+	app.setup(userLambdas, this);
 }
 
 
@@ -21,13 +24,24 @@ void ofApp::startUserProcess(ofxApp::State s){
 };
 
 
-void ofApp::contentIsReady(vector<ContentObject*> objs){
-	ofLogNotice("ofApp") << "content is ready! " << objs.size() << " objects!";
-	for(auto o : objs){
-		contentObjects.push_back((USER_OBJECT*)o); //cast up to MyObject*
-		vector<ofxAssets::Descriptor> assetKeys = contentObjects.back()->getAssetDescsWithTag("isPrimary");
-		if(assetKeys.size() == 1){
-			ofLogNotice("ofApp") << assetKeys.back().relativePath << " is Primary for " << contentObjects.back()->objectID;
+void ofApp::contentIsReady(const string & contentID, vector<ContentObject*> objs){
+	ofLogNotice("ofApp") << "Content '" << contentID << "' is ready! " << objs.size() << " objects!";
+
+	if(contentID == "CWRU"){
+		for(auto o : objs){
+			cwruObjects.push_back(dynamic_cast<CWRU_Object*>(o)); //cast up to CWRU_Object*
+		}
+	}
+
+	if(contentID == "CH"){
+		for(auto o : objs){
+			CH_Object * cho = dynamic_cast<CH_Object*>(o);
+			chObjects.push_back(cho); //cast up to CWRU_Object*
+			//demo on how to "fish back" asset info
+			vector<ofxAssets::Descriptor> assetKeys = cho->getAssetDescsWithTag("isPrimary");
+			if(assetKeys.size() == 1){
+				ofLogNotice("ofApp") << assetKeys.back().relativePath << " is Primary for " << cho->objectID;
+			}
 		}
 	}
 }

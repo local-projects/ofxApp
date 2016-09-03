@@ -50,8 +50,9 @@ public:
 	const string settingsFile = "configs/AppSettings.json";
 	const string LogsDir = "logs";
 	const string configsDir = "configs";
+	const string cleanLogLine = "/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////";
 
-	void setup(ofxApp::UserLambdas cfg, ofxAppDelegate * delegate);
+	void setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * delegate);
 
 	void update(ofEventArgs &);
 	void exit(ofEventArgs &);
@@ -64,40 +65,42 @@ public:
 	//  OFX_APP_NAME=MyApp
 	OFX_APP_CLASS_NAME(Colors) & 	colors(){return colorsStorage;}
 	OFX_APP_CLASS_NAME(Globals) & 	globals(){return globalsStorage;}
-	AppFonts & 						fonts(){return *fontStorage;}
-	AppContent & 					content(){return *contentStorage;}
-	ofxJsonSettings& 				settings(){return ofxJsonSettings::get();}
+	AppFonts &						fonts(){return *fontStorage;}
+	//AppContent & 					content(){return *contentStorage;}
+	ofxJsonSettings & 				settings(){return ofxJsonSettings::get();}
 	AppStaticTextures & 			textures(){return texStorage;}
 	ofPtr<ofxSuperLog> 				logger(){return ofxSuperLog::getLogger();}
 	ofxTuioClient & 				tuio(){ return tuioClient;}
 
-	ofxScreenSetup screenSetup;
+	ofxScreenSetup					screenSetup;
 
 	// Convinience methods ////////////////////////////////////////////////////////
 	// SETTINGS //
-	bool& getBool(const string & key, bool defaultVal = true);
-	int& getInt(const string & key, int defaultVal = 0);
-	float& getFloat(const string & key, float defaultVal = 0.0);
-	string& getString(const string & key, string defaultVal = "uninited!");
-	ofColor& getColor(const string & key, ofColor defaultVal = ofColor::red);
 
-	void loadSettings();
-	void saveSettings();
+	bool&		getBool(const string & key, bool defaultVal = true);
+	int&		getInt(const string & key, int defaultVal = 0);
+	float&		getFloat(const string & key, float defaultVal = 0.0);
+	string&		getString(const string & key, string defaultVal = "uninited!");
+	ofColor&	getColor(const string & key, ofColor defaultVal = ofColor::red);
+
+	void		loadSettings();
+	void		saveSettings();
 
 	ofxApp::State getState(){return appState.getState();}
 
 	//those are cfgs coming from the main config file
-	ofxAssets::DownloadPolicy getAssetDownloadPolicy(){ return assetDownloadPolicy; }
-	ofxAssets::UsagePolicy getAssetUsagePolicy(){ return assetUsagePolicy;}
+	ofxAssets::DownloadPolicy	getAssetDownloadPolicy(){ return assetDownloadPolicy; }
+	ofxAssets::UsagePolicy		getAssetUsagePolicy(){ return assetUsagePolicy;}
 
 	// CALLBACKS ///////////////////////////////////////////////////////////////////////////////////
+
 	void onRemoteUINotification(RemoteUIServerCallBackArg & arg);
 	void onStaticTexturesLoaded();
 	void onKeyPressed(ofKeyEventArgs&);
 
 	// app params that come from settings json
-	ofVec2f 	renderSize;
-	ofRectangle getRenderAreaForCurrentWindowSize();
+	ofVec2f			renderSize;
+	ofRectangle		getRenderAreaForCurrentWindowSize();
 
 protected:
 
@@ -115,7 +118,7 @@ protected:
 	void startLoadingStaticAssets();
 	void setMouseEvents(bool enabled);
 	void loadSettingsBundles();
-
+	void logBanner(const string & log);
 
 	// STATE MACHINE ///////////////////////////////////////////////////////////////////////////////
 	virtual void updateStateMachine(float dt);
@@ -129,33 +132,37 @@ protected:
 	AppStaticTextures					texStorage;
 	ofxMullion							mullions;
 
-	// Settings budles ////////
+	// Settings bundles ///////////////////////////////////////
 
-	ofxSimpleHttp::ProxyConfig		proxyCfg;
-	std::pair<string,string>		credentials; //http
+	ofxSimpleHttp::ProxyConfig			proxyCfg;
+	std::pair<string,string>			credentials; //http
 
-	ofxAssets::DownloadPolicy		assetDownloadPolicy;
-	ofxAssets::UsagePolicy			assetUsagePolicy;
-	ofxAssets::ObjectUsagePolicy	objectUsagePolicy;
+	ofxAssets::DownloadPolicy			assetDownloadPolicy;
+	ofxAssets::UsagePolicy				assetUsagePolicy;
+	ofxAssets::ObjectUsagePolicy		objectUsagePolicy;
 
 	//crazy macro magic - beware! read a few lines above to see what's going on
 	OFX_APP_CLASS_NAME(Colors)				colorsStorage;
 	OFX_APP_CLASS_NAME(Globals)				globalsStorage;
 	AppFonts *								fontStorage;
-	AppContent *							contentStorage;
+	map<string, AppContent*>				contentStorage; //this will be same # as contentCfgs.size()
 	ofxDrawableStateMachine<ofxApp::State>	appState; //App State Machine
 
 	bool									hasLoadedSettings = false;
-	//bool									shouldQuit;
-
 	float									dt;
-	ofxApp::UserLambdas						contentCfg;
+
+	map<string, ofxApp::UserLambdas>		contentCfgs; //this will be as big as the number of jsons to load
+	string									currentContentID;
+	vector<string>							requestedContent;
+	vector<string>							loadedContent;
+
 
 	ofxAppDelegate *						delegate = nullptr;
 
 	const int								loadingScreenFontSize = 22;
 
 };
-}
+
+} //namespace ofxApp
 
 extern ofxApp::App app; //all global parameters are here - add yor "ofxApp" subclass!
