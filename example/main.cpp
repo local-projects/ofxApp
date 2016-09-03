@@ -19,8 +19,6 @@ int main( ){
 	shared_ptr<ofAppBaseWindow> win = ofCreateWindow(winSettings);	// sets up the opengl context!
 	((ofAppGLFWWindow*)win.get())->setMultiDisplayFullscreen(true);
 
-	TIME_SAMPLE_ADD_SETUP_HOOKS();
-
 	ofRunApp(win, shared_ptr<ofBaseApp>(new ofApp()));
 	ofRunMainLoop();
 }

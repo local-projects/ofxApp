@@ -28,6 +28,8 @@ void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * d
 		fonts().setup();
 		setupLogging();
 		loadSettingsBundles();
+		if(timeSampleOfxApp) TS_START_NIF("ofxApp Setup");
+		setupTimeMeasurements();
 		setupTextureLoader();
 		setupWindow();
 		contentCfgs = cfgs;
@@ -37,11 +39,11 @@ void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * d
 		setupListeners();
 		setupRemoteUI();
 		globals().setupRemoteUIParams();
-		setupTimeMeasurements();
 		colors().setupRemoteUIParams();
 		textures().setup();
 		setupTuio();
 		setupOF();
+		if(timeSampleOfxApp) TS_START_NIF("ofxApp Load Static Textures");
 		appState.setState(LOADING_STATIC_TEXTURES); //start loading content
 	}else{
 		ofLogError("ofxApp") << "Trying to setup() ofxApp a second time!";
@@ -58,7 +60,7 @@ void App::setupOF(){
 	if(showMouse) ofShowCursor();
 	else ofHideCursor();
 
-	setMouseEvents(getBool("App/showMouse"));
+	setMouseEvents(getBool("App/enableMouse"));
 }
 
 void App::setMouseEvents(bool enabled){
@@ -148,7 +150,6 @@ void App::setupTextureLoader(){
 
 void App::loadSettings(){
 
-	TIME_SAMPLE_SET_CONFIG_DIR(configsDir);
 	assertFileExists(settingsFile);
 
 	ofLogNotice("ofxApp") << "loadSettings() from " << settingsFile;
@@ -193,13 +194,9 @@ void App::setupApp(){
 
 void App::setupLogging(){
 
-	#if defined(__has_feature) /*this triggers asan for some reason - dont clean longs when asan is ON*/
-		#if !__has_feature(address_sanitizer)
-			if(getBool("logging/deleteOldLogs")){
-				ofxSuperLog::clearOldLogs(LogsDir, getInt("logging/logExpirationInDays"));
-			}
-		#endif
-	#endif
+	if(getBool("logging/deleteOldLogs")){
+		ofxSuperLog::clearOldLogs(LogsDir, getInt("logging/logExpirationInDays"));
+	}
 	bool logToConsole = getBool("logging/toConsole");
 	bool logToScreen = getBool("logging/toScreen");
 	ofSetLogLevel(ofLogLevel(getInt("logging/logLevel")));
@@ -286,6 +283,7 @@ void App::loadSettingsBundles(){
 
 	renderSize.x = getInt("App/renderSize/width");
 	renderSize.y = getInt("App/renderSize/height");
+	timeSampleOfxApp = getBool("App/TimeSampleOfxApp");
 }
 
 void App::setupRuiWatches(){
@@ -307,7 +305,9 @@ void App::setupRuiWatches(){
 void App::setupTimeMeasurements(){
 	TIME_SAMPLE_SET_CONFIG_DIR(configsDir);
 	TIME_SAMPLE_SET_FRAMERATE(getInt("App/frameRate", 60));
-	TIME_SAMPLE_SET_ENABLED(getBool("TimeMeasurements/enabled", true));
+	bool enabled = getBool("TimeMeasurements/enabled", true);
+	if(timeSampleOfxApp) enabled = true; //if we are benchmarking ofxApp, enable regardless
+	TIME_SAMPLE_SET_ENABLED(enabled);
 	TIME_SAMPLE_DISABLE_AVERAGE();
 	TIME_SAMPLE_SET_DRAW_LOCATION((ofxTMDrawLocation)(getInt("TimeMeasurements/widgetLocation", 3)));
 	TIME_SAMPLE_GET_INSTANCE()->setDeadThreadTimeDecay(getFloat("TimeMeasurements/threadTimeDecay"));
@@ -437,6 +437,7 @@ void App::updateStateMachine(float dt){
 					if(contentStorage[currentContentID]->isContentReady()){ //see if we are done
 						logBanner("JSON content \"" + currentContentID + "\" loaded! " + ofToString(contentStorage[currentContentID]->getNumParsedObjects()) + " objects.");
 						loadedContent.push_back(currentContentID);
+						if(timeSampleOfxApp) TS_STOP_NIF("ofxApp LoadContent " + currentContentID);
 
 						if(loadedContent.size() == contentStorage.size()){ //done loading ALL the JSON contents!
 							appState.setState(LOAD_CUSTOM_USER_CONTENT);
@@ -507,6 +508,7 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 			break;
 
 		case LOADING_JSON_CONTENT:{
+			if(timeSampleOfxApp) TS_START_NIF("ofxApp LoadContent " + currentContentID);
 			logBanner("Start Loading Content  \"" + currentContentID + "\"");
 
 			bool keyExists = settings().exists("content/JsonSources/" + currentContentID);
@@ -568,8 +570,13 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 			appState.setState(RUNNING);
 			break;
 
-		case RUNNING:
-			logBanner(" ofxApp Setup Complete! ");
+		case RUNNING:{
+			float ts = -1.0f;
+			if(timeSampleOfxApp){
+				ts = TS_STOP_NIF("ofxApp Setup");
+			}
+			logBanner(" ofxApp Setup Complete! Took " + ofToString(ts, 1) + "sec." );
+			}
 			break;
 
 		default: break;
@@ -589,6 +596,7 @@ void App::onContentManagerStateChanged(string& s){
 
 void App::onStaticTexturesLoaded(){
 	ofLogNotice("ofxApp")<< "All Static Textures Loaded!";
+	if(timeSampleOfxApp) TS_STOP_NIF("ofxApp Load Static Textures");
 	appState.setState(LOADING_JSON_CONTENT);
 }
 
