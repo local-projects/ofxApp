@@ -100,6 +100,7 @@ protected:
 	vector<string> pendingToLoad; //list of file paths still pending to load
 	vector<ofxAutoTexture*> loadedInOrder;
 
+	vector<string> texNameOrder;
 	unordered_map<string, ofxAutoTexture*> textures;
 
 	float memUsed = 0; //MBytes

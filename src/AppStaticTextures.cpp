@@ -118,6 +118,7 @@ ofxAutoTexture* AppStaticTextures::loadTexture(const string& filePath){
 
 	if(loaded){
 
+		texNameOrder.push_back(texName);
 		textures[texName] = tex;
 		float memUsedForThisOne = memUse(tex);
 		memUsed += memUsedForThisOne;
@@ -126,12 +127,12 @@ ofxAutoTexture* AppStaticTextures::loadTexture(const string& filePath){
 			tex->setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 		}
 
-
-		ofLogNotice("AppStaticTextures") 	<< "Loaded '" << filePath << "' >>> "
-											<< "name:'" << texName << "' size:[" << tex->getWidth()
-											<< "x" << tex->getHeight() << "] mipmap:" << createMipMap
-											<< " format:" << ofGetGlInternalFormatName(tex->getTextureData().glInternalFormat)
-											<< " mem:" << ofToString(memUsedForThisOne, 2) << "Mb";
+		ofLogNotice("AppStaticTextures") 	<< "#### Loaded \"" << filePath << "\" ######################################################";
+		ofLogNotice("AppStaticTextures")	<< "     Name: '" << texName << "'";
+		ofLogNotice("AppStaticTextures")	<< "     Size: [" << tex->getWidth() << " x " << tex->getHeight() << "]";
+		ofLogNotice("AppStaticTextures")	<< "     Mipmap: " << createMipMap;
+		ofLogNotice("AppStaticTextures")	<< "     Format: " << ofGetGlInternalFormatName(tex->getTextureData().glInternalFormat);
+		ofLogNotice("AppStaticTextures")	<< "     Mem: " << ofToString(memUsedForThisOne, 2) << "Mb";
 		return tex;
 	}else{
 		delete tex;
@@ -225,7 +226,8 @@ void AppStaticTextures::drawAll(const ofRectangle & rect){
 	ofDrawRectangle(rect);
 	ofSetColor(255);
 
-	for(auto it : textures){
+	for(auto & texName : texNameOrder){
+		ofTexture * tex = textures[texName];
 		ofRectangle frame = ofRectangle(xx,yy, rect.width / ceil(nx), rect.height / ceil(ny));
 		float pad = 0.05 * MAX(frame.width, frame.height);
 		ofRectangle paddedFrame = frame;
@@ -234,20 +236,23 @@ void AppStaticTextures::drawAll(const ofRectangle & rect){
 		paddedFrame.width -= 2 * pad;
 		paddedFrame.height -= 2 * pad;
 
-		ofRectangle texR = ofRectangle(0,0,it.second->getWidth(), it.second->getHeight());
+		ofSetColor(55);
+		ofDrawRectangle(frame);
+		ofSetColor(22);
+		ofNoFill();
+		ofDrawRectangle(frame);
+		ofFill();
+
+		ofRectangle texR = ofRectangle(0,0,tex->getWidth(), tex->getHeight());
 		texR.scaleTo(paddedFrame);
 		ofSetColor(255);
-		it.second->draw(texR);
-		ofDrawBitmapStringHighlight(it.first, xx + 5, yy + frame.height - 8);
+		tex->draw(texR);
+		ofDrawBitmapStringHighlight(texName, xx + 5, yy + frame.height - 8);
 		xx += ceil(frame.width);
 		if(xx >= rect.x + rect.width){
 			yy += frame.height;
 			xx = rect.x;
 		}
-		ofSetColor(66);
-		ofNoFill();
-		ofDrawRectangle(frame);
-		ofFill();
 	}
 }
 

@@ -18,6 +18,7 @@ void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * d
 
 	ofLogNotice("ofxApp") << "setup()";
 	if(!this->delegate){
+		if(!hasLoadedSettings) loadSettings();
 		this->delegate = delegate;
 		fontStorage = new AppFonts();
 		for(auto & cfg : cfgs){
@@ -25,9 +26,13 @@ void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * d
 			requestedContent.push_back(cfg.first);
 		}
 		currentContentID = requestedContent[0];
-		fonts().setup();
 		setupLogging();
-		loadSettingsBundles();
+		printSettingsFile();
+		fonts().setup();
+		if(getBool("logging/useFontStash")){ //set a nice font for the on screen logger if using fontstash
+			ofxSuperLog::getLogger()->setFont(&(fonts().getMonoBoldFont()), getFloat("logging/uiScale", 1.0) * getInt("logging/fontSize"));
+		}
+		loadModulesSettings();
 		if(timeSampleOfxApp) TS_START_NIF("ofxApp Setup");
 		setupTimeMeasurements();
 		setupTextureLoader();
@@ -61,23 +66,23 @@ void App::setupOF(){
 	else ofHideCursor();
 
 	setMouseEvents(getBool("App/enableMouse"));
+
 }
 
 void App::setMouseEvents(bool enabled){
-
 	if(enabled){
 		if(!ofEvents().mousePressed.isEnabled()){
 			ofEvents().mousePressed.enable();
 			ofEvents().mouseReleased.enable();
 			ofEvents().mouseDragged.enable();
-			ofLogWarning("ofxApp") << "Disabled Mouse Events";
+			ofLogWarning("ofxApp") << "Enabled Mouse Events";
 		}
 	}else{
 		if(ofEvents().mousePressed.isEnabled()){
 			ofEvents().mousePressed.disable();
 			ofEvents().mouseReleased.disable();
 			ofEvents().mouseDragged.disable();
-			ofLogWarning("ofxApp") << "Enabled Mouse Events";
+			ofLogWarning("ofxApp") << "Disabled Mouse Events";
 		}
 	}
 }
@@ -152,22 +157,28 @@ void App::loadSettings(){
 
 	assertFileExists(settingsFile);
 
-	ofLogNotice("ofxApp") << "loadSettings() from " << settingsFile;
+	ofLogNotice("ofxApp") << "loadSettings() from \"" << settingsFile << "\"";
 	bool ok = settings().load(ofToDataPath(settingsFile, true));
 	if(!ok){
-		ofLogError("ofxApp") << "Could not load settings from " << ofToDataPath(settingsFile, true);
+		ofLogError("ofxApp") << "Could not load settings from \"" << ofToDataPath(settingsFile, true) << "\"";
 		terminateApp();
 	}
+	hasLoadedSettings = true;
+}
+
+
+void App::printSettingsFile(){
+
 	string settingsString = settings().getAsJsonString();
 	logBanner("Loaded ofxApp Settings - JSON Contents follow :");
 	vector<string> jsonLines = ofSplitString(settingsString, "\n");
-	ofLogNotice("ofxApp") << " +---------------------------------------------------------------------------------------------+";
+	ofLogNotice("ofxApp") << " ╔═════╣ AppSettings.json ╠════════════════════════════════════════════════════════════════════";
 	for(auto & l : jsonLines){
-		ofLogNotice("ofxApp") << " | " << l;
+		ofLogNotice("ofxApp") << " ║ " << l;
 	}
-	ofLogNotice("ofxApp") << " +--------------------------------------------------------------------------------------------+";
-	hasLoadedSettings = true;
+	ofLogNotice("ofxApp") << " ╚═════════════════════════════════════════════════════════════════════════════════════════════";
 }
+
 
 
 void App::saveSettings(){
@@ -206,9 +217,6 @@ void App::setupLogging(){
 	ofxSuperLog::getLogger()->setMaxNumLogLines(getInt("logging/maxScreenLines"));
 	ofxSuperLog::getLogger()->setUseScreenColors(true);
 
-	if(getBool("logging/useFontStash")){ //set a nice font for the on screen logger if using fontstash
-		ofxSuperLog::getLogger()->setFont(&(fonts().getMonoBoldFont()), getFloat("logging/uiScale", 1.0) * getInt("logging/fontSize"));
-	}
 	float panelW = getFloat("logging/screenLogPanelWidth");
 	ofxSuperLog::getLogger()->setDisplayWidth(panelW);
 
@@ -251,7 +259,7 @@ void App::setupRemoteUI(){
 }
 
 
-void App::loadSettingsBundles(){
+void App::loadModulesSettings(){
 
 	std::pair<string,string> credentials;
 	credentials.first = getString("downloads/credentials/username");
@@ -649,9 +657,9 @@ ofRectangle App::getRenderAreaForCurrentWindowSize(){
 
 void App::logBanner(const string & log){
 	ofLogNotice("ofxApp") << "";
-	ofLogNotice("ofxApp") << cleanLogLine;
-	ofLogNotice("ofxApp") << "// " << log;
-	ofLogNotice("ofxApp") << cleanLogLine;
+	ofLogNotice("ofxApp") << "███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████";
+	ofLogNotice("ofxApp") << "██ " << log;
+	ofLogNotice("ofxApp") << "███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████";
 	ofLogNotice("ofxApp") << "";
 }
 

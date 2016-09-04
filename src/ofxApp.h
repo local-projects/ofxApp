@@ -50,7 +50,6 @@ public:
 	const string settingsFile = "configs/AppSettings.json";
 	const string LogsDir = "logs";
 	const string configsDir = "configs";
-	const string cleanLogLine = "/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////";
 
 	void setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * delegate);
 
@@ -84,6 +83,7 @@ public:
 	ofColor&	getColor(const string & key, ofColor defaultVal = ofColor::red);
 
 	void		loadSettings();
+	void		printSettingsFile();
 	void		saveSettings();
 
 	ofxApp::State getState(){return appState.getState();}
@@ -117,7 +117,7 @@ protected:
 	void setupRuiWatches();
 	void startLoadingStaticAssets();
 	void setMouseEvents(bool enabled);
-	void loadSettingsBundles();
+	void loadModulesSettings();
 	void logBanner(const string & log);
 
 	// STATE MACHINE ///////////////////////////////////////////////////////////////////////////////
