@@ -583,7 +583,7 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 			if(timeSampleOfxApp){
 				ts = TS_STOP_NIF("ofxApp Setup");
 			}
-			logBanner(" ofxApp Setup Complete! Took " + ofToString(ts, 1) + "sec." );
+			logBanner(" ofxApp Setup Complete! " + string((ts > 0.0f) ? ofToString(ts, 1) + "sec." : "") );
 			}
 			break;
 
@@ -669,7 +669,7 @@ void App::logBanner(const string & log){
 bool& App::getBool(const string & key, bool defaultVal){
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
 	if(settings().exists(key)){
-		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Bool Value for '" << key << "' : " << settings().getBool(key);
+		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Bool Value for \"" << key << "\" : " << settings().getBool(key);
 		return settings().getBool(key);
 	}else{
 		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! \"" << key << "\" in '" << settingsFile << "'";
@@ -683,7 +683,7 @@ bool& App::getBool(const string & key, bool defaultVal){
 int& App::getInt(const string & key, int defaultVal){
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
 	if(settings().exists(key)){
-		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Int Value for '" << key << "' : " << settings().getInt(key);
+		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Int Value for \"" << key << "\" : " << settings().getInt(key);
 		return settings().getInt(key);
 	}else{
 		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! \"" << key << "\" in '" << settingsFile << "'";
@@ -696,7 +696,7 @@ int& App::getInt(const string & key, int defaultVal){
 float& App::getFloat(const string & key, float defaultVal){
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
 	if(settings().exists(key)){
-		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Float Value for '" << key << "' : " << settings().getFloat(key);
+		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Float Value for \"" << key << "\" : " << settings().getFloat(key);
 		return settings().getFloat(key);
 	}else{
 		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! \"" << key << "\" in '" << settingsFile << "'";
@@ -709,7 +709,7 @@ float& App::getFloat(const string & key, float defaultVal){
 string& App::getString(const string & key, string defaultVal){
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
 	if(settings().exists(key)){
-		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << " getting String Value for '" << key << "' : " << settings().getString(key);
+		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << " getting String Value for \"" << key << "\" : " << settings().getString(key);
 		return settings().getString(key);
 	}else{
 		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! \"" << key << "\" in '" << settingsFile << "'";
@@ -722,7 +722,7 @@ string& App::getString(const string & key, string defaultVal){
 ofColor& App::getColor(const string & key, ofColor defaultVal){
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
 	if(settings().exists(key)){
-		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Color Value for '" << key << "' : " << settings().getColor(key);
+		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Color Value for \"" << key << "\" : " << settings().getColor(key);
 		return settings().getColor(key);
 	}else{
 		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! \"" << key << "\" in '" << settingsFile << "'";
