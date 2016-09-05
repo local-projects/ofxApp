@@ -172,11 +172,11 @@ void App::printSettingsFile(){
 	string settingsString = settings().getAsJsonString();
 	logBanner("Loaded ofxApp Settings - JSON Contents follow :");
 	vector<string> jsonLines = ofSplitString(settingsString, "\n");
-	ofLogNotice("ofxApp") << " ╔═════╣ AppSettings.json ╠════════════════════════════════════════════════════════════════════";
+	ofLogNotice("ofxApp") << " ╔═════╣ AppSettings.json ╠═════════════════════════════════════════════════════════════════════════════════";
 	for(auto & l : jsonLines){
 		ofLogNotice("ofxApp") << " ║ " << l;
 	}
-	ofLogNotice("ofxApp") << " ╚═════════════════════════════════════════════════════════════════════════════════════════════";
+	ofLogNotice("ofxApp") << " ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════";
 }
 
 
@@ -575,6 +575,7 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 		case POST_USER_SETUP:
 			setupRuiWatches();
 			setupApp();
+			delegate->startUserProcess(POST_USER_SETUP); //user custom code runs here
 			appState.setState(RUNNING);
 			break;
 
