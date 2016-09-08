@@ -7,7 +7,8 @@
 
 #include "AppContent.h"
 
-void AppContent::setup(	string jsonSrc,
+void AppContent::setup(	string ID,
+					   	string jsonSrc,
 						string jsonDestinationDir_,
 						int numThreads_,
 						int numConcurrentDownloads,
@@ -20,7 +21,9 @@ void AppContent::setup(	string jsonSrc,
 						const ofxApp::UserLambdas & contentCfg,
 					    const ofxAssets::ObjectUsagePolicy objectUsagePolicy){
 
+
 	parsedObjects.clear();
+	this->ID = ID;
 	this->jsonURL = jsonSrc;
 	this->contentCfg = contentCfg;
 	this->objectUsagePolicy = objectUsagePolicy;
@@ -209,8 +212,8 @@ void AppContent::setState(ContentState s){
 		default: break;
 	}
 
-	string name = getNameForState(state);
-	ofNotifyEvent(eventStateChanged, name);
+	string info = "\"" + ID + "\" > " + getNameForState(state);
+	ofNotifyEvent(eventStateChanged, info);
 }
 
 

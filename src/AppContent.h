@@ -53,7 +53,8 @@ public:
 		NUM_CONTENT_MANAGER_STATES
 	};
 
-	void setup(string jsonSrc,
+	void setup(string ID,
+			   string jsonSrc,
 			   string jsonDestinationDir_,
 			   int numThreads,
 			   int numConcurrentDownloads,
@@ -121,5 +122,6 @@ protected:
 	int numThreads = 4;
 	string objectsWithBadAssets;
 	bool shouldSkipObjectTests;
+	string ID;
 };
 

@@ -103,7 +103,7 @@ void App::setupWindow(){
 void App::setupListeners(){
 
 	ofAddListener(ofEvents().update, this, &App::update);
-	ofAddListener(ofEvents().exit, this, &App::exit);
+	ofAddListener(ofEvents().exit, this, &App::exit, OF_EVENT_ORDER_AFTER_APP);
 	//listen to content manager state changes
 	for(auto c : contentStorage){
 		ofAddListener(c.second->eventStateChanged, this, &App::onContentManagerStateChanged);
@@ -197,7 +197,7 @@ void App::setupApp(){
 	bool & enableMouse = getBool("App/enableMouse");
 	RUI_SHARE_PARAM(enableMouse);
 	RUI_PUSH_TO_CLIENT();
-	RUI_LOAD_FROM_XML();
+	//RUI_LOAD_FROM_XML();
 	setMouseEvents(enableMouse);
 	ofBackground(colorsStorage.bgColor);
 }
@@ -357,9 +357,9 @@ void App::update(ofEventArgs &){
 
 void App::exit(ofEventArgs &){
 	ofLogWarning("ofxApp") << "OF is exitting!";
-	ofLogWarning("ofxApp") << "destroying ssl context...";
+	ofLogWarning("ofxApp") << "destroying  ofxSimpleHttp SSL context...";
 	ofxSimpleHttp::destroySslContext();
-	ofLogWarning("ofxApp") << "closing logs...";
+	ofLogWarning("ofxApp") << "Closing ThreadSafeLog(s)...";
 	ofxThreadSafeLog::one()->close();
 	ofLogWarning("ofxApp") << "done exitting!";
 }
@@ -532,7 +532,8 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 				int speedLimitKBs = getInt("downloads/speedLimitKb");
 				float idleTimeAfterDl = getFloat("downloads/idleTimeAfterEachDownloadSec");
 
-				contentStorage[currentContentID]->setup(jsonURL,
+				contentStorage[currentContentID]->setup(currentContentID,
+														jsonURL,
 														jsonDir,
 														numThreads,
 														numConcurrentDownloads,
@@ -710,7 +711,7 @@ float& App::getFloat(const string & key, float defaultVal){
 string& App::getString(const string & key, string defaultVal){
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
 	if(settings().exists(key)){
-		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << " getting String Value for \"" << key << "\" : " << settings().getString(key);
+		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting String Value for \"" << key << "\" : " << settings().getString(key);
 		return settings().getString(key);
 	}else{
 		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! \"" << key << "\" in '" << settingsFile << "'";
