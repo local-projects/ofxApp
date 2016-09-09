@@ -38,7 +38,7 @@ void AppFonts::loadUseFonts(){
 				string fontName = itr.key().asString();
 				string fontFile = (*itr)["fontFile"].asString();
 				int atlasSize = (*itr)["atlasSize"].asInt();
-				float lineH = (*itr)["lineH"].asFloat();
+				float lineH = (*itr)["lineHeight"].asFloat();
 				bool mipmaps = (*itr)["mipmaps"].asBool();
 				int mipmapPadding = (*itr)["mipmapPadding"].asInt();
 				float uiScale = (*itr)["uiScale"].asFloat();
