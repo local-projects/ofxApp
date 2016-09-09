@@ -39,7 +39,7 @@ const string FILE_ACCES_ICON = "💾";
 const string FILE_ACCES_ICON = "💾";
 #endif
 
-#define G 				app.globals() /*super fast access to globals*/
+#define GLOB			app.globals() /*super fast access to globals*/
 #define G_COL			app.colors()
 #define G_TEX(name)		app.textures().getTexture(name)
 #define G_FONT(name)	app.fonts().getFont(name)
