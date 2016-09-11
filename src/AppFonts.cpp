@@ -54,6 +54,9 @@ void AppFonts::loadUseFonts(){
 							uiScale 	//ui Scale (per-char texture upscale)
 						   );
 
+				bool doKerning = (*itr)["kerning"].asBool();
+				font->setKerning(doKerning);
+
 				auto search = userFonts.find(fontName);
 				if (search == userFonts.end()){
 					ofLogNotice("AppFonts") << "Loading User Font '" << fontName << "' from '" << fontFile << "'";
@@ -61,6 +64,13 @@ void AppFonts::loadUseFonts(){
 				}else{
 					ofLogError("AppFonts") << "User Font with this name already exists! (" << fontName << ")";
 					terminateApp();
+				}
+
+				float charSpacing = 0;
+				if(!(*itr)["charSpacing"].isNull()){
+					charSpacing = (*itr)["charSpacing"].asFloat();
+					font->setCharacterSpacing(charSpacing);
+					ofLogNotice("AppFonts") << "Setting custom Character Spacing for font \""<< fontName << "\" : " << charSpacing;
 				}
 
 			}
