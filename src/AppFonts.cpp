@@ -54,8 +54,10 @@ void AppFonts::loadUseFonts(){
 							uiScale 	//ui Scale (per-char texture upscale)
 						   );
 
-				bool doKerning = (*itr)["kerning"].asBool();
-				font->setKerning(doKerning);
+				if (!(*itr)["kerning"].isNull()) {
+					bool doKerning = (*itr)["kerning"].asBool();
+					font->setKerning(doKerning);
+				}
 
 				auto search = userFonts.find(fontName);
 				if (search == userFonts.end()){
@@ -72,7 +74,6 @@ void AppFonts::loadUseFonts(){
 					font->setCharacterSpacing(charSpacing);
 					ofLogNotice("AppFonts") << "Setting custom Character Spacing for font \""<< fontName << "\" : " << charSpacing;
 				}
-
 			}
 		}else{
 			ofLogFatalError("AppFonts") << "User Fonts (\"Fonts/user\")is not a Json Object! Check you AppSettings.json file!";
