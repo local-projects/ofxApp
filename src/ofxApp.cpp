@@ -92,6 +92,14 @@ void App::setupWindow(){
 	ofxScreenSetup::ScreenMode mode = ofxScreenSetup::ScreenMode((int)getInt("App/window/windowMode"));
 	screenSetup.setup(getInt("App/window/customWidth"), getInt("App/window/customHeight"), mode);
 
+	bool customPosition = getBool("App/window/customWindowPosition");
+	int customX = getInt("App/window/customPositionX");
+	int customY = getInt("App/window/customPositionY");
+	if(customPosition){
+		ofLogNotice("ofxApp") << "Setting a custom window position [" << customX << " , " << customY << "]";
+		ofSetWindowPosition(customX, customY);
+	}
+
 	//setup mullions user settings
 	bool mullionsVisible = getBool("App/mullions/visibleAtStartup");
 	mullions.setup(getInt("App/mullions/numX"), getInt("App/mullions/numY"));
