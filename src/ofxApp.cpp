@@ -264,6 +264,12 @@ void App::setupRemoteUI(){
 
 	ofAddListener(RUI_GET_OF_EVENT(), this, &App::onRemoteUINotification);
 	RUI_SETUP();
+
+	bool enabled = getBool("RemoteUI/enabled");
+	if(!enabled){
+		ofLogWarning("ofxApp") << "Disabling ofxRemoteUI as specified in json settings!";
+		RUI_GET_INSTANCE()->setEnabled(enabled);
+	}
 }
 
 
