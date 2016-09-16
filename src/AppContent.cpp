@@ -39,6 +39,11 @@ void AppContent::setup(	string ID,
 	dlc.setCredentials(credentials.first, credentials.second);
 	dlc.setProxyConfiguration(proxyConfig);
 
+	jsonParser.getHttp().setTimeOut(timeout);
+	jsonParser.getHttp().setSpeedLimit(speedLimitKBs);
+	jsonParser.getHttp().setProxyConfiguration(proxyConfig);
+	jsonParser.getHttp().setCredentials(credentials.first, credentials.second);
+
 	//subscribe to parsing events
 	ofAddListener(jsonParser.eventJsonDownloaded, this, 	&AppContent::jsonDownloaded);
 	ofAddListener(jsonParser.eventJsonDownloadFailed, this, &AppContent::jsonDownloadFailed);
