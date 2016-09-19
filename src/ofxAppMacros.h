@@ -32,10 +32,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef TARGET_WIN32
-//#define FILE_ACCES_ICON "💾"
-const string FILE_ACCES_ICON = "💾";
+const string FILE_ACCES_ICON = "";
 #else
-//#define FILE_ACCES_ICON "💾"
 const string FILE_ACCES_ICON = "💾";
 #endif
 

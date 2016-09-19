@@ -180,11 +180,19 @@ void App::printSettingsFile(){
 	string settingsString = settings().getAsJsonString();
 	logBanner("Loaded ofxApp Settings - JSON Contents follow :");
 	vector<string> jsonLines = ofSplitString(settingsString, "\n");
+	#ifdef TARGET_WIN32
+	ofLogNotice("ofxApp") << " %%%%%% AppSettings.json %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
+	for (auto & l : jsonLines) {
+		ofLogNotice("ofxApp") << " % " << l;
+	}
+	ofLogNotice("ofxApp") << " %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
+	#else
 	ofLogNotice("ofxApp") << " ╔═════╣ AppSettings.json ╠═════════════════════════════════════════════════════════════════════════════════";
-	for(auto & l : jsonLines){
+	for (auto & l : jsonLines) {
 		ofLogNotice("ofxApp") << " ║ " << l;
 	}
 	ofLogNotice("ofxApp") << " ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════";
+	#endif	
 }
 
 
