@@ -52,6 +52,10 @@ void AppContent::setup(	string ID,
 	ofAddListener(jsonParser.eventAllObjectsParsed, this, 	&AppContent::jsonContentReady);
 }
 
+void AppContent::setJsonDownloadURL(string jsonURL){
+	ofLogNotice("AppContent") << "updating the JSON Content URL of " << ID << " to '" << jsonURL << "'";
+	this->jsonURL = jsonURL;
+};
 
 void AppContent::fetchContent(){
 	if(state == IDLE || state == JSON_PARSE_FAILED ){
@@ -211,14 +215,27 @@ void AppContent::setState(ContentState s){
 			setState(JSON_CONTENT_READY);
 			break;
 
-		case JSON_CONTENT_READY:
-			break;
+		case JSON_CONTENT_READY:{
+			//keep the json as a good one
+			ofFile jsonFile;
+			jsonFile.open(jsonParser.getJsonLocalPath());
+			string jsonPath = jsonParser.getJsonLocalPath();
+			string dir = ofFilePath::getEnclosingDirectory(jsonPath);
+			ofFilePath::createEnclosingDirectory(dir + "knownGood");
+			jsonFile.moveTo(dir + "/knownGood/" + ID + ".json");
+		}break;
 
 		default: break;
 	}
 
 	string info = "\"" + ID + "\" > " + getNameForState(state);
 	ofNotifyEvent(eventStateChanged, info);
+}
+
+
+string AppContent::getLastKnownGoodJsonPath(){
+	string dir = ofFilePath::getEnclosingDirectory(jsonParser.getJsonLocalPath());
+	return dir + "knownGood/" + ID + ".json";
 }
 
 

@@ -464,6 +464,7 @@ void App::updateStateMachine(float dt){
 					appState.setState(LOADING_JSON_CONTENT_FAILED);
 					break;
 				}else{
+					
 					if(contentStorage[currentContentID]->isContentReady()){ //see if we are done
 						logBanner("JSON content \"" + currentContentID + "\" loaded! " + ofToString(contentStorage[currentContentID]->getNumParsedObjects()) + " objects.");
 						loadedContent.push_back(currentContentID);
@@ -471,11 +472,10 @@ void App::updateStateMachine(float dt){
 
 						if(loadedContent.size() == contentStorage.size()){ //done loading ALL the JSON contents!
 							appState.setState(LOAD_CUSTOM_USER_CONTENT);
-						}else{
+						}else{ //load the next json
 							currentContentID = requestedContent[loadedContent.size()];
 							appState.setState(LOADING_JSON_CONTENT);
 						}
-
 						break;
 					}
 				}
@@ -496,9 +496,12 @@ void App::updateStateMachine(float dt){
 
 		case LOADING_JSON_CONTENT_FAILED:
 			appState.updateState( -1, "error while loading content!");
-			if (appState.getElapsedTimeInCurrentState() > 15){ //hold the error screen for a while and quit
-				ofLogFatalError("ofxApp") << "cant load json, exiting!";
-				terminateApp();
+			if (appState.getElapsedTimeInCurrentState() > 10	){ //hold the error screen for a while and quit
+				//ofLogFatalError("ofxApp") << "cant load json, exiting!";
+				//terminateApp();
+				string knownGoodJSON = "file://" + contentStorage[currentContentID]->getLastKnownGoodJsonPath();
+				contentStorage[currentContentID]->setJsonDownloadURL(knownGoodJSON); //lets try from a known good json
+				appState.setState(LOADING_JSON_CONTENT);
 			}
 			break;
 
@@ -538,48 +541,53 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 			break;
 
 		case LOADING_JSON_CONTENT:{
-			if(timeSampleOfxApp) TS_START_NIF("ofxApp LoadContent " + currentContentID);
-			logBanner("Start Loading Content  \"" + currentContentID + "\"");
-
-			bool keyExists = settings().exists("content/JsonSources/" + currentContentID);
-
-			if(keyExists){
-				string jsonURL = getString("content/JsonSources/" + currentContentID + "/url");
-				string jsonDir = getString("content/JsonSources/" + currentContentID + "/jsonDownloadDir");
-				bool skipPolicyTests = getBool("content/JsonSources/" + currentContentID + "/shouldSkipObjectPolicyTests");
-
-				int numConcurrentDownloads = getInt("downloads/maxConcurrentDownloads");
-				int numThreads = getInt("App/maxThreads");
-				int timeOutSecs = getInt("downloads/timeOutSec");
-				int speedLimitKBs = getInt("downloads/speedLimitKb");
-				float idleTimeAfterDl = getFloat("downloads/idleTimeAfterEachDownloadSec");
-
-				contentStorage[currentContentID]->setup(currentContentID,
-														jsonURL,
-														jsonDir,
-														numThreads,
-														numConcurrentDownloads,
-														speedLimitKBs,
-														timeOutSecs,
-														skipPolicyTests,
-														idleTimeAfterDl,
-														credentials,
-														proxyCfg,
-														contentCfgs[currentContentID],
-														objectUsagePolicy
+			if(change.oldState != LOADING_JSON_CONTENT_FAILED){
+				if(timeSampleOfxApp) TS_START_NIF("ofxApp LoadContent " + currentContentID);
+				logBanner("Start Loading Content  \"" + currentContentID + "\"");
+				
+				bool keyExists = settings().exists("content/JsonSources/" + currentContentID);
+				
+				if(keyExists){
+					string jsonURL = getString("content/JsonSources/" + currentContentID + "/url");
+					string jsonDir = getString("content/JsonSources/" + currentContentID + "/jsonDownloadDir");
+					bool skipPolicyTests = getBool("content/JsonSources/" + currentContentID + "/shouldSkipObjectPolicyTests");
+					
+					int numConcurrentDownloads = getInt("downloads/maxConcurrentDownloads");
+					int numThreads = getInt("App/maxThreads");
+					int timeOutSecs = getInt("downloads/timeOutSec");
+					int speedLimitKBs = getInt("downloads/speedLimitKb");
+					float idleTimeAfterDl = getFloat("downloads/idleTimeAfterEachDownloadSec");
+					
+					contentStorage[currentContentID]->setup(currentContentID,
+															jsonURL,
+															jsonDir,
+															numThreads,
+															numConcurrentDownloads,
+															speedLimitKBs,
+															timeOutSecs,
+															skipPolicyTests,
+															idleTimeAfterDl,
+															credentials,
+															proxyCfg,
+															contentCfgs[currentContentID],
+															objectUsagePolicy
 													  );
+					
+					contentStorage[currentContentID]->fetchContent(); //this starts the AppContent process!
+					
+				}else{
+					ofLogError("ofxApp") << "Requested content ID \"content/JsonSources/" << currentContentID << "\" not found in \"" << settingsFile << "\"";
+					terminateApp();
+				}
 
-				contentStorage[currentContentID]->fetchContent(); //this starts the AppContent process! TODO multiple sources!
-
-			}else{
-				ofLogError("ofxApp") << "Requested content ID \"content/JsonSources/" << currentContentID << "\" not found in \"" << settingsFile << "\"";
-				terminateApp();
+			}else{ //We are retrying to download with a known good json! we already swapped the JSON URL to a local older JSON
+				contentStorage[currentContentID]->fetchContent(); //this starts the AppContent process!
 			}
 			}break;
 
 		case LOADING_JSON_CONTENT_FAILED:
 			appState.setProgressBarExtraInfo(" - CONTENT LOAD FAILED");
-			ofxSuperLog::getLogger()->setScreenLoggingEnabled(true); //show log if json error
+			//ofxSuperLog::getLogger()->setScreenLoggingEnabled(true); //show log if json error
 			break;
 
 		case LOAD_CUSTOM_USER_CONTENT:

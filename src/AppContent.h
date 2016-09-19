@@ -69,6 +69,8 @@ public:
 			   );
 
 	void fetchContent(); //start the process here
+	
+	void setJsonDownloadURL(string jsonURL);
 
 	void update(float dt);
 
@@ -83,6 +85,8 @@ public:
 	int getNumParsedObjects(){ return parsedObjects.size();}
 
 	void onDrawStateMachineStatus(ofRectangle & drawableArea);
+	
+	string getLastKnownGoodJsonPath();
 
 	// CALLBACKS ///////////////////////////////////////////////////////////////////////////////////
 
