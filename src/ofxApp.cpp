@@ -10,7 +10,7 @@
 #include "ofxThreadSafeLog.h"
 #include "TexturedObjectStats.h"
 
-ofxApp::App app; //app global in your subclass!
+ofxApp::App app; //app global in your project!
 
 using namespace ofxApp;
 
@@ -18,14 +18,11 @@ void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * d
 
 	ofLogNotice("ofxApp") << "setup()";
 	if(!this->delegate){
-		if(!hasLoadedSettings) loadSettings();
+		contentCfgs = cfgs;
 		this->delegate = delegate;
+		if(!hasLoadedSettings) loadSettings();
 		fontStorage = new AppFonts();
-		for(auto & cfg : cfgs){
-			contentStorage[cfg.first] = new AppContent();
-			requestedContent.push_back(cfg.first);
-		}
-		currentContentID = requestedContent[0];
+		setupContentData();
 		setupLogging();
 		printSettingsFile();
 		fonts().setup();
@@ -37,7 +34,6 @@ void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * d
 		setupTimeMeasurements();
 		setupTextureLoader();
 		setupWindow();
-		contentCfgs = cfgs;
 		ofxSimpleHttp::createSslContext();
 		setupStateMachine();
 		appState.setState(SETTING_UP);
@@ -52,7 +48,17 @@ void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * d
 		appState.setState(LOADING_STATIC_TEXTURES); //start loading content
 	}else{
 		ofLogError("ofxApp") << "Trying to setup() ofxApp a second time!";
+		terminateApp();
 	}
+}
+
+
+void App::setupContentData() {
+	for (auto & cfg : contentCfgs) {
+		contentStorage[cfg.first] = new AppContent();
+		requestedContent.push_back(cfg.first);
+	}
+	currentContentID = requestedContent[0];
 }
 
 

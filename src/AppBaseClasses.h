@@ -25,6 +25,7 @@ public:
 		ofLogFatalError("ofxApp") << "terminateApp()!";
 		ofxThreadSafeLog::one()->close();
 		ofxSimpleHttp::destroySslContext();
+		ofSleepMillis(3000);
 		exit(-1);
 	};
 };

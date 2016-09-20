@@ -107,6 +107,7 @@ protected:
 	void setupListeners();
 	void setupStateMachine();
 	void setupTimeMeasurements();
+	void setupContentData();
 	void setupWindow();
 	void setupOF();
 	void setupRemoteUI();
