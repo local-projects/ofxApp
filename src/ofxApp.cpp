@@ -489,41 +489,34 @@ void App::updateStateMachine(float dt){
 				if(contentStorage[currentContentID]->foundError()){
 					int numRetries = getInt("StateMachine/onErrorRetryCount", 5);
 					int delaySeconds = getInt("StateMachine/onErrorWaitTimeSec", 5);
-					appState.setError("failed to load!", delaySeconds /*sec*/, numRetries /*retry max*/); //report an error, retry!
+					appState.setError("failed to load content for \"" + currentContentID + "\"", delaySeconds /*sec*/, numRetries /*retry max*/); //report an error, retry!
 					ofLogError("ofxApp") << "json failed to load! (" << appState.getNumTimesRetried() << ")";
 					if(numRetries > 0){ //if no retry allowed, jump to fail state directly
 						appState.setState(LOADING_JSON_CONTENT, false); //note "false" << do not clear errors (to keep track of # of retries)
 					}else{
-						appState.setState(LOADING_JSON_CONTENT_FAILED);
+						appState.setState(LOADING_JSON_CONTENT_FAILED, false);  //note "false" << do not clear errors (to keep track of # of retries)
 					}
 				}
 			}
 			break;
 
-		case LOADING_JSON_CONTENT_FAILED:
-			appState.updateState( -1, "error while loading content!");
-			if (appState.getElapsedTimeInCurrentState() > 10	){ //hold the error screen for a while and quit
-				//ofLogFatalError("ofxApp") << "cant load json, exiting!";
-				//terminateApp();
-				string knownGoodJSON = "file://" + contentStorage[currentContentID]->getLastKnownGoodJsonPath();
-				contentStorage[currentContentID]->setJsonDownloadURL(knownGoodJSON); //lets try from a known good json
-				appState.setState(LOADING_JSON_CONTENT);
-			}
-			break;
+		case LOADING_JSON_CONTENT_FAILED:{
+			string knownGoodJSON = "file://" + contentStorage[currentContentID]->getLastKnownGoodJsonPath();
+			contentStorage[currentContentID]->setJsonDownloadURL(knownGoodJSON); //lets try from a known good json
+			appState.setState(LOADING_JSON_CONTENT, false);
+			}break;
 
 		case LOAD_CUSTOM_USER_CONTENT:
 			if(delegate->isUserProcessDone(LOAD_CUSTOM_USER_CONTENT)){
 				ofLogNotice("ofxApp") << "done loading Custom User Content!";
 				appState.setState(SETUP_USER_APP);
-			}
-			break;
+			}break;
 
 		case SETUP_USER_APP:
 			if(delegate->isUserProcessDone(SETUP_USER_APP)){
 				ofLogNotice("ofxApp") << "done Setup User App!";
 				appState.setState(POST_USER_SETUP);
-			}
-			break;
+			}break;
 
 		case RUNNING:
 			appState.updateState( -1, "");

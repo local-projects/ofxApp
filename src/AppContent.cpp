@@ -58,7 +58,7 @@ void AppContent::setJsonDownloadURL(string jsonURL){
 };
 
 void AppContent::fetchContent(){
-	if(state == IDLE || state == JSON_PARSE_FAILED ){
+	if(state == IDLE || state == JSON_PARSE_FAILED || state == JSON_DOWNLOAD_FAILED){
 		setState(DOWNLOADING_JSON);
 	}else{
 		ofLogError("AppContent") << "Can't fetch content now!";
@@ -222,7 +222,7 @@ void AppContent::setState(ContentState s){
 			string jsonPath = jsonParser.getJsonLocalPath();
 			string dir = ofFilePath::getEnclosingDirectory(jsonPath);
 			ofFilePath::createEnclosingDirectory(dir + "knownGood");
-			jsonFile.moveTo(dir + "/knownGood/" + ID + ".json");
+			jsonFile.moveTo(dir + "/knownGood/" + ID + ".json", false, true);
 		}break;
 
 		default: break;
