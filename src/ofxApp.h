@@ -37,9 +37,7 @@
 //some macro magic to include the user defined subclasses of AppColorsBasic, AppFonts, AppGlobalsBasic
 //it takes the user defined macro (ie OFX_APP_NAME=MyApp) and creates an #include "MyAppColors.h"
 #include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_COLORS_FILENAME) 	//include MyAppColors.h
-//#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_FONTS_FILENAME)	//include MyAppFonts.h
 #include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_GLOBALS_FILENAME) //include MyAppGlobals.h
-//#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_STATES_FILENAME)	//include MyAppStates.h
 
 namespace ofxApp{
 
@@ -129,18 +127,18 @@ protected:
 	virtual void onStateError(ofxStateMachine<ofxApp::State>::ErrorStateEventArgs& error);
 	virtual void onContentManagerStateChanged(string&);
 
-	ofxTuioClient						tuioClient;
-	AppStaticTextures					texStorage;
-	ofxMullion							mullions;
+	ofxTuioClient							tuioClient;
+	AppStaticTextures						texStorage;
+	ofxMullion								mullions;
 
 	// Settings bundles ///////////////////////////////////////
 
-	ofxSimpleHttp::ProxyConfig			proxyCfg;
-	std::pair<string,string>			credentials; //http
+	ofxSimpleHttp::ProxyConfig				proxyCfg;
+	std::pair<string,string>				credentials; //http
 
-	ofxAssets::DownloadPolicy			assetDownloadPolicy;
-	ofxAssets::UsagePolicy				assetUsagePolicy;
-	ofxAssets::ObjectUsagePolicy		objectUsagePolicy;
+	ofxAssets::DownloadPolicy				assetDownloadPolicy;
+	ofxAssets::UsagePolicy					assetUsagePolicy;
+	ofxAssets::ObjectUsagePolicy			objectUsagePolicy;
 
 	//crazy macro magic - beware! read a few lines above to see what's going on
 	OFX_APP_CLASS_NAME(Colors)				colorsStorage;

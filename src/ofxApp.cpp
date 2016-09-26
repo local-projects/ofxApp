@@ -27,7 +27,7 @@ void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * d
 		printSettingsFile();
 		fonts().setup();
 		if(getBool("logging/useFontStash")){ //set a nice font for the on screen logger if using fontstash
-			ofxSuperLog::getLogger()->setFont(&(fonts().getMonoBoldFont()), getFloat("logging/uiScale", 1.0) * getInt("logging/fontSize"));
+			ofxSuperLog::getLogger()->setFont(&(fonts().getMonoBoldFont()), getInt("logging/fontSize"));
 		}
 		loadModulesSettings();
 		if(timeSampleOfxApp) TS_START_NIF("ofxApp Setup");
