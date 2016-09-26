@@ -72,7 +72,6 @@ void App::setupOF(){
 	else ofHideCursor();
 
 	setMouseEvents(getBool("App/enableMouse"));
-
 }
 
 void App::setMouseEvents(bool enabled){
@@ -200,7 +199,6 @@ void App::printSettingsFile(){
 	ofLogNotice("ofxApp") << " ╚══════════════════════════════════════════════════════════════════════════════════════════════════════════";
 	#endif	
 }
-
 
 
 void App::saveSettings(){

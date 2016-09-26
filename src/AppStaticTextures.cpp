@@ -27,7 +27,7 @@ void AppStaticTextures::setup(){
 
 void AppStaticTextures::loadTexturesInDir(const string& imgDirPath, bool async){
 	if(!isLoading){
-		ofLogWarning("AppStaticTextures") << "#### Start Loading all Textures in directory \"" << imgDirPath << "\" ############################################";
+		ofLogWarning("AppStaticTextures") << "#### START Loading all Textures in directory \"" << imgDirPath << "\" ############################################";
 		isLoading = true;
 		loadAsync = async;
 		dirPath = ofFilePath::addTrailingSlash(imgDirPath);
@@ -52,7 +52,6 @@ void AppStaticTextures::loadTexturesInDirectory(const string& path, bool recursi
 	}
 
 	for(int i = 0; i < dir.size(); i++){
-
 		ofFile file = dir.getFile(i);
 
 		if (file.isDirectory() && recursive) {
@@ -144,13 +143,13 @@ ofxAutoTexture* AppStaticTextures::loadTexture(const string& filePath){
 
 void AppStaticTextures::onUpdate(ofEventArgs & ){
 
-	if(pendingToLoad.size() /* && ofGetFrameNum()%10 == 1*/){
+	if(pendingToLoad.size() && ofGetFrameNum()%5 == 1){
 		string currentFile = pendingToLoad.front();
 		pendingToLoad.erase(pendingToLoad.begin());
 		ofxAutoTexture * tex = loadTexture(currentFile);
 		loadedInOrder.push_back(tex);
 		if(pendingToLoad.size() == 0){
-			ofLogNotice("AppStaticTextures") << "#### Finished loading " << textures.size() << " Static Textures! Memory used: " << ofToString(memUsed,2) << "Mb ############################################";
+			ofLogNotice("AppStaticTextures") << "#### DONE loading " << textures.size() << " Static Textures! Memory used: " << ofToString(memUsed,2) << "Mb ############################################";
 			ofNotifyEvent(eventAllTexturesLoaded, this);
 		}
 	}
