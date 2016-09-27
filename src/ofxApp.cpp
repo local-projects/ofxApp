@@ -683,6 +683,9 @@ ofRectangle App::getRenderAreaForCurrentWindowSize(){
 	return render;
 }
 
+ofRectangle App::getRenderRect() {
+	return ofRectangle(0, 0, app.renderSize.x, app.renderSize.y);
+}
 
 void App::logBanner(const string & log){
 	ofLogNotice("ofxApp") << "";

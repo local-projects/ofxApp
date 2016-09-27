@@ -98,6 +98,8 @@ public:
 	// app params that come from settings json
 	ofVec2f			renderSize;
 	ofRectangle		getRenderAreaForCurrentWindowSize();
+	ofRectangle		getRenderRect();
+
 
 protected:
 
