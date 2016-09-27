@@ -63,7 +63,6 @@ public:
 	OFX_APP_CLASS_NAME(Colors) & 	colors(){return colorsStorage;}
 	OFX_APP_CLASS_NAME(Globals) & 	globals(){return globalsStorage;}
 	AppFonts &						fonts(){return *fontStorage;}
-	//AppContent & 					content(){return *contentStorage;}
 	ofxJsonSettings & 				settings(){return ofxJsonSettings::get();}
 	AppStaticTextures & 			textures(){return texStorage;}
 	ofPtr<ofxSuperLog> 				logger(){return ofxSuperLog::getLogger();}
@@ -160,7 +159,7 @@ protected:
 	ofxAppDelegate *						delegate = nullptr;
 
 	const int								loadingScreenFontSize = 22;
-
+	
 };
 
 } //namespace ofxApp
