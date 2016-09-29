@@ -127,11 +127,8 @@ ofxAutoTexture* AppStaticTextures::loadTexture(const string& filePath){
 		}
 
 		ofLogNotice("AppStaticTextures") 	<< "#### Loaded \"" << filePath << "\" ######################################################";
-		ofLogNotice("AppStaticTextures")	<< "     Name: '" << texName << "'";
-		ofLogNotice("AppStaticTextures")	<< "     Size: [" << tex->getWidth() << " x " << tex->getHeight() << "]";
-		ofLogNotice("AppStaticTextures")	<< "     Mipmap: " << createMipMap;
-		ofLogNotice("AppStaticTextures")	<< "     Format: " << ofGetGlInternalFormatName(tex->getTextureData().glInternalFormat);
-		ofLogNotice("AppStaticTextures")	<< "     Mem: " << ofToString(memUsedForThisOne, 2) << "Mb";
+		ofLogNotice("AppStaticTextures")	<< "   Name: '" << texName << "'  " << "[" << tex->getWidth() << "x" << tex->getHeight() << "]" <<
+		"  Mipmap: " << createMipMap << "  Format: " << ofGetGlInternalFormatName(tex->getTextureData().glInternalFormat) << "  Mem: " << ofToString(memUsedForThisOne, 2) << "Mb";
 		return tex;
 	}else{
 		delete tex;

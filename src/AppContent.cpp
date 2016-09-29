@@ -111,13 +111,17 @@ void AppContent::setState(ContentState s){
 
 		case CHECKING_ASSET_STATUS:{
 			//sadly we need to cast our objects to AssetHolder* objects to check them
-			vector<AssetHolder*> assetObjs;
-			//assetObjs.insert(assetObjs.begin(), parsedObjects.begin(), parsedObjects.end());
-			for (int i = 0; i < parsedObjects.size(); i++) {
-				assetObjs.push_back(dynamic_cast<AssetHolder*>(parsedObjects[i]));
+			if (parsedObjects.size()) {
+				vector<AssetHolder*> assetObjs;
+				for (int i = 0; i < parsedObjects.size(); i++) {
+					assetObjs.push_back(dynamic_cast<AssetHolder*>(parsedObjects[i]));
+				}
+				ofAddListener(assetChecker.eventFinishedCheckingAllAssets, this, &AppContent::assetCheckFinished);
+				assetChecker.checkAssets(assetObjs, numThreads);
+			} else {
+				setState(DOWNLOADING_ASSETS);
 			}
-			ofAddListener(assetChecker.eventFinishedCheckingAllAssets, this, &AppContent::assetCheckFinished);
-			assetChecker.checkAssets(assetObjs, numThreads);
+
 		}break;
 
 		case DOWNLOADING_ASSETS:

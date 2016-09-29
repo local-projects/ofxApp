@@ -649,7 +649,6 @@ void App::onRemoteUINotification(RemoteUIServerCallBackArg &arg){
 				setMouseEvents(arg.param.boolVal);
 			}
 			if(arg.paramName == "bgColor"){
-				//colorsStorage.bgColor = arg.param.getColor();
 				ofBackground(colorsStorage.bgColor);
 				RUI_PUSH_TO_CLIENT();
 			}
