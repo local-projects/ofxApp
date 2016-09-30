@@ -100,6 +100,8 @@ public:
 	ofRectangle		getRenderAreaForCurrentWindowSize();
 	ofRectangle		getRenderRect();
 
+	//to draw debug msgs
+	ofRectangle drawMsgInBox(string msg, int x, int y, int fontSize, ofColor fontColor, ofColor bgColor = ofColor::black, float edgeGrow = 5);
 
 protected:
 

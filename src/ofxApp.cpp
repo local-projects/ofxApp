@@ -404,23 +404,23 @@ void App::draw(ofEventArgs &){
 
 	//stack up stats
 	int x = 20;
-	int y = 30;
-	int lineH = 14;
-
+	int y = 27;
+	int pad = -10;
+	int fontSize = 15;
 	if(globalsStorage.drawStaticTexturesMemStats){
 		float mb = app.textures().getTotalMemUsed();
-		ofDrawBitmapStringHighlight("Static Assets Mem Used: " + ofToString(mb, 1) + "Mb", ofVec2f(x,y), ofColor::black, ofColor::fuchsia);
-		y += lineH * 2;
+		ofRectangle r = drawMsgInBox("Static Assets Mem Used: " + ofToString(mb, 1) + "Mb", x, y, fontSize, ofColor::fuchsia);
+		y += r.height + fabs(r.y - y) + pad;
 	}
 
 	if(globalsStorage.drawTextureLoaderStats){
-		TexturedObjectStats::one().draw(x, y);
-		y += lineH * 8;
+		ofRectangle r = drawMsgInBox(TexturedObjectStats::one().getStatsAsText(), x, y, fontSize, ofColor::orange);
+		y += r.height + fabs(r.y - y) + pad;
 	}
 
 	if(globalsStorage.drawTextureLoaderState){
-		ProgressiveTextureLoadQueue::instance()->draw(x, y);
-		y += lineH * 4 + ProgressiveTextureLoadQueue::instance()->getNumBusy() * lineH;
+		ofRectangle r = drawMsgInBox(ProgressiveTextureLoadQueue::instance()->getStatsAsText(), x, y, fontSize, ofColor::limeGreen);
+		y += r.height + fabs(r.y - y) + pad;
 	}
 }
 
@@ -698,7 +698,18 @@ void App::logBanner(const string & log){
 	ofLogNotice("ofxApp") << "███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████";
 	#endif
 	ofLogNotice("ofxApp") << "";
+}
 
+ofRectangle App::drawMsgInBox(string msg, int x, int y, int fontSize, ofColor fontColor, ofColor bgColor, float edgeGrow) {
+	ofxFontStash & font = fonts().getMonoBoldFont();
+	ofRectangle bbox = font.getBBox(msg, fontSize, x, y);
+	ofSetColor(bgColor);
+	bbox.x -= edgeGrow; bbox.y -= edgeGrow; bbox.width += 2 * edgeGrow; bbox.height += 2 * edgeGrow;
+	ofDrawRectangle(bbox);
+	ofSetColor(fontColor);
+	font.drawMultiLine(msg, fontSize, x, y);
+	ofSetColor(255);
+	return bbox;
 }
 
 ///////////////////// SETTINGS //////////////////////////////////////////////////////////////////////
