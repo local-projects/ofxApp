@@ -127,7 +127,7 @@ void App::setupWindow(){
 	//trying to get the window to "show up" in the 1st frame - to show terminateApp() in the 1st frame
 	GLFWwindow* glfwWindow = (GLFWwindow*)ofGetWindowPtr()->getWindowContext();
 	glfwShowWindow(glfwWindow);
-	ofGetWindowPtr()->setFullscreen(true);
+	//ofGetWindowPtr()->setFullscreen(true);
 	//ofSetWindowPosition(0,0);
 	ofGetWindowPtr()->makeCurrent();
 	ofGetGLRenderer()->startRender();
@@ -267,7 +267,8 @@ void App::setupLogging(){
 	loggerStorage = new ofPtr<ofxSuperLog>(); //note this 2* madness is to avoid the logger being delete b4 the app is finished logging
 	*loggerStorage = ofxSuperLog::getLogger(logToConsole, logToScreen, LogsDir);
 	ofSetLoggerChannel(*loggerStorage);
-	(*loggerStorage)->setScreenLoggingEnabled(false);
+	bool visible = getBool("logging/visibleAtStartup");
+	(*loggerStorage)->setScreenLoggingEnabled(visible);
 	(*loggerStorage)->setMaximized(true);
 	(*loggerStorage)->setMaxNumLogLines(getInt("logging/maxScreenLines"));
 	(*loggerStorage)->setUseScreenColors(true);
