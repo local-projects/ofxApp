@@ -53,8 +53,7 @@ void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * d
 		if(timeSampleOfxApp) TS_START_NIF("ofxApp Load Static Textures");
 		appState.setState(LOADING_STATIC_TEXTURES); //start loading content
 	}else{
-		ofLogError("ofxApp") << "Trying to setup() ofxApp a second time!";
-		terminateApp();
+		terminateApp("ofxApp", "Trying to setup() ofxApp a second time!");
 	}
 }
 
@@ -183,8 +182,7 @@ void App::loadSettings(){
 	ofLogNotice("ofxApp") << "loadSettings() from \"" << settingsFile << "\"";
 	bool ok = settings().load(ofToDataPath(settingsFile, true));
 	if(!ok){
-		ofLogError("ofxApp") << "Could not load settings from \"" << ofToDataPath(settingsFile, true) << "\"";
-		terminateApp();
+		terminateApp("ofxApp", "Could not load settings from \"" + ofToDataPath(settingsFile, true) + "\"");
 	}
 	hasLoadedSettings = true;
 }
@@ -585,8 +583,7 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 					contentStorage[currentContentID]->fetchContent(); //this starts the AppContent process!
 					
 				}else{
-					ofLogError("ofxApp") << "Requested content ID \"content/JsonSources/" << currentContentID << "\" not found in \"" << settingsFile << "\"";
-					terminateApp();
+					terminateApp("ofxApp", "Requested content ID \"content/JsonSources/" + currentContentID + "\" not found in \"" + settingsFile + "\"");
 				}
 
 			}else{ //We are retrying to download with a known good json! we already swapped the JSON URL to a local older JSON
@@ -739,8 +736,9 @@ bool& App::getBool(const string & key, bool defaultVal){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Bool Value for \"" << key << "\" : " << settings().getBool(key);
 		return settings().getBool(key);
 	}else{
-		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! \"" << key << "\" in '" << settingsFile << "'";
-		if(QUIT_ON_MISSING_SETTING) terminateApp();
+		string msg = "Requesting a BOOL setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
+		ofLogFatalError("ofxApp") << msg;
+		if(QUIT_ON_MISSING_SETTING) terminateApp("ofxApp", msg);
 		static auto def = defaultVal;
 		return def; //mmmm....
 	}
@@ -753,8 +751,9 @@ int& App::getInt(const string & key, int defaultVal){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Int Value for \"" << key << "\" : " << settings().getInt(key);
 		return settings().getInt(key);
 	}else{
-		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! \"" << key << "\" in '" << settingsFile << "'";
-		if(QUIT_ON_MISSING_SETTING) terminateApp();
+		string msg = "Requesting an INT setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
+		ofLogFatalError("ofxApp") << msg;
+		if(QUIT_ON_MISSING_SETTING) terminateApp("ofxApp", msg);
 		static auto def = defaultVal;
 		return def; //mmmm....
 	}
@@ -766,8 +765,9 @@ float& App::getFloat(const string & key, float defaultVal){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Float Value for \"" << key << "\" : " << settings().getFloat(key);
 		return settings().getFloat(key);
 	}else{
-		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! \"" << key << "\" in '" << settingsFile << "'";
-		if(QUIT_ON_MISSING_SETTING) terminateApp();
+		string msg = "Requesting a FLOAT setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
+		ofLogFatalError("ofxApp") << msg;
+		if(QUIT_ON_MISSING_SETTING) terminateApp("ofxApp", msg);
 		static auto def = defaultVal;
 		return def; //mmmm....
 	}
@@ -779,8 +779,9 @@ string& App::getString(const string & key, string defaultVal){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting String Value for \"" << key << "\" : " << settings().getString(key);
 		return settings().getString(key);
 	}else{
-		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! \"" << key << "\" in '" << settingsFile << "'";
-		if(QUIT_ON_MISSING_SETTING) terminateApp();
+		string msg = "Requesting a STRING setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
+		ofLogFatalError("ofxApp") << msg;
+		if(QUIT_ON_MISSING_SETTING) terminateApp("ofxApp", msg);
 		static auto def = defaultVal;
 		return def; //mmmm....
 	}
@@ -792,8 +793,9 @@ ofColor& App::getColor(const string & key, ofColor defaultVal){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Color Value for \"" << key << "\" : " << settings().getColor(key);
 		return settings().getColor(key);
 	}else{
-		ofLogFatalError("ofxApp") << "Requesting setting that does not exist! \"" << key << "\" in '" << settingsFile << "'";
-		if(QUIT_ON_MISSING_SETTING) terminateApp();
+		string msg = "Requesting a COLOR setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
+		ofLogFatalError("ofxApp") << msg;
+		if(QUIT_ON_MISSING_SETTING) terminateApp("ofxApp", msg);
 		static auto def = defaultVal;
 		return def; //mmmm....
 	}

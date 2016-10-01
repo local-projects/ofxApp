@@ -23,19 +23,19 @@ void ofApp::draw(){
 
 	if(app.getState() == ofxApp::RUNNING){
 
-		float mb = app.textures().getTotalMemUsed();
-		ofDrawBitmapStringHighlight("Static Assets Mem Used: " + ofToString(mb, 1) + "Mb", ofVec2f(20,20));
-
 		app.textures().drawAll(ofRectangle(100, 100, ofGetMouseX(), ofGetMouseY()));
 
-		app.textures().getTexture("sf2")->draw(0,0);
-
+		G_TEX("sf2")->draw(0,0);
+		G_FONT("NoManSky")->draw("My Font", 20, ofGetMouseX(), ofGetMouseY());
 	}
 }
 
 
 void ofApp::keyPressed(int key){
 
+	if(key == 'k'){
+		app.terminateApp("ofApp", "user forced terminate!");
+	}
 }
 
 

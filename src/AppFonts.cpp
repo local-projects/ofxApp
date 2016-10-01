@@ -21,8 +21,8 @@ ofxFontStash* AppFonts::getFont(const string& name){
 	if (search != userFonts.end()){
 		return search->second;
 	}else{
-		ofLogError("AppFonts") << "Can't find a font with that name! (" << name << ")";
-		terminateApp();
+		string msg = "Can't find a font with that name! (" + name + ")";
+		terminateApp("AppFonts", msg);
 		return nullptr;
 	}
 }
@@ -64,8 +64,7 @@ void AppFonts::loadUseFonts(){
 					ofLogNotice("AppFonts") << "Loading User Font '" << fontName << "' from '" << fontFile << "'";
 					userFonts[fontName] = font;
 				}else{
-					ofLogError("AppFonts") << "User Font with this name already exists! (" << fontName << ")";
-					terminateApp();
+					terminateApp("AppFonts", "User Font with this name already exists! (" + fontName + ")");
 				}
 
 				float charSpacing = 0;
@@ -76,8 +75,7 @@ void AppFonts::loadUseFonts(){
 				}
 			}
 		}else{
-			ofLogFatalError("AppFonts") << "User Fonts (\"Fonts/user\")is not a Json Object! Check you AppSettings.json file!";
-			terminateApp();
+			terminateApp("AppFonts", "User Fonts (\"Fonts/user\")is not a Json Object! Check you \"AppSettings.json\" file!");
 		}
 	}
 }
@@ -108,7 +106,6 @@ void AppFonts::loadOfxAppFont(const string & key, ofxFontStash & font){
 
 
 	}else{
-		ofLogFatalError("AppFonts") << "Missing required ofxApp font! Check you AppSettings.json file in \"Fonts/ofxApp/" << key << "\"";
-		terminateApp();
+		terminateApp("AppFonts", "Missing required ofxApp font! Check your \"AppSettings.json\" file in \"Fonts/ofxApp/" + key + "\"");
 	}
 }
