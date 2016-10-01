@@ -8,15 +8,15 @@
 #pragma once
 
 #include "ofMain.h"
-#include "AppBaseClasses.h"
+#include "ofxAppUtils.h"
 
-class AppGlobalsAbstract : public HasRuiParams{
+class ofxAppGlobalsAbstract : public HasRuiParams{
 public:
 	virtual void setupRemoteUIParams() = 0;
 };
 
 
-class AppGlobalsBasic : public AppGlobalsAbstract{
+class ofxAppGlobalsBasic : public ofxAppGlobalsAbstract{
 
 public:
 	

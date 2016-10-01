@@ -12,17 +12,11 @@
 #define QUIT_ON_MISSING_SETTING		true
 
 
-//Check if the user created the required macro to include his custom sub-classes for Colors, Globals and Fonts.
-#ifndef OFX_APP_NAME
-	#error You Must define an app Name for your app in the preprocessor macros; ie OFX_APP_NAME=MyApp
-	//#define OFX_APP_NAME MyApp /*you define your App's name in your PREPROCESSOR MACROS*/
-#endif
-
 #include "ofMain.h"
-#include "AppBaseClasses.h"
-#include "AppContent.h"
-#include "AppFonts.h"
-#include "AppStaticTextures.h"
+#include "ofxAppUtils.h"
+#include "ofxAppContent.h"
+#include "ofxAppFonts.h"
+#include "ofxAppStaticTextures.h"
 #include "ofxAppMacros.h"
 
 #include "ofxJsonSettings.h"
@@ -34,20 +28,30 @@
 #include "ofxTimeMeasurements.h"
 #include "ofxDrawableStateMachine.h"
 
-//some macro magic to include the user defined subclasses of AppColorsBasic, AppFonts, AppGlobalsBasic
-//it takes the user defined macro (ie OFX_APP_NAME=MyApp) and creates an #include "MyAppColors.h"
-#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_COLORS_FILENAME) 	//include MyAppColors.h
-#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_GLOBALS_FILENAME) //include MyAppGlobals.h
-
+//Check if the user created the required macro to include his custom sub-classes for Colors, Globals and Fonts.
+#ifndef OFX_APP_NAME
+	#define OFX_APP_NONAME
+	#warning You should define an app Name for your app in the preprocessor macros; ie OFX_APP_NAME=MyApp
+	//#define OFX_APP_NAME MyApp /*you define your App's name in your PREPROCESSOR MACROS*/
+	#include "ofxAppColorsBasic.h"
+	#include "ofxAppGlobalsBasic.h"
+#else
+	//some macro magic to include the user defined subclasses of ofxAppColorsBasic, ofxAppFonts, ofxAppGlobalsBasic
+	//it takes the user defined macro (ie OFX_APP_NAME=MyApp) and creates an #include "MyAppColors.h"
+	#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_COLORS_FILENAME) 	//include MyAppColors.h
+	#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_GLOBALS_FILENAME) //include MyAppGlobals.h
+#endif
 namespace ofxApp{
 
-class App : public HasAssets, public CanTerminate{
+class App{
 
 public:
 
 	const string settingsFile = "configs/AppSettings.json";
 	const string LogsDir = "logs";
 	const string configsDir = "configs";
+	
+	~App();
 
 	void setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * delegate);
 	void setup(ofxAppDelegate * delegate); //if your app has no content ; no lambdas needed
@@ -61,11 +65,17 @@ public:
 	// so "OFX_APP_CLASS_NAME(Colors)" becomes "MyAppColors"
 	// "MyApp" is a macro you MUST define in your pre-processor macros:
 	//  OFX_APP_NAME=MyApp
+	#ifdef OFX_APP_NONAME
+	ofxAppColorsBasic & 				colors(){return colorsStorage;}
+	ofxAppGlobalsBasic & 				globals(){return globalsStorage;}
+	#else
 	OFX_APP_CLASS_NAME(Colors) & 	colors(){return colorsStorage;}
 	OFX_APP_CLASS_NAME(Globals) & 	globals(){return globalsStorage;}
-	AppFonts &						fonts(){return *fontStorage;}
+	#endif
+	
+	ofxAppFonts &						fonts(){return *fontStorage;}
 	ofxJsonSettings & 				settings(){return ofxJsonSettings::get();}
-	AppStaticTextures & 			textures(){return texStorage;}
+	ofxAppStaticTextures & 			textures(){return texStorage;}
 	ofPtr<ofxSuperLog> 				logger(){return ofxSuperLog::getLogger();}
 	ofxTuioClient & 				tuio(){ return tuioClient;}
 
@@ -132,7 +142,7 @@ protected:
 	virtual void onContentManagerStateChanged(string&);
 
 	ofxTuioClient							tuioClient;
-	AppStaticTextures						texStorage;
+	ofxAppStaticTextures					texStorage;
 	ofxMullion								mullions;
 
 	// Settings bundles ///////////////////////////////////////
@@ -145,10 +155,16 @@ protected:
 	ofxAssets::ObjectUsagePolicy			objectUsagePolicy;
 
 	//crazy macro magic - beware! read a few lines above to see what's going on
+	#ifdef OFX_APP_NONAME
+	ofxAppColorsBasic						colorsStorage;
+	ofxAppGlobalsBasic						globalsStorage;
+	#else
 	OFX_APP_CLASS_NAME(Colors)				colorsStorage;
 	OFX_APP_CLASS_NAME(Globals)				globalsStorage;
-	AppFonts *								fontStorage;
-	map<string, AppContent*>				contentStorage; //this will be same # as contentCfgs.size()
+	#endif
+	ofxAppFonts *							fontStorage;
+	map<string, ofxAppContent*>				contentStorage; //this will be same # as contentCfgs.size()
+	ofPtr<ofxSuperLog>	*					loggerStorage; //note its a *
 	ofxDrawableStateMachine<ofxApp::State>	appState; //App State Machine
 
 	bool									hasLoadedSettings = false;

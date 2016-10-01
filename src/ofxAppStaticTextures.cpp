@@ -1,33 +1,33 @@
 //
-//  AppStaticTextures.cpp
+//  ofxAppStaticTextures.cpp
 //  BaseApp
 //
 //  Created by Oriol Ferrer Mesià on 4/8/16.
 //
 //
 
-#include "AppStaticTextures.h"
+#include "ofxAppStaticTextures.h"
 
 
-string AppStaticTextures::filenameHintTex2D = "_t2d";
-string AppStaticTextures::filenameHintMipMap = "_mip";
+string ofxAppStaticTextures::filenameHintTex2D = "_t2d";
+string ofxAppStaticTextures::filenameHintMipMap = "_mip";
 
 
-AppStaticTextures::AppStaticTextures(){
+ofxAppStaticTextures::ofxAppStaticTextures(){
 }
 
-void AppStaticTextures::setup(){
+void ofxAppStaticTextures::setup(){
 	if(!missingTex.isAllocated()){
 		missingTex.allocate(16,16,GL_RGBA);
-		ofAddListener(ofEvents().update, this, &AppStaticTextures::onUpdate);
+		ofAddListener(ofEvents().update, this, &ofxAppStaticTextures::onUpdate);
 	}else{
-		ofLogError("AppStaticTextures") << "Already setup! Trying to setup twice?!";
+		ofLogError("ofxAppStaticTextures") << "Already setup! Trying to setup twice?!";
 	}
 }
 
-void AppStaticTextures::loadTexturesInDir(const string& imgDirPath, bool async){
+void ofxAppStaticTextures::loadTexturesInDir(const string& imgDirPath, bool async){
 	if(!isLoading){
-		ofLogWarning("AppStaticTextures") << "#### START Loading all Textures in directory \"" << imgDirPath << "\" ############################################";
+		ofLogWarning("ofxAppStaticTextures") << "#### START Loading all Textures in directory \"" << imgDirPath << "\" ############################################";
 		isLoading = true;
 		loadAsync = async;
 		dirPath = ofFilePath::addTrailingSlash(imgDirPath);
@@ -37,18 +37,18 @@ void AppStaticTextures::loadTexturesInDir(const string& imgDirPath, bool async){
 		loadTexturesInDirectory(imgDirPath, true);
 		if(async == false) isLoading = false;
 	}else{
-		ofLogError("AppStaticTextures") << "Already loading async!";
+		ofLogError("ofxAppStaticTextures") << "Already loading async!";
 	}
 }
 
-void AppStaticTextures::loadTexturesInDirectory(const string& path, bool recursive){
+void ofxAppStaticTextures::loadTexturesInDirectory(const string& path, bool recursive){
 
 	ofDirectory dir(path);
 	dir.listDir();
 
 	if (dir.size() == 0) { //if no images, proceed now.
 		ofNotifyEvent(eventAllTexturesLoaded, this);
-		ofLogWarning("AppStaticTextures") << "No textures found in the directory! \"" << path << "\"";
+		ofLogWarning("ofxAppStaticTextures") << "No textures found in the directory! \"" << path << "\"";
 	}
 
 	for(int i = 0; i < dir.size(); i++){
@@ -71,7 +71,7 @@ void AppStaticTextures::loadTexturesInDirectory(const string& path, bool recursi
 }
 
 
-ofxAutoTexture* AppStaticTextures::loadTexture(const string& filePath){
+ofxAutoTexture* ofxAppStaticTextures::loadTexture(const string& filePath){
 
 	string lowercaseFilePath = ofToLower(filePath);
 	bool useTex2D = ofIsStringInString(lowercaseFilePath, filenameHintTex2D);
@@ -104,8 +104,8 @@ ofxAutoTexture* AppStaticTextures::loadTexture(const string& filePath){
 
 	auto it = textures.find(texName);
 	if (it != textures.end()){
-		ofLogError("AppStaticTextures") << "file name collision! " << filePath << " >> " << texName;
-		ofLogError("AppStaticTextures") << "skipping texture at path: '" << filePath << "'";
+		ofLogError("ofxAppStaticTextures") << "file name collision! " << filePath << " >> " << texName;
+		ofLogError("ofxAppStaticTextures") << "skipping texture at path: '" << filePath << "'";
 		return NULL;
 	}
 
@@ -126,19 +126,19 @@ ofxAutoTexture* AppStaticTextures::loadTexture(const string& filePath){
 			tex->setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 		}
 
-		ofLogNotice("AppStaticTextures") 	<< "#### Loaded \"" << filePath << "\" ######################################################";
-		ofLogNotice("AppStaticTextures")	<< "     Name:\"" << texName << "\"  " << "[" << tex->getWidth() << "x" << tex->getHeight() << "]" <<
+		ofLogNotice("ofxAppStaticTextures") 	<< "#### Loaded \"" << filePath << "\" ######################################################";
+		ofLogNotice("ofxAppStaticTextures")	<< "     Name:\"" << texName << "\"  " << "[" << tex->getWidth() << "x" << tex->getHeight() << "]" <<
 		"  Mipmap:" << createMipMap << "  Format:" << ofGetGlInternalFormatName(tex->getTextureData().glInternalFormat) << "  Mem:" << ofToString(memUsedForThisOne, 2) << "Mb";
 		return tex;
 	}else{
 		delete tex;
-		ofLogError("AppStaticTextures") << "FAILED to load tex from \"" << filePath << "\"" ;
+		ofLogError("ofxAppStaticTextures") << "FAILED to load tex from \"" << filePath << "\"" ;
 		return NULL;
 	}
 }
 
 
-void AppStaticTextures::onUpdate(ofEventArgs & ){
+void ofxAppStaticTextures::onUpdate(ofEventArgs & ){
 
 	if(pendingToLoad.size() && ofGetFrameNum()%5 == 1){
 		string currentFile = pendingToLoad.front();
@@ -146,14 +146,14 @@ void AppStaticTextures::onUpdate(ofEventArgs & ){
 		ofxAutoTexture * tex = loadTexture(currentFile);
 		loadedInOrder.push_back(tex);
 		if(pendingToLoad.size() == 0){
-			ofLogNotice("AppStaticTextures") << "#### DONE loading " << textures.size() << " Static Textures! Memory used: " << ofToString(memUsed,2) << "Mb ############################################";
+			ofLogNotice("ofxAppStaticTextures") << "#### DONE loading " << textures.size() << " Static Textures! Memory used: " << ofToString(memUsed,2) << "Mb ############################################";
 			ofNotifyEvent(eventAllTexturesLoaded, this);
 		}
 	}
 }
 
 
-ofTexture * AppStaticTextures::getLatestLoadedTex(){
+ofTexture * ofxAppStaticTextures::getLatestLoadedTex(){
 	if(loadedInOrder.size()){
 		return loadedInOrder.back();
 	}else{
@@ -161,7 +161,7 @@ ofTexture * AppStaticTextures::getLatestLoadedTex(){
 	}
 }
 
-float AppStaticTextures::memUse(ofTexture * tex){
+float ofxAppStaticTextures::memUse(ofTexture * tex){
 
 	if(tex && tex->isAllocated()){
 		int w, h;
@@ -180,12 +180,12 @@ float AppStaticTextures::memUse(ofTexture * tex){
 		}
 		return mem / float(1024 * 1024); //return MBytes
 	}
-	ofLogError("AppStaticTextures") << "Tex doesn't use any memory bc its not allocated!";
+	ofLogError("ofxAppStaticTextures") << "Tex doesn't use any memory bc its not allocated!";
 	return 0;
 }
 
 
-ofTexture* AppStaticTextures::getTexture(string fullPath){
+ofTexture* ofxAppStaticTextures::getTexture(string fullPath){
 
 	//remove "/" from beginnig as it makes no sense
 	if(fullPath.size() && fullPath[0] == '/'){
@@ -194,14 +194,14 @@ ofTexture* AppStaticTextures::getTexture(string fullPath){
 	
 	auto it = textures.find(fullPath);
 	if (it == textures.end()){
-		ofLogError("AppStaticTextures") << "requesting a missing texture! " << fullPath;
+		ofLogError("ofxAppStaticTextures") << "requesting a missing texture! " << fullPath;
 		return &missingTex;
 	}
 	return it->second;
 }
 
 
-void AppStaticTextures::drawAll(const ofRectangle & rect){
+void ofxAppStaticTextures::drawAll(const ofRectangle & rect){
 
 	int n = getNumTextures();
 	float ar = rect.width / rect.height;

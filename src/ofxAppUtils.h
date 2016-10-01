@@ -20,15 +20,16 @@ public:
 	virtual void setupRemoteUIParams() = 0;
 };
 
-class CanTerminate{
-public:
-	void terminateApp(const string & module, const string & reason, float secondsOnScreen = 15){
+
+namespace ofxApp{
+	
+	static void terminateApp(const string & module, const string & reason, float secondsOnScreen = 15){
 		ofLogFatalError("ofxApp") << "terminateApp()!";
 		ofxSimpleHttp::destroySslContext();
 		ofLogFatalError("ofxApp") << "";
 		ofLogFatalError("ofxApp") << "";
 		ofLogFatalError("ofxApp") << "ofxApp is terminating because the module \"" << module << "\" found an unrecoverable error.";
-		ofLogFatalError("ofxApp") << "\"" << module << "\": \"" << reason << "\"";
+		ofLogFatalError("ofxApp") << "\"" << reason << "\"";
 		ofLogFatalError("ofxApp") << "This message will be on screen for " << (int)secondsOnScreen << " seconds, then the app will quit.";
 		ofLogFatalError("ofxApp") << "";
 		ofLogFatalError("ofxApp") << "";
@@ -53,17 +54,12 @@ public:
 		}
 		exit(-1);
 	};
-};
 
-
-class HasAssets{
-public:
 	static void assertFileExists(string path){
 		if(!ofFile::doesFileExist(path)){
-			ofLogFatalError("HasAssets") << "Required asset not present: '" << path << "'";
-			ofLogFatalError("HasAssets") << "Terminating app";
-			ofExit();
-			exit(-1);
+			string msg = "Required asset not present: '" + path + "'";
+			ofLogFatalError("HasAssets") << msg;
+			ofxApp::terminateApp("ofxApp", msg);
 		}else{
 			//ofLogNotice("HasAssets") << "Confirmed asset is present: '" << path << "'";
 		}

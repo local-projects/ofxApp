@@ -1,5 +1,5 @@
 //
-//  AppStaticTextures.h
+//  ofxAppStaticTextures.h
 //  BaseApp
 //
 //  Created by Oriol Ferrer Mesià on 4/8/16.
@@ -58,7 +58,7 @@
  */
 
 
-class AppStaticTextures{
+class ofxAppStaticTextures{
 
 public:
 
@@ -67,7 +67,7 @@ public:
 
 	void setup();
 
-	AppStaticTextures();
+	ofxAppStaticTextures();
 
 	void loadTexturesInDir(const string& imgDirPath, bool async); 	//if async == true: starts loading textures
 																	//will load one file per frame to keep the process

@@ -1,5 +1,5 @@
 //
-//  AppFonts.h
+//  ofxAppFonts.h
 //
 //  Created by Oriol Ferrer Mesià aug/2016
 //
@@ -8,9 +8,9 @@
 #pragma once
 #include "ofMain.h"
 #include "ofxFontStash.h"
-#include "AppBaseClasses.h"
+#include "ofxAppUtils.h"
 
-class AppFonts : public HasAssets, public CanTerminate {
+class ofxAppFonts{
 
 public:
 

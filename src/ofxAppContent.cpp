@@ -1,13 +1,13 @@
 //
-//  AppContent.cpp
+//  ofxAppContent.cpp
 //
 //  Created by Oriol Ferrer Mesià aug/2016
 //
 //
 
-#include "AppContent.h"
+#include "ofxAppContent.h"
 
-void AppContent::setup(	string ID,
+void ofxAppContent::setup(	string ID,
 					   	string jsonSrc,
 						string jsonDestinationDir_,
 						int numThreads_,
@@ -45,28 +45,28 @@ void AppContent::setup(	string ID,
 	jsonParser.getHttp().setCredentials(credentials.first, credentials.second);
 
 	//subscribe to parsing events
-	ofAddListener(jsonParser.eventJsonDownloaded, this, 	&AppContent::jsonDownloaded);
-	ofAddListener(jsonParser.eventJsonDownloadFailed, this, &AppContent::jsonDownloadFailed);
-	ofAddListener(jsonParser.eventJsonInitialCheckOK, this, &AppContent::jsonInitialCheckOK);
-	ofAddListener(jsonParser.eventJsonParseFailed, this, 	&AppContent::jsonParseFailed);
-	ofAddListener(jsonParser.eventAllObjectsParsed, this, 	&AppContent::jsonContentReady);
+	ofAddListener(jsonParser.eventJsonDownloaded, this, 	&ofxAppContent::jsonDownloaded);
+	ofAddListener(jsonParser.eventJsonDownloadFailed, this, &ofxAppContent::jsonDownloadFailed);
+	ofAddListener(jsonParser.eventJsonInitialCheckOK, this, &ofxAppContent::jsonInitialCheckOK);
+	ofAddListener(jsonParser.eventJsonParseFailed, this, 	&ofxAppContent::jsonParseFailed);
+	ofAddListener(jsonParser.eventAllObjectsParsed, this, 	&ofxAppContent::jsonContentReady);
 }
 
-void AppContent::setJsonDownloadURL(string jsonURL){
-	ofLogNotice("AppContent") << "updating the JSON Content URL of " << ID << " to '" << jsonURL << "'";
+void ofxAppContent::setJsonDownloadURL(string jsonURL){
+	ofLogNotice("ofxAppContent") << "updating the JSON Content URL of " << ID << " to '" << jsonURL << "'";
 	this->jsonURL = jsonURL;
 };
 
-void AppContent::fetchContent(){
+void ofxAppContent::fetchContent(){
 	if(state == IDLE || state == JSON_PARSE_FAILED || state == JSON_DOWNLOAD_FAILED){
 		setState(DOWNLOADING_JSON);
 	}else{
-		ofLogError("AppContent") << "Can't fetch content now!";
+		ofLogError("ofxAppContent") << "Can't fetch content now!";
 	}
 }
 
 
-void AppContent::update(float dt){
+void ofxAppContent::update(float dt){
 
 	timeInState += ofGetLastFrameTime();
 	jsonParser.update();
@@ -77,7 +77,7 @@ void AppContent::update(float dt){
 
 		case DOWNLOADING_ASSETS:
 			if(!dlc.isBusy()){ //downloader finished!
-				ofLogNotice("AppContent") << "finished asset downloads!";
+				ofLogNotice("ofxAppContent") << "finished asset downloads!";
 				setState(FILTER_OBJECTS_WITH_BAD_ASSETS);
 			}break;
 
@@ -92,7 +92,7 @@ void AppContent::update(float dt){
 }
 
 
-void AppContent::setState(ContentState s){
+void ofxAppContent::setState(ContentState s){
 
 	state = s;
 	timeInState = 0;
@@ -116,7 +116,7 @@ void AppContent::setState(ContentState s){
 				for (int i = 0; i < parsedObjects.size(); i++) {
 					assetObjs.push_back(dynamic_cast<AssetHolder*>(parsedObjects[i]));
 				}
-				ofAddListener(assetChecker.eventFinishedCheckingAllAssets, this, &AppContent::assetCheckFinished);
+				ofAddListener(assetChecker.eventFinishedCheckingAllAssets, this, &ofxAppContent::assetCheckFinished);
 				assetChecker.checkAssets(assetObjs, numThreads);
 			} else {
 				setState(DOWNLOADING_ASSETS);
@@ -167,7 +167,7 @@ void AppContent::setState(ContentState s){
 						rejectObject = true;
 						if(rejectionReason.size()) rejectionReason += " | ";
 						rejectionReason += "Not Enough Images";
-						ofLogError("AppContent") << "Rejecting Object '" << parsedObjects[i]->getObjectUUID()
+						ofLogError("ofxAppContent") << "Rejecting Object '" << parsedObjects[i]->getObjectUUID()
 							<< "' because doesnt have the min # of images! (" << numImgAssets << "/"
 							<< objectUsagePolicy.minNumberOfImageAssets << ")" ;
 					}
@@ -176,7 +176,7 @@ void AppContent::setState(ContentState s){
 						rejectObject = true;
 						if(rejectionReason.size()) rejectionReason += " | ";
 						rejectionReason += "Not Enough Videos";
-						ofLogError("AppContent") << "Rejecting Object '" << parsedObjects[i]->getObjectUUID()
+						ofLogError("ofxAppContent") << "Rejecting Object '" << parsedObjects[i]->getObjectUUID()
 						<< "' because doesnt have the min # of Videos! (" << numVideoAssets << "/"
 						<< objectUsagePolicy.minNumberOfVideoAssets << ")" ;
 					}
@@ -185,7 +185,7 @@ void AppContent::setState(ContentState s){
 						rejectObject = true;
 						if(rejectionReason.size()) rejectionReason += " | ";
 						rejectionReason += "Not Enough AudioFiles";
-						ofLogError("AppContent") << "Rejecting Object '" << parsedObjects[i]->getObjectUUID()
+						ofLogError("ofxAppContent") << "Rejecting Object '" << parsedObjects[i]->getObjectUUID()
 						<< "' because doesnt have the min # of Audio Files! (" << numAudioAssets << "/"
 						<< objectUsagePolicy.minNumberOfAudioAssets << ")" ;
 					}
@@ -198,14 +198,14 @@ void AppContent::setState(ContentState s){
 				}
 
 				for(int i = badObjects.size() - 1; i >= 0; i--){
-					ofLogError("AppContent") << "Dropping object " << parsedObjects[i]->getObjectUUID();
+					ofLogError("ofxAppContent") << "Dropping object " << parsedObjects[i]->getObjectUUID();
 					delete parsedObjects[badObjects[i]];
 					parsedObjects.erase(parsedObjects.begin() + badObjects[i]);
 				}
 
 				objectsWithBadAssets = "\nRemoved " + ofToString(badObjects.size()) + " objects:\n\n" + objectsWithBadAssets;
 			}else{
-				ofLogWarning("AppContent") << "skipping Object Drop Policy Tests!!";
+				ofLogWarning("ofxAppContent") << "skipping Object Drop Policy Tests!!";
 			}
 
 		}break;
@@ -237,13 +237,13 @@ void AppContent::setState(ContentState s){
 }
 
 
-string AppContent::getLastKnownGoodJsonPath(){
+string ofxAppContent::getLastKnownGoodJsonPath(){
 	string dir = ofFilePath::getEnclosingDirectory(jsonParser.getJsonLocalPath());
 	return dir + "knownGood/" + ID + ".json";
 }
 
 
-string AppContent::getStatus(){
+string ofxAppContent::getStatus(){
 
 	string r;
 	string plainFormat = " %0.8 #0x888888 \n"; //text format for logging on screen - see ofxFontStash.h drawMultiLineColumn()
@@ -266,7 +266,7 @@ string AppContent::getStatus(){
 }
 
 
-float AppContent::getPercentDone(){
+float ofxAppContent::getPercentDone(){
 	float p = -1.0f;
 	switch (state) {
 		case DOWNLOADING_JSON: p = jsonParser.getHttp().getCurrentDownloadProgress(); break;
@@ -286,32 +286,32 @@ float AppContent::getPercentDone(){
 // CALBACKS ////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Callbacks
 
-void AppContent::jsonDownloaded(ofxSimpleHttpResponse & arg){
-	ofLogNotice("AppContent") << "JSON download OK!";
+void ofxAppContent::jsonDownloaded(ofxSimpleHttpResponse & arg){
+	ofLogNotice("ofxAppContent") << "JSON download OK!";
 	setState(CHECKING_JSON);
 }
 
 
-void AppContent::jsonDownloadFailed(ofxSimpleHttpResponse & arg){
-	ofLogError("AppContent") << "JSON download failed!";
+void ofxAppContent::jsonDownloadFailed(ofxSimpleHttpResponse & arg){
+	ofLogError("ofxAppContent") << "JSON download failed!";
 	errorMessage = arg.reasonForStatus + " (" + arg.url + ")";
 	setState(JSON_DOWNLOAD_FAILED);
 }
 
 
-void AppContent::jsonInitialCheckOK(){
-	ofLogNotice("AppContent") << "JSON Initial Check OK!";
+void ofxAppContent::jsonInitialCheckOK(){
+	ofLogNotice("ofxAppContent") << "JSON Initial Check OK!";
 	setState(PARSING_JSON);
 }
 
 
-void AppContent::jsonParseFailed(){
-	ofLogError("AppContent") << "json Parse Failed!";
+void ofxAppContent::jsonParseFailed(){
+	ofLogError("ofxAppContent") << "json Parse Failed!";
 	setState(JSON_PARSE_FAILED);
 }
 
 
-void AppContent::jsonContentReady(vector<ParsedObject*> &parsedObjects_){
+void ofxAppContent::jsonContentReady(vector<ParsedObject*> &parsedObjects_){
 	ofLogNotice("PgContentManager") << "json Content Ready! " << parsedObjects.size() << " Objects received.";
 	parsedObjects.reserve(parsedObjects_.size());
 	for(auto o : parsedObjects_){
@@ -325,13 +325,13 @@ void AppContent::jsonContentReady(vector<ParsedObject*> &parsedObjects_){
 }
 
 
-void AppContent::assetCheckFinished(){
-	ofLogNotice("AppContent") << "Asset Check Finished!";
+void ofxAppContent::assetCheckFinished(){
+	ofLogNotice("ofxAppContent") << "Asset Check Finished!";
 	setState(DOWNLOADING_ASSETS);
 }
 
 
-string AppContent::getNameForState(AppContent::ContentState state){
+string ofxAppContent::getNameForState(ofxAppContent::ContentState state){
 
 	switch (state) {
 		case IDLE: return "IDLE";

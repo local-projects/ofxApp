@@ -7,14 +7,14 @@
 
 #pragma once
 
-#include "AppColorsBasic.h"
+#include "ofxAppColorsBasic.h"
 
-class MyAppColors : public AppColorsBasic{
+class MyAppColors : public ofxAppColorsBasic{
 
 public:
 	
 	void setupRemoteUIParams(){
-		AppColorsBasic::setupRemoteUIParams();
+		ofxAppColorsBasic::setupRemoteUIParams();
 		RUI_SHARE_COLOR_PARAM(myColor);
 	};
 

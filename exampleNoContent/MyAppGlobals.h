@@ -7,14 +7,14 @@
 
 #pragma once
 
-#include "AppGlobalsBasic.h"
+#include "ofxAppGlobalsBasic.h"
 
-class MyAppGlobals : public AppGlobalsBasic{
+class MyAppGlobals : public ofxAppGlobalsBasic{
 
 public:
 	
 	void setupRemoteUIParams(){
-		AppGlobalsBasic::setupRemoteUIParams();
+		ofxAppGlobalsBasic::setupRemoteUIParams();
 		RUI_NEW_GROUP("APP PARAMS");
 		RUI_SHARE_PARAM(myParam, 0, 1);
 	};

@@ -27,7 +27,7 @@ void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * d
 		contentCfgs = cfgs;
 		this->delegate = delegate;
 		if(!hasLoadedSettings) loadSettings();
-		fontStorage = new AppFonts();
+		fontStorage = new ofxAppFonts();
 		setupContentData();
 		setupLogging();
 		printSettingsFile();
@@ -53,14 +53,20 @@ void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * d
 		if(timeSampleOfxApp) TS_START_NIF("ofxApp Load Static Textures");
 		appState.setState(LOADING_STATIC_TEXTURES); //start loading content
 	}else{
-		terminateApp("ofxApp", "Trying to setup() ofxApp a second time!");
+		ofxApp::terminateApp("ofxApp", "Trying to setup() ofxApp a second time!");
 	}
+}
+
+
+App::~App(){
+	//cout << (*loggerStorage).use_count() << endl;
+	ofLogNotice("ofxApp")<< "~ofxApp()";
 }
 
 
 void App::setupContentData() {
 	for (auto & cfg : contentCfgs) {
-		contentStorage[cfg.first] = new AppContent();
+		contentStorage[cfg.first] = new ofxAppContent();
 		requestedContent.push_back(cfg.first);
 	}
 	if(requestedContent.size()){
@@ -117,6 +123,12 @@ void App::setupWindow(){
 	mullions.setup(getInt("App/mullions/numX"), getInt("App/mullions/numY"));
 	if(mullionsVisible) mullions.enable();
 	else mullions.disable();
+	
+	//trying to get the window to "show up" in the 1st frame - to show terminateApp() in the 1st frame
+	ofGetWindowPtr()->makeCurrent();
+	ofGetWindowPtr()->update();
+	ofGetWindowPtr()->draw();
+	ofGetMainLoop()->pollEvents();
 }
 
 
@@ -143,7 +155,7 @@ void App::setupStateMachine(){
 	ofAddListener(appState.eventDraw, this, &App::onDrawLoadingScreenStatus);
 
 	string boldFontPath = getString("Fonts/ofxApp/monospacedBold/fontFile");
-	assertFileExists(boldFontPath);
+	ofxApp::assertFileExists(boldFontPath);
 	appState.setup(boldFontPath, "", ofColor::black, ofColor::white);
 	//this creates strings for each of the ENUM states
 	appState.SET_NAME_AND_COLOR_FOR_STATE(SETTING_UP, ofColor(0,0,255), ofColor(0,0,128));
@@ -158,7 +170,7 @@ void App::setupStateMachine(){
 
 void App::startLoadingStaticAssets(){
 	string texturesPath = getString("StaticAssets/textures");
-	assertFileExists(texturesPath);
+	ofxApp::assertFileExists(texturesPath);
 	textures().loadTexturesInDir(texturesPath, true/*async*/);
 }
 
@@ -177,12 +189,12 @@ void App::setupTextureLoader(){
 
 void App::loadSettings(){
 
-	assertFileExists(settingsFile);
+	ofxApp::assertFileExists(settingsFile);
 
 	ofLogNotice("ofxApp") << "loadSettings() from \"" << settingsFile << "\"";
 	bool ok = settings().load(ofToDataPath(settingsFile, true));
 	if(!ok){
-		terminateApp("ofxApp", "Could not load settings from \"" + ofToDataPath(settingsFile, true) + "\"");
+		ofxApp::terminateApp("ofxApp", "Could not load settings from \"" + ofToDataPath(settingsFile, true) + "\"");
 	}
 	hasLoadedSettings = true;
 }
@@ -239,11 +251,15 @@ void App::setupLogging(){
 	bool logToConsole = getBool("logging/toConsole");
 	bool logToScreen = getBool("logging/toScreen");
 	ofSetLogLevel(ofLogLevel(getInt("logging/logLevel")));
-	ofSetLoggerChannel(ofxSuperLog::getLogger(logToConsole, logToScreen, LogsDir));
-	ofxSuperLog::getLogger()->setScreenLoggingEnabled(false);
-	ofxSuperLog::getLogger()->setMaximized(true);
-	ofxSuperLog::getLogger()->setMaxNumLogLines(getInt("logging/maxScreenLines"));
-	ofxSuperLog::getLogger()->setUseScreenColors(true);
+	//lets keep a ref to the logger counter around so that we can control when it gets deleted
+	
+	loggerStorage = new ofPtr<ofxSuperLog>(); //note this 2* madness is to avoid the logger being delete b4 the app is finished logging
+	*loggerStorage = ofxSuperLog::getLogger(logToConsole, logToScreen, LogsDir);
+	ofSetLoggerChannel(*loggerStorage);
+	(*loggerStorage)->setScreenLoggingEnabled(false);
+	(*loggerStorage)->setMaximized(true);
+	(*loggerStorage)->setMaxNumLogLines(getInt("logging/maxScreenLines"));
+	(*loggerStorage)->setUseScreenColors(true);
 
 	float panelW = getFloat("logging/screenLogPanelWidth");
 	ofxSuperLog::getLogger()->setDisplayWidth(panelW);
@@ -261,7 +277,7 @@ void App::setupRemoteUI(){
 	bool useFontStash = getBool("RemoteUI/useFontStash");
 	if(useFontStash){
 		string fontFile = getString("RemoteUI/fontFile");
-		assertFileExists(fontFile);
+		ofxApp::assertFileExists(fontFile);
 		RUI_GET_INSTANCE()->drawUiWithFontStash(fontFile, getInt("RemoteUI/fontSize", 15));
 	}
 	bool ruiSaveOnQuit = getBool("RemoteUI/saveSettingsOnExit");
@@ -358,7 +374,7 @@ void App::setupTimeMeasurements(){
 	bool useFontStash = getBool("TimeMeasurements/useFontStash");
 	if(useFontStash){
 		string fontFile = getString("TimeMeasurements/fontFile");
-		assertFileExists(fontFile);
+		ofxApp::assertFileExists(fontFile);
 		TIME_SAMPLE_GET_INSTANCE()->drawUiWithFontStash(fontFile, getInt("TimeMeasurements/fontSize", 13));
 	}
 	TIME_SAMPLE_GET_INSTANCE()->setMsPrecision(getInt("TimeMeasurements/msPrecision", 2));
@@ -580,14 +596,14 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 															objectUsagePolicy
 													  );
 					
-					contentStorage[currentContentID]->fetchContent(); //this starts the AppContent process!
+					contentStorage[currentContentID]->fetchContent(); //this starts the ofxAppContent process!
 					
 				}else{
-					terminateApp("ofxApp", "Requested content ID \"content/JsonSources/" + currentContentID + "\" not found in \"" + settingsFile + "\"");
+					ofxApp::terminateApp("ofxApp", "Requested content ID \"content/JsonSources/" + currentContentID + "\" not found in \"" + settingsFile + "\"");
 				}
 
 			}else{ //We are retrying to download with a known good json! we already swapped the JSON URL to a local older JSON
-				contentStorage[currentContentID]->fetchContent(); //this starts the AppContent process!
+				contentStorage[currentContentID]->fetchContent(); //this starts the ofxAppContent process!
 			}
 			}break;
 
@@ -738,7 +754,7 @@ bool& App::getBool(const string & key, bool defaultVal){
 	}else{
 		string msg = "Requesting a BOOL setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
 		ofLogFatalError("ofxApp") << msg;
-		if(QUIT_ON_MISSING_SETTING) terminateApp("ofxApp", msg);
+		if(QUIT_ON_MISSING_SETTING) ofxApp::terminateApp("ofxApp", msg);
 		static auto def = defaultVal;
 		return def; //mmmm....
 	}
@@ -753,7 +769,7 @@ int& App::getInt(const string & key, int defaultVal){
 	}else{
 		string msg = "Requesting an INT setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
 		ofLogFatalError("ofxApp") << msg;
-		if(QUIT_ON_MISSING_SETTING) terminateApp("ofxApp", msg);
+		if(QUIT_ON_MISSING_SETTING) ofxApp::terminateApp("ofxApp", msg);
 		static auto def = defaultVal;
 		return def; //mmmm....
 	}
@@ -767,7 +783,7 @@ float& App::getFloat(const string & key, float defaultVal){
 	}else{
 		string msg = "Requesting a FLOAT setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
 		ofLogFatalError("ofxApp") << msg;
-		if(QUIT_ON_MISSING_SETTING) terminateApp("ofxApp", msg);
+		if(QUIT_ON_MISSING_SETTING) ofxApp::terminateApp("ofxApp", msg);
 		static auto def = defaultVal;
 		return def; //mmmm....
 	}
@@ -781,7 +797,7 @@ string& App::getString(const string & key, string defaultVal){
 	}else{
 		string msg = "Requesting a STRING setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
 		ofLogFatalError("ofxApp") << msg;
-		if(QUIT_ON_MISSING_SETTING) terminateApp("ofxApp", msg);
+		if(QUIT_ON_MISSING_SETTING) ofxApp::terminateApp("ofxApp", msg);
 		static auto def = defaultVal;
 		return def; //mmmm....
 	}
@@ -795,7 +811,7 @@ ofColor& App::getColor(const string & key, ofColor defaultVal){
 	}else{
 		string msg = "Requesting a COLOR setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
 		ofLogFatalError("ofxApp") << msg;
-		if(QUIT_ON_MISSING_SETTING) terminateApp("ofxApp", msg);
+		if(QUIT_ON_MISSING_SETTING) ofxApp::terminateApp("ofxApp", msg);
 		static auto def = defaultVal;
 		return def; //mmmm....
 	}

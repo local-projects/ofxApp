@@ -1,5 +1,5 @@
 //
-//  AppContent.h
+//  ofxAppContent.h
 //
 //  Created by Oriol Ferrer Mesià aug/2016
 //
@@ -8,7 +8,7 @@
 #pragma once
 
 #include "ofMain.h"
-#include "AppBaseClasses.h"
+#include "ofxAppUtils.h"
 #include "ofxAssets.h"
 #include "ofxSimpleHttp.h"
 #include "ofxDownloadCentral.h"
@@ -34,7 +34,7 @@ class ContentObject : public ParsedObject, public AssetHolder, public TexturedOb
 };
 
 
-class AppContent{
+class ofxAppContent{
 
 public:
 
@@ -98,7 +98,7 @@ public:
 	void assetCheckFinished();
 
 	int getNumStates(){return NUM_CONTENT_MANAGER_STATES;}
-	string getNameForState(AppContent::ContentState state);
+	string getNameForState(ofxAppContent::ContentState state);
 
 	// EVENTS //////////////////////////////////////////////////////////////////////////////////////
 

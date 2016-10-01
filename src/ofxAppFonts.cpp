@@ -1,33 +1,33 @@
 //
-//  AppFonts.cpp
+//  ofxAppFonts.cpp
 //
 //  Created by Oriol Ferrer Mesià aug/2016
 //
 //
 
-#include "AppFonts.h"
+#include "ofxAppFonts.h"
 #include "ofxJsonSettings.h"
 
 
-void AppFonts::setup(){
+void ofxAppFonts::setup(){
 	loadOfxAppFont("monospaced", monospaced);
 	loadOfxAppFont("monospacedBold", monospacedBold);
 	loadUseFonts();
 }
 
-ofxFontStash* AppFonts::getFont(const string& name){
+ofxFontStash* ofxAppFonts::getFont(const string& name){
 
 	auto search = userFonts.find(name);
 	if (search != userFonts.end()){
 		return search->second;
 	}else{
 		string msg = "Can't find a font with that name! (" + name + ")";
-		terminateApp("AppFonts", msg);
+		ofxApp::terminateApp("ofxAppFonts", msg);
 		return nullptr;
 	}
 }
 
-void AppFonts::loadUseFonts(){
+void ofxAppFonts::loadUseFonts(){
 
 	ofxJsonSettings & settings = ofxJsonSettings::get();
 	if(settings.exists("Fonts/user")){
@@ -43,7 +43,7 @@ void AppFonts::loadUseFonts(){
 				int mipmapPadding = (*itr)["mipmapPadding"].asInt();
 				float uiScale = (*itr)["uiScale"].asFloat();
 
-				assertFileExists(fontFile);
+				ofxApp::assertFileExists(fontFile);
 				ofxFontStash * font = new ofxFontStash();
 
 				font->setup(fontFile,
@@ -61,26 +61,26 @@ void AppFonts::loadUseFonts(){
 
 				auto search = userFonts.find(fontName);
 				if (search == userFonts.end()){
-					ofLogNotice("AppFonts") << "Loading User Font '" << fontName << "' from '" << fontFile << "'";
+					ofLogNotice("ofxAppFonts") << "Loading User Font '" << fontName << "' from '" << fontFile << "'";
 					userFonts[fontName] = font;
 				}else{
-					terminateApp("AppFonts", "User Font with this name already exists! (" + fontName + ")");
+					ofxApp::terminateApp("ofxAppFonts", "User Font with this name already exists! (" + fontName + ")");
 				}
 
 				float charSpacing = 0;
 				if(!(*itr)["charSpacing"].isNull()){
 					charSpacing = (*itr)["charSpacing"].asFloat();
 					font->setCharacterSpacing(charSpacing);
-					ofLogNotice("AppFonts") << "Setting custom Character Spacing for font \""<< fontName << "\" : " << charSpacing;
+					ofLogNotice("ofxAppFonts") << "Setting custom Character Spacing for font \""<< fontName << "\" : " << charSpacing;
 				}
 			}
 		}else{
-			terminateApp("AppFonts", "User Fonts (\"Fonts/user\")is not a Json Object! Check you \"AppSettings.json\" file!");
+			ofxApp::terminateApp("ofxAppFonts", "User Fonts (\"Fonts/user\")is not a Json Object! Check you \"AppSettings.json\" file!");
 		}
 	}
 }
 
-void AppFonts::loadOfxAppFont(const string & key, ofxFontStash & font){
+void ofxAppFonts::loadOfxAppFont(const string & key, ofxFontStash & font){
 
 	ofxJsonSettings & settings = ofxJsonSettings::get();
 
@@ -93,9 +93,9 @@ void AppFonts::loadOfxAppFont(const string & key, ofxFontStash & font){
 		int mipMapPadding = settings.getInt("Fonts/ofxApp/" + key + "/mipmapPadding");
 		float retinaScale = settings.getFloat("Fonts/ofxApp/" + key + "/uiScale");
 
-		assertFileExists(fontFile);
+		ofxApp::assertFileExists(fontFile);
 
-		ofLogNotice("AppFonts") << "Loading ofxApp Font'" << fontFile << "'";
+		ofLogNotice("ofxAppFonts") << "Loading ofxApp Font'" << fontFile << "'";
 		font.setup(	fontFile,
 					lineH, 		//line height
 					atlasSize, 		//tex atlas size
@@ -106,6 +106,6 @@ void AppFonts::loadOfxAppFont(const string & key, ofxFontStash & font){
 
 
 	}else{
-		terminateApp("AppFonts", "Missing required ofxApp font! Check your \"AppSettings.json\" file in \"Fonts/ofxApp/" + key + "\"");
+		ofxApp::terminateApp("ofxAppFonts", "Missing required ofxApp font! Check your \"AppSettings.json\" file in \"Fonts/ofxApp/" + key + "\"");
 	}
 }
