@@ -50,6 +50,7 @@ public:
 	const string configsDir = "configs";
 
 	void setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * delegate);
+	void setup(ofxAppDelegate * delegate); //if your app has no content ; no lambdas needed
 
 	void update(ofEventArgs &);
 	void exit(ofEventArgs &);

@@ -14,6 +14,12 @@ ofxApp::App app; //app global in your project!
 
 using namespace ofxApp;
 
+void App::setup(ofxAppDelegate * delegate){
+
+	map<string,ofxApp::UserLambdas> emptyLambas;
+	setup(emptyLambas, delegate);
+}
+
 void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * delegate){
 
 	ofLogNotice("ofxApp") << "setup()";
@@ -58,7 +64,9 @@ void App::setupContentData() {
 		contentStorage[cfg.first] = new AppContent();
 		requestedContent.push_back(cfg.first);
 	}
-	currentContentID = requestedContent[0];
+	if(requestedContent.size()){
+		currentContentID = requestedContent[0];
+	}
 }
 
 
@@ -127,6 +135,7 @@ void App::setupListeners(){
 	ofAddListener(textures().eventAllTexturesLoaded, this, &App::onStaticTexturesLoaded);
 }
 
+
 void App::setupStateMachine(){
 
 	//listen to state machine changes
@@ -165,6 +174,7 @@ void App::setupTextureLoader(){
 	q->setMaximumRequestsPerFrame( getInt("textureLoader/maxLoadRequestsPerFrame") );
 
 }
+
 
 void App::loadSettings(){
 
@@ -320,6 +330,7 @@ void App::loadModulesSettings(){
 	timeSampleOfxApp = getBool("App/TimeSampleOfxApp");
 }
 
+
 void App::setupRuiWatches(){
 
 	ofxJSON paramWatches = settings().getJson("RemoteUI/paramWatches");
@@ -380,6 +391,7 @@ void App::update(ofEventArgs &){
 	}
 	updateStateMachine(dt);
 }
+
 
 void App::exit(ofEventArgs &){
 	ofLogWarning("ofxApp") << "OF is exitting!";
@@ -634,7 +646,12 @@ void App::onContentManagerStateChanged(string& s){
 void App::onStaticTexturesLoaded(){
 	ofLogNotice("ofxApp")<< "All Static Textures Loaded!";
 	if(timeSampleOfxApp) TS_STOP_NIF("ofxApp Load Static Textures");
-	appState.setState(LOADING_JSON_CONTENT);
+	if(contentStorage.size()){
+		appState.setState(LOADING_JSON_CONTENT);
+	}else{
+		ofLogNotice("ofxApp")<< "Skipping JsonLoadContent phase, as there's no content to load.";
+		appState.setState(SETUP_USER_APP);
+	}
 }
 
 
@@ -652,7 +669,6 @@ void App::onRemoteUINotification(RemoteUIServerCallBackArg &arg){
 				ofBackground(colorsStorage.bgColor);
 				RUI_PUSH_TO_CLIENT();
 			}
-
 			break;
 		default:
 			break;
@@ -682,9 +698,11 @@ ofRectangle App::getRenderAreaForCurrentWindowSize(){
 	return render;
 }
 
+
 ofRectangle App::getRenderRect() {
 	return ofRectangle(0, 0, app.renderSize.x, app.renderSize.y);
 }
+
 
 void App::logBanner(const string & log){
 	ofLogNotice("ofxApp") << "";
