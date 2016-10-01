@@ -125,9 +125,16 @@ void App::setupWindow(){
 	else mullions.disable();
 	
 	//trying to get the window to "show up" in the 1st frame - to show terminateApp() in the 1st frame
+	GLFWwindow* glfwWindow = (GLFWwindow*)ofGetWindowPtr()->getWindowContext();
+	glfwShowWindow(glfwWindow);
+	ofGetWindowPtr()->setFullscreen(true);
+	//ofSetWindowPosition(0,0);
 	ofGetWindowPtr()->makeCurrent();
-	ofGetWindowPtr()->update();
-	ofGetWindowPtr()->draw();
+	ofGetGLRenderer()->startRender();
+	ofGetGLRenderer()->setupScreen();
+	ofGetGLRenderer()->finishRender();
+//	ofGetWindowPtr()->update();
+//	ofGetWindowPtr()->draw();
 	ofGetMainLoop()->pollEvents();
 }
 
@@ -170,7 +177,11 @@ void App::setupStateMachine(){
 
 void App::startLoadingStaticAssets(){
 	string texturesPath = getString("StaticAssets/textures");
-	ofxApp::assertFileExists(texturesPath);
+	if(texturesPath.size()){
+		ofxApp::assertFileExists(texturesPath);
+	}else{
+		ofLogWarning("ofxApp") << "App doesnt want to load static Assets!";
+	}
 	textures().loadTexturesInDir(texturesPath, true/*async*/);
 }
 
@@ -232,9 +243,9 @@ void App::saveSettings(){
 void App::setupApp(){
 
 	RUI_NEW_GROUP("APP");
-	bool & showMouse = getBool("App/showMouse");
+	showMouse = getBool("App/showMouse");
 	RUI_SHARE_PARAM(showMouse);
-	bool & enableMouse = getBool("App/enableMouse");
+	enableMouse = getBool("App/enableMouse");
 	RUI_SHARE_PARAM(enableMouse);
 	RUI_PUSH_TO_CLIENT();
 	//RUI_LOAD_FROM_XML();

@@ -39,18 +39,20 @@ namespace ofxApp{
 		int numFrames = secondsOnScreen * 1000 / 16; //stay up a bit so that you can read logs on screen
 		
 		//hijack OF and refresh screen & events by hand
-		for(int i = 0; i < numFrames; i++ ){
-			ofGetWindowPtr()->swapBuffers();
-			ofSetupScreen();
-			ofClear(0,0,0,255);
-			ofxSuperLog::getLogger()->getDisplayLogger().draw(ofGetWidth(), ofGetHeight());
-			//ofGetMainLoop()->loopOnce();
-			ofGetMainLoop()->pollEvents();
-			if(ofGetWindowPtr()->getWindowShouldClose()){
-				ofLogFatalError("ofxApp") << "Quitting by user action";
-				exit(-1);
+		if(ofGetWindowPtr()){
+			for(int i = 0; i < numFrames; i++ ){
+				ofSetupScreen();
+				ofClear(0,0,0,255);
+				ofxSuperLog::getLogger()->getDisplayLogger().draw(ofGetWidth(), ofGetHeight());
+				//ofGetMainLoop()->loopOnce();
+				ofGetMainLoop()->pollEvents();
+				if(ofGetWindowPtr()->getWindowShouldClose()){
+					ofLogFatalError("ofxApp") << "Quitting by user action";
+					exit(-1);
+				}
+				ofGetWindowPtr()->swapBuffers();
+				ofSleepMillis(16);
 			}
-			ofSleepMillis(16);
 		}
 		exit(-1);
 	};
