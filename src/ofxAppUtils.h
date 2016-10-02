@@ -27,11 +27,13 @@ namespace ofxApp{
 		ofLogFatalError("ofxApp") << "terminateApp()!";
 		ofxSimpleHttp::destroySslContext();
 		ofLogFatalError("ofxApp") << "";
+		ofLogFatalError("ofxApp") << "-----------------------------------------------------------------------------------------------------------";
 		ofLogFatalError("ofxApp") << "";
 		ofLogFatalError("ofxApp") << "ofxApp is terminating because the module \"" << module << "\" found an unrecoverable error.";
 		ofLogFatalError("ofxApp") << "\"" << reason << "\"";
 		ofLogFatalError("ofxApp") << "This message will be on screen for " << (int)secondsOnScreen << " seconds, then the app will quit.";
 		ofLogFatalError("ofxApp") << "";
+		ofLogFatalError("ofxApp") << "-----------------------------------------------------------------------------------------------------------";
 		ofLogFatalError("ofxApp") << "";
 		ofxThreadSafeLog::one()->close();
 		ofxSuperLog::getLogger()->setScreenLoggingEnabled(true); //show log if json error
