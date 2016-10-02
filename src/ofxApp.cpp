@@ -272,6 +272,8 @@ void App::setupLogging(){
 	(*loggerStorage)->setMaximized(true);
 	(*loggerStorage)->setMaxNumLogLines(getInt("logging/maxScreenLines"));
 	(*loggerStorage)->setUseScreenColors(true);
+	(*loggerStorage)->setSyncronizedLogging(getBool("logging/syncronizedLogging"));
+	
 
 	float panelW = getFloat("logging/screenLogPanelWidth");
 	ofxSuperLog::getLogger()->setDisplayWidth(panelW);
