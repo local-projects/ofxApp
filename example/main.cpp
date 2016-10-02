@@ -6,7 +6,7 @@
 //========================================================================
 int main( ){
 
-	app.loadSettings(); //ofxApp settings loaded here!
+	app.loadSettings(); //ofxApp settings loaded here! just to acces AA samples
 
 	//ofSetCurrentRenderer(ofGLProgrammableRenderer::TYPE);
 

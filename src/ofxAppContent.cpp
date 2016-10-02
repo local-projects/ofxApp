@@ -77,12 +77,12 @@ void ofxAppContent::update(float dt){
 
 		case DOWNLOADING_ASSETS:
 			if(!dlc.isBusy()){ //downloader finished!
-				ofLogNotice("ofxAppContent") << "finished asset downloads!";
+				ofLogNotice("ofxAppContent") << "Finished Asset downloads for \"" << ID << "\!";
 				setState(FILTER_OBJECTS_WITH_BAD_ASSETS);
 			}break;
 
 		case FILTER_OBJECTS_WITH_BAD_ASSETS:
-			if(timeInState > 0.1){ //show this on screen for a sec
+			if(timeInState > 1.0){ //show this on screen for a sec
 				setState(SETUP_TEXTURED_OBJECTS);
 			}
 			break;
@@ -203,9 +203,9 @@ void ofxAppContent::setState(ContentState s){
 					parsedObjects.erase(parsedObjects.begin() + badObjects[i]);
 				}
 
-				objectsWithBadAssets = "\nRemoved " + ofToString(badObjects.size()) + " objects:\n\n" + objectsWithBadAssets;
+				objectsWithBadAssets = "\nRemoved " + ofToString(badObjects.size()) + " \"" << ID << "\" objects:\n\n" + objectsWithBadAssets;
 			}else{
-				ofLogWarning("ofxAppContent") << "skipping Object Drop Policy Tests!!";
+				ofLogWarning("ofxAppContent") << "skipping Object Drop Policy Tests!! \"" << ID << "\"";
 			}
 
 		}break;
@@ -306,13 +306,13 @@ void ofxAppContent::jsonInitialCheckOK(){
 
 
 void ofxAppContent::jsonParseFailed(){
-	ofLogError("ofxAppContent") << "json Parse Failed!";
+	ofLogError("ofxAppContent") << "JSON Parse Failed!";
 	setState(JSON_PARSE_FAILED);
 }
 
 
 void ofxAppContent::jsonContentReady(vector<ParsedObject*> &parsedObjects_){
-	ofLogNotice("PgContentManager") << "json Content Ready! " << parsedObjects.size() << " Objects received.";
+	ofLogNotice("ofxAppContent") << "JSON Content Ready! " << parsedObjects.size() << " Objects received.";
 	parsedObjects.reserve(parsedObjects_.size());
 	for(auto o : parsedObjects_){
 		//parsedObjects.push_back((ContentObject*)o);		

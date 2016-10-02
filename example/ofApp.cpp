@@ -20,7 +20,7 @@ void ofApp::setup(){
 
 
 void ofApp::startUserProcess(ofxApp::State s){
-	ofLogNotice("ofApp") << "start User Process " << ofxApp::toString(s);
+	ofLogNotice("ofApp") << "Start User Process " << ofxApp::toString(s);
 };
 
 

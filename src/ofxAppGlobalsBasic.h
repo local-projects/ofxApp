@@ -22,7 +22,7 @@ public:
 	
 	virtual void setupRemoteUIParams(){
 
-		ofLogNotice("ofxApp Globals") << "setupRemoteUIParams()";
+		ofLogNotice("ofxAppGlobals") << "setupRemoteUIParams()";
 		RUI_NEW_GROUP("OFXAPP GLOBALS");
 		RUI_SHARE_PARAM(debug);
 		RUI_SHARE_PARAM(drawStaticTexturesMemStats);

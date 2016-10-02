@@ -423,11 +423,11 @@ void App::update(ofEventArgs &){
 
 void App::exit(ofEventArgs &){
 	ofLogWarning("ofxApp") << "OF is exitting!";
-	ofLogWarning("ofxApp") << "destroying  ofxSimpleHttp SSL context...";
+	ofLogWarning("ofxApp") << "Destroying ofxSimpleHttp SSL context...";
 	ofxSimpleHttp::destroySslContext();
 	ofLogWarning("ofxApp") << "Closing ThreadSafeLog(s)...";
 	ofxThreadSafeLog::one()->close();
-	ofLogWarning("ofxApp") << "done exitting!";
+	ofLogWarning("ofxApp") << "Done exitting!";
 }
 
 //////////////////// LOADING SCREEN /////////////////////////////////////////////////////////////////
@@ -546,13 +546,13 @@ void App::updateStateMachine(float dt){
 
 		case LOAD_CUSTOM_USER_CONTENT:
 			if(delegate->isUserProcessDone(LOAD_CUSTOM_USER_CONTENT)){
-				ofLogNotice("ofxApp") << "done loading Custom User Content!";
+				ofLogNotice("ofxApp") << "Done Loading Custom User Content!";
 				appState.setState(SETUP_USER_APP);
 			}break;
 
 		case SETUP_USER_APP:
 			if(delegate->isUserProcessDone(SETUP_USER_APP)){
-				ofLogNotice("ofxApp") << "done Setup User App!";
+				ofLogNotice("ofxApp") << "Done Setup User App!";
 				appState.setState(POST_USER_SETUP);
 			}break;
 
@@ -630,12 +630,12 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 			for(auto c : contentStorage){
 				delegate->contentIsReady(c.first, c.second->getParsedObjects());
 			}
-			ofLogNotice("ofxApp") << "start loading Custom User Content...";
+			ofLogNotice("ofxApp") << "Start Loading Custom User Content...";
 			delegate->startUserProcess(LOAD_CUSTOM_USER_CONTENT);
 			break;
 
 		case SETUP_USER_APP:
-			ofLogNotice("ofxApp") << "start loading Custom User Content...";
+			ofLogNotice("ofxApp") << "Start Setup User App...";
 			delegate->startUserProcess(SETUP_USER_APP);
 			break;
 
@@ -763,7 +763,7 @@ ofRectangle App::drawMsgInBox(string msg, int x, int y, int fontSize, ofColor fo
 bool& App::getBool(const string & key, bool defaultVal){
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
 	if(settings().exists(key)){
-		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Bool Value for \"" << key << "\" : " << settings().getBool(key);
+		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " Getting Bool Value for \"" << key << "\" : " << settings().getBool(key);
 		return settings().getBool(key);
 	}else{
 		string msg = "Requesting a BOOL setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
@@ -778,7 +778,7 @@ bool& App::getBool(const string & key, bool defaultVal){
 int& App::getInt(const string & key, int defaultVal){
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
 	if(settings().exists(key)){
-		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Int Value for \"" << key << "\" : " << settings().getInt(key);
+		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " Getting Int Value for \"" << key << "\" : " << settings().getInt(key);
 		return settings().getInt(key);
 	}else{
 		string msg = "Requesting an INT setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
@@ -792,7 +792,7 @@ int& App::getInt(const string & key, int defaultVal){
 float& App::getFloat(const string & key, float defaultVal){
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
 	if(settings().exists(key)){
-		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Float Value for \"" << key << "\" : " << settings().getFloat(key);
+		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " Getting Float Value for \"" << key << "\" : " << settings().getFloat(key);
 		return settings().getFloat(key);
 	}else{
 		string msg = "Requesting a FLOAT setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
@@ -806,7 +806,7 @@ float& App::getFloat(const string & key, float defaultVal){
 string& App::getString(const string & key, string defaultVal){
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
 	if(settings().exists(key)){
-		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting String Value for \"" << key << "\" : " << settings().getString(key);
+		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " Getting String Value for \"" << key << "\" : " << settings().getString(key);
 		return settings().getString(key);
 	}else{
 		string msg = "Requesting a STRING setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
@@ -820,7 +820,7 @@ string& App::getString(const string & key, string defaultVal){
 ofColor& App::getColor(const string & key, ofColor defaultVal){
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
 	if(settings().exists(key)){
-		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " getting Color Value for \"" << key << "\" : " << settings().getColor(key);
+		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " Getting Color Value for \"" << key << "\" : " << settings().getColor(key);
 		return settings().getColor(key);
 	}else{
 		string msg = "Requesting a COLOR setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
