@@ -203,7 +203,7 @@ void ofxAppContent::setState(ContentState s){
 					parsedObjects.erase(parsedObjects.begin() + badObjects[i]);
 				}
 
-				objectsWithBadAssets = "\nRemoved " + ofToString(badObjects.size()) + " \"" << ID << "\" objects:\n\n" + objectsWithBadAssets;
+				objectsWithBadAssets = "\nRemoved " + ofToString(badObjects.size()) + " \"" + ID + "\" objects:\n\n" + objectsWithBadAssets;
 			}else{
 				ofLogWarning("ofxAppContent") << "skipping Object Drop Policy Tests!! \"" << ID << "\"";
 			}
