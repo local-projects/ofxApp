@@ -49,6 +49,7 @@ void ofxAppStaticTextures::loadTexturesInDirectory(const string& path, bool recu
 	if (dir.size() == 0) { //if no images, proceed now.
 		ofNotifyEvent(eventAllTexturesLoaded, this);
 		ofLogWarning("ofxAppStaticTextures") << "No textures found in the directory! \"" << path << "\"";
+		return;
 	}
 
 	for(int i = 0; i < dir.size(); i++){

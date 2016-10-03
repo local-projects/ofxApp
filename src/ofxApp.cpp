@@ -179,10 +179,11 @@ void App::startLoadingStaticAssets(){
 	string texturesPath = getString("StaticAssets/textures");
 	if(texturesPath.size()){
 		ofxApp::assertFileExists(texturesPath);
+		textures().loadTexturesInDir(texturesPath, true/*async*/);
 	}else{
 		ofLogWarning("ofxApp") << "App doesnt want to load static Assets!";
+		onStaticTexturesLoaded();
 	}
-	textures().loadTexturesInDir(texturesPath, true/*async*/);
 }
 
 
@@ -546,13 +547,13 @@ void App::updateStateMachine(float dt){
 
 		case LOAD_CUSTOM_USER_CONTENT:
 			if(delegate->isUserProcessDone(LOAD_CUSTOM_USER_CONTENT)){
-				ofLogNotice("ofxApp") << "Done Loading Custom User Content!";
+				ofLogNotice("ofxApp") << "Done LOAD_CUSTOM_USER_CONTENT!";
 				appState.setState(SETUP_USER_APP);
 			}break;
 
 		case SETUP_USER_APP:
 			if(delegate->isUserProcessDone(SETUP_USER_APP)){
-				ofLogNotice("ofxApp") << "Done Setup User App!";
+				ofLogNotice("ofxApp") << "Done SETUP_USER_APP!";
 				appState.setState(POST_USER_SETUP);
 			}break;
 
@@ -676,7 +677,7 @@ void App::onStaticTexturesLoaded(){
 	if(contentStorage.size()){
 		appState.setState(LOADING_JSON_CONTENT);
 	}else{
-		ofLogNotice("ofxApp")<< "Skipping JsonLoadContent phase, as there's no content to load.";
+		ofLogWarning("ofxApp")<< "Skipping JsonLoadContent phase, as there's no content to load.";
 		appState.setState(SETUP_USER_APP);
 	}
 }
