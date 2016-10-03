@@ -748,7 +748,7 @@ void App::logBanner(const string & log){
 
 ofRectangle App::drawMsgInBox(string msg, int x, int y, int fontSize, ofColor fontColor, ofColor bgColor, float edgeGrow) {
 
-	if (msg.size() == 0) return;
+	if (msg.size() == 0) return ofRectangle();
 	ofxFontStash & font = fonts().getMonoBoldFont();
 	ofRectangle bbox = font.getBBox(msg, fontSize, x, y);
 	ofSetColor(bgColor);
