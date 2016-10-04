@@ -146,7 +146,7 @@ void ofxAppStaticTextures::onUpdate(ofEventArgs & ){
 	int numPreloaded = 0;
 	for(auto & d : pendingToPreLoad){
 		if(d.tex->isPreloadingPixels()) numPreloading++;
-		if(d.tex->arePixelPreLoaded()) numPreloaded++;
+		if(d.loader->preloaded) numPreloaded++;
 	}
 
 	if(numPreloaded < pendingToPreLoad.size() && numPreloading < maxThreads ){
@@ -154,26 +154,29 @@ void ofxAppStaticTextures::onUpdate(ofEventArgs & ){
 		int numToStart = MIN( maxThreads - numPreloading, pendingToPreLoad.size() - numPreloaded );
 		int i = 0;
 		while(numToStart > 0 && i < pendingToPreLoad.size()){
-			if(!pendingToPreLoad[i].loader->threadStarted && !pendingToPreLoad[i].loader->preloaded){
-				
+			if(!pendingToPreLoad[i].loader->threadStarted){
+				pendingToPreLoad[i].loader->threadStarted = true;
 				pendingToPreLoad[i].loader->data = pendingToPreLoad[i];
 				numToStart--;
 				//spawn a loading thread
 				pendingToPreLoad[i].loader->startThread();
-				numThreadsStarted++;
 			}
 			i++;
 		}
 	}
 	
 	if(numPreloaded > 0 ){
-		PreLoadData currTex = pendingToPreLoad.front();
-		pendingToPreLoad.erase(pendingToPreLoad.begin());
-		loadTexture(currTex);
-		loaded.push_back(currTex);
-		if(pendingToPreLoad.size() == 0){
-			ofLogNotice("ofxAppStaticTextures") << "#### DONE loading " << textures.size() << " Static Textures! Memory used: " << ofToString(memUsed,2) << "Mb ############################################";
-			ofNotifyEvent(eventAllTexturesLoaded, this);
+		for(int i = pendingToPreLoad.size()-1; i >= 0; i--){
+			if(pendingToPreLoad[i].loader->preloaded){
+				PreLoadData currTex = pendingToPreLoad[i];
+				pendingToPreLoad.erase(pendingToPreLoad.begin() + i);
+				loadTexture(currTex);
+				loaded.push_back(currTex);
+				if(pendingToPreLoad.size() == 0){
+					ofLogNotice("ofxAppStaticTextures") << "#### DONE loading " << textures.size() << " Static Textures! Memory used: " << ofToString(memUsed,2) << "Mb ############################################";
+					ofNotifyEvent(eventAllTexturesLoaded, this);
+				}
+			}
 		}
 	}
 }
@@ -250,16 +253,16 @@ void ofxAppStaticTextures::drawAll(const ofRectangle & rect){
 		paddedFrame.width -= 2 * pad;
 		paddedFrame.height -= 2 * pad;
 
-		ofSetColor(55);
+		ofSetColor(32);
 		ofDrawRectangle(frame);
-		ofSetColor(22);
+		ofSetColor(16);
 		ofNoFill();
 		ofDrawRectangle(frame);
 		ofFill();
 
-		if(tex->isAllocated()){
+		if(tex->isAllocated() && tex->getWidth()){
 			ofRectangle texR = ofRectangle(0,0,tex->getWidth(), tex->getHeight());
-			texR.scaleTo(paddedFrame);
+			texR.scaleTo(paddedFrame, OF_ASPECT_RATIO_KEEP, OF_ALIGN_HORZ_CENTER, OF_ALIGN_VERT_TOP);
 			ofSetColor(255);
 			tex->draw(texR);
 		}

@@ -82,7 +82,7 @@ void ofxAppContent::update(float dt){
 			}break;
 
 		case FILTER_OBJECTS_WITH_BAD_ASSETS:
-			if(timeInState > 1.0){ //show this on screen for a sec
+			if(timeInState > 0.1){ //show this on screen for a sec
 				setState(SETUP_TEXTURED_OBJECTS);
 			}
 			break;

@@ -107,13 +107,10 @@ protected:
 		bool threadStarted = false;
 		bool preloaded = false;
 		void threadedFunction(){
-			threadStarted = true;
 			data.tex->preloadPixelsFromFile(data.filePath);
 			preloaded = true;
 		}
 	};
-	
-	int numThreadsStarted = 0;
 	
 	void onUpdate(ofEventArgs & );
 
