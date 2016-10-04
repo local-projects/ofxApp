@@ -8,7 +8,7 @@
 
 #pragma once
 
-#define VERBOSE_SETTINGS_ACCESS 	true
+#define VERBOSE_SETTINGS_ACCESS 	false
 #define QUIT_ON_MISSING_SETTING		true
 
 
