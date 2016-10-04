@@ -165,13 +165,14 @@ void App::setupStateMachine(){
 	ofxApp::assertFileExists(boldFontPath);
 	appState.setup(boldFontPath, "", ofColor::black, ofColor::white);
 	//this creates strings for each of the ENUM states
+	float dark = 0.333;
 	appState.SET_NAME_AND_COLOR_FOR_STATE(SETTING_UP, ofColor(0,0,255), ofColor(0,0,128));
-	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_STATIC_TEXTURES, ofColor(0,0,255), ofColor(0,0,128));
-	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_JSON_CONTENT, ofColor(0,0,255), ofColor(0,0,128));
-	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_JSON_CONTENT_FAILED, ofColor(255,0,0), ofColor(128,0,0));
-	appState.SET_NAME_AND_COLOR_FOR_STATE(LOAD_CUSTOM_USER_CONTENT, ofColor(255,0,0), ofColor(128,0,0));
-	appState.SET_NAME_AND_COLOR_FOR_STATE(SETUP_USER_APP, ofColor::white, ofColor::grey);
-	appState.SET_NAME_AND_COLOR_FOR_STATE(POST_USER_SETUP, ofColor::white, ofColor::grey);
+	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_STATIC_TEXTURES, ofColor::darkorange, ofColor::darkorange * dark);
+	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_JSON_CONTENT, ofColor::lawnGreen, ofColor::lawnGreen * dark);
+	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_JSON_CONTENT_FAILED, ofColor::crimson, ofColor::crimson * dark);
+	appState.SET_NAME_AND_COLOR_FOR_STATE(LOAD_CUSTOM_USER_CONTENT, ofColor::blueViolet, ofColor::blueViolet * dark);
+	appState.SET_NAME_AND_COLOR_FOR_STATE(SETUP_USER_APP, ofColor::royalBlue, ofColor::royalBlue * dark);
+	appState.SET_NAME_AND_COLOR_FOR_STATE(POST_USER_SETUP, ofColor::mediumAquaMarine, ofColor::mediumAquaMarine * dark);
 	appState.SET_NAME_AND_COLOR_FOR_STATE(RUNNING, ofColor::white, ofColor::grey);
 }
 
@@ -640,6 +641,7 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 		case POST_USER_SETUP:
 			setupRuiWatches();
 			setupApp();
+			ofLogNotice("ofxApp") << "Start Post User Setup...";
 			delegate->startUserProcess(POST_USER_SETUP); //user custom code runs here
 			appState.setState(RUNNING);
 			break;
