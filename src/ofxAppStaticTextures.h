@@ -9,6 +9,7 @@
 #pragma once
 #include "ofMain.h"
 #include "ofxAutoTexture.h"
+#include <thread>
 
 /*
  
@@ -69,18 +70,14 @@ public:
 
 	ofxAppStaticTextures();
 
-	void loadTexturesInDir(const string& imgDirPath, bool async); 	//if async == true: starts loading textures
-																	//will load one file per frame to keep the process
-																	//interactive. Will trigger eventAllTexturesLoaded
-																	//when done
+	void loadTexturesInDir(const string& imgDirPath, int maxThreads = 4);
 	ofTexture* getTexture(string textureName);
 
 	static float memUse(ofTexture * tex); //in MBytes
 
-	int getNumTextures(){ return pendingToLoad.size() + textures.size();}
-	int getNumLoadedTextures(){ return textures.size();}
+	int getNumTextures(){ return textures.size();}
+	int getNumLoadedTextures(){ return loaded.size();}
 	float getTotalMemUsed(){ return memUsed;} //in MBytes
-	ofTexture * getLatestLoadedTex(); //use to monitor async loading progress
 
 	void drawAll(const ofRectangle & rect); //debug call to see all textures in one giant grid
 											//mostly to check texture names
@@ -90,21 +87,51 @@ public:
 
 protected:
 
+	int maxThreads;
+	
+	class ThreadedLoader;
+	
+	struct PreLoadData {
+	public:
+		ofxAutoTexture* tex;
+		string texName;
+		string filePath;
+		bool createMipmap;
+		ThreadedLoader * loader = NULL;
+	};
+
+	
+	class ThreadedLoader : public ofThread{
+		public:
+		PreLoadData data;
+		bool threadStarted = false;
+		bool preloaded = false;
+		void threadedFunction(){
+			threadStarted = true;
+			data.tex->preloadPixelsFromFile(data.filePath);
+			preloaded = true;
+		}
+	};
+	
+	int numThreadsStarted = 0;
+	
 	void onUpdate(ofEventArgs & );
 
-	ofxAutoTexture* loadTexture(const string& filename);
+	ofxAutoTexture* loadTexture(PreLoadData data);
 	void loadTexturesInDirectory(const string& path, bool recursive);
 
 	string dirPath; //path to where the textures are
-
-	vector<string> pendingToLoad; //list of file paths still pending to load
-	vector<ofxAutoTexture*> loadedInOrder;
-
+	
+	vector<PreLoadData> pendingToPreLoad;
+	vector<PreLoadData> loaded;
+	
 	vector<string> texNameOrder;
 	unordered_map<string, ofxAutoTexture*> textures;
+	
+	ofxAutoTexture* createTexObjForPath(string filePath, string & texName, bool & createMipMap);
 
 	float memUsed = 0; //MBytes
-	bool loadAsync = false;
 	bool isLoading = false;
 	ofTexture missingTex;
+	
 };

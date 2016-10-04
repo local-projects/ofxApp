@@ -66,14 +66,14 @@ public:
 	// "MyApp" is a macro you MUST define in your pre-processor macros:
 	//  OFX_APP_NAME=MyApp
 	#ifdef OFX_APP_NONAME
-	ofxAppColorsBasic & 				colors(){return colorsStorage;}
-	ofxAppGlobalsBasic & 				globals(){return globalsStorage;}
+	ofxAppColorsBasic & 			colors(){return colorsStorage;}
+	ofxAppGlobalsBasic & 			globals(){return globalsStorage;}
 	#else
 	OFX_APP_CLASS_NAME(Colors) & 	colors(){return colorsStorage;}
 	OFX_APP_CLASS_NAME(Globals) & 	globals(){return globalsStorage;}
 	#endif
 	
-	ofxAppFonts &						fonts(){return *fontStorage;}
+	ofxAppFonts &					fonts(){return *fontStorage;}
 	ofxJsonSettings & 				settings(){return ofxJsonSettings::get();}
 	ofxAppStaticTextures & 			textures(){return texStorage;}
 	ofPtr<ofxSuperLog> 				logger(){return ofxSuperLog::getLogger();}

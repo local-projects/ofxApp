@@ -179,7 +179,7 @@ void App::startLoadingStaticAssets(){
 	string texturesPath = getString("StaticAssets/textures");
 	if(texturesPath.size()){
 		ofxApp::assertFileExists(texturesPath);
-		textures().loadTexturesInDir(texturesPath, true/*async*/);
+		textures().loadTexturesInDir(texturesPath, getInt("App/maxThreads"));
 	}else{
 		ofLogWarning("ofxApp") << "App doesnt want to load static Assets!";
 		onStaticTexturesLoaded();
@@ -474,12 +474,9 @@ void App::onDrawLoadingScreenStatus(ofRectangle & area){
 			textures().drawAll(area);
 			float progress = textures().getNumLoadedTextures() / float(textures().getNumTextures());
 			appState.updateState( progress, "");
-			ofPushStyle();
-			ofSetColor(0);
-			fonts().getMonoBoldFont().draw(ofToString(textures().getTotalMemUsed(), 1) + "MBytes used", loadingScreenFontSize, 101, 101);
-			ofSetColor(255);
-			fonts().getMonoBoldFont().draw(ofToString(textures().getTotalMemUsed(), 1) + "MBytes used", loadingScreenFontSize, 100, 100);
-			ofPopStyle();
+			string msg = ofToString(textures().getTotalMemUsed(), 1) + "MBytes used";
+			drawMsgInBox(msg, 20, 60, loadingScreenFontSize, ofColor::white);
+			
 		}break;
 
 		case LOAD_CUSTOM_USER_CONTENT:
@@ -569,8 +566,8 @@ void App::updateStateMachine(float dt){
 
 void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& change){
 
-	ofLogNotice("ofxApp") 	<< "State Changed from " << appState.getNameForState(change.oldState)
-							<< " to " << appState.getNameForState(change.newState);
+	ofLogNotice("ofxApp") 	<< "State Changed from \"" << appState.getNameForState(change.oldState)
+							<< "\" to \"" << appState.getNameForState(change.newState) << "\"  State Duration: " << change.timeInPrevState << "sec.";
 
 	switch(change.newState){
 

@@ -25,21 +25,21 @@ void ofxAppStaticTextures::setup(){
 	}
 }
 
-void ofxAppStaticTextures::loadTexturesInDir(const string& imgDirPath, bool async){
+void ofxAppStaticTextures::loadTexturesInDir(const string& imgDirPath, int maxThreads){
 	if(!isLoading){
+		this->maxThreads = maxThreads;
 		ofLogWarning("ofxAppStaticTextures") << "#### START Loading all Textures in directory \"" << imgDirPath << "\" ############################################";
 		isLoading = true;
-		loadAsync = async;
 		dirPath = ofFilePath::addTrailingSlash(imgDirPath);
 		#ifdef TARGET_WIN32 //lets make windows path prettier
 		ofStringReplace(dirPath, "\\", "/");
 		#endif
 		loadTexturesInDirectory(imgDirPath, true);
-		if(async == false) isLoading = false;
 	}else{
 		ofLogError("ofxAppStaticTextures") << "Already loading async!";
 	}
 }
+
 
 void ofxAppStaticTextures::loadTexturesInDirectory(const string& path, bool recursive){
 
@@ -62,24 +62,49 @@ void ofxAppStaticTextures::loadTexturesInDirectory(const string& path, bool recu
 		string ext = ofToLower(file.getExtension());
 		if (ext == "png" || ext == "jpg" || ext == "jpeg" || ext == "gif" || ext == "tga" || ext == "tiff" || ext == "tif" || ext == "psd") {
 			string filepath = path + "/" + file.getBaseName() + "." + file.getExtension();
-			if(loadAsync){
-				pendingToLoad.push_back(filepath);
-			}else{
-				loadTexture(filepath); //load in place
-			}
+			
+			PreLoadData texData;
+			texData.filePath = filepath;
+			texData.loader = new ThreadedLoader();
+			texData.tex = createTexObjForPath(filepath, texData.texName, texData.createMipmap );
+			textures[texData.texName] = texData.tex;
+			texNameOrder.push_back(texData.texName);
+			pendingToPreLoad.push_back(texData);
 		}
 	}
 }
 
 
-ofxAutoTexture* ofxAppStaticTextures::loadTexture(const string& filePath){
+ofxAutoTexture* ofxAppStaticTextures::loadTexture(PreLoadData data){
+	
+	bool loaded = data.tex->loadFromFile(data.filePath);
+
+	if(loaded){
+		float memUsedForThisOne = memUse(data.tex);
+		memUsed += memUsedForThisOne;
+		if(data.createMipmap){
+			data.tex->generateMipmap();
+			data.tex->setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+		}
+
+		ofLogNotice("ofxAppStaticTextures") 	<< "#### Loaded \"" << data.filePath << "\" ######################################################";
+		ofLogNotice("ofxAppStaticTextures")	<< "     Name:\"" << data.texName << "\"  " << "[" << data.tex->getWidth() << "x" << data.tex->getHeight() << "]" <<
+		"  Mipmap:" << data.createMipmap << "  Format:" << ofGetGlInternalFormatName(data.tex->getTextureData().glInternalFormat) << "  Mem:" << ofToString(memUsedForThisOne, 2) << "Mb";
+		return data.tex;
+	}else{
+		delete data.tex;
+		ofLogError("ofxAppStaticTextures") << "FAILED to load tex from \"" << data.filePath << "\"" ;
+		return NULL;
+	}
+}
+
+ofxAutoTexture* ofxAppStaticTextures::createTexObjForPath(string filePath, string & texName, bool & createMipMap ){
 
 	string lowercaseFilePath = ofToLower(filePath);
 	bool useTex2D = ofIsStringInString(lowercaseFilePath, filenameHintTex2D);
-	bool createMipMap = ofIsStringInString(lowercaseFilePath, filenameHintMipMap);
+	createMipMap = ofIsStringInString(lowercaseFilePath, filenameHintMipMap);
 
 	//set OF ARB global state according to file naming
-	bool usingARB = ofGetUsingArbTex();
 	if(createMipMap){
 		ofDisableArbTex();
 	}else{
@@ -90,7 +115,7 @@ ofxAutoTexture* ofxAppStaticTextures::loadTexture(const string& filePath){
 		}
 	}
 
-	string texName = ofFilePath::removeExt(filePath);
+	texName = ofFilePath::removeExt(filePath);
 	#ifdef TARGET_WIN32 //lets make windows path prettier
 	ofStringReplace(texName, "\\", "/");
 	#endif
@@ -108,59 +133,51 @@ ofxAutoTexture* ofxAppStaticTextures::loadTexture(const string& filePath){
 		ofLogError("ofxAppStaticTextures") << "file name collision! " << filePath << " >> " << texName;
 		ofLogError("ofxAppStaticTextures") << "skipping texture at path: '" << filePath << "'";
 		return NULL;
-	}
-
-	ofxAutoTexture * tex = new ofxAutoTexture();
-	bool loaded = tex->loadFromFile(filePath);
-
-	//restore of arb global state
-	if(usingARB){ofEnableArbTex();}else{ofDisableArbTex();}
-
-	if(loaded){
-
-		texNameOrder.push_back(texName);
-		textures[texName] = tex;
-		float memUsedForThisOne = memUse(tex);
-		memUsed += memUsedForThisOne;
-		if(createMipMap){
-			tex->generateMipmap();
-			tex->setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 		}
-
-		ofLogNotice("ofxAppStaticTextures") 	<< "#### Loaded \"" << filePath << "\" ######################################################";
-		ofLogNotice("ofxAppStaticTextures")	<< "     Name:\"" << texName << "\"  " << "[" << tex->getWidth() << "x" << tex->getHeight() << "]" <<
-		"  Mipmap:" << createMipMap << "  Format:" << ofGetGlInternalFormatName(tex->getTextureData().glInternalFormat) << "  Mem:" << ofToString(memUsedForThisOne, 2) << "Mb";
-		return tex;
-	}else{
-		delete tex;
-		ofLogError("ofxAppStaticTextures") << "FAILED to load tex from \"" << filePath << "\"" ;
-		return NULL;
-	}
+		
+	ofxAutoTexture * tex = new ofxAutoTexture();
+	return tex;
 }
 
 
 void ofxAppStaticTextures::onUpdate(ofEventArgs & ){
+	
+	int numPreloading = 0;
+	int numPreloaded = 0;
+	for(auto & d : pendingToPreLoad){
+		if(d.tex->isPreloadingPixels()) numPreloading++;
+		if(d.tex->arePixelPreLoaded()) numPreloaded++;
+	}
 
-	if(pendingToLoad.size() && ofGetFrameNum()%5 == 1){
-		string currentFile = pendingToLoad.front();
-		pendingToLoad.erase(pendingToLoad.begin());
-		ofxAutoTexture * tex = loadTexture(currentFile);
-		loadedInOrder.push_back(tex);
-		if(pendingToLoad.size() == 0){
+	if(numPreloaded < pendingToPreLoad.size() && numPreloading < maxThreads ){
+		
+		int numToStart = MIN( maxThreads - numPreloading, pendingToPreLoad.size() - numPreloaded );
+		int i = 0;
+		while(numToStart > 0 && i < pendingToPreLoad.size()){
+			if(!pendingToPreLoad[i].loader->threadStarted && !pendingToPreLoad[i].loader->preloaded){
+				
+				pendingToPreLoad[i].loader->data = pendingToPreLoad[i];
+				numToStart--;
+				//spawn a loading thread
+				pendingToPreLoad[i].loader->startThread();
+				numThreadsStarted++;
+			}
+			i++;
+		}
+	}
+	
+	if(numPreloaded > 0 ){
+		PreLoadData currTex = pendingToPreLoad.front();
+		pendingToPreLoad.erase(pendingToPreLoad.begin());
+		loadTexture(currTex);
+		loaded.push_back(currTex);
+		if(pendingToPreLoad.size() == 0){
 			ofLogNotice("ofxAppStaticTextures") << "#### DONE loading " << textures.size() << " Static Textures! Memory used: " << ofToString(memUsed,2) << "Mb ############################################";
 			ofNotifyEvent(eventAllTexturesLoaded, this);
 		}
 	}
 }
 
-
-ofTexture * ofxAppStaticTextures::getLatestLoadedTex(){
-	if(loadedInOrder.size()){
-		return loadedInOrder.back();
-	}else{
-		return NULL;
-	}
-}
 
 float ofxAppStaticTextures::memUse(ofTexture * tex){
 
@@ -240,10 +257,12 @@ void ofxAppStaticTextures::drawAll(const ofRectangle & rect){
 		ofDrawRectangle(frame);
 		ofFill();
 
-		ofRectangle texR = ofRectangle(0,0,tex->getWidth(), tex->getHeight());
-		texR.scaleTo(paddedFrame);
-		ofSetColor(255);
-		tex->draw(texR);
+		if(tex->isAllocated()){
+			ofRectangle texR = ofRectangle(0,0,tex->getWidth(), tex->getHeight());
+			texR.scaleTo(paddedFrame);
+			ofSetColor(255);
+			tex->draw(texR);
+		}
 		ofDrawBitmapStringHighlight(texName, xx + 5, yy + frame.height - 8);
 		xx += ceil(frame.width);
 		if(xx >= rect.x + rect.width){
