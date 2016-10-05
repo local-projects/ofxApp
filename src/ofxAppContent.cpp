@@ -77,7 +77,7 @@ void ofxAppContent::update(float dt){
 
 		case DOWNLOADING_ASSETS:
 			if(!dlc.isBusy()){ //downloader finished!
-				ofLogNotice("ofxAppContent") << "Finished Asset downloads for \"" << ID << "\!";
+				ofLogNotice("ofxAppContent") << "Finished Asset downloads for \"" << ID << "\"!";
 				setState(FILTER_OBJECTS_WITH_BAD_ASSETS);
 			}break;
 
