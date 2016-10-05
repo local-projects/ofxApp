@@ -51,6 +51,7 @@ public:
 	const string LogsDir = "logs";
 	const string configsDir = "configs";
 	
+	App();
 	~App();
 
 	void setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * delegate);
