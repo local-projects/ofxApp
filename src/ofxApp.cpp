@@ -15,7 +15,7 @@ ofxApp::App app; //app global in your project!
 using namespace ofxApp;
 
 App::App() {
-	ofLogNotice("ofxApp") << "App()";
+	cout << "App()";
 }
 
 void App::setup(ofxAppDelegate * delegate){
