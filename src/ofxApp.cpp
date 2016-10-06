@@ -213,6 +213,10 @@ void App::loadSettings(){
 	if(!ok){
 		ofxApp::terminateApp("ofxApp", "Could not load settings from \"" + ofToDataPath(settingsFile, true) + "\"");
 	}
+	startupScreenViewport.x = getFloat("App/startupScreenViewport/x", 0);
+	startupScreenViewport.y = getFloat("App/startupScreenViewport/y", 0);
+	startupScreenViewport.width = getFloat("App/startupScreenViewport/w", 0);
+	startupScreenViewport.height = getFloat("App/startupScreenViewport/h", 0);
 	hasLoadedSettings = true;
 }
 
@@ -442,7 +446,13 @@ void App::exit(ofEventArgs &){
 void App::draw(ofEventArgs &){
 	if(appState.getState() != RUNNING){
 		ofSetupScreen();
-		appState.draw(ofGetCurrentViewport());
+		float w = ofGetWidth();
+		float h = ofGetHeight();
+		appState.draw(ofRectangle(startupScreenViewport.x * w,
+								  startupScreenViewport.y * h,
+								  startupScreenViewport.width * w,
+								  startupScreenViewport.height * h)
+					  );
 	}
 	ofSetColor(0);
 	mullions.draw();
