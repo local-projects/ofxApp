@@ -19,12 +19,18 @@ void ofApp::setup(){
 }
 
 
-void ofApp::startUserProcess(ofxApp::State s){
+void ofApp::ofxAppStartUserPhase(ofxApp::UserAppSetupStage s){
 	ofLogNotice("ofApp") << "Start User Process " << ofxApp::toString(s);
+	switch (s) {
+		case ofxApp::SETUP_B4_CONTENT_LOAD: break;
+		case ofxApp::RECEIVE_CONTENT_LOAD_RESULTS: break;
+		case ofxApp::SETUP_AFTER_CONTENT_LOAD: break;
+		case ofxApp::SETUP_JUST_B4_RUNNING: break;
+	}
 };
 
 
-void ofApp::contentIsReady(const string & contentID, vector<ContentObject*> objs){
+void ofApp::ofxAppContentIsReady(const string & contentID, vector<ContentObject*> objs){
 	ofLogNotice("ofApp") << "Content '" << contentID << "' is ready! " << objs.size() << " objects!";
 
 	if(contentID == "CWRU"){

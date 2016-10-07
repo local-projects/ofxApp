@@ -55,7 +55,7 @@ void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * d
 		setupTuio();
 		setupOF();
 		if(timeSampleOfxApp) TS_START_NIF("ofxApp Load Static Textures");
-		appState.setState(LOADING_STATIC_TEXTURES); //start loading content
+		appState.setState(SETUP_USER_APP_PRE_LOAD_CONTENT); //start loading content
 	}else{
 		ofxApp::terminateApp("ofxApp", "Trying to setup() ofxApp a second time!");
 	}
@@ -169,14 +169,15 @@ void App::setupStateMachine(){
 	ofxApp::assertFileExists(boldFontPath);
 	appState.setup(boldFontPath, "", ofColor::black, ofColor::white);
 	//this creates strings for each of the ENUM states
-	float dark = 0.333;
+	float dark = 0.25;
 	appState.SET_NAME_AND_COLOR_FOR_STATE(SETTING_UP, ofColor(0,0,255), ofColor(0,0,128));
+	appState.SET_NAME_AND_COLOR_FOR_STATE(SETUP_USER_APP_PRE_LOAD_CONTENT, ofColor::magenta, ofColor::magenta * dark);
 	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_STATIC_TEXTURES, ofColor::darkorange, ofColor::darkorange * dark);
 	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_JSON_CONTENT, ofColor::lawnGreen, ofColor::lawnGreen * dark);
 	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_JSON_CONTENT_FAILED, ofColor::crimson, ofColor::crimson * dark);
-	appState.SET_NAME_AND_COLOR_FOR_STATE(LOAD_CUSTOM_USER_CONTENT, ofColor::blueViolet, ofColor::blueViolet * dark);
-	appState.SET_NAME_AND_COLOR_FOR_STATE(SETUP_USER_APP, ofColor::royalBlue, ofColor::royalBlue * dark);
-	appState.SET_NAME_AND_COLOR_FOR_STATE(POST_USER_SETUP, ofColor::mediumAquaMarine, ofColor::mediumAquaMarine * dark);
+	appState.SET_NAME_AND_COLOR_FOR_STATE(DELIVER_CONTENT_LOAD_RESULTS, ofColor::blueViolet, ofColor::blueViolet * dark);
+	appState.SET_NAME_AND_COLOR_FOR_STATE(SETUP_USER_APP_POST_LOAD_CONTENT, ofColor::royalBlue, ofColor::royalBlue * dark);
+	appState.SET_NAME_AND_COLOR_FOR_STATE(SETUP_USER_APP_JUST_B4_RUNNING, ofColor::mediumAquaMarine, ofColor::mediumAquaMarine * dark);
 	appState.SET_NAME_AND_COLOR_FOR_STATE(RUNNING, ofColor::white, ofColor::grey);
 }
 
@@ -494,9 +495,11 @@ void App::onDrawLoadingScreenStatus(ofRectangle & area){
 			
 		}break;
 
-		case LOAD_CUSTOM_USER_CONTENT:
-		case SETUP_USER_APP:
-			delegate->drawLoadingScreenForUserProcess(appState.getState(), area);
+		case SETUP_USER_APP_PRE_LOAD_CONTENT:
+		case DELIVER_CONTENT_LOAD_RESULTS:
+		case SETUP_USER_APP_POST_LOAD_CONTENT:
+		case SETUP_USER_APP_JUST_B4_RUNNING:
+			delegate->ofxAppDrawPhaseProgressScreen((UserAppSetupStage)appState.getState(), area);
 			break;
 
 		default: break;
@@ -509,6 +512,12 @@ void App::onDrawLoadingScreenStatus(ofRectangle & area){
 void App::updateStateMachine(float dt){
 
 	switch (appState.getState()) {
+
+		case SETUP_USER_APP_PRE_LOAD_CONTENT:
+			if (delegate->ofxAppIsUserPhaseComplete((UserAppSetupStage)SETUP_USER_APP_PRE_LOAD_CONTENT)) {
+				ofLogNotice("ofxApp") << "Done SETUP_USER_APP_PRE_LOAD_CONTENT!";
+				appState.setState(LOADING_STATIC_TEXTURES);
+			}break;
 
 		case LOADING_JSON_CONTENT:
 
@@ -528,7 +537,7 @@ void App::updateStateMachine(float dt){
 						if(timeSampleOfxApp) TS_STOP_NIF("ofxApp LoadContent " + currentContentID);
 
 						if(loadedContent.size() == contentStorage.size()){ //done loading ALL the JSON contents!
-							appState.setState(LOAD_CUSTOM_USER_CONTENT);
+							appState.setState(DELIVER_CONTENT_LOAD_RESULTS);
 						}else{ //load the next json
 							currentContentID = requestedContent[loadedContent.size()];
 							appState.setState(LOADING_JSON_CONTENT);
@@ -557,16 +566,22 @@ void App::updateStateMachine(float dt){
 			appState.setState(LOADING_JSON_CONTENT, false);
 			}break;
 
-		case LOAD_CUSTOM_USER_CONTENT:
-			if(delegate->isUserProcessDone(LOAD_CUSTOM_USER_CONTENT)){
-				ofLogNotice("ofxApp") << "Done LOAD_CUSTOM_USER_CONTENT!";
-				appState.setState(SETUP_USER_APP);
+		case DELIVER_CONTENT_LOAD_RESULTS:
+			if(delegate->ofxAppIsUserPhaseComplete((UserAppSetupStage)DELIVER_CONTENT_LOAD_RESULTS)){
+				ofLogNotice("ofxApp") << "Done DELIVER_CONTENT_LOAD_RESULTS!";
+				appState.setState(SETUP_USER_APP_POST_LOAD_CONTENT);
 			}break;
 
-		case SETUP_USER_APP:
-			if(delegate->isUserProcessDone(SETUP_USER_APP)){
-				ofLogNotice("ofxApp") << "Done SETUP_USER_APP!";
-				appState.setState(POST_USER_SETUP);
+		case SETUP_USER_APP_POST_LOAD_CONTENT:
+			if(delegate->ofxAppIsUserPhaseComplete((UserAppSetupStage)SETUP_USER_APP_POST_LOAD_CONTENT)){
+				ofLogNotice("ofxApp") << "Done SETUP_USER_APP_POST_LOAD_CONTENT!";
+				appState.setState(SETUP_USER_APP_JUST_B4_RUNNING);
+			}break;
+
+		case SETUP_USER_APP_JUST_B4_RUNNING:
+			if (delegate->ofxAppIsUserPhaseComplete((UserAppSetupStage)SETUP_USER_APP_JUST_B4_RUNNING)) {
+				ofLogNotice("ofxApp") << "Done SETUP_USER_APP_JUST_B4_RUNNING!";
+				appState.setState(RUNNING);
 			}break;
 
 		case RUNNING:
@@ -585,6 +600,11 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 							<< "\" to \"" << appState.getNameForState(change.newState) << "\"  State Duration: " << change.timeInPrevState << "sec.";
 
 	switch(change.newState){
+
+		case SETUP_USER_APP_PRE_LOAD_CONTENT:
+			ofLogNotice("ofxApp") << "Start SETUP_USER_APP_PRE_LOAD_CONTENT...";
+			delegate->ofxAppStartUserPhase((UserAppSetupStage)SETUP_USER_APP_PRE_LOAD_CONTENT);
+		break;
 
 		case LOADING_STATIC_TEXTURES:
 			startLoadingStaticAssets();
@@ -639,25 +659,24 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 			//ofxSuperLog::getLogger()->setScreenLoggingEnabled(true); //show log if json error
 			break;
 
-		case LOAD_CUSTOM_USER_CONTENT:
+		case DELIVER_CONTENT_LOAD_RESULTS:
 			for(auto c : contentStorage){
-				delegate->contentIsReady(c.first, c.second->getParsedObjects());
+				delegate->ofxAppContentIsReady(c.first, c.second->getParsedObjects());
 			}
 			ofLogNotice("ofxApp") << "Start Loading Custom User Content...";
-			delegate->startUserProcess(LOAD_CUSTOM_USER_CONTENT);
+			delegate->ofxAppStartUserPhase((UserAppSetupStage)DELIVER_CONTENT_LOAD_RESULTS);
 			break;
 
-		case SETUP_USER_APP:
-			ofLogNotice("ofxApp") << "Start Setup User App...";
-			delegate->startUserProcess(SETUP_USER_APP);
+		case SETUP_USER_APP_POST_LOAD_CONTENT:
+			ofLogNotice("ofxApp") << "Start SETUP_USER_APP_POST_LOAD_CONTENT...";
+			delegate->ofxAppStartUserPhase((UserAppSetupStage)SETUP_USER_APP_POST_LOAD_CONTENT);
 			break;
 
-		case POST_USER_SETUP:
+		case SETUP_USER_APP_JUST_B4_RUNNING:
 			setupRuiWatches();
 			setupApp();
-			ofLogNotice("ofxApp") << "Start Post User Setup...";
-			delegate->startUserProcess(POST_USER_SETUP); //user custom code runs here
-			appState.setState(RUNNING);
+			ofLogNotice("ofxApp") << "Start SETUP_USER_APP_JUST_B4_RUNNING...";
+			delegate->ofxAppStartUserPhase((UserAppSetupStage)SETUP_USER_APP_JUST_B4_RUNNING); //user custom code runs here
 			break;
 
 		case RUNNING:{
@@ -691,7 +710,7 @@ void App::onStaticTexturesLoaded(){
 		appState.setState(LOADING_JSON_CONTENT);
 	}else{
 		ofLogWarning("ofxApp")<< "Skipping JsonLoadContent phase, as there's no content to load.";
-		appState.setState(SETUP_USER_APP);
+		appState.setState(SETUP_USER_APP_POST_LOAD_CONTENT);
 	}
 }
 
