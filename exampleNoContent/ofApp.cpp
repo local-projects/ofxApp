@@ -9,8 +9,14 @@ void ofApp::setup(){
 }
 
 
-void ofApp::startUserProcess(ofxApp::State s){
+void ofApp::ofxAppStartUserPhase(ofxApp::State s){
 	ofLogNotice("ofApp") << "start User Process " << ofxApp::toString(s);
+	switch (s) {
+		case ofxApp::SETUP_B4_CONTENT_LOAD: break;
+		case ofxApp::RECEIVE_CONTENT_LOAD_RESULTS: break;
+		case ofxApp::SETUP_AFTER_CONTENT_LOAD: break;
+		case ofxApp::SETUP_JUST_B4_RUNNING: break;
+	}
 };
 
 

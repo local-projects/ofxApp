@@ -24,10 +24,10 @@ public:
 	void setupChanged(ofxScreenSetup::ScreenSetupArg &arg);
 
 	//ofxApp imposed - responder methods
-	void startUserProcess(ofxApp::State);
-	bool isUserProcessDone(ofxApp::State){return true;}
-	void drawLoadingScreenForUserProcess(ofxApp::State, const ofRectangle & r){};
-	float getProgressForUserProcess(ofxApp::State){return -1;}
+	void ofxAppStartUserPhase(ofxApp::State);
+	bool ofxAppIsUserPhaseComplete(ofxApp::State){return true;}
+	void ofxAppDrawPhaseProgressScreen(ofxApp::State, const ofRectangle & r){};
+	float ofxAppGetProgressForUserPhase(ofxApp::State){return -1;}
 
 	void contentIsReady(const string & contentID, vector<ContentObject*>){};
 
