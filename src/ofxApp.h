@@ -68,10 +68,10 @@ public:
 	//  OFX_APP_NAME=MyApp
 	#ifdef OFX_APP_NONAME
 	ofxAppColorsBasic & 			colors(){return colorsStorage;}
-	ofxAppGlobalsBasic & 			globals(){return globalsStorage;}
+	ofxAppGlobalsBasic & 			globals(){return *globalsStorage;}
 	#else
 	OFX_APP_CLASS_NAME(Colors) & 	colors(){return colorsStorage;}
-	OFX_APP_CLASS_NAME(Globals) & 	globals(){return globalsStorage;}
+	OFX_APP_CLASS_NAME(Globals) & 	globals(){return *globalsStorage;}
 	#endif
 	
 	ofxAppFonts &					fonts(){return *fontStorage;}
@@ -159,10 +159,10 @@ protected:
 	//crazy macro magic - beware! read a few lines above to see what's going on
 	#ifdef OFX_APP_NONAME
 	ofxAppColorsBasic						colorsStorage;
-	ofxAppGlobalsBasic						globalsStorage;
+	ofxAppGlobalsBasic						*globalsStorage;
 	#else
 	OFX_APP_CLASS_NAME(Colors)				colorsStorage;
-	OFX_APP_CLASS_NAME(Globals)				globalsStorage;
+	OFX_APP_CLASS_NAME(Globals)				* globalsStorage;
 	#endif
 	ofxAppFonts *							fontStorage;
 	map<string, ofxAppContent*>				contentStorage; //this will be same # as contentCfgs.size()

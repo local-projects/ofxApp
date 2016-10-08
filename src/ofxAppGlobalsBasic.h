@@ -12,6 +12,7 @@
 
 class ofxAppGlobalsAbstract : public HasRuiParams{
 public:
+	virtual ~ofxAppGlobalsAbstract() {};
 	virtual void setupRemoteUIParams() = 0;
 };
 
@@ -30,6 +31,8 @@ public:
 		RUI_SHARE_PARAM(drawTextureLoaderState);
 
 	 };
+
+	virtual ~ofxAppGlobalsBasic() {};
 
 public:
 

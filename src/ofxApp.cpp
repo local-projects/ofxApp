@@ -16,10 +16,15 @@ using namespace ofxApp;
 
 App::App() {
 	cout << "ofxApp::App()\n";
+	fontStorage = new ofxAppFonts();
+	#ifdef OFX_APP_NONAME
+	globalsStorage = new ofxAppGlobalsBasic;
+	#else
+	globalsStorage = new OFX_APP_CLASS_NAME(Globals);
+	#endif
 }
 
 void App::setup(ofxAppDelegate * delegate){
-
 	map<string,ofxApp::UserLambdas> emptyLambas;
 	setup(emptyLambas, delegate);
 }
@@ -31,7 +36,6 @@ void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * d
 		contentCfgs = cfgs;
 		this->delegate = delegate;
 		if(!hasLoadedSettings) loadSettings();
-		fontStorage = new ofxAppFonts();
 		setupContentData();
 		setupLogging();
 		printSettingsFile();
@@ -464,18 +468,18 @@ void App::draw(ofEventArgs &){
 	int y = 27;
 	int pad = -10;
 	int fontSize = 15;
-	if(globalsStorage.drawStaticTexturesMemStats){
+	if(globalsStorage->drawStaticTexturesMemStats){
 		float mb = app.textures().getTotalMemUsed();
 		ofRectangle r = drawMsgInBox("Static Assets Mem Used: " + ofToString(mb, 1) + "Mb", x, y, fontSize, ofColor::fuchsia);
 		y += r.height + fabs(r.y - y) + pad;
 	}
 
-	if(globalsStorage.drawTextureLoaderStats){
+	if(globalsStorage->drawTextureLoaderStats){
 		ofRectangle r = drawMsgInBox(TexturedObjectStats::one().getStatsAsText(), x, y, fontSize, ofColor::orange);
 		y += r.height + fabs(r.y - y) + pad;
 	}
 
-	if(globalsStorage.drawTextureLoaderState){
+	if(globalsStorage->drawTextureLoaderState){
 		ofRectangle r = drawMsgInBox(ProgressiveTextureLoadQueue::instance()->getStatsAsText(), x, y, fontSize, ofColor::limeGreen);
 		y += r.height + fabs(r.y - y) + pad;
 	}
@@ -742,7 +746,7 @@ void App::onKeyPressed(ofKeyEventArgs & a){
 		case 'W': screenSetup.cycleToNextScreenMode(); didPress = true; break;
 		case 'L': ofxSuperLog::getLogger()->setScreenLoggingEnabled(!ofxSuperLog::getLogger()->isScreenLoggingEnabled()); didPress = true; break;
 		case 'M': mullions.toggle(); didPress = true; break;
-		case 'D': globalsStorage.debug^= true; didPress = true; break;
+		case 'D': globalsStorage->debug^= true; didPress = true; break;
 	}
 	if(didPress){
 		RUI_PUSH_TO_CLIENT();
