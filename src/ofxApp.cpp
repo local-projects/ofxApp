@@ -228,9 +228,10 @@ void App::loadSettings(){
 
 void App::printSettingsFile(){
 
-	string settingsString = settings().getAsJsonString();
+	ofBuffer jsonFile = ofBufferFromFile(settingsFile, false);
+
 	logBanner("Loaded ofxApp Settings - JSON Contents follow :");
-	vector<string> jsonLines = ofSplitString(settingsString, "\n");
+	vector<string> jsonLines = ofSplitString(jsonFile.getText(), "\n");
 	#ifdef TARGET_WIN32
 	ofLogNotice("ofxApp") << " %%%%%% AppSettings.json %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
 	for (auto & l : jsonLines) {
