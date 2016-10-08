@@ -211,6 +211,7 @@ void App::loadSettings(){
 
 	ofLogNotice("ofxApp") << "loadSettings() from \"" << settingsFile << "\"";
 	bool ok = settings().load(ofToDataPath(settingsFile, true));
+	hasLoadedSettings = true;
 	if(!ok){
 		ofxApp::terminateApp("ofxApp", "Could not load settings from \"" + ofToDataPath(settingsFile, true) + "\"");
 	}
@@ -218,7 +219,6 @@ void App::loadSettings(){
 	startupScreenViewport.y = getFloat("App/startupScreenViewport/y", 0);
 	startupScreenViewport.width = getFloat("App/startupScreenViewport/w", 0);
 	startupScreenViewport.height = getFloat("App/startupScreenViewport/h", 0);
-	hasLoadedSettings = true;
 }
 
 
@@ -796,7 +796,7 @@ ofRectangle App::drawMsgInBox(string msg, int x, int y, int fontSize, ofColor fo
 #pragma mark Settings
 
 bool& App::getBool(const string & key, bool defaultVal){
-	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
+	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a BOOL setting but Settings have not been loaded! '" << key<< "'";
 	if(settings().exists(key)){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " Getting Bool Value for \"" << key << "\" : " << settings().getBool(key);
 		return settings().getBool(key);
@@ -811,7 +811,7 @@ bool& App::getBool(const string & key, bool defaultVal){
 
 
 int& App::getInt(const string & key, int defaultVal){
-	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
+	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a INT setting but Settings have not been loaded! '" << key<< "'";
 	if(settings().exists(key)){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " Getting Int Value for \"" << key << "\" : " << settings().getInt(key);
 		return settings().getInt(key);
@@ -825,7 +825,7 @@ int& App::getInt(const string & key, int defaultVal){
 }
 
 float& App::getFloat(const string & key, float defaultVal){
-	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
+	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a FLOAT setting but Settings have not been loaded! '" << key<< "'";
 	if(settings().exists(key)){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " Getting Float Value for \"" << key << "\" : " << settings().getFloat(key);
 		return settings().getFloat(key);
@@ -839,7 +839,7 @@ float& App::getFloat(const string & key, float defaultVal){
 }
 
 string& App::getString(const string & key, string defaultVal){
-	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
+	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a STRING setting but Settings have not been loaded! '" << key<< "'";
 	if(settings().exists(key)){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " Getting String Value for \"" << key << "\" : " << settings().getString(key);
 		return settings().getString(key);
@@ -853,7 +853,7 @@ string& App::getString(const string & key, string defaultVal){
 }
 
 ofColor& App::getColor(const string & key, ofColor defaultVal){
-	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a setting but Settings have not been loaded!";
+	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a COLOR setting but Settings have not been loaded! '" << key<< "'";
 	if(settings().exists(key)){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " Getting Color Value for \"" << key << "\" : " << settings().getColor(key);
 		return settings().getColor(key);
