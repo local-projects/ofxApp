@@ -471,7 +471,13 @@ void App::draw(ofEventArgs &){
 	int fontSize = 15;
 	if(globalsStorage->drawStaticTexturesMemStats){
 		float mb = app.textures().getTotalMemUsed();
-		ofRectangle r = drawMsgInBox("Static Assets Mem Used: " + ofToString(mb, 1) + "Mb", x, y, fontSize, ofColor::fuchsia);
+		ofRectangle r = drawMsgInBox("ofxApp Static Texturs Mem Used: " + ofToString(mb, 1) + "Mb", x, y, fontSize, ofColor::fuchsia);
+		y += r.height + fabs(r.y - y) + pad;
+	}
+
+	if (globalsStorage->drawAutoTextureMemStats) {
+		float mb = ofxAutoTexture::getTotalLoadedMBytes();
+		ofRectangle r = drawMsgInBox("ofxAutoTexture Mem Used: " + ofToString(mb, 1) + "Mb", x, y, fontSize, ofColor::deepSkyBlue);
 		y += r.height + fabs(r.y - y) + pad;
 	}
 

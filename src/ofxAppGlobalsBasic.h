@@ -27,6 +27,7 @@ public:
 		RUI_NEW_GROUP("OFXAPP GLOBALS");
 		RUI_SHARE_PARAM(debug);
 		RUI_SHARE_PARAM(drawStaticTexturesMemStats);
+		RUI_SHARE_PARAM(drawAutoTextureMemStats);
 		RUI_SHARE_PARAM(drawTextureLoaderStats);
 		RUI_SHARE_PARAM(drawTextureLoaderState);
 
@@ -40,6 +41,7 @@ public:
 	bool drawTextureLoaderStats  = false;
 	bool drawTextureLoaderState = false;
 	bool drawStaticTexturesMemStats = false;
+	bool drawAutoTextureMemStats = false;
 
 };
 
