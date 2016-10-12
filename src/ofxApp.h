@@ -13,6 +13,7 @@
 
 
 #include "ofMain.h"
+#include "ofxAppDelegate.h"
 #include "ofxAppUtils.h"
 #include "ofxAppContent.h"
 #include "ofxAppFonts.h"

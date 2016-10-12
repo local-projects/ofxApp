@@ -469,6 +469,12 @@ void App::draw(ofEventArgs &){
 	int y = 27;
 	int pad = -10;
 	int fontSize = 15;
+	
+	if(globalsStorage->drawAppRunTime){
+		ofRectangle r = drawMsgInBox("App Runtime: " + ofxApp::secondsToHumanReadable(ofGetElapsedTimef(), 1), x, y, fontSize, ofColor::crimson);
+		y += r.height + fabs(r.y - y) + pad;
+	}
+
 	if(globalsStorage->drawStaticTexturesMemStats){
 		float mb = app.textures().getTotalMemUsed();
 		ofRectangle r = drawMsgInBox("ofxApp Static Texturs Mem Used: " + ofToString(mb, 1) + "Mb", x, y, fontSize, ofColor::fuchsia);
@@ -490,6 +496,7 @@ void App::draw(ofEventArgs &){
 		ofRectangle r = drawMsgInBox(ProgressiveTextureLoadQueue::instance()->getStatsAsText(), x, y, fontSize, ofColor::limeGreen);
 		y += r.height + fabs(r.y - y) + pad;
 	}
+	
 }
 
 

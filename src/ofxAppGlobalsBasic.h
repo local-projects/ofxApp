@@ -26,10 +26,13 @@ public:
 		ofLogNotice("ofxAppGlobals") << "setupRemoteUIParams()";
 		RUI_NEW_GROUP("OFXAPP GLOBALS");
 		RUI_SHARE_PARAM(debug);
+		RUI_NEW_COLOR();
+		RUI_SHARE_PARAM(drawAppRunTime);
 		RUI_SHARE_PARAM(drawStaticTexturesMemStats);
 		RUI_SHARE_PARAM(drawAutoTextureMemStats);
 		RUI_SHARE_PARAM(drawTextureLoaderStats);
 		RUI_SHARE_PARAM(drawTextureLoaderState);
+		
 
 	 };
 
@@ -38,6 +41,7 @@ public:
 public:
 
 	bool debug = false;
+	bool drawAppRunTime;
 	bool drawTextureLoaderStats  = false;
 	bool drawTextureLoaderState = false;
 	bool drawStaticTexturesMemStats = false;
