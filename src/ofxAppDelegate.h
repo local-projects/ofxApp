@@ -35,7 +35,7 @@ public:
 	// just return true in ofxAppIsUserPhaseComplete() when the stage is concluded for ofxApp to proceed
 	// to the next state.
 
-	virtual void ofxAppStartUserPhase(ofxApp::UserAppSetupStage){}; //this will be your entry point to start loading stuff
+	virtual void ofxAppStartUserPhase(ofxApp::UserAppSetupStage){ ofLogError("ofxApp") << "ofxAppStartUserPhase() not implemented!"; }; //this will be your entry point to start loading stuff
 	//after u are asked to start loading content, ofxApp will query every frame to check if you are done
 	virtual bool ofxAppIsUserPhaseComplete(ofxApp::UserAppSetupStage){return true;} //your APP should override this method if you are loading custom content
 	virtual void ofxAppDrawPhaseProgressScreen(ofxApp::UserAppSetupStage, const ofRectangle & r){}; //your APP can override the loading screen drawing
