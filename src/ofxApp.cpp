@@ -289,6 +289,7 @@ void App::setupLogging(){
 	(*loggerStorage)->setMaxNumLogLines(getInt("logging/maxScreenLines"));
 	(*loggerStorage)->setUseScreenColors(true);
 	(*loggerStorage)->setSyncronizedLogging(getBool("logging/syncronizedLogging"));
+	(*loggerStorage)->getDisplayLogger().setDisplayLogTimes(getBool("logging/displayLogTimes"));
 	
 
 	float panelW = getFloat("logging/screenLogPanelWidth");
