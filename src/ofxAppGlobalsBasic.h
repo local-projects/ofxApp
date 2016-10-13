@@ -41,7 +41,7 @@ public:
 public:
 
 	bool debug = false;
-	bool drawAppRunTime;
+	bool drawAppRunTime = false;
 	bool drawTextureLoaderStats  = false;
 	bool drawTextureLoaderState = false;
 	bool drawStaticTexturesMemStats = false;
