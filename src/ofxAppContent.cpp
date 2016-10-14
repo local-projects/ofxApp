@@ -312,7 +312,7 @@ void ofxAppContent::jsonParseFailed(){
 
 
 void ofxAppContent::jsonContentReady(vector<ParsedObject*> &parsedObjects_){
-	ofLogNotice("ofxAppContent") << "JSON Content Ready! " << parsedObjects.size() << " Objects received.";
+	ofLogNotice("ofxAppContent") << "JSON Content Ready! " << parsedObjects_.size() << " Objects received.";
 	parsedObjects.reserve(parsedObjects_.size());
 	for(auto o : parsedObjects_){
 		//parsedObjects.push_back((ContentObject*)o);		
