@@ -20,7 +20,4 @@ ofxOpenCv
 ../../ExternalAddons/ofxTimeMeasurements
 ../../ExternalAddons/ofxRemoteUI
 ../../ExternalAddons/ofxHistoryPlot
-../../ExternalAddons/ofxAnimatable
 ../../ExternalAddons/ofxScreenSetup
-
-

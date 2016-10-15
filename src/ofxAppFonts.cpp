@@ -22,7 +22,7 @@ ofxFontStash* ofxAppFonts::getFont(const string& name){
 		return search->second;
 	}else{
 		string msg = "Can't find a font with that name! (" + name + ")";
-		ofxApp::terminateApp("ofxAppFonts", msg);
+		ofxApp::utils::terminateApp("ofxAppFonts", msg);
 		return nullptr;
 	}
 }
@@ -43,7 +43,7 @@ void ofxAppFonts::loadUseFonts(){
 				int mipmapPadding = (*itr)["mipmapPadding"].asInt();
 				float uiScale = (*itr)["uiScale"].asFloat();
 
-				ofxApp::assertFileExists(fontFile);
+				ofxApp::utils::assertFileExists(fontFile);
 				ofxFontStash * font = new ofxFontStash();
 
 				font->setup(fontFile,
@@ -64,7 +64,7 @@ void ofxAppFonts::loadUseFonts(){
 					ofLogNotice("ofxAppFonts") << "Loading User Font '" << fontName << "' from '" << fontFile << "'";
 					userFonts[fontName] = font;
 				}else{
-					ofxApp::terminateApp("ofxAppFonts", "User Font with this name already exists! (" + fontName + ")");
+					ofxApp::utils::terminateApp("ofxAppFonts", "User Font with this name already exists! (" + fontName + ")");
 				}
 
 				float charSpacing = 0;
@@ -75,7 +75,7 @@ void ofxAppFonts::loadUseFonts(){
 				}
 			}
 		}else{
-			ofxApp::terminateApp("ofxAppFonts", "User Fonts (\"Fonts/user\")is not a Json Object! Check you \"AppSettings.json\" file!");
+			ofxApp::utils::terminateApp("ofxAppFonts", "User Fonts (\"Fonts/user\")is not a Json Object! Check you \"AppSettings.json\" file!");
 		}
 	}
 }
@@ -93,7 +93,7 @@ void ofxAppFonts::loadOfxAppFont(const string & key, ofxFontStash & font){
 		int mipMapPadding = settings.getInt("Fonts/ofxApp/" + key + "/mipmapPadding");
 		float retinaScale = settings.getFloat("Fonts/ofxApp/" + key + "/uiScale");
 
-		ofxApp::assertFileExists(fontFile);
+		ofxApp::utils::assertFileExists(fontFile);
 
 		ofLogNotice("ofxAppFonts") << "Loading ofxApp Font'" << fontFile << "'";
 		font.setup(	fontFile,
@@ -106,6 +106,6 @@ void ofxAppFonts::loadOfxAppFont(const string & key, ofxFontStash & font){
 
 
 	}else{
-		ofxApp::terminateApp("ofxAppFonts", "Missing required ofxApp font! Check your \"AppSettings.json\" file in \"Fonts/ofxApp/" + key + "\"");
+		ofxApp::utils::terminateApp("ofxAppFonts", "Missing required ofxApp font! Check your \"AppSettings.json\" file in \"Fonts/ofxApp/" + key + "\"");
 	}
 }

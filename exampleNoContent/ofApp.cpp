@@ -40,7 +40,7 @@ void ofApp::draw(){
 void ofApp::keyPressed(int key){
 
 	if(key == 'k'){
-		ofxApp::terminateApp("ofApp", "user forced terminate!");
+		ofxApp::utils::terminateApp("ofApp", "user forced terminate!");
 	}
 }
 

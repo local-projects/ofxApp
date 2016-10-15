@@ -61,7 +61,7 @@ void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * d
 		if(timeSampleOfxApp) TS_START_NIF("ofxApp Load Static Textures");
 		appState.setState(SETUP_USER_APP_PRE_LOAD_CONTENT); //start loading content
 	}else{
-		ofxApp::terminateApp("ofxApp", "Trying to setup() ofxApp a second time!");
+		ofxApp::utils::terminateApp("ofxApp", "Trying to setup() ofxApp a second time!");
 	}
 }
 
@@ -170,7 +170,7 @@ void App::setupStateMachine(){
 	ofAddListener(appState.eventDraw, this, &App::onDrawLoadingScreenStatus);
 
 	string boldFontPath = getString("Fonts/ofxApp/monospacedBold/fontFile");
-	ofxApp::assertFileExists(boldFontPath);
+	ofxApp::utils::assertFileExists(boldFontPath);
 	appState.setup(boldFontPath, "", ofColor::black, ofColor::white);
 	//this creates strings for each of the ENUM states
 	float dark = 0.25;
@@ -188,7 +188,7 @@ void App::setupStateMachine(){
 void App::startLoadingStaticAssets(){
 	string texturesPath = getString("StaticAssets/textures");
 	if(texturesPath.size()){
-		ofxApp::assertFileExists(texturesPath);
+		ofxApp::utils::assertFileExists(texturesPath);
 		textures().loadTexturesInDir(texturesPath, getInt("App/maxThreads"));
 	}else{
 		ofLogWarning("ofxApp") << "App doesnt want to load static Assets!";
@@ -211,13 +211,13 @@ void App::setupTextureLoader(){
 
 void App::loadSettings(){
 
-	ofxApp::assertFileExists(settingsFile);
+	ofxApp::utils::assertFileExists(settingsFile);
 
 	ofLogNotice("ofxApp") << "loadSettings() from \"" << settingsFile << "\"";
 	bool ok = settings().load(ofToDataPath(settingsFile, true));
 	hasLoadedSettings = true;
 	if(!ok){
-		ofxApp::terminateApp("ofxApp", "Could not load settings from \"" + ofToDataPath(settingsFile, true) + "\"");
+		ofxApp::utils::terminateApp("ofxApp", "Could not load settings from \"" + ofToDataPath(settingsFile, true) + "\"");
 	}
 	startupScreenViewport.x = getFloat("App/startupScreenViewport/x", 0);
 	startupScreenViewport.y = getFloat("App/startupScreenViewport/y", 0);
@@ -308,7 +308,7 @@ void App::setupRemoteUI(){
 	bool useFontStash = getBool("RemoteUI/useFontStash");
 	if(useFontStash){
 		string fontFile = getString("RemoteUI/fontFile");
-		ofxApp::assertFileExists(fontFile);
+		ofxApp::utils::assertFileExists(fontFile);
 		RUI_GET_INSTANCE()->drawUiWithFontStash(fontFile, getInt("RemoteUI/fontSize", 15));
 	}
 	bool ruiSaveOnQuit = getBool("RemoteUI/saveSettingsOnExit");
@@ -405,7 +405,7 @@ void App::setupTimeMeasurements(){
 	bool useFontStash = getBool("TimeMeasurements/useFontStash");
 	if(useFontStash){
 		string fontFile = getString("TimeMeasurements/fontFile");
-		ofxApp::assertFileExists(fontFile);
+		ofxApp::utils::assertFileExists(fontFile);
 		TIME_SAMPLE_GET_INSTANCE()->drawUiWithFontStash(fontFile, getInt("TimeMeasurements/fontSize", 13));
 	}
 	TIME_SAMPLE_GET_INSTANCE()->setMsPrecision(getInt("TimeMeasurements/msPrecision", 2));
@@ -472,7 +472,7 @@ void App::draw(ofEventArgs &){
 	int fontSize = 15;
 	
 	if(globalsStorage->drawAppRunTime){
-		ofRectangle r = drawMsgInBox("App Runtime: " + ofxApp::secondsToHumanReadable(ofGetElapsedTimef(), 1), x, y, fontSize, ofColor::crimson);
+		ofRectangle r = drawMsgInBox("App Runtime: " + ofxApp::utils::secondsToHumanReadable(ofGetElapsedTimef(), 1), x, y, fontSize, ofColor::crimson);
 		y += r.height + fabs(r.y - y) + pad;
 	}
 
@@ -580,9 +580,15 @@ void App::updateStateMachine(float dt){
 			break;
 
 		case LOADING_JSON_CONTENT_FAILED:{
-			string knownGoodJSON = "file://" + contentStorage[currentContentID]->getLastKnownGoodJsonPath();
-			contentStorage[currentContentID]->setJsonDownloadURL(knownGoodJSON); //lets try from a known good json
-			appState.setState(LOADING_JSON_CONTENT, false);
+			if(contentStorage[currentContentID]->isReadyToFetchContent()){
+				string knownGoodJSON = "file://" + contentStorage[currentContentID]->getLastKnownGoodJsonPath();
+				contentStorage[currentContentID]->setJsonDownloadURL(knownGoodJSON); //lets try from a known good json
+				appState.setState(LOADING_JSON_CONTENT, false);
+			}else{
+				if(appState.getElapsedTimeInCurrentState() < 0.016){
+					ofLogNotice("ofxApp") << "Json Content Load Failed but ofxAppContent not ready yet... Waiting.";
+				}
+			}
 			}break;
 
 		case DELIVER_CONTENT_LOAD_RESULTS:
@@ -665,10 +671,11 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 					contentStorage[currentContentID]->fetchContent(); //this starts the ofxAppContent process!
 					
 				}else{
-					ofxApp::terminateApp("ofxApp", "Requested content ID \"content/JsonSources/" + currentContentID + "\" not found in \"" + settingsFile + "\"");
+					ofxApp::utils::terminateApp("ofxApp", "Requested content ID \"content/JsonSources/" + currentContentID + "\" not found in \"" + settingsFile + "\"");
 				}
 
 			}else{ //We are retrying to download with a known good json! we already swapped the JSON URL to a local older JSON
+				ofLogNotice("ofxApp") << "fetching content from a known good JSON!";
 				contentStorage[currentContentID]->fetchContent(); //this starts the ofxAppContent process!
 			}
 			}break;
@@ -822,7 +829,7 @@ bool& App::getBool(const string & key, bool defaultVal){
 	}else{
 		string msg = "Requesting a BOOL setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
 		ofLogFatalError("ofxApp") << msg;
-		if(QUIT_ON_MISSING_SETTING) ofxApp::terminateApp("ofxApp", msg);
+		if(QUIT_ON_MISSING_SETTING) ofxApp::utils::terminateApp("ofxApp", msg);
 		static auto def = defaultVal;
 		return def; //mmmm....
 	}
@@ -837,7 +844,7 @@ int& App::getInt(const string & key, int defaultVal){
 	}else{
 		string msg = "Requesting an INT setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
 		ofLogFatalError("ofxApp") << msg;
-		if(QUIT_ON_MISSING_SETTING) ofxApp::terminateApp("ofxApp", msg);
+		if(QUIT_ON_MISSING_SETTING) ofxApp::utils::terminateApp("ofxApp", msg);
 		static auto def = defaultVal;
 		return def; //mmmm....
 	}
@@ -851,7 +858,7 @@ float& App::getFloat(const string & key, float defaultVal){
 	}else{
 		string msg = "Requesting a FLOAT setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
 		ofLogFatalError("ofxApp") << msg;
-		if(QUIT_ON_MISSING_SETTING) ofxApp::terminateApp("ofxApp", msg);
+		if(QUIT_ON_MISSING_SETTING) ofxApp::utils::terminateApp("ofxApp", msg);
 		static auto def = defaultVal;
 		return def; //mmmm....
 	}
@@ -865,7 +872,7 @@ string& App::getString(const string & key, string defaultVal){
 	}else{
 		string msg = "Requesting a STRING setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
 		ofLogFatalError("ofxApp") << msg;
-		if(QUIT_ON_MISSING_SETTING) ofxApp::terminateApp("ofxApp", msg);
+		if(QUIT_ON_MISSING_SETTING) ofxApp::utils::terminateApp("ofxApp", msg);
 		static auto def = defaultVal;
 		return def; //mmmm....
 	}
@@ -879,7 +886,7 @@ ofColor& App::getColor(const string & key, ofColor defaultVal){
 	}else{
 		string msg = "Requesting a COLOR setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
 		ofLogFatalError("ofxApp") << msg;
-		if(QUIT_ON_MISSING_SETTING) ofxApp::terminateApp("ofxApp", msg);
+		if(QUIT_ON_MISSING_SETTING) ofxApp::utils::terminateApp("ofxApp", msg);
 		static auto def = defaultVal;
 		return def; //mmmm....
 	}
