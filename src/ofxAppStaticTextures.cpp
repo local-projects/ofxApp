@@ -66,7 +66,8 @@ void ofxAppStaticTextures::loadTexturesInDirectory(const string& path, bool recu
 			PreLoadData texData;
 			texData.filePath = filepath;
 			texData.loader = new ThreadedLoader();
-			texData.tex = createTexObjForPath(filepath, texData.texName, texData.createMipmap );
+
+			texData.tex = createTexObjForPath(filepath, texData.texName, texData.createMipmap, texData.useTex2D);
 			textures[texData.texName] = texData.tex;
 			texNameOrder.push_back(texData.texName);
 			pendingToPreLoad.push_back(texData);
@@ -77,6 +78,17 @@ void ofxAppStaticTextures::loadTexturesInDirectory(const string& path, bool recu
 
 ofxAutoTexture* ofxAppStaticTextures::loadTexture(PreLoadData data){
 	
+	//set OF ARB global state according to file naming
+	if (data.createMipmap) {
+		ofDisableArbTex();
+	} else {
+		if (!data.useTex2D) {
+			ofEnableArbTex();
+		} else {
+			ofDisableArbTex();
+		}
+	}
+
 	bool loaded = data.tex->loadFromFile(data.filePath);
 
 	if(loaded){
@@ -98,22 +110,11 @@ ofxAutoTexture* ofxAppStaticTextures::loadTexture(PreLoadData data){
 	}
 }
 
-ofxAutoTexture* ofxAppStaticTextures::createTexObjForPath(string filePath, string & texName, bool & createMipMap ){
+ofxAutoTexture* ofxAppStaticTextures::createTexObjForPath(string filePath, string & texName, bool & createMipMap, bool & useTex2D) {
 
 	string lowercaseFilePath = ofToLower(filePath);
-	bool useTex2D = ofIsStringInString(lowercaseFilePath, filenameHintTex2D);
+	useTex2D = ofIsStringInString(lowercaseFilePath, filenameHintTex2D);
 	createMipMap = ofIsStringInString(lowercaseFilePath, filenameHintMipMap);
-
-	//set OF ARB global state according to file naming
-	if(createMipMap){
-		ofDisableArbTex();
-	}else{
-		if (!useTex2D){
-			ofEnableArbTex();
-		}else{
-			ofDisableArbTex();
-		}
-	}
 
 	texName = ofFilePath::removeExt(filePath);
 	#ifdef TARGET_WIN32 //lets make windows path prettier

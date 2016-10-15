@@ -96,6 +96,7 @@ protected:
 		ofxAutoTexture* tex;
 		string texName;
 		string filePath;
+		bool useTex2D;
 		bool createMipmap;
 		ThreadedLoader * loader = NULL;
 	};
@@ -125,7 +126,7 @@ protected:
 	vector<string> texNameOrder;
 	unordered_map<string, ofxAutoTexture*> textures;
 	
-	ofxAutoTexture* createTexObjForPath(string filePath, string & texName, bool & createMipMap);
+	ofxAutoTexture* createTexObjForPath(string filePath, string & texName, bool & createMipMap, bool & useTex2D);
 
 	float memUsed = 0; //MBytes
 	bool isLoading = false;
