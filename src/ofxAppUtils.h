@@ -71,7 +71,7 @@ namespace ofxApp{
 			}
 		}
 		
-		ofColor createHsbColor(float h, float sat, float brightness){ //[0..255.0f]
+		static ofColor createHsbColor(float h, float sat, float brightness){ //[0..255.0f]
 			ofColor c;
 			c.setHsb(h,sat,brightness);
 			return c;
@@ -118,7 +118,7 @@ namespace ofxApp{
 			return ret;
 		}
 
-		string getNewUUID(){
+		static string getNewUUID(){
 			static char alphabet[16] = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
 			string s;
 			for(int i = 0; i < 8; i++) s += ofToString((char)alphabet[(int)floor(ofRandom(16))]);
@@ -134,7 +134,7 @@ namespace ofxApp{
 		}
 
 		
-		string getFileSystemSafeString(const string & input){
+		static string getFileSystemSafeString(const string & input){
 			static char invalidChars[] = {'?', '\\', '/', '*', '<', '>', '"', ';', ':', '#' };
 			int howMany = sizeof(invalidChars) / sizeof(invalidChars[0]);
 			char replacementChar = '_';
