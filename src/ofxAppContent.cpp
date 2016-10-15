@@ -22,6 +22,7 @@ void ofxAppContent::setup(	string ID,
 					    const ofxAssets::ObjectUsagePolicy objectUsagePolicy){
 
 
+	state = IDLE;
 	parsedObjects.clear();
 	this->ID = ID;
 	this->jsonURL = jsonSrc;
@@ -345,7 +346,6 @@ string ofxAppContent::getNameForState(ofxAppContent::ContentState state){
 		case FILTER_OBJECTS_WITH_BAD_ASSETS: return "FILTER_OBJECTS_WITH_BAD_ASSETS";
 		case SETUP_TEXTURED_OBJECTS: return "SETUP_TEXTURED_OBJECTS";
 		case JSON_CONTENT_READY: return "JSON_CONTENT_READY";
-		case NUM_CONTENT_MANAGER_STATES: return "NUM_CONTENT_MANAGER_STATES";
 		default: break;
 	}
 	return "UNKNOWN STATE";

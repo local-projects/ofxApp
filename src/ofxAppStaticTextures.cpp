@@ -34,6 +34,15 @@ void ofxAppStaticTextures::loadTexturesInDir(const string& imgDirPath, int maxTh
 		#ifdef TARGET_WIN32 //lets make windows path prettier
 		ofStringReplace(dirPath, "\\", "/");
 		#endif
+
+		ofDirectory dir(imgDirPath);
+		dir.listDir();
+		if (dir.size() == 0) { //if no images, proceed now.
+			ofNotifyEvent(eventAllTexturesLoaded, this);
+			ofLogWarning("ofxAppStaticTextures") << "No textures found in the directory! \"" << imgDirPath << "\"";
+			return;
+		}
+
 		loadTexturesInDirectory(imgDirPath, true);
 	}else{
 		ofLogError("ofxAppStaticTextures") << "Already loading async!";
@@ -46,11 +55,6 @@ void ofxAppStaticTextures::loadTexturesInDirectory(const string& path, bool recu
 	ofDirectory dir(path);
 	dir.listDir();
 
-	if (dir.size() == 0) { //if no images, proceed now.
-		ofNotifyEvent(eventAllTexturesLoaded, this);
-		ofLogWarning("ofxAppStaticTextures") << "No textures found in the directory! \"" << path << "\"";
-		return;
-	}
 
 	for(int i = 0; i < dir.size(); i++){
 		ofFile file = dir.getFile(i);

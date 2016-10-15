@@ -50,7 +50,6 @@ public:
 		FILTER_OBJECTS_WITH_BAD_ASSETS,
 		SETUP_TEXTURED_OBJECTS,
 		JSON_CONTENT_READY,
-		NUM_CONTENT_MANAGER_STATES
 	};
 
 	void setup(string ID,
@@ -98,7 +97,6 @@ public:
 	void jsonContentReady(vector<ParsedObject*> &parsedObjects);
 	void assetCheckFinished();
 
-	int getNumStates(){return NUM_CONTENT_MANAGER_STATES;}
 	string getNameForState(ofxAppContent::ContentState state);
 
 	// EVENTS //////////////////////////////////////////////////////////////////////////////////////
@@ -109,7 +107,7 @@ protected:
 
 	void setState(ContentState s);
 
-	ContentState state;
+	ContentState state = IDLE;
 	float timeInState = 0;
 	int totalAssetsToDownload = 0;
 

@@ -58,7 +58,7 @@ namespace ofxApp{
 					ofSleepMillis(16);
 				}
 			}
-			exit(-1);
+			exit(0);
 		};
 
 		static void assertFileExists(string path){
