@@ -67,7 +67,7 @@ public:
 			   const ofxAssets::ObjectUsagePolicy objectUsagePolicy
 			   );
 
-	bool isReadyToFetchContent(){return state == IDLE || state == JSON_PARSE_FAILED || state == JSON_DOWNLOAD_FAILED;}
+	bool isReadyToFetchContent(){return state == IDLE || state == JSON_PARSE_FAILED || state == JSON_DOWNLOAD_FAILED || state == JSON_CONTENT_READY;}
 	void fetchContent(); //start the process here
 	
 	void setJsonDownloadURL(string jsonURL);
