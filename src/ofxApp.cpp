@@ -9,8 +9,10 @@
 #include "ofxApp.h"
 #include "ofxThreadSafeLog.h"
 #include "TexturedObjectStats.h"
+#include "ofxAppUtils.h"
 
 ofxApp::App app; //app global in your project!
+ofxApp::App* ofxApp::App::theApp = &app; //static access to theApp with ofxApp::get() 
 
 using namespace ofxApp;
 
@@ -24,10 +26,12 @@ App::App() {
 	#endif
 }
 
+
 void App::setup(ofxAppDelegate * delegate){
 	map<string,ofxApp::UserLambdas> emptyLambas;
 	setup(emptyLambas, delegate);
 }
+
 
 void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * delegate){
 
@@ -38,6 +42,7 @@ void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * d
 		if(!hasLoadedSettings) loadSettings();
 		setupContentData();
 		setupLogging();
+		setupErrorReporting();
 		printSettingsFile();
 		fonts().setup();
 		if(getBool("logging/useFontStash")){ //set a nice font for the on screen logger if using fontstash
@@ -111,6 +116,14 @@ void App::setMouseEvents(bool enabled){
 			ofLogWarning("ofxApp") << "Disabled Mouse Events";
 		}
 	}
+}
+
+
+void App::setupErrorReporting(){
+	int port = getInt("ErrorReporting/port");
+	string host = getString("ErrorReporting/host");
+	string email = getString("ErrorReporting/email");
+	errorReporterObj.setup(host, port, email);
 }
 
 

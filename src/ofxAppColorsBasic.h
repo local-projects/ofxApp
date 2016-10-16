@@ -8,7 +8,7 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxAppUtils.h"
+#include "ofxAppStructs.h"
 
 class ofxAppColorsAbstract : public HasRuiParams{
 public:

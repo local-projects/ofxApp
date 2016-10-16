@@ -8,7 +8,6 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxAppUtils.h"
 #include "ofxAssets.h"
 #include "ofxSimpleHttp.h"
 #include "ofxDownloadCentral.h"
@@ -30,7 +29,6 @@ class ContentObject : public ParsedObject, public AssetHolder, public TexturedOb
 
 		//this is effectively the destructor of the object
 		virtual void deleteWithGC(){}
-
 };
 
 

@@ -6,6 +6,7 @@
 //
 
 #include "ofxAppContent.h"
+#include "ofxAppUtils.h"
 
 void ofxAppContent::setup(	string ID,
 					   	string jsonSrc,

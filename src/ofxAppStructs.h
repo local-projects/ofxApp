@@ -71,3 +71,8 @@ namespace ofxApp{
 	}
 
 };
+
+class HasRuiParams{
+public:
+	virtual void setupRemoteUIParams() = 0;
+};

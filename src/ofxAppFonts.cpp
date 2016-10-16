@@ -7,6 +7,7 @@
 
 #include "ofxAppFonts.h"
 #include "ofxJsonSettings.h"
+#include "ofxAppUtils.h"
 
 
 void ofxAppFonts::setup(){

@@ -8,7 +8,8 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxAppUtils.h"
+#include "ofxAppStructs.h"
+#include "ofxRemoteUIServer.h"
 
 class ofxAppGlobalsAbstract : public HasRuiParams{
 public:

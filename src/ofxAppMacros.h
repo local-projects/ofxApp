@@ -37,11 +37,12 @@ const string FILE_ACCES_ICON = "[!]";
 const string FILE_ACCES_ICON = "💾";
 #endif
 
-#define GLOB				app.globals() /*super fast access to globals*/
-#define G_COL				app.colors()
-#define G_TEX(name)			app.textures().getTexture(name)
-#define G_FONT(name)		app.fonts().getFont(name)
-#define G_FONT_MONO			app.fonts().getMonoFont()
-#define G_FONT_MONO_BOLD	app.fonts().getMonoBoldFont()
+#define GLOB											app.globals() /*super fast access to globals*/
+#define G_COL											app.colors()
+#define G_TEX(name)										app.textures().getTexture(name)
+#define G_FONT(name)									app.fonts().getFont(name)
+#define G_FONT_MONO										app.fonts().getMonoFont()
+#define G_FONT_MONO_BOLD								app.fonts().getMonoBoldFont()
+#define G_REPORT(alertID,msg,severity,fileToSend)		app.errorReporter().send(alertID,msg,severity,fileToSend)
 
 

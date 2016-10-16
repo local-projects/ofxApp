@@ -6,20 +6,10 @@
 //
 //
 
+
 #pragma once
-#include "ofMain.h"
-#include "ofxRemoteUIServer.h"
-#include "ofxAppStructs.h"
+#include "ofxApp.h"
 #include "ofxThreadSafeLog.h"
-#include "ofxSuperLog.h"
-#include "ofxSimpleHttp.h"
-#include "ofxTuio.h"
-
-class HasRuiParams{
-public:
-	virtual void setupRemoteUIParams() = 0;
-};
-
 
 namespace ofxApp{
 	
@@ -42,13 +32,16 @@ namespace ofxApp{
 			ofxSuperLog::getLogger()->getDisplayLogger().setPanelWidth(1.0);
 			int numFrames = secondsOnScreen * 1000 / 16; //stay up a bit so that you can read logs on screen
 			
+			//ofxApp::get();
+			G_REPORT("ofxAppTerminate", reason, 2, "");
+			
+			
 			//hijack OF and refresh screen & events by hand
 			if(ofGetWindowPtr()){
 				for(int i = 0; i < numFrames; i++ ){
 					ofSetupScreen();
 					ofClear(0,0,0,255);
 					ofxSuperLog::getLogger()->getDisplayLogger().draw(ofGetWidth(), ofGetHeight());
-					//ofGetMainLoop()->loopOnce();
 					ofGetMainLoop()->pollEvents();
 					if(ofGetWindowPtr()->getWindowShouldClose()){
 						ofLogFatalError("ofxApp") << "Quitting by user action";

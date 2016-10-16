@@ -14,12 +14,10 @@
 
 #include "ofMain.h"
 #include "ofxAppDelegate.h"
-#include "ofxAppUtils.h"
 #include "ofxAppContent.h"
 #include "ofxAppFonts.h"
 #include "ofxAppStaticTextures.h"
 #include "ofxAppMacros.h"
-
 #include "ofxJsonSettings.h"
 #include "ofxMullion.h"
 #include "ofxTuio.h"
@@ -28,6 +26,7 @@
 #include "ofxRemoteUIServer.h"
 #include "ofxTimeMeasurements.h"
 #include "ofxDrawableStateMachine.h"
+#include "ofxAppErrorReporter.h"
 
 //Check if the user created the required macro to include his custom sub-classes for Colors, Globals and Fonts.
 #ifndef OFX_APP_NAME
@@ -55,6 +54,8 @@ public:
 	App();
 	~App();
 
+	static App * get(){return theApp;}
+	
 	void setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * delegate);
 	void setup(ofxAppDelegate * delegate); //if your app has no content ; no lambdas needed
 
@@ -79,6 +80,7 @@ public:
 	ofxJsonSettings & 				settings(){return ofxJsonSettings::get();}
 	ofxAppStaticTextures & 			textures(){return texStorage;}
 	ofPtr<ofxSuperLog> 				logger(){return ofxSuperLog::getLogger();}
+	ofxAppErrorReporter &			errorReporter(){ return errorReporterObj;}
 	ofxTuioClient & 				tuio(){ return tuioClient;}
 
 	ofxScreenSetup					screenSetup;
@@ -127,6 +129,7 @@ protected:
 	void setupOF();
 	void setupRemoteUI();
 	void setupLogging();
+	void setupErrorReporting();
 	void setupTuio();
 	void setupApp();
 	void setupTextureLoader();
@@ -169,6 +172,9 @@ protected:
 	map<string, ofxAppContent*>				contentStorage; //this will be same # as contentCfgs.size()
 	ofPtr<ofxSuperLog>	*					loggerStorage; //note its a *
 	ofxDrawableStateMachine<ofxApp::State>	appState; //App State Machine
+	
+	ofxAppErrorReporter						errorReporterObj;
+	
 
 	bool									hasLoadedSettings = false;
 	float									dt;
@@ -183,11 +189,15 @@ protected:
 
 
 	ofxAppDelegate *						delegate = nullptr;
-
+	
 	const int								loadingScreenFontSize = 22;
 	
+	static App *							theApp;
 };
-
+	
+	ofxApp::App * get(){ return ofxApp::App::get();}
+	
 } //namespace ofxApp
 
 extern ofxApp::App app; //all global parameters are here - add yor "ofxApp" subclass!
+

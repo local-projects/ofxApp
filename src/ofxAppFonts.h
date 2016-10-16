@@ -8,7 +8,6 @@
 #pragma once
 #include "ofMain.h"
 #include "ofxFontStash.h"
-#include "ofxAppUtils.h"
 
 class ofxAppFonts{
 
