@@ -78,7 +78,7 @@ protected:
 	string addContext(const string& msg){
 		string msg2 = msg +
 						"\nHostInfo: " + hostInfo +
-						"\nAppUptime: " + //ofxApp::utils::secondsToHumanReadable(ofGetElapsedTimef(), 2) +
+						"\nAppUptime: " + ofxApp::utils::secondsToHumanReadable(ofGetElapsedTimef(), 2) +
 						"\ngitRev:" + gitRev +
 						"\ngitStatus: " + gitStatus;
 		
