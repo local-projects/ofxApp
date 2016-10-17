@@ -181,6 +181,7 @@ protected:
 	bool									timeSampleOfxApp = false;
 	bool 									enableMouse;
 	bool									showMouse;
+	bool									reportErrors;
 
 	map<string, ofxApp::UserLambdas>		contentCfgs; //this will be as big as the number of jsons to load
 	string									currentContentID;

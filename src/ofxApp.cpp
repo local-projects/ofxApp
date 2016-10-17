@@ -120,10 +120,11 @@ void App::setMouseEvents(bool enabled){
 
 
 void App::setupErrorReporting(){
+	reportErrors = getBool("ErrorReporting/enabled");
 	int port = getInt("ErrorReporting/port");
 	string host = getString("ErrorReporting/host");
 	string email = getString("ErrorReporting/email");
-	errorReporterObj.setup(host, port, email);
+	errorReporterObj.setup(host, port, email, reportErrors);
 }
 
 
