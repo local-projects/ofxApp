@@ -196,7 +196,7 @@ protected:
 	static App *							theApp;
 };
 	
-	ofxApp::App * get(){ return ofxApp::App::get();}
+	//static ofxApp::App * get(){ return ofxApp::App::get();}
 	
 } //namespace ofxApp
 

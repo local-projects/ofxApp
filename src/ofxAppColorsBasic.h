@@ -9,6 +9,7 @@
 
 #include "ofMain.h"
 #include "ofxAppStructs.h"
+#include "ofxRemoteUIServer.h"
 
 class ofxAppColorsAbstract : public HasRuiParams{
 public:

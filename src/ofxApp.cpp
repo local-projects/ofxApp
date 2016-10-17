@@ -12,7 +12,7 @@
 #include "ofxAppUtils.h"
 
 ofxApp::App app; //app global in your project!
-ofxApp::App* ofxApp::App::theApp = &app; //static access to theApp with ofxApp::get() 
+ofxApp::App* ofxApp::App::theApp = &app; //static access to the App with ofxApp::get() 
 
 using namespace ofxApp;
 
