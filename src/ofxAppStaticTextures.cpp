@@ -7,7 +7,7 @@
 //
 
 #include "ofxAppStaticTextures.h"
-
+#include "ofxApp.h"
 
 string ofxAppStaticTextures::filenameHintTex2D = "_t2d";
 string ofxAppStaticTextures::filenameHintMipMap = "_mip";
@@ -109,7 +109,9 @@ ofxAutoTexture* ofxAppStaticTextures::loadTexture(PreLoadData data){
 		return data.tex;
 	}else{
 		delete data.tex;
-		ofLogError("ofxAppStaticTextures") << "FAILED to load tex from \"" << data.filePath << "\"" ;
+		string msg = "FAILED to load tex from \"" + data.filePath + "\"" ;
+		OFXAPP_REPORT("ofxAppStaticTexturesFailLoad", msg, 1);
+		ofLogError("ofxAppStaticTextures") << msg;
 		return NULL;
 	}
 }

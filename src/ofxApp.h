@@ -53,8 +53,13 @@ public:
 	
 	App();
 	~App();
+	
+//	static App& one(){
+//		static App instance;
+//		return instance;
+//	}
 
-	static App * get(){return theApp;}
+	//static App * get(){return theApp;}
 	
 	void setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * delegate);
 	void setup(ofxAppDelegate * delegate); //if your app has no content ; no lambdas needed
@@ -63,6 +68,8 @@ public:
 	void exit(ofEventArgs &);
 	void draw(ofEventArgs &);
 
+	
+	
 	// Crazy Macro magic here!! Beware!!
 	// this compounds some classnames to match whatever you decided to name your app;
 	// so "OFX_APP_CLASS_NAME(Colors)" becomes "MyAppColors"
@@ -193,7 +200,7 @@ protected:
 	
 	const int								loadingScreenFontSize = 22;
 	
-	static App *							theApp;
+	//static App *							theApp;
 };
 	
 	//static ofxApp::App * get(){ return ofxApp::App::get();}

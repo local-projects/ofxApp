@@ -69,13 +69,15 @@ public:
 	void fetchContent(); //start the process here
 	
 	void setJsonDownloadURL(string jsonURL);
+	string getJsonDownloadURL(){ return jsonURL;};
 
 	void update(float dt);
 
 	bool foundError(){ return state == JSON_DOWNLOAD_FAILED || state == JSON_PARSE_FAILED; };
 	bool isContentReady(){ return state == JSON_CONTENT_READY; };
 
-	string getStatus();
+	string getStatus(bool formatted = true);
+	string getErrorMsg(){return errorMessage;}
 	float getPercentDone();
 
 	//call this only if isContentReady() == true

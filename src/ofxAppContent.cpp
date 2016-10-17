@@ -7,6 +7,7 @@
 
 #include "ofxAppContent.h"
 #include "ofxAppUtils.h"
+#include "ofxApp.h"
 
 void ofxAppContent::setup(	string ID,
 					   	string jsonSrc,
@@ -245,23 +246,23 @@ string ofxAppContent::getLastKnownGoodJsonPath(){
 }
 
 
-string ofxAppContent::getStatus(){
+string ofxAppContent::getStatus(bool formatted){
 
 	string r;
 	string plainFormat = " %0.8 #0x888888 \n"; //text format for logging on screen - see ofxFontStash.h drawMultiLineColumn()
 	string errorFormat = " %0.8 #0xBB0000 \n"; //text format for logging on screen - see ofxFontStash.h drawMultiLineColumn()
 
 	switch (state) {
-		case DOWNLOADING_JSON: r = plainFormat + jsonParser.getHttp().drawableString(); break;
-		case JSON_DOWNLOAD_FAILED: r = errorFormat + errorMessage; break;
-		case CHECKING_JSON: r = plainFormat + jsonParser.getDrawableState(); break;
-		case PARSING_JSON: r = plainFormat + jsonParser.getDrawableState(); break;
-		case CHECKING_ASSET_STATUS: r = plainFormat + assetChecker.getDrawableState(); break;
-		case JSON_PARSE_FAILED: r = errorFormat +  errorMessage; break;
-		case DOWNLOADING_ASSETS: r =  plainFormat + dlc.getDrawableInfo(true, false); break;
-		case FILTER_OBJECTS_WITH_BAD_ASSETS: r = plainFormat + objectsWithBadAssets; break;
-		case SETUP_TEXTURED_OBJECTS: r = plainFormat; break;
-		case JSON_CONTENT_READY: r = plainFormat + "READY"; break;
+		case DOWNLOADING_JSON: r = string(formatted ? plainFormat : "") + jsonParser.getHttp().drawableString(); break;
+		case JSON_DOWNLOAD_FAILED: r = string(formatted ? errorFormat : "") + errorMessage; break;
+		case CHECKING_JSON: r = string(formatted ? plainFormat : "") + jsonParser.getDrawableState(); break;
+		case PARSING_JSON: r = string(formatted ? plainFormat : "") + jsonParser.getDrawableState(); break;
+		case CHECKING_ASSET_STATUS: r = string(formatted ? plainFormat : "") + assetChecker.getDrawableState(); break;
+		case JSON_PARSE_FAILED: r = string(formatted ? errorFormat : "") +  errorMessage; break;
+		case DOWNLOADING_ASSETS: r =  string(formatted ? plainFormat : "") + dlc.getDrawableInfo(true, false); break;
+		case FILTER_OBJECTS_WITH_BAD_ASSETS: r = string(formatted ? plainFormat : "") + objectsWithBadAssets; break;
+		case SETUP_TEXTURED_OBJECTS: r = string(formatted ? plainFormat : ""); break;
+		case JSON_CONTENT_READY: r = string(formatted ? plainFormat : "") + "READY"; break;
 		default: break;
 	}
 	return r;
@@ -297,6 +298,7 @@ void ofxAppContent::jsonDownloaded(ofxSimpleHttpResponse & arg){
 void ofxAppContent::jsonDownloadFailed(ofxSimpleHttpResponse & arg){
 	ofLogError("ofxAppContent") << "JSON download failed!";
 	errorMessage = arg.reasonForStatus + " (" + arg.url + ")";
+	OFXAPP_REPORT("ofxAppJsonDownloadFailed", "JSON Download Failed for '" + ID + "'! \"" + jsonURL + "\"\nreason: " + arg.reasonForStatus , 2);
 	setState(JSON_DOWNLOAD_FAILED);
 }
 
@@ -309,6 +311,7 @@ void ofxAppContent::jsonInitialCheckOK(){
 
 void ofxAppContent::jsonParseFailed(){
 	ofLogError("ofxAppContent") << "JSON Parse Failed!";
+	OFXAPP_REPORT("ofxAppJsonParseFailed", "JSON Parse Failed for '" + ID + "'! \"" + jsonURL + "\"" , 2);
 	setState(JSON_PARSE_FAILED);
 }
 

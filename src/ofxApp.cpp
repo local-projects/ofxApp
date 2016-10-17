@@ -12,7 +12,7 @@
 #include "ofxAppUtils.h"
 
 ofxApp::App app; //app global in your project!
-ofxApp::App* ofxApp::App::theApp = &app; //static access to the App with ofxApp::get() 
+//ofxApp::App* ofxApp::App::theApp = &app; //static access to the App with ofxApp::get()
 
 using namespace ofxApp;
 
@@ -42,6 +42,7 @@ void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * d
 		if(!hasLoadedSettings) loadSettings();
 		setupContentData();
 		setupLogging();
+		setupRemoteUI();
 		setupErrorReporting();
 		printSettingsFile();
 		fonts().setup();
@@ -57,7 +58,6 @@ void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * d
 		setupStateMachine();
 		appState.setState(SETTING_UP);
 		setupListeners();
-		setupRemoteUI();
 		globals().setupRemoteUIParams();
 		colors().setupRemoteUIParams();
 		textures().setup();
@@ -124,7 +124,11 @@ void App::setupErrorReporting(){
 	int port = getInt("ErrorReporting/port");
 	string host = getString("ErrorReporting/host");
 	string email = getString("ErrorReporting/email");
-	errorReporterObj.setup(host, port, email, reportErrors);
+	errorReporterObj.setup(host, port, email, reportErrors,
+						   RUI_GET_INSTANCE()->getComputerName(),
+						   RUI_GET_INSTANCE()->getComputerIP(),
+						   RUI_GET_INSTANCE()->getBinaryName()
+						   );
 }
 
 
@@ -561,7 +565,14 @@ void App::updateStateMachine(float dt){
 				if( appState.hasError() && appState.ranOutOfErrorRetries()){ //give up!
 					ofLogError("ofxApp") << "json failed to load too many times! Giving Up!";
 					appState.setState(LOADING_JSON_CONTENT_FAILED);
+					
+					OFXAPP_REPORT(	"ofxAppJsonContentGiveUp", "Giving up on fetching JSON for '" + currentContentID +
+							 	"'!\nJsonSrc: \"" + contentStorage[currentContentID]->getJsonDownloadURL() +
+							 	"\"\nStatus: " + contentStorage[currentContentID]->getStatus(false) +
+							 	"\"ErrorMsg: \"" + contentStorage[currentContentID]->getErrorMsg(),
+							 	2);
 					break;
+					
 				}else{
 					
 					if(contentStorage[currentContentID]->isContentReady()){ //see if we are done
@@ -905,3 +916,5 @@ ofColor& App::getColor(const string & key, ofColor defaultVal){
 		return def; //mmmm....
 	}
 }
+
+//////////////////////////////////////////////////////////////////////////
