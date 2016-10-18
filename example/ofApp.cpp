@@ -71,7 +71,9 @@ void ofApp::draw(){
 
 
 void ofApp::keyPressed(int key){
-
+	if (key == 'a') {
+		OFXAPP_REPORT("testAlert", "testing", 0);
+	}
 }
 
 
