@@ -148,7 +148,7 @@ ofxAppLambdas::ofxAppLambdas(){
 
 				Json::Value & jsonImage = (Json::Value &)*itr;
 
-				const string imgSize = "n"; //"x", "z", "b" and so on
+				const string imgSize = "sq"; //"x", "z", "b" and so on
 
 				if(jsonImage[imgSize].isObject()){
 					//if(jsonImage[imgSize]["is_primary"].asString() == "1"){ //only primary images

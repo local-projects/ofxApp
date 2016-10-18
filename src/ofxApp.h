@@ -27,6 +27,7 @@
 #include "ofxTimeMeasurements.h"
 #include "ofxDrawableStateMachine.h"
 #include "ofxAppErrorReporter.h"
+#include "ofxGoogleAnalytics.h"
 
 //Check if the user created the required macro to include his custom sub-classes for Colors, Globals and Fonts.
 #ifndef OFX_APP_NAME
@@ -89,7 +90,7 @@ public:
 	ofPtr<ofxSuperLog> 				logger(){return ofxSuperLog::getLogger();}
 	ofxAppErrorReporter &			errorReporter(){ return errorReporterObj;}
 	ofxTuioClient & 				tuio(){ return tuioClient;}
-
+	ofxGoogleAnalytics *			analytics(){ return gAnalytics; }
 	ofxScreenSetup					screenSetup;
 
 	// Convinience methods ////////////////////////////////////////////////////////
@@ -144,6 +145,8 @@ protected:
 	void startLoadingStaticAssets();
 	void setMouseEvents(bool enabled);
 	void loadModulesSettings();
+	void setupGoogleAnalytics();
+
 	void logBanner(const string & log);
 
 	// STATE MACHINE ///////////////////////////////////////////////////////////////////////////////
@@ -170,17 +173,18 @@ protected:
 	//crazy macro magic - beware! read a few lines above to see what's going on
 	#ifdef OFX_APP_NONAME
 	ofxAppColorsBasic						colorsStorage;
-	ofxAppGlobalsBasic						*globalsStorage;
+	ofxAppGlobalsBasic						* globalsStorage = nullptr;
 	#else
 	OFX_APP_CLASS_NAME(Colors)				colorsStorage;
-	OFX_APP_CLASS_NAME(Globals)				* globalsStorage;
+	OFX_APP_CLASS_NAME(Globals)				* globalsStorage = nullptr;
 	#endif
-	ofxAppFonts *							fontStorage;
+	ofxAppFonts *							fontStorage = nullptr;
 	map<string, ofxAppContent*>				contentStorage; //this will be same # as contentCfgs.size()
 	ofPtr<ofxSuperLog>	*					loggerStorage; //note its a *
 	ofxDrawableStateMachine<ofxApp::State>	appState; //App State Machine
 	
 	ofxAppErrorReporter						errorReporterObj;
+	ofxGoogleAnalytics *					gAnalytics = nullptr;
 	
 
 	bool									hasLoadedSettings = false;

@@ -1,4 +1,5 @@
 ofxOsc
+ofxNetwork
 ofxXmlSettings
 ofxOpenCv
 ../../ExternalAddons/ofxFontStash
@@ -21,3 +22,5 @@ ofxOpenCv
 ../../ExternalAddons/ofxRemoteUI
 ../../ExternalAddons/ofxHistoryPlot
 ../../ExternalAddons/ofxScreenSetup
+../../ExternalAddons/ofxGoogleAnalytics
+../../ExternalAddons/ofxSensu

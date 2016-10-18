@@ -44,6 +44,7 @@ void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * d
 		setupLogging();
 		setupRemoteUI();
 		setupErrorReporting();
+		setupGoogleAnalytics();
 		printSettingsFile();
 		fonts().setup();
 		if(getBool("logging/useFontStash")){ //set a nice font for the on screen logger if using fontstash
@@ -63,6 +64,7 @@ void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * d
 		textures().setup();
 		setupTuio();
 		setupOF();
+		
 		if(timeSampleOfxApp) TS_START_NIF("ofxApp Load Static Textures");
 		appState.setState(SETUP_USER_APP_PRE_LOAD_CONTENT); //start loading content
 	}else{
@@ -78,6 +80,7 @@ App::~App(){
 
 
 void App::setupContentData() {
+	ofLogNotice("ofxApp") << "setupContentData()";
 	for (auto & cfg : contentCfgs) {
 		contentStorage[cfg.first] = new ofxAppContent();
 		requestedContent.push_back(cfg.first);
@@ -89,6 +92,7 @@ void App::setupContentData() {
 
 
 void App::setupOF(){
+	ofLogNotice("ofxApp") << "setupOF()";
 	ofSetFrameRate(getInt("App/frameRate"));
 	ofBackground(22);
 	dt = 1.0f / ofGetTargetFrameRate();
@@ -101,6 +105,8 @@ void App::setupOF(){
 }
 
 void App::setMouseEvents(bool enabled){
+	
+	ofLogNotice("ofxApp") << "setMouseEvents()";
 	if(enabled){
 		if(!ofEvents().mousePressed.isEnabled()){
 			ofEvents().mousePressed.enable();
@@ -120,6 +126,9 @@ void App::setMouseEvents(bool enabled){
 
 
 void App::setupErrorReporting(){
+	
+	ofLogNotice("ofxApp") << "setupErrorReporting()";
+	
 	reportErrors = getBool("ErrorReporting/enabled");
 	int port = getInt("ErrorReporting/port");
 	string host = getString("ErrorReporting/host");
@@ -133,6 +142,8 @@ void App::setupErrorReporting(){
 
 
 void App::setupWindow(){
+	
+	ofLogNotice("ofxApp") << "setupWindow()";
 	ofxScreenSetup::ScreenMode mode = ofxScreenSetup::ScreenMode((int)getInt("App/window/windowMode"));
 	screenSetup.setup(getInt("App/window/customWidth"), getInt("App/window/customHeight"), mode);
 
@@ -167,8 +178,9 @@ void App::setupWindow(){
 
 void App::setupListeners(){
 
+	ofLogNotice("ofxApp") << "setupListeners()";
 	ofAddListener(ofEvents().update, this, &App::update);
-	ofAddListener(ofEvents().exit, this, &App::exit, OF_EVENT_ORDER_AFTER_APP);
+	ofAddListener(ofEvents().exit, this, &App::exit, OF_EVENT_ORDER_AFTER_APP + 100); //last thing hopefully!
 	//listen to content manager state changes
 	for(auto c : contentStorage){
 		ofAddListener(c.second->eventStateChanged, this, &App::onContentManagerStateChanged);
@@ -180,8 +192,41 @@ void App::setupListeners(){
 }
 
 
+void App::setupGoogleAnalytics(){
+	
+	ofLogNotice("ofxApp") << "setupGoogleAnalytics()";
+	bool enabled = getBool("GoogleAnalytics/enabled");
+	string googleID = getString("GoogleAnalytics/googleID");
+	string appName = getString("GoogleAnalytics/appName");
+	string appVersion = getString("GoogleAnalytics/appVersion");
+	string appID = getString("GoogleAnalytics/appID");
+	string appInstallerID = getString("GoogleAnalytics/appInstallerID");
+	bool verbose = getBool("GoogleAnalytics/verbose");
+	bool doBench = getBool("GoogleAnalytics/sendBenchmark");
+	bool randUUID = getBool("GoogleAnalytics/randomizedUUID");
+	int maxRequestsPerSession = getInt("GoogleAnalytics/maxRequestsPerSession");
+	float sendDataIntervalSec = getFloat("GoogleAnalytics/sendDataInterval");
+	bool shouldReportFramerate = getBool("GoogleAnalytics/shouldReportFramerate");
+	float framerateReportInterval = getFloat("GoogleAnalytics/framerateReportInterval");
+	
+	gAnalytics = new ofxGoogleAnalytics();
+	gAnalytics->setVerbose(verbose);
+	gAnalytics->setEnabled(enabled);
+	gAnalytics->setRandomizeUUID(randUUID);
+	gAnalytics->setSendSimpleBenchmarks(doBench);
+	gAnalytics->setShouldReportFramerates(shouldReportFramerate);
+	gAnalytics->setMaxRequestsPerSession(maxRequestsPerSession);
+	gAnalytics->setSendToGoogleInterval(sendDataIntervalSec);
+	gAnalytics->setFramerateReportInterval(framerateReportInterval);
+	gAnalytics->setUserID("ofxApp"); //todo
+	
+	gAnalytics->setup( googleID, appName, appVersion, appID, appInstallerID );
+
+}
+
 void App::setupStateMachine(){
 
+	ofLogNotice("ofxApp") << "setupStateMachine()";
 	//listen to state machine changes
 	ofAddListener(appState.eventStateChanged, this, &App::onStateChanged);
 	ofAddListener(appState.eventStateError, this, &App::onStateError);
@@ -195,7 +240,7 @@ void App::setupStateMachine(){
 	appState.SET_NAME_AND_COLOR_FOR_STATE(SETTING_UP, ofColor(0,0,255), ofColor(0,0,128));
 	appState.SET_NAME_AND_COLOR_FOR_STATE(SETUP_USER_APP_PRE_LOAD_CONTENT, ofColor::magenta, ofColor::magenta * dark);
 	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_STATIC_TEXTURES, ofColor::darkorange, ofColor::darkorange * dark);
-	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_JSON_CONTENT, ofColor::lawnGreen, ofColor::lawnGreen * dark);
+	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_JSON_CONTENT, ofColor::forestGreen, ofColor::forestGreen * dark);
 	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_JSON_CONTENT_FAILED, ofColor::crimson, ofColor::crimson * dark);
 	appState.SET_NAME_AND_COLOR_FOR_STATE(DELIVER_CONTENT_LOAD_RESULTS, ofColor::blueViolet, ofColor::blueViolet * dark);
 	appState.SET_NAME_AND_COLOR_FOR_STATE(SETUP_USER_APP_POST_LOAD_CONTENT, ofColor::royalBlue, ofColor::royalBlue * dark);
@@ -204,6 +249,7 @@ void App::setupStateMachine(){
 }
 
 void App::startLoadingStaticAssets(){
+	ofLogNotice("ofxApp") << "startLoadingStaticAssets()";
 	string texturesPath = getString("StaticAssets/textures");
 	if(texturesPath.size()){
 		ofxApp::utils::assertFileExists(texturesPath);
@@ -217,6 +263,7 @@ void App::startLoadingStaticAssets(){
 
 void App::setupTextureLoader(){
 
+	ofLogNotice("ofxApp") << "setupTextureLoader()";
 	ProgressiveTextureLoadQueue * q = ProgressiveTextureLoadQueue::instance();
 	q->setNumberSimultaneousLoads( getInt("textureLoader/maxNumberSimulataneousLoads") ); //N threads loading images in the bg
 	q->setTexLodBias( getFloat("textureLoader/textureLodBias") ); //MipMap sharpness
@@ -276,6 +323,7 @@ void App::saveSettings(){
 
 void App::setupApp(){
 
+	ofLogNotice("ofxApp") << "setupApp()";
 	RUI_NEW_GROUP("APP");
 	showMouse = getBool("App/showMouse");
 	RUI_SHARE_PARAM(showMouse);
@@ -290,6 +338,7 @@ void App::setupApp(){
 
 void App::setupLogging(){
 
+	ofLogNotice("ofxApp") << "setupLogging()";
 	if(getBool("logging/deleteOldLogs")){
 		ofxSuperLog::clearOldLogs(LogsDir, getInt("logging/logExpirationInDays"));
 	}
@@ -309,7 +358,6 @@ void App::setupLogging(){
 	(*loggerStorage)->setSyncronizedLogging(getBool("logging/syncronizedLogging"));
 	(*loggerStorage)->getDisplayLogger().setDisplayLogTimes(getBool("logging/displayLogTimes"));
 	
-
 	float panelW = getFloat("logging/screenLogPanelWidth");
 	ofxSuperLog::getLogger()->setDisplayWidth(panelW);
 
@@ -320,6 +368,7 @@ void App::setupLogging(){
 
 
 void App::setupRemoteUI(){
+	ofLogNotice("ofxApp") << "setupRemoteUI()";
 	RUI_SET_CONFIGS_DIR(configsDir);
 	RUI_GET_INSTANCE()->setUiColumnWidth(getInt("RemoteUI/columnWidth", 280));
 	RUI_GET_INSTANCE()->setBuiltInUiScale(getFloat("RemoteUI/uiScale", 1.0));
@@ -411,6 +460,7 @@ void App::setupRuiWatches(){
 
 
 void App::setupTimeMeasurements(){
+	ofLogNotice("ofxApp") << "setupTimeMeasurements()";
 	TIME_SAMPLE_SET_CONFIG_DIR(configsDir);
 	TIME_SAMPLE_SET_FRAMERATE(getInt("App/frameRate", 60));
 	bool enabled = getBool("TimeMeasurements/enabled", true);
@@ -436,6 +486,7 @@ void App::setupTimeMeasurements(){
 
 
 void App::setupTuio(){
+	ofLogNotice("ofxApp") << "setupTuio()";
 	if(getBool("tuio/enabled")){
 		int port = getInt("tuio/port");
 		ofLogNotice("ofxApp") << "Listening for TUIO events at port " << port;
@@ -453,10 +504,13 @@ void App::update(ofEventArgs &){
 		c.second->update(dt);
 	}
 	updateStateMachine(dt);
+	if(gAnalytics) gAnalytics->update();
 }
 
 
 void App::exit(ofEventArgs &){
+	if(gAnalytics) gAnalytics->sendEvent("ofxApp", "exitApp", 0, "", false);
+	if (gAnalytics) delete gAnalytics;
 	ofLogWarning("ofxApp") << "OF is exitting!";
 	ofLogWarning("ofxApp") << "Destroying ofxSimpleHttp SSL context...";
 	ofxSimpleHttp::destroySslContext();
@@ -727,6 +781,7 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 			setupRuiWatches();
 			setupApp();
 			ofLogNotice("ofxApp") << "Start SETUP_USER_APP_JUST_B4_RUNNING...";
+			if(gAnalytics) gAnalytics->sendEvent("ofxApp", "startApp", 0, "", false);
 			delegate->ofxAppStartUserPhase((UserAppSetupStage)SETUP_USER_APP_JUST_B4_RUNNING); //user custom code runs here
 			break;
 
