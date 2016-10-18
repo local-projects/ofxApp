@@ -23,7 +23,10 @@ public:
 		sensu.setup(host, port);
 		this->email = email;
 		enabled = shouldReportErrors;
-		hostInfo = "hostName: " + hostName + "\nhostIP: " + hostIP + "\nbinaryName: " + binaryName;
+		hostInfo = ">> Platform: " + ofGetTargetPlatform() == OF_TARGET_OSX ? "osx" : "win" + 
+		">> hostName: " + hostName +
+		"\n>> hostIP: " + hostIP +
+		"\n>> binaryName: " + binaryName ;
 		
 		gitRev = ofSystem("git rev-parse HEAD");
 		ofStringReplace(gitRev, "\n", "");
@@ -84,10 +87,10 @@ protected:
 	string addContext(const string& msg){
 		string msg2 = msg +
 						"\n\n/////////////////////////////////////////////////////////////////////////////////////////////////////"+
-						"\n\nHostInfo: " + hostInfo +
-						"\nAppUptime: " + ofxApp::utils::secondsToHumanReadable(ofGetElapsedTimef(), 2) +
-						"\ngit revision:" + gitRev +
-						"\ngit status: " + gitStatus;
+						"\n\n" + hostInfo +
+						"\n>> AppUptime: " + ofxApp::utils::secondsToHumanReadable(ofGetElapsedTimef(), 2) +
+						"\n>> git revision:" + gitRev +
+						"\n>> git status:\n\n" + gitStatus;
 		
 		return msg2;
 	}
