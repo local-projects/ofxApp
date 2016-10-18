@@ -23,10 +23,10 @@ public:
 		sensu.setup(host, port);
 		this->email = email;
 		enabled = shouldReportErrors;
-		hostInfo = ">> Platform: " + ofGetTargetPlatform() == OF_TARGET_OSX ? "osx" : "win" + 
-		">> hostName: " + hostName +
-		"\n>> hostIP: " + hostIP +
-		"\n>> binaryName: " + binaryName ;
+		hostInfo = ">> Platform: " + string(ofGetTargetPlatform() == OF_TARGET_OSX ? "osx" : "win") + 
+		">> HostName: " + hostName +
+		"\n>> Host IP: " + hostIP +
+		"\n>> BinaryName: " + binaryName ;
 		
 		gitRev = ofSystem("git rev-parse HEAD");
 		ofStringReplace(gitRev, "\n", "");
