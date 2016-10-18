@@ -17,21 +17,27 @@ class ofxAppErrorReporter{
 
 public:
 	
+	const string indent = " + ";
+	
 	void setup(string host, int port, string email, bool shouldReportErrors,
 			   string hostName = "", string hostIP = "", string binaryName = ""){
 		
 		sensu.setup(host, port);
 		this->email = email;
 		enabled = shouldReportErrors;
-		hostInfo = ">> Platform: " + string(ofGetTargetPlatform() == OF_TARGET_OSX ? "osx" : "win") + 
-		">> HostName: " + hostName +
-		"\n>> Host IP: " + hostIP +
-		"\n>> BinaryName: " + binaryName ;
 		
 		gitRev = ofSystem("git rev-parse HEAD");
 		ofStringReplace(gitRev, "\n", "");
-		
 		gitStatus = ofSystem("git status");
+
+		hostInfo = indent + "Platform: " + string(ofGetTargetPlatform() == OF_TARGET_OSX ? "osx" : "win") +
+		indent + "HostName: " + hostName +
+		"\n" + indent + "Host IP: " + hostIP +
+		"\n" + indent + "BinaryName: " + binaryName + "\n";
+		
+		hostInfo += indent + "Git Revision: " + gitRev + "\n" +
+					indent + "Git Status: " + gitStatus + "\n";
+		
 		
 	}
 	
@@ -88,9 +94,7 @@ protected:
 		string msg2 = msg +
 						"\n\n/////////////////////////////////////////////////////////////////////////////////////////////////////"+
 						"\n\n" + hostInfo +
-						"\n>> AppUptime: " + ofxApp::utils::secondsToHumanReadable(ofGetElapsedTimef(), 2) +
-						"\n>> git revision:" + gitRev +
-						"\n>> git status:\n\n" + gitStatus;
+						"\n" + indent + "AppUptime: " + ofxApp::utils::secondsToHumanReadable(ofGetElapsedTimef(), 2);
 		
 		return msg2;
 	}
