@@ -31,7 +31,7 @@ public:
 		gitStatus = ofSystem("git status");
 
 		hostInfo = indent + "Platform: " + string(ofGetTargetPlatform() == OF_TARGET_OSX ? "osx" : "win") +
-		indent + "HostName: " + hostName +
+		"\n" + indent + "HostName: " + hostName +
 		"\n" + indent + "Host IP: " + hostIP +
 		"\n" + indent + "BinaryName: " + binaryName + "\n";
 		
@@ -91,10 +91,14 @@ public:
 protected:
 	
 	string addContext(const string& msg){
+		
 		string msg2 = msg +
-						"\n\n/////////////////////////////////////////////////////////////////////////////////////////////////////"+
-						"\n\n" + hostInfo +
-						"\n" + indent + "AppUptime: " + ofxApp::utils::secondsToHumanReadable(ofGetElapsedTimef(), 2);
+		"\n\n/////////////////////////////////////////////////////////////////////////////////////////////////////"+
+		
+		"\n\n" + hostInfo +
+		"\n" + indent + "AppUptime: " + ofxApp::utils::secondsToHumanReadable(ofGetElapsedTimef(), 2) +
+		
+		"\n\n/////////////////////////////////////////////////////////////////////////////////////////////////////";
 		
 		return msg2;
 	}
