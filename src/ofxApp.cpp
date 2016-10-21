@@ -24,11 +24,6 @@ App::App() {
 	#else
 	globalsStorage = new OFX_APP_CLASS_NAME(Globals);
 	#endif
-	
-	//create pid file
-	ofFile pid;
-	pid.openFromCWD(pidFileName, ofFile::WriteOnly, true);
-	pid.close();
 }
 
 
@@ -41,6 +36,13 @@ void App::setup(ofxAppDelegate * delegate){
 void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * delegate){
 
 	ofLogNotice("ofxApp") << "setup()";
+
+	//create pid file
+	ofLogNotice("ofxApp") << "Create PID file at " << pidFileName;
+	ofFile pid;
+	pid.open(pidFileName, ofFile::WriteOnly, true);
+	pid.close();
+
 	if(!this->delegate){
 		contentCfgs = cfgs;
 		this->delegate = delegate;
@@ -523,7 +525,7 @@ void App::exit(ofEventArgs &){
 	ofxThreadSafeLog::one()->close();
 
 	ofLogWarning("ofxApp") << "Delete \"" << pidFileName <<"\" PID file";
-	ofFile::removeFile("../" + pidFileName);
+	ofFile::removeFile(pidFileName);
 	
 	ofLogWarning("ofxApp") << "Done exitting! GoodBye!";
 }
