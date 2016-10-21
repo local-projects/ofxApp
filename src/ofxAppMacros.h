@@ -49,4 +49,6 @@ const string FILE_ACCES_ICON = "💾";
 #define OFXAPP_REPORT(alertID,msg,severity)						app.errorReporter().send(alertID,msg,severity)
 #define OFXAPP_REPORT_FILE(alertID,msg,severity,fileToSend)		app.errorReporter().send(alertID,msg,severity,fileToSend)
 
+#define OFXAPP_ANALYTICS()										app.analytics()
+
 
