@@ -51,6 +51,7 @@ public:
 	const string settingsFile = "configs/AppSettings.json";
 	const string LogsDir = "logs";
 	const string configsDir = "configs";
+	const string pidFileName = "ofxApp.pid";
 	
 	App();
 	~App();

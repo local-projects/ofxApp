@@ -24,6 +24,11 @@ App::App() {
 	#else
 	globalsStorage = new OFX_APP_CLASS_NAME(Globals);
 	#endif
+	
+	//create pid file
+	ofFile pid;
+	pid.openFromCWD(pidFileName, ofFile::WriteOnly, true);
+	pid.close();
 }
 
 
@@ -516,7 +521,11 @@ void App::exit(ofEventArgs &){
 	ofxSimpleHttp::destroySslContext();
 	ofLogWarning("ofxApp") << "Closing ThreadSafeLog(s)...";
 	ofxThreadSafeLog::one()->close();
-	ofLogWarning("ofxApp") << "Done exitting!";
+
+	ofLogWarning("ofxApp") << "Delete \"" << pidFileName <<"\" PID file";
+	ofFile::removeFile("../" + pidFileName);
+	
+	ofLogWarning("ofxApp") << "Done exitting! GoodBye!";
 }
 
 //////////////////// LOADING SCREEN /////////////////////////////////////////////////////////////////
