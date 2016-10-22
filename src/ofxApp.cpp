@@ -527,7 +527,8 @@ void App::exit(ofEventArgs &){
 	ofLogWarning("ofxApp") << "Delete \"" << pidFileName <<"\" PID file";
 	ofFile::removeFile(pidFileName);
 	
-	ofLogWarning("ofxApp") << "Done exitting! GoodBye!";
+	ofLogWarning("ofxApp") << "ofxApp ran for " << ofxApp::utils::secondsToHumanReadable(ofGetElapsedTimef(), 2);
+	ofLogWarning("ofxApp") << "GoodBye!";
 }
 
 //////////////////// LOADING SCREEN /////////////////////////////////////////////////////////////////
