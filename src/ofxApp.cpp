@@ -26,7 +26,6 @@ App::App() {
 	#endif
 }
 
-
 void App::setup(ofxAppDelegate * delegate){
 	map<string,ofxApp::UserLambdas> emptyLambas;
 	setup(emptyLambas, delegate);
@@ -139,8 +138,24 @@ void App::setupErrorReporting(){
 	reportErrors = getBool("ErrorReporting/enabled");
 	int port = getInt("ErrorReporting/port");
 	string host = getString("ErrorReporting/host");
-	string email = getString("ErrorReporting/email");
-	errorReporterObj.setup(host, port, email, reportErrors,
+	
+	vector<string> emails;
+	
+	if(settings().exists("ErrorReporting/emails")){ //see if its a list of emails
+		ofxJSON emailsJson = settings().getJson("ErrorReporting/emails");
+		if(emailsJson.isArray()){
+			for( Json::ValueIterator itr = emailsJson.begin() ; itr != emailsJson.end() ; itr++ ) {
+				string email = (*itr).asString();
+				emails.push_back(email);
+			}
+		}
+	}else{ //otherwise its a single email
+		string email = getString("ErrorReporting/email");
+		emails.push_back(email);
+	}
+	
+	
+	errorReporterObj.setup(host, port, emails, reportErrors,
 						   RUI_GET_INSTANCE()->getComputerName(),
 						   RUI_GET_INSTANCE()->getComputerIP(),
 						   RUI_GET_INSTANCE()->getBinaryName()

@@ -65,7 +65,6 @@ void ofApp::draw(){
 		app.textures().drawAll(ofRectangle(100, 100, ofGetMouseX(), ofGetMouseY()));		
 		G_TEX("sf2")->draw(0,0);
 		G_FONT("NoManSky")->draw("My Font", 20, ofGetMouseX(), ofGetMouseY());
-
 	}
 }
 
