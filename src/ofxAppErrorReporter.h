@@ -45,16 +45,14 @@ public:
 		"\n" + indent + "BinaryName: " + binaryName + "\n";
 		
 		hostInfo += indent + "Git Revision: " + gitRev + "\n" +
-					indent + "Git Status: " + gitStatus + "\n";
-		
-		
+					indent + "Git Status: " + gitStatus + "\n";		
 	}
 	
 	void send(string alertName, string msg, int level02, string filePath = ""){
 		if(enabled){
 			if(filePath == "") filePath = ofToDataPath(ofxSuperLog::getLogger()->getCurrentLogFile(), true);
 			string msg2 = addContext(msg);
-			ofLogError("ofxAppErrorReporter") << "Send Error Report '" << alertName<< "' : '" << msg << "' level " << level02 ;
+			logSend(alertName, msg, level02, false);
 			sensu.send(alertName, msg2, ofxSensu::Status(level02), emails, filePath, false);
 		}else{
 			ofLogError("ofxAppErrorReporter") << "Skipping Send Error Report '" << alertName<< "' : '" << msg << "' bc Err Reports are disabled";
@@ -63,7 +61,7 @@ public:
 
 	void send(string alertName, string msg, int level02, vector<string> filePaths){
 		if(enabled){
-			ofLogError("ofxAppErrorReporter") << "Send Error Report '" << alertName<< "' : '" << addContext(msg) << "' level " << level02;
+			logSend(alertName, msg, level02, false);
 			string msg2 = addContext(msg);
 			sensu.send(alertName, msg2, ofxSensu::Status(level02), emails, filePaths, false);
 		}else{
@@ -76,7 +74,7 @@ public:
 	void sendBlocking(string alertName, string msg, int level02, string filePath = ""){
 		if(enabled){
 			if(filePath == "") filePath = ofToDataPath(ofxSuperLog::getLogger()->getCurrentLogFile(), true);
-			ofLogError("ofxAppErrorReporter") << "Send Error Report '" << alertName<< "' : '" << addContext(msg) << "' level " << level02 ;
+			logSend(alertName, msg, level02, true);
 			string msg2 = addContext(msg);
 			sensu.send(alertName, msg2, ofxSensu::Status(level02), emails, filePath, true);
 		}else{
@@ -86,7 +84,7 @@ public:
 
 	void sendBlocking(string alertName, string msg, int level02, vector<string> filePaths){
 		if(enabled){
-			ofLogError("ofxAppErrorReporter") << "Send Error Report '" << alertName<< "' : '" << addContext(msg) << "' level " << level02 ;
+			logSend(alertName, msg, level02, true);
 			string msg2 = addContext(msg);
 			sensu.send(alertName, msg2, ofxSensu::Status(level02), emails, filePaths, true);
 		}else{
@@ -97,6 +95,15 @@ public:
 
 protected:
 	
+	void logSend(const string & alertName, const string & msg, int level02, bool blocking) {
+		switch (level02) {
+			case 0: ofLogNotice("ofxAppErrorReporter") << "Send RESOLVE Report " << string(blocking ? "blocking " : "") << "'" << alertName << "' : '" << msg << "'"; break;
+			case 1: ofLogWarning("ofxAppErrorReporter") << "Send WARNING Report " << string(blocking ? "blocking " : "") << "'" << alertName << "' : '" << msg << "'"; break;
+			case 2: ofLogError("ofxAppErrorReporter") << "Send CRITICAL Report " << string(blocking ? "blocking " : "") << "'" << alertName << "' : '" << msg << "'"; break;
+			default: ofLogError("ofxAppErrorReporter") << "Send UNKNOWN LEVEL Report " << string(blocking ? "blocking " : "") << "'" << alertName << "' : '" << msg << "'"; break;
+		}
+	}
+
 	string addContext(const string& msg){
 		
 		string msg2 = msg +
