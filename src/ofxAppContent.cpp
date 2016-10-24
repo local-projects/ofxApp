@@ -292,6 +292,7 @@ float ofxAppContent::getPercentDone(){
 void ofxAppContent::jsonDownloaded(ofxSimpleHttpResponse & arg){
 	ofLogNotice("ofxAppContent") << "JSON download OK!";
 	setState(CHECKING_JSON);
+	OFXAPP_REPORT("ofxAppJsonDownloadFailed", "JSON Download OK for '" + ID + "'! \"" + jsonURL + "\"", 0);
 }
 
 
@@ -305,6 +306,7 @@ void ofxAppContent::jsonDownloadFailed(ofxSimpleHttpResponse & arg){
 
 void ofxAppContent::jsonInitialCheckOK(){
 	ofLogNotice("ofxAppContent") << "JSON Initial Check OK!";
+	OFXAPP_REPORT("ofxAppJsonParseFailed", "JSON Parse OK '" + ID + "'! \"" + jsonURL + "\"", 0);
 	setState(PARSING_JSON);
 }
 
