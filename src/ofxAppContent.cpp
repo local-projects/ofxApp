@@ -55,10 +55,17 @@ void ofxAppContent::setup(	string ID,
 	ofAddListener(jsonParser.eventAllObjectsParsed, this, 	&ofxAppContent::jsonContentReady);
 }
 
+
+ofxAppContent::~ofxAppContent(){
+	ofLogNotice("ofxAppContent") << "~ofxAppContent \"" << ID << "\"";
+}
+
+
 void ofxAppContent::setJsonDownloadURL(string jsonURL){
 	ofLogNotice("ofxAppContent") << "updating the JSON Content URL of " << ID << " to '" << jsonURL << "'";
 	this->jsonURL = jsonURL;
 };
+
 
 void ofxAppContent::fetchContent(){
 	if(state == IDLE || state == JSON_PARSE_FAILED || state == JSON_DOWNLOAD_FAILED){
@@ -66,6 +73,11 @@ void ofxAppContent::fetchContent(){
 	}else{
 		ofLogError("ofxAppContent") << "Can't fetch content now!";
 	}
+}
+
+
+void ofxAppContent::stopAllDownloads(){
+	dlc.cancelAllDownloads();
 }
 
 

@@ -186,10 +186,9 @@ protected:
 	
 	ofxAppErrorReporter						errorReporterObj;
 	ofxGoogleAnalytics *					gAnalytics = nullptr;
-	
 
-	bool									hasLoadedSettings = false;
 	float									dt;
+	bool									hasLoadedSettings = false;
 	bool									timeSampleOfxApp = false;
 	bool 									enableMouse;
 	bool									showMouse;
@@ -199,7 +198,6 @@ protected:
 	string									currentContentID;
 	vector<string>							requestedContent;
 	vector<string>							loadedContent;
-
 
 	ofxAppDelegate *						delegate = nullptr;
 	
@@ -212,5 +210,5 @@ protected:
 	
 } //namespace ofxApp
 
-extern ofxApp::App app; //all global parameters are here - add yor "ofxApp" subclass!
+extern ofxApp::App app; //all global parameters are here
 

@@ -28,6 +28,6 @@ namespace ofxApp{
 		string getFileSystemSafeString(const string & input);
 
 		bool isValidEmail(const string email);
-		
+
 	} //utils
 }; //ofxApp

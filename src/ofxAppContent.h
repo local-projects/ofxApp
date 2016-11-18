@@ -50,6 +50,8 @@ public:
 		JSON_CONTENT_READY,
 	};
 
+	~ofxAppContent();
+
 	void setup(string ID,
 			   string jsonSrc,
 			   string jsonDestinationDir_,
@@ -79,6 +81,8 @@ public:
 	string getStatus(bool formatted = true);
 	string getErrorMsg(){return errorMessage;}
 	float getPercentDone();
+
+	void stopAllDownloads();
 
 	//call this only if isContentReady() == true
 	vector<ContentObject*> getParsedObjects(){return parsedObjects;};

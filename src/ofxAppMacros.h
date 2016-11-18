@@ -51,4 +51,11 @@ const string FILE_ACCES_ICON = "💾";
 
 #define OFXAPP_ANALYTICS()										app.analytics()
 
+// Logging
+//for in-class methods only - will throw compiler error in static methods or classless functions
+#define LOGV 										ofLogNotice(SUPERLOG_TYPE_NAME)
+#define LOGN 										ofLogNotice(SUPERLOG_TYPE_NAME)
+#define LOGW 										ofLogWarning(SUPERLOG_TYPE_NAME)
+#define LOGE 										ofLogError(SUPERLOG_TYPE_NAME)
+#define LOGF 										ofLogFatalError(SUPERLOG_TYPE_NAME)
 

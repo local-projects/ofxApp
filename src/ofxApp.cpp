@@ -80,6 +80,11 @@ void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * d
 
 
 App::~App(){
+	//if we are in the download stage, we would crash unless we stop the download threads
+	//before deleting ofxApp::App so here we stop all downloads.
+	for(auto it : contentStorage){
+		it.second->stopAllDownloads();
+	}
 	//cout << (*loggerStorage).use_count() << endl;
 	ofLogNotice("ofxApp")<< "~ofxApp()";
 }
