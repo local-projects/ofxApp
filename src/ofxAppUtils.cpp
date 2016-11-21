@@ -140,7 +140,11 @@ namespace utils{
 	bool isValidEmail(const string email){
 		// define a regular expression
 		//http://stackoverflow.com/questions/46155/validate-email-address-in-javascript/46181#46181
-		const std::regex pattern ("([0-9A-Za-z\\-_\\.]+)@([0-9a-z]+\\.[a-z]{2,4}(\\.[a-z]{2,4})?)");
+		const std::regex pattern ("[^ ]*@[^ ]*\\.[^ ]*");
+		//a more relaxed version: // [^ ]*@[^ ]*\\.[^ ]*
+		//a more relaxed strict version: // ([0-9A-Za-z\\-_\\.]+)@([0-9a-z]+\\.[a-z]{2,4}(\\.[a-z]{2,4})?)
+
+
 		// try to match the string with the regular expression
 		return std::regex_match(email, pattern);
 	}
