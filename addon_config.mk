@@ -1,11 +1,10 @@
-ofxOsc
-ofxNetwork
-ofxXmlSettings
 ofxOpenCv
+ofxOsc
+ofxXmlSettings
+ofxNetwork
 ../../ExternalAddons/ofxFontStash
 ../../ExternalAddons/ofxTuio
 ../../ExternalAddons/ofxJson
-../../ExternalAddons/ofxJsonSettings
 ../../ExternalAddons/ofxSuperLog
 ../../ExternalAddons/ofxAutoTexture
 ../../ExternalAddons/ofxApp
@@ -18,9 +17,11 @@ ofxOpenCv
 ../../ExternalAddons/ofxProgressiveTextureLoad
 ../../ExternalAddons/ofxTexturedObject
 ../../ExternalAddons/ofxMullion
+../../ExternalAddons/ofxJsonSettings
 ../../ExternalAddons/ofxTimeMeasurements
 ../../ExternalAddons/ofxRemoteUI
 ../../ExternalAddons/ofxHistoryPlot
+../../ExternalAddons/ofxAnimatable
 ../../ExternalAddons/ofxScreenSetup
-../../ExternalAddons/ofxGoogleAnalytics
 ../../ExternalAddons/ofxSensu
+../../ExternalAddons/ofxGoogleAnalytics
