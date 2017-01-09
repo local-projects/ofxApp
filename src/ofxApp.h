@@ -77,6 +77,7 @@ public:
 	// so "OFX_APP_CLASS_NAME(Colors)" becomes "MyAppColors"
 	// "MyApp" is a macro you MUST define in your pre-processor macros:
 	//  OFX_APP_NAME=MyApp
+	// alternativelly, only the default Globals & colors will be defined (ofxAppColorsBasic & ofxAppGlobalsBasic)
 	#ifdef OFX_APP_NONAME
 	ofxAppColorsBasic & 			colors(){return colorsStorage;}
 	ofxAppGlobalsBasic & 			globals(){return *globalsStorage;}
@@ -94,8 +95,8 @@ public:
 	ofxGoogleAnalytics *			analytics(){ return gAnalytics; }
 	ofxScreenSetup					screenSetup;
 
-	// Convinience methods ////////////////////////////////////////////////////////
-	// SETTINGS //
+	// SETTINGS ////////////////////////////////////////////////////////
+	// Convenience methods //
 
 	bool&		getBool(const string & key, bool defaultVal = true);
 	int&		getInt(const string & key, int defaultVal = 0);
