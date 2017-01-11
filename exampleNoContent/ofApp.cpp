@@ -85,8 +85,4 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 }
 
 void ofApp::setupChanged(ofxScreenSetup::ScreenSetupArg &arg){
-	ofLogNotice()	<< "ofxScreenSetup setup changed from " << arg.who->stringForMode(arg.oldMode)
-	<< " (" << arg.oldWidth << "x" << arg.oldHeight << ") "
-	<< " to " << arg.who->stringForMode(arg.newMode)
-	<< " (" << arg.newWidth << "x" << arg.newHeight << ")";
 }
