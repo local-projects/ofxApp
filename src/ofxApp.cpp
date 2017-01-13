@@ -80,11 +80,6 @@ void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * d
 
 
 App::~App(){
-	//if we are in the download stage, we would crash unless we stop the download threads
-	//before deleting ofxApp::App so here we stop all downloads.
-	for(auto it : contentStorage){
-		it.second->stopAllDownloads();
-	}
 	//cout << (*loggerStorage).use_count() << endl;
 	ofLogNotice("ofxApp")<< "~ofxApp()";
 }
@@ -539,6 +534,14 @@ void App::exit(ofEventArgs &){
 	if(gAnalytics) gAnalytics->sendEvent("ofxApp", "exitApp", 0, "", false);
 	if (gAnalytics) delete gAnalytics;
 	ofLogWarning("ofxApp") << "OF is exitting!";
+
+	//if we are in the download stage, we would crash unless we stop the download threads
+	//before deleting ofxApp::App so here we stop all downloads.
+	ofLogWarning("ofxApp") << "Stopping any current downloads!";
+	for (auto it : contentStorage) {
+		it.second->stopAllDownloads();
+	}
+
 	ofLogWarning("ofxApp") << "Destroying ofxSimpleHttp SSL context...";
 	ofxSimpleHttp::destroySslContext();
 	ofLogWarning("ofxApp") << "Closing ThreadSafeLog(s)...";
