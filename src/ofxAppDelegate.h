@@ -10,7 +10,7 @@
 #include "ofMain.h"
 #include "ofxAppStructs.h"
 #include "ofxTuio.h"
-
+#include "ofxScreenSetup.h"
 
 //to use ofxApp, your app must follow this protocol, so make sure your app
 //is a subclass of ofxAppDelegate
@@ -49,5 +49,8 @@ public:
 	virtual void tuioAdded(ofxTuioCursor & tuioCursor){};
 	virtual void tuioRemoved(ofxTuioCursor & tuioCursor){};
 	virtual void tuioUpdated(ofxTuioCursor & tuioCursor){};
+
+	//screen setup changed callback
+	virtual void screenSetupChanged(ofxScreenSetup::ScreenSetupArg &arg){};
 
 };

@@ -2,9 +2,6 @@
 
 void ofApp::setup(){
 
-	// other modules LISTENERS
-	ofAddListener(app.screenSetup.setupChanged, this, &ofApp::setupChanged);
-
 	app.setup(this); //start the ofxApp setup process
 }
 
@@ -82,7 +79,4 @@ void ofApp::gotMessage(ofMessage msg){
 
 void ofApp::dragEvent(ofDragInfo dragInfo){
 	
-}
-
-void ofApp::setupChanged(ofxScreenSetup::ScreenSetupArg &arg){
 }

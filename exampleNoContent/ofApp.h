@@ -21,8 +21,6 @@ public:
 	void dragEvent(ofDragInfo dragInfo);
 	void gotMessage(ofMessage msg);
 
-	void setupChanged(ofxScreenSetup::ScreenSetupArg &arg);
-
 	//ofxApp imposed - responder methods
 	void ofxAppStartUserPhase(ofxApp::State);
 	bool ofxAppIsUserPhaseComplete(ofxApp::State){return true;}

@@ -96,7 +96,7 @@ public:
 	ofxScreenSetup					screenSetup;
 
 	// SETTINGS ////////////////////////////////////////////////////////
-	// Convenience methods //
+	// Convenience methods to easily get values from "data/configs/AppSettings.json"
 
 	bool&		getBool(const string & key, bool defaultVal = true);
 	int&		getInt(const string & key, int defaultVal = 0);
@@ -104,9 +104,8 @@ public:
 	string&		getString(const string & key, string defaultVal = "uninited!");
 	ofColor&	getColor(const string & key, ofColor defaultVal = ofColor::red);
 
-	void		loadSettings();
-	void		printSettingsFile();
-	void		saveSettings();
+	void		loadSettings(); //load JSON settings (data/configs/AppSettings.json)
+	void		saveSettings();//not really used / tested! TODO!
 
 	ofxApp::State getState(){return appState.getState();}
 
@@ -119,6 +118,7 @@ public:
 	void onRemoteUINotification(RemoteUIServerCallBackArg & arg);
 	void onStaticTexturesLoaded();
 	void onKeyPressed(ofKeyEventArgs&);
+	void screenSetupChanged(ofxScreenSetup::ScreenSetupArg &arg);
 
 	// app params that come from settings json
 	ofVec2f			renderSize;
@@ -149,7 +149,10 @@ protected:
 	void loadModulesSettings();
 	void setupGoogleAnalytics();
 
-	void logBanner(const string & log);
+	//utils
+	void logBanner(const string & log); //to make prettier log headers
+	void printSettingsFile(); //print JSON settings file to stdout (and logs)
+
 
 	// STATE MACHINE ///////////////////////////////////////////////////////////////////////////////
 	virtual void updateStateMachine(float dt);
@@ -163,44 +166,52 @@ protected:
 	ofxAppStaticTextures					texStorage;
 	ofxMullion								mullions;
 
-	// Settings bundles ///////////////////////////////////////
+	// Settings Values Bundles ///////////////////////////////////////
 
+	//used by ofxSimpleHttp
 	ofxSimpleHttp::ProxyConfig				proxyCfg;
-	std::pair<string,string>				credentials; //http
+	std::pair<string,string>				credentials;
 
+	//used by ofxAssets
 	ofxAssets::DownloadPolicy				assetDownloadPolicy;
 	ofxAssets::UsagePolicy					assetUsagePolicy;
 	ofxAssets::ObjectUsagePolicy			objectUsagePolicy;
 
-	//crazy macro magic - beware! read a few lines above to see what's going on
-	#ifdef OFX_APP_NONAME
-	ofxAppColorsBasic						colorsStorage;
-	ofxAppGlobalsBasic						* globalsStorage = nullptr;
+
+	// ofxApp various user contents ///////////////////////////////////
+
+	#ifdef OFX_APP_NONAME //if the dev didnt define an app name, use default global vars & colors
+		ofxAppColorsBasic					colorsStorage;
+		ofxAppGlobalsBasic					* globalsStorage = nullptr;
 	#else
-	OFX_APP_CLASS_NAME(Colors)				colorsStorage;
-	OFX_APP_CLASS_NAME(Globals)				* globalsStorage = nullptr;
+		//crazy macro magic - beware! read a few lines above to see what's going on
+		OFX_APP_CLASS_NAME(Colors)			colorsStorage;
+		OFX_APP_CLASS_NAME(Globals)			* globalsStorage = nullptr;
 	#endif
-	ofxAppFonts *							fontStorage = nullptr;
-	map<string, ofxAppContent*>				contentStorage; //this will be same # as contentCfgs.size()
-	ofPtr<ofxSuperLog>	*					loggerStorage; //note its a *
-	ofxDrawableStateMachine<ofxApp::State>	appState; //App State Machine
+
+	ofxAppFonts *							fontStorage = nullptr; //keeps all loaded fonts
+
+	map<string, ofxAppContent*>				contentStorage; //App contents parser - indexed by contentID
+	map<string, ofxApp::UserLambdas>		contentCfgs; //user supplied custom parsing code - indexed by contentID
+
+	ofPtr<ofxSuperLog> *					loggerStorage; //note its a * to an ofPtr - TODO!
+	ofxDrawableStateMachine<ofxApp::State>	appState; //ofxApp State Machine to handle all loading stages
 	
-	ofxAppErrorReporter						errorReporterObj;
+	ofxAppErrorReporter						errorReporterObj; //send live error reports to our CMS over sensu
 	ofxGoogleAnalytics *					gAnalytics = nullptr;
 
-	float									dt;
+	float									dt; //inited based on app target framerate settings - used to update some internal objects
 	bool									hasLoadedSettings = false;
-	bool									timeSampleOfxApp = false;
+	bool									timeSampleOfxApp = false; //internal benchmark of ofxApp timings, usually false
 	bool 									enableMouse;
 	bool									showMouse;
 	bool									reportErrors;
 
-	map<string, ofxApp::UserLambdas>		contentCfgs; //this will be as big as the number of jsons to load
-	string									currentContentID;
-	vector<string>							requestedContent;
-	vector<string>							loadedContent;
+	string									currentContentID; //keep track of which content are we getting
+	vector<string>							requestedContent; //complete list of user supplied contentID's
+	vector<string>							loadedContent; //user supplied contentID's loaded so far
 
-	ofxAppDelegate *						delegate = nullptr;
+	ofxAppDelegate *						delegate = nullptr; //this will be the "user"'s app, likely an ofBaseApp subclass
 	
 	const int								loadingScreenFontSize = 22;
 	

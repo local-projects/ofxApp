@@ -24,9 +24,9 @@ public:
 	void dragEvent(ofDragInfo dragInfo);
 	void gotMessage(ofMessage msg);
 
-	void setupChanged(ofxScreenSetup::ScreenSetupArg &arg);
+	void setupChanged(ofxScreenSetup::ScreenSetupArg &arg){}
 
-	//ofxApp imposed - responder methods
+	//ofxApp imposed - callback methods
 	void ofxAppStartUserPhase(ofxApp::UserAppSetupStage);
 	bool ofxAppIsUserPhaseComplete(ofxApp::UserAppSetupStage){return true;}
 	void ofxAppDrawPhaseProgressScreen(ofxApp::UserAppSetupStage, const ofRectangle & r){};

@@ -168,6 +168,7 @@ void App::setupWindow(){
 	ofLogNotice("ofxApp") << "setupWindow()";
 	ofxScreenSetup::ScreenMode mode = ofxScreenSetup::ScreenMode((int)getInt("App/window/windowMode"));
 	screenSetup.setup(getInt("App/window/customWidth"), getInt("App/window/customHeight"), mode);
+	
 
 	bool customPosition = getBool("App/window/customWindowPosition");
 	int customX = getInt("App/window/customPositionX");
@@ -211,6 +212,9 @@ void App::setupListeners(){
 	ofAddListener(ofEvents().keyPressed, this, &App::onKeyPressed);
 	ofAddListener(ofEvents().draw, this, &App::draw, OF_EVENT_ORDER_AFTER_APP);
 	ofAddListener(textures().eventAllTexturesLoaded, this, &App::onStaticTexturesLoaded);
+
+	ofAddListener(screenSetup.setupChanged, this, &App::screenSetupChanged);
+
 }
 
 
@@ -855,6 +859,7 @@ void App::onStaticTexturesLoaded(){
 	}
 }
 
+#pragma mark Callbacks
 
 void App::onRemoteUINotification(RemoteUIServerCallBackArg &arg){
 	switch (arg.action) {
@@ -890,6 +895,9 @@ void App::onKeyPressed(ofKeyEventArgs & a){
 	}
 }
 
+void App::screenSetupChanged(ofxScreenSetup::ScreenSetupArg &arg){
+	if(delegate) delegate->screenSetupChanged(arg);
+}
 
 ofRectangle App::getRenderAreaForCurrentWindowSize(){
 
