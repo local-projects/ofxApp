@@ -80,7 +80,7 @@ Look at the example to see how they look like.
 
 This usually means your ofApp (a subclass of ofBaseApp, the basic OpenFrameworks app) should also subclass ofxAppDelegate, as shown here:
 
-```
+```c++
 class ofApp : public ofBaseApp, public ofxAppDelegate{
 
 }
@@ -100,7 +100,7 @@ ofxApp abstracts content fetching, checking and loading through several means; i
 
  Usually you have a JSON file for each content type; for example, the objects of a museum collection will all live in a single JSON file. They are often arranged in a JSON array, or in a JSON dictionary, as show below:
 
-```
+```JSON
 ///Objects in JSON array; objectID must be supplied per object
 { "MuseumObjects" : [
 		{
@@ -117,7 +117,7 @@ ofxApp abstracts content fetching, checking and loading through several means; i
 }
 ```
 
-```
+```JSON
 ///Objects in JSON dictionary;
 { "MuseumObjects" : {
 	"objID1" : {
@@ -135,7 +135,7 @@ ofxApp abstracts content fetching, checking and loading through several means; i
 
 To attach all this to a real world example, let's assume we are working on a project for a museum that has a collection of objects, whose contents are stored in a JSON like the one defined above. We will create our own C++ object and we will call it MuseumObject. It will look like this:
 
-```
+```c++
 class MuseumObject : public ContentObject{
 
 public:
@@ -217,14 +217,14 @@ There's a callback mechanism that allows ofxApp to wait or proceed to the next P
 
 
 
-```
+```c++
 ofxAppPhaseWillBegin(ofxApp::Phase);
 ofxAppIsPhaseComplete(ofxApp::Phase);
 ```
 
 There is also a callback method that will get called N times, depending on how many content pieces you setup ofxApp to load. This is:
 
-```
+```c++
 void ofxAppContentIsReady(const string & contentID, vector<ContentObject*>);
 ```
 
