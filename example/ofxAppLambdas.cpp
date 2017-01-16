@@ -18,7 +18,7 @@ ofxAppLambdas::ofxAppLambdas(){
 
 
 	// Locate Object List in JSON user lambda //////////////////////////////////////////////////////
-	cwru.describeJsonUserLambda = [](ofxMtJsonParserThread::JsonStructureData & inOutData){
+	cwru.pointToObjects = [](ofxMtJsonParserThread::JsonStructureData & inOutData){
 		ofxJSONElement & jsonRef = *(inOutData.fullJson);
 		if(jsonRef["data"].isObject()){
 			inOutData.objectArray = (ofxJSONElement*) &(jsonRef["data"]);
@@ -31,7 +31,7 @@ ofxAppLambdas::ofxAppLambdas(){
 	};
 
 	// Parse Single JSON Object user lambda ////////////////////////////////////////////////////////
-	cwru.parseSingleObjectUserLambda = [](ofxMtJsonParserThread::SingleObjectParseData & inOutData){
+	cwru.parseOneObject = [](ofxMtJsonParserThread::SingleObjectParseData & inOutData){
 
 		const ofxJSONElement & jsonRef = *(inOutData.jsonObj); //pointers mess up the json syntax somehow
 
@@ -75,14 +75,14 @@ ofxAppLambdas::ofxAppLambdas(){
 
 
 	// Setup Textured Objects User Lambda /////////////////////////////////////////////////////////
-	cwru.setupTexturedObjectUserLambda = [](ContentObject * texuredObject){
+	cwru.setupTexturedObject = [](ContentObject * texuredObject){
 
 		CWRU_Object * to = (CWRU_Object*)texuredObject; //cast to our obj type
 
 		int numAssets = to->getNumAssets(); //this will always be 1 for this example, 1 img per object
 
 		//assets are owned by my extended object "AssetHolder"
-		to->TexturedObject::setup(numAssets, TEXTURE_MEDIUM); //we only use one tex size, so lets choose medium
+		to->TexturedObject::setup(numAssets, TEXTURE_ORIGINAL); //we only use one tex size, so lets choose ORIGINAL
 		to->TexturedObject::setResizeQuality(CV_INTER_AREA); //define resize quality (in case we use mipmaps)
 		ofPixels pix;
 
@@ -113,7 +113,7 @@ ofxAppLambdas::ofxAppLambdas(){
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	// Locate Object List in JSON user lambda //////////////////////////////////////////////////////
-	ch.describeJsonUserLambda = [](ofxMtJsonParserThread::JsonStructureData & inOutData){
+	ch.pointToObjects = [](ofxMtJsonParserThread::JsonStructureData & inOutData){
 		ofxJSONElement & jsonRef = *(inOutData.fullJson);
 		if(jsonRef.isArray()){
 			inOutData.objectArray = (ofxJSONElement*) &(jsonRef);
@@ -125,7 +125,7 @@ ofxAppLambdas::ofxAppLambdas(){
 	};
 
 	// Parse Single JSON Object user lambda ////////////////////////////////////////////////////////
-	ch.parseSingleObjectUserLambda = [](ofxMtJsonParserThread::SingleObjectParseData & inOutData){
+	ch.parseOneObject = [](ofxMtJsonParserThread::SingleObjectParseData & inOutData){
 
 		const ofxJSONElement & jsonRef = *(inOutData.jsonObj); //pointers mess up the json syntax somehow
 
@@ -207,14 +207,14 @@ ofxAppLambdas::ofxAppLambdas(){
 
 
 	// Setup Textured Objects User Lambda /////////////////////////////////////////////////////////
-	ch.setupTexturedObjectUserLambda = [](ContentObject * texuredObject){
+	ch.setupTexturedObject = [](ContentObject * texuredObject){
 
 		CH_Object * to = (CH_Object*)texuredObject; //cast to our obj type
 
 		int numAssets = to->images.size();
 
 		//assets are owned by my extended object "AssetHolder"
-		to->TexturedObject::setup(numAssets, TEXTURE_MEDIUM); //we only use one tex size, so lets choose medium
+		to->TexturedObject::setup(numAssets, TEXTURE_ORIGINAL); //we only use one tex size, so lets choose original
 		to->TexturedObject::setResizeQuality(CV_INTER_AREA); //define resize quality (in case we use mipmaps)
 		ofPixels pix;
 

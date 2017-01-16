@@ -6,13 +6,13 @@ void ofApp::setup(){
 }
 
 
-void ofApp::ofxAppStartUserPhase(ofxApp::State s){
-	ofLogNotice("ofApp") << "start User Process " << ofxApp::toString(s);
+void ofApp::ofxAppPhaseWillBegin(ofxApp::Phase s){
+	ofLogNotice("ofApp") << "Start User Process " << ofxApp::toString(s);
 	switch (s) {
-		case ofxApp::SETUP_B4_CONTENT_LOAD: break;
-		case ofxApp::RECEIVE_CONTENT_LOAD_RESULTS: break;
-		case ofxApp::SETUP_AFTER_CONTENT_LOAD: break;
-		case ofxApp::SETUP_JUST_B4_RUNNING: break;
+		case ofxApp::Phase::SETUP_B4_CONTENT_LOAD: break;
+		case ofxApp::Phase::RECEIVE_CONTENT: break;
+		case ofxApp::Phase::SETUP_AFTER_CONTENT_LOAD: break;
+		case ofxApp::Phase::LAST_SETUP_B4_RUNNING: break;
 	}
 };
 
@@ -24,7 +24,7 @@ void ofApp::update(){
 
 void ofApp::draw(){
 
-	if(app.getState() == ofxApp::RUNNING){
+	if(app.getState() == ofxApp::State::RUNNING){
 
 		app.textures().drawAll(ofRectangle(100, 100, ofGetMouseX(), ofGetMouseY()));
 

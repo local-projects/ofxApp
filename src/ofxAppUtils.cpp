@@ -16,11 +16,11 @@ namespace utils{
 
 	void assertFileExists(const string & path){
 		if(!ofFile::doesFileExist(path)){
-			string msg = "Required asset not present: '" + path + "'";
-			ofLogFatalError("HasAssets") << msg;
+			const string msg = "Required asset not present: '" + path + "'";
+			ofLogFatalError("ofxApp") << msg;
 			ofxApp::utils::terminateApp("ofxApp", msg);
 		}else{
-			//ofLogNotice("HasAssets") << "Confirmed asset is present: '" << path << "'";
+			//ofLogNotice("ofxApp") << "Confirmed asset is present: '" << path << "'";
 		}
 	}
 
@@ -39,26 +39,30 @@ namespace utils{
 		ofLogFatalError("ofxApp") << "-----------------------------------------------------------------------------------------------------------";
 		ofLogFatalError("ofxApp") << "";
 		ofxThreadSafeLog::one()->close();
-		ofxSuperLog::getLogger()->setScreenLoggingEnabled(true); //show log if json error
-		ofxSuperLog::getLogger()->getDisplayLogger().setPanelWidth(1.0);
-		int numFrames = secondsOnScreen * 1000 / 16; //stay up a bit so that you can read logs on screen
-		
-		OFXAPP_REPORT("ofxAppTerminate_" + module, reason, 2);
-		
-		//hijack OF and refresh screen & events by hand
-		if(ofGetWindowPtr()){
-			for(int i = 0; i < numFrames; i++ ){
-				ofSetupScreen();
-				ofClear(0,0,0,255);
-				ofxSuperLog::getLogger()->getDisplayLogger().draw(ofGetWidth(), ofGetHeight());
-				ofGetMainLoop()->pollEvents();
-				if(ofGetWindowPtr()->getWindowShouldClose()){
-					ofLogFatalError("ofxApp") << "Quitting by user action";
-					std::exit(-1);
+		if(app.isWindowSetup()){
+			ofxSuperLog::getLogger()->setScreenLoggingEnabled(true); //show log if json error
+			ofxSuperLog::getLogger()->getDisplayLogger().setPanelWidth(1.0);
+			int numFrames = secondsOnScreen * 1000 / 16; //stay up a bit so that you can read logs on screen
+			
+			OFXAPP_REPORT("ofxAppTerminate_" + module, reason, 2);
+			
+			//hijack OF and refresh screen & events by hand at ~60fps
+			if(ofGetWindowPtr()){
+				for(int i = 0; i < numFrames; i++ ){
+					ofSetupScreen();
+					ofClear(0,0,0,255);
+					ofxSuperLog::getLogger()->getDisplayLogger().draw(ofGetWidth(), ofGetHeight());
+					ofGetMainLoop()->pollEvents();
+					if(ofGetWindowPtr()->getWindowShouldClose()){
+						ofLogFatalError("ofxApp") << "Quitting by user action";
+						std::exit(-1);
+					}
+					ofGetWindowPtr()->swapBuffers();
+					ofSleepMillis(16);
 				}
-				ofGetWindowPtr()->swapBuffers();
-				ofSleepMillis(16);
 			}
+		}else{
+			ofLogFatalError("ofxApp") << "Terminating ofxApp before the app window is setup.";
 		}
 		std::exit(0);
 	};

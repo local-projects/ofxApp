@@ -10,21 +10,20 @@
 #include "ofxApp.h"
 
 void ofxAppContent::setup(	string ID,
-					   	string jsonSrc,
-						string jsonDestinationDir_,
-						int numThreads_,
-						int numConcurrentDownloads,
-						int speedLimitKBs,
-						int timeout,
-						bool shouldSkipObjectTests,
-						float idleTimeAfterEachDownload,
-						const std::pair<string,string> & credentials,
-						const ofxSimpleHttp::ProxyConfig & proxyConfig,
-						const ofxApp::UserLambdas & contentCfg,
-					    const ofxAssets::ObjectUsagePolicy objectUsagePolicy){
+							string jsonSrc,
+							string jsonDestinationDir_,
+							int numThreads_,
+							int numConcurrentDownloads,
+							int speedLimitKBs,
+							int timeout,
+							bool shouldSkipObjectTests,
+							float idleTimeAfterEachDownload,
+							const std::pair<string,string> & credentials,
+							const ofxSimpleHttp::ProxyConfig & proxyConfig,
+							const ofxApp::ParseFunctions & contentCfg,
+							const ofxAssets::ObjectUsagePolicy objectUsagePolicy){
 
-
-	state = IDLE;
+	state = ContentState::IDLE;
 	parsedObjects.clear();
 	this->ID = ID;
 	this->jsonURL = jsonSrc;
@@ -68,8 +67,10 @@ void ofxAppContent::setJsonDownloadURL(string jsonURL){
 
 
 void ofxAppContent::fetchContent(){
-	if(state == IDLE || state == JSON_PARSE_FAILED || state == JSON_DOWNLOAD_FAILED){
-		setState(DOWNLOADING_JSON);
+	if(state == ContentState::IDLE ||
+	   state == ContentState::JSON_PARSE_FAILED ||
+	   state == ContentState::JSON_DOWNLOAD_FAILED){
+		setState(ContentState::DOWNLOADING_JSON);
 	}else{
 		ofLogError("ofxAppContent") << "Can't fetch content now!";
 	}
@@ -90,15 +91,15 @@ void ofxAppContent::update(float dt){
 
 	switch(state){
 
-		case DOWNLOADING_ASSETS:
+		case ContentState::DOWNLOADING_ASSETS:
 			if(!dlc.isBusy()){ //downloader finished!
 				ofLogNotice("ofxAppContent") << "Finished Asset downloads for \"" << ID << "\"!";
-				setState(FILTER_OBJECTS_WITH_BAD_ASSETS);
+				setState(ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS);
 			}break;
 
-		case FILTER_OBJECTS_WITH_BAD_ASSETS:
+		case ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS:
 			if(timeInState > 0.1){ //show this on screen for a sec
-				setState(SETUP_TEXTURED_OBJECTS);
+				setState(ContentState::SETUP_TEXTURED_OBJECTS);
 			}
 			break;
 
@@ -114,17 +115,17 @@ void ofxAppContent::setState(ContentState s){
 
 	switch (s) {
 
-		case DOWNLOADING_JSON:
+		case ContentState::DOWNLOADING_JSON:
 			//start the download and parse process
 			jsonParser.downloadAndParse(jsonURL,
 										jsonDestinationDir,	//directory where to save
 										numThreads,			//num threads
-										contentCfg.describeJsonUserLambda,
-										contentCfg.parseSingleObjectUserLambda
+										contentCfg.pointToObjects,
+										contentCfg.parseOneObject
 										);
 			break;
 
-		case CHECKING_ASSET_STATUS:{
+		case ContentState::CHECKING_ASSET_STATUS:{
 			//sadly we need to cast our objects to AssetHolder* objects to check them
 			if (parsedObjects.size()) {
 				vector<AssetHolder*> assetObjs;
@@ -134,12 +135,12 @@ void ofxAppContent::setState(ContentState s){
 				ofAddListener(assetChecker.eventFinishedCheckingAllAssets, this, &ofxAppContent::assetCheckFinished);
 				assetChecker.checkAssets(assetObjs, numThreads);
 			} else {
-				setState(DOWNLOADING_ASSETS);
+				setState(ContentState::DOWNLOADING_ASSETS);
 			}
 
 		}break;
 
-		case DOWNLOADING_ASSETS:
+		case ContentState::DOWNLOADING_ASSETS:
 			//fill in the list
 			for(int i = 0; i < parsedObjects.size(); i++){
 				parsedObjects[i]->downloadMissingAssets(dlc);
@@ -149,7 +150,7 @@ void ofxAppContent::setState(ContentState s){
 			dlc.startDownloading();
 			break;
 
-		case FILTER_OBJECTS_WITH_BAD_ASSETS:{
+		case ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS:{
 
 			if(!shouldSkipObjectTests){
 				objectsWithBadAssets.clear();
@@ -225,16 +226,16 @@ void ofxAppContent::setState(ContentState s){
 
 		}break;
 
-		case SETUP_TEXTURED_OBJECTS:
+		case ContentState::SETUP_TEXTURED_OBJECTS:
 			for(int i = 0; i < parsedObjects.size(); i++){
-				auto setupTexObjUserLambda = contentCfg.setupTexturedObjectUserLambda;
+				auto setupTexObjUserLambda = contentCfg.setupTexturedObject;
 				//call the User Supplied Lambda to setup the user's TexturedObject
 				setupTexObjUserLambda( parsedObjects[i] );
 			}
-			setState(JSON_CONTENT_READY);
+			setState(ContentState::JSON_CONTENT_READY);
 			break;
 
-		case JSON_CONTENT_READY:{
+		case ContentState::JSON_CONTENT_READY:{
 			//keep the json as a good one
 			ofFile jsonFile;
 			jsonFile.open(jsonParser.getJsonLocalPath());
@@ -265,16 +266,16 @@ string ofxAppContent::getStatus(bool formatted){
 	string errorFormat = " %0.8 #0xBB0000 \n"; //text format for logging on screen - see ofxFontStash.h drawMultiLineColumn()
 
 	switch (state) {
-		case DOWNLOADING_JSON: r = string(formatted ? plainFormat : "") + jsonParser.getHttp().drawableString(); break;
-		case JSON_DOWNLOAD_FAILED: r = string(formatted ? errorFormat : "") + errorMessage; break;
-		case CHECKING_JSON: r = string(formatted ? plainFormat : "") + jsonParser.getDrawableState(); break;
-		case PARSING_JSON: r = string(formatted ? plainFormat : "") + jsonParser.getDrawableState(); break;
-		case CHECKING_ASSET_STATUS: r = string(formatted ? plainFormat : "") + assetChecker.getDrawableState(); break;
-		case JSON_PARSE_FAILED: r = string(formatted ? errorFormat : "") +  errorMessage; break;
-		case DOWNLOADING_ASSETS: r =  string(formatted ? plainFormat : "") + dlc.getDrawableInfo(true, false); break;
-		case FILTER_OBJECTS_WITH_BAD_ASSETS: r = string(formatted ? plainFormat : "") + objectsWithBadAssets; break;
-		case SETUP_TEXTURED_OBJECTS: r = string(formatted ? plainFormat : ""); break;
-		case JSON_CONTENT_READY: r = string(formatted ? plainFormat : "") + "READY"; break;
+		case ContentState::DOWNLOADING_JSON: r = string(formatted ? plainFormat : "") + jsonParser.getHttp().drawableString(); break;
+		case ContentState::JSON_DOWNLOAD_FAILED: r = string(formatted ? errorFormat : "") + errorMessage; break;
+		case ContentState::CHECKING_JSON: r = string(formatted ? plainFormat : "") + jsonParser.getDrawableState(); break;
+		case ContentState::PARSING_JSON: r = string(formatted ? plainFormat : "") + jsonParser.getDrawableState(); break;
+		case ContentState::CHECKING_ASSET_STATUS: r = string(formatted ? plainFormat : "") + assetChecker.getDrawableState(); break;
+		case ContentState::JSON_PARSE_FAILED: r = string(formatted ? errorFormat : "") +  errorMessage; break;
+		case ContentState::DOWNLOADING_ASSETS: r =  string(formatted ? plainFormat : "") + dlc.getDrawableInfo(true, false); break;
+		case ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS: r = string(formatted ? plainFormat : "") + objectsWithBadAssets; break;
+		case ContentState::SETUP_TEXTURED_OBJECTS: r = string(formatted ? plainFormat : ""); break;
+		case ContentState::JSON_CONTENT_READY: r = string(formatted ? plainFormat : "") + "READY"; break;
 		default: break;
 	}
 	return r;
@@ -284,12 +285,12 @@ string ofxAppContent::getStatus(bool formatted){
 float ofxAppContent::getPercentDone(){
 	float p = -1.0f;
 	switch (state) {
-		case DOWNLOADING_JSON: p = jsonParser.getHttp().getCurrentDownloadProgress(); break;
-		case CHECKING_JSON: p = -1.0; break;
-		case PARSING_JSON: p = jsonParser.getTotalProgress(); break;
-		case CHECKING_ASSET_STATUS: p = assetChecker.getProgress(); break;
-		case FILTER_OBJECTS_WITH_BAD_ASSETS: p = -1; break;
-		case DOWNLOADING_ASSETS:
+		case ContentState::DOWNLOADING_JSON: p = jsonParser.getHttp().getCurrentDownloadProgress(); break;
+		case ContentState::CHECKING_JSON: p = -1.0; break;
+		case ContentState::PARSING_JSON: p = jsonParser.getTotalProgress(); break;
+		case ContentState::CHECKING_ASSET_STATUS: p = assetChecker.getProgress(); break;
+		case ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS: p = -1; break;
+		case ContentState::DOWNLOADING_ASSETS:
 			p = 1.0 - float(dlc.getNumPendingDownloads()) / totalAssetsToDownload;
 			break;
 		default: break;
@@ -297,13 +298,31 @@ float ofxAppContent::getPercentDone(){
 	return p;
 }
 
+bool ofxAppContent::isReadyToFetchContent(){
+	return	state == ContentState::IDLE ||
+			state == ContentState::JSON_PARSE_FAILED ||
+			state == ContentState::JSON_DOWNLOAD_FAILED ||
+			state == ContentState::JSON_CONTENT_READY;
+}
+
+
+bool ofxAppContent::foundError(){
+	return	state == ContentState::JSON_DOWNLOAD_FAILED ||
+			state == ContentState::JSON_PARSE_FAILED;
+};
+
+
+bool ofxAppContent::isContentReady(){
+	return state == ContentState::JSON_CONTENT_READY;
+};
+
 
 // CALBACKS ////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Callbacks
 
 void ofxAppContent::jsonDownloaded(ofxSimpleHttpResponse & arg){
 	ofLogNotice("ofxAppContent") << "JSON download OK!";
-	setState(CHECKING_JSON);
+	setState(ContentState::CHECKING_JSON);
 	OFXAPP_REPORT("ofxAppJsonDownloadFailed", "JSON Download OK for '" + ID + "'! \"" + jsonURL + "\"", 0);
 }
 
@@ -312,21 +331,21 @@ void ofxAppContent::jsonDownloadFailed(ofxSimpleHttpResponse & arg){
 	ofLogError("ofxAppContent") << "JSON download failed!";
 	errorMessage = arg.reasonForStatus + " (" + arg.url + ")";
 	OFXAPP_REPORT("ofxAppJsonDownloadFailed", "JSON Download Failed for '" + ID + "'! \"" + jsonURL + "\"\nreason: " + arg.reasonForStatus , 2);
-	setState(JSON_DOWNLOAD_FAILED);
+	setState(ContentState::JSON_DOWNLOAD_FAILED);
 }
 
 
 void ofxAppContent::jsonInitialCheckOK(){
 	ofLogNotice("ofxAppContent") << "JSON Initial Check OK!";
 	OFXAPP_REPORT("ofxAppJsonParseFailed", "JSON Parse OK '" + ID + "'! \"" + jsonURL + "\"", 0);
-	setState(PARSING_JSON);
+	setState(ContentState::PARSING_JSON);
 }
 
 
 void ofxAppContent::jsonParseFailed(){
 	ofLogError("ofxAppContent") << "JSON Parse Failed!";
 	OFXAPP_REPORT("ofxAppJsonParseFailed", "JSON Parse Failed for '" + ID + "'! \"" + jsonURL + "\"" , 2);
-	setState(JSON_PARSE_FAILED);
+	setState(ContentState::JSON_PARSE_FAILED);
 }
 
 
@@ -340,30 +359,30 @@ void ofxAppContent::jsonContentReady(vector<ParsedObject*> &parsedObjects_){
 
 		parsedObjects.push_back(co);
 	}
-	setState(CHECKING_ASSET_STATUS);
+	setState(ContentState::CHECKING_ASSET_STATUS);
 }
 
 
 void ofxAppContent::assetCheckFinished(){
 	ofLogNotice("ofxAppContent") << "Asset Check Finished!";
-	setState(DOWNLOADING_ASSETS);
+	setState(ContentState::DOWNLOADING_ASSETS);
 }
 
 
 string ofxAppContent::getNameForState(ofxAppContent::ContentState state){
 
 	switch (state) {
-		case IDLE: return "IDLE";
-		case DOWNLOADING_JSON: return "DOWNLOADING_JSON";
-		case JSON_DOWNLOAD_FAILED: return "JSON_DOWNLOAD_FAILED";
-		case CHECKING_JSON: return "CHECKING_JSON";
-		case JSON_PARSE_FAILED: return "JSON_PARSE_FAILED";
-		case PARSING_JSON: return "PARSING_JSON";
-		case CHECKING_ASSET_STATUS: return "CHECKING_ASSET_STATUS";
-		case DOWNLOADING_ASSETS: return "DOWNLOADING_ASSETS";
-		case FILTER_OBJECTS_WITH_BAD_ASSETS: return "FILTER_OBJECTS_WITH_BAD_ASSETS";
-		case SETUP_TEXTURED_OBJECTS: return "SETUP_TEXTURED_OBJECTS";
-		case JSON_CONTENT_READY: return "JSON_CONTENT_READY";
+		case ContentState::IDLE: return "IDLE";
+		case ContentState::DOWNLOADING_JSON: return "DOWNLOADING_JSON";
+		case ContentState::JSON_DOWNLOAD_FAILED: return "JSON_DOWNLOAD_FAILED";
+		case ContentState::CHECKING_JSON: return "CHECKING_JSON";
+		case ContentState::JSON_PARSE_FAILED: return "JSON_PARSE_FAILED";
+		case ContentState::PARSING_JSON: return "PARSING_JSON";
+		case ContentState::CHECKING_ASSET_STATUS: return "CHECKING_ASSET_STATUS";
+		case ContentState::DOWNLOADING_ASSETS: return "DOWNLOADING_ASSETS";
+		case ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS: return "FILTER_OBJECTS_WITH_BAD_ASSETS";
+		case ContentState::SETUP_TEXTURED_OBJECTS: return "SETUP_TEXTURED_OBJECTS";
+		case ContentState::JSON_CONTENT_READY: return "JSON_CONTENT_READY";
 		default: break;
 	}
 	return "UNKNOWN STATE";

@@ -48,7 +48,7 @@ class App{
 
 public:
 
-	const string settingsFile = "configs/AppSettings.json";
+	const string settingsFile = "configs/ofxAppSettings.json";
 	const string LogsDir = "logs";
 	const string configsDir = "configs";
 	const string pidFileName = "ofxApp.pid";
@@ -63,7 +63,7 @@ public:
 
 	//static App * get(){return theApp;}
 	
-	void setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * delegate);
+	void setup(const map<string,ofxApp::ParseFunctions> & cfgs, ofxAppDelegate * delegate);
 	void setup(ofxAppDelegate * delegate); //if your app has no content ; no lambdas needed
 
 	void update(ofEventArgs &);
@@ -76,7 +76,7 @@ public:
 	// this compounds some classnames to match whatever you decided to name your app;
 	// so "OFX_APP_CLASS_NAME(Colors)" becomes "MyAppColors"
 	// "MyApp" is a macro you MUST define in your pre-processor macros:
-	//  OFX_APP_NAME=MyApp
+	// OFX_APP_NAME=MyApp
 	// alternativelly, only the default Globals & colors will be defined (ofxAppColorsBasic & ofxAppGlobalsBasic)
 	#ifdef OFX_APP_NONAME
 	ofxAppColorsBasic & 			colors(){return colorsStorage;}
@@ -96,7 +96,7 @@ public:
 	ofxScreenSetup					screenSetup;
 
 	// SETTINGS ////////////////////////////////////////////////////////
-	// Convenience methods to easily get values from "data/configs/AppSettings.json"
+	// Convenience methods to easily get values from "data/configs/ofxAppSettings.json"
 
 	bool&		getBool(const string & key, bool defaultVal = true);
 	int&		getInt(const string & key, int defaultVal = 0);
@@ -104,7 +104,7 @@ public:
 	string&		getString(const string & key, string defaultVal = "uninited!");
 	ofColor&	getColor(const string & key, ofColor defaultVal = ofColor::red);
 
-	void		loadSettings(); //load JSON settings (data/configs/AppSettings.json)
+	void		loadSettings(); //load JSON settings (data/configs/ofxAppSettings.json)
 	void		saveSettings();//not really used / tested! TODO!
 
 	ofxApp::State getState(){return appState.getState();}
@@ -120,14 +120,16 @@ public:
 	void onKeyPressed(ofKeyEventArgs&);
 	void screenSetupChanged(ofxScreenSetup::ScreenSetupArg &arg);
 
-	// app params that come from settings json
-	ofVec2f			renderSize;
+	// retrieve app params that come from settings json
+
 	ofRectangle		getRenderAreaForCurrentWindowSize();
 	ofRectangle		getRenderRect();
-	ofRectangle 	startupScreenViewport;
+	ofRectangle 	getStartupScreenViewport(){return startupScreenViewport;} //loading screen rect area
+	ofVec2f			getRenderSize(){return renderSize;}
+	bool			isWindowSetup(){return windowIsSetup;}
 
 	//to draw debug msgs
-	ofRectangle drawMsgInBox(string msg, int x, int y, int fontSize, ofColor fontColor, ofColor bgColor = ofColor::black, float edgeGrow = 5);
+	ofRectangle		drawMsgInBox(string msg, int x, int y, int fontSize, ofColor fontColor, ofColor bgColor = ofColor::black, float edgeGrow = 5);
 
 protected:
 
@@ -152,7 +154,6 @@ protected:
 	//utils
 	void logBanner(const string & log); //to make prettier log headers
 	void printSettingsFile(); //print JSON settings file to stdout (and logs)
-
 
 	// STATE MACHINE ///////////////////////////////////////////////////////////////////////////////
 	virtual void updateStateMachine(float dt);
@@ -192,7 +193,7 @@ protected:
 	ofxAppFonts *							fontStorage = nullptr; //keeps all loaded fonts
 
 	map<string, ofxAppContent*>				contentStorage; //App contents parser - indexed by contentID
-	map<string, ofxApp::UserLambdas>		contentCfgs; //user supplied custom parsing code - indexed by contentID
+	map<string, ofxApp::ParseFunctions>		contentCfgs; //user supplied custom parsing code - indexed by contentID
 
 	ofPtr<ofxSuperLog> *					loggerStorage; //note its a * to an ofPtr - TODO!
 	ofxDrawableStateMachine<ofxApp::State>	appState; //ofxApp State Machine to handle all loading stages
@@ -200,6 +201,7 @@ protected:
 	ofxAppErrorReporter						errorReporterObj; //send live error reports to our CMS over sensu
 	ofxGoogleAnalytics *					gAnalytics = nullptr;
 
+	bool									windowIsSetup = false; //will only be true once the window exists.
 	float									dt; //inited based on app target framerate settings - used to update some internal objects
 	bool									hasLoadedSettings = false;
 	bool									timeSampleOfxApp = false; //internal benchmark of ofxApp timings, usually false
@@ -213,14 +215,19 @@ protected:
 
 	ofxAppDelegate *						delegate = nullptr; //this will be the "user"'s app, likely an ofBaseApp subclass
 	
-	const int								loadingScreenFontSize = 22;
-	
+	const int								loadingScreenFontSize = 22; //TODO!
+
+	//loaded from json settings
+	ofVec2f									renderSize;
+	ofRectangle								startupScreenViewport; //loading screen rect area
+
+	//TBD
 	//static App *							theApp;
 };
 	
-	//static ofxApp::App * get(){ return ofxApp::App::get();}
+//static ofxApp::App * get(){ return ofxApp::App::get();}
 	
 } //namespace ofxApp
 
-extern ofxApp::App app; //all global parameters are here
+extern ofxApp::App app; //anyone including ofxApp.h can reach the "app".
 

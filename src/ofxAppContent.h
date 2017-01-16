@@ -36,7 +36,7 @@ class ofxAppContent{
 
 public:
 
-	enum ContentState{
+	enum class ContentState{
 		IDLE = 0,
 		DOWNLOADING_JSON,
 		JSON_DOWNLOAD_FAILED,
@@ -63,11 +63,11 @@ public:
 			   float idleTimeAfterEachDownload,
 			   const std::pair<string,string> & credentials,
 			   const ofxSimpleHttp::ProxyConfig & proxyConfig,
-			   const ofxApp::UserLambdas & contentCfg,
+			   const ofxApp::ParseFunctions & contentCfg,
 			   const ofxAssets::ObjectUsagePolicy objectUsagePolicy
 			   );
 
-	bool isReadyToFetchContent(){return state == IDLE || state == JSON_PARSE_FAILED || state == JSON_DOWNLOAD_FAILED || state == JSON_CONTENT_READY;}
+	bool isReadyToFetchContent();
 	void fetchContent(); //start the process here
 	
 	void setJsonDownloadURL(string jsonURL);
@@ -75,8 +75,8 @@ public:
 
 	void update(float dt);
 
-	bool foundError(){ return state == JSON_DOWNLOAD_FAILED || state == JSON_PARSE_FAILED; };
-	bool isContentReady(){ return state == JSON_CONTENT_READY; };
+	bool foundError();
+	bool isContentReady();
 
 	string getStatus(bool formatted = true);
 	string getErrorMsg(){return errorMessage;}
@@ -92,7 +92,7 @@ public:
 	
 	string getLastKnownGoodJsonPath();
 
-	// CALLBACKS ///////////////////////////////////////////////////////////////////////////////////
+	// ofxMtJsonParser CALLBACKS ///////////////////////////////////////////////////////////////////
 
 	void jsonDownloaded(ofxSimpleHttpResponse & arg);
 	void jsonDownloadFailed(ofxSimpleHttpResponse & arg);
@@ -111,12 +111,12 @@ protected:
 
 	void setState(ContentState s);
 
-	ContentState state = IDLE;
+	ContentState state = ContentState::IDLE;
 	float timeInState = 0;
 	int totalAssetsToDownload = 0;
 
 	ofxMtJsonParser jsonParser;
-	ofxApp::UserLambdas contentCfg;
+	ofxApp::ParseFunctions contentCfg;
 	ofxAssets::ObjectUsagePolicy objectUsagePolicy;
 
 	vector<ContentObject*> parsedObjects;

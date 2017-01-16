@@ -76,7 +76,7 @@ void ofxAppFonts::loadUseFonts(){
 				}
 			}
 		}else{
-			ofxApp::utils::terminateApp("ofxAppFonts", "User Fonts (\"Fonts/user\")is not a Json Object! Check you \"AppSettings.json\" file!");
+			ofxApp::utils::terminateApp("ofxAppFonts", "User Fonts (\"Fonts/user\")is not a Json Object! Check your \"ofxAppSettings.json\" file!");
 		}
 	}
 }
@@ -107,6 +107,6 @@ void ofxAppFonts::loadOfxAppFont(const string & key, ofxFontStash & font){
 
 
 	}else{
-		ofxApp::utils::terminateApp("ofxAppFonts", "Missing required ofxApp font! Check your \"AppSettings.json\" file in \"Fonts/ofxApp/" + key + "\"");
+		ofxApp::utils::terminateApp("ofxAppFonts", "Missing required ofxApp font! Check your \"ofxAppSettings.json\" file in \"Fonts/ofxApp/" + key + "\"");
 	}
 }

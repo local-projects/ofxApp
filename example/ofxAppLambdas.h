@@ -16,7 +16,7 @@ public:
 	
 	ofxAppLambdas();
 
-	ofxApp::UserLambdas cwru;
-	ofxApp::UserLambdas ch;
+	ofxApp::ParseFunctions cwru;
+	ofxApp::ParseFunctions ch;
 };
 

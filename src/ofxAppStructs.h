@@ -10,68 +10,72 @@
 #include "ofMain.h"
 #include "ofxAppMacros.h"
 #include "ofxMtJsonParser.h"
-#include "ofxAssets.h"
 
 class ContentObject;
 
 namespace ofxApp{
 
 	//user created lambdas to do custom actions at the crucial points
-	struct UserLambdas{
-		std::function<void (ofxMtJsonParserThread::JsonStructureData &)> describeJsonUserLambda;
-		std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> parseSingleObjectUserLambda;
-		std::function<void (ContentObject*)> setupTexturedObjectUserLambda;
+	struct ParseFunctions{
+		std::function<void (ofxMtJsonParserThread::JsonStructureData &)> pointToObjects;
+		std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> parseOneObject;
+		std::function<void (ContentObject*)> setupTexturedObject;
 	};
 
-	enum State{
-		SETTING_UP,
-		SETUP_USER_APP_PRE_LOAD_CONTENT,
-		LOADING_STATIC_TEXTURES,
-		LOADING_JSON_CONTENT,
-		LOADING_JSON_CONTENT_FAILED,
+	enum class State : int{ //internal states used by an ofxApp app
+		SETUP_OFXAPP_INTERNALS,
+		SETUP_DELEGATE_B4_CONTENT_LOAD,
+		LOAD_STATIC_TEXTURES,
+		LOAD_JSON_CONTENT,
+		LOAD_JSON_CONTENT_FAILED,
 		DELIVER_CONTENT_LOAD_RESULTS,
-		SETUP_USER_APP_POST_LOAD_CONTENT,
-		SETUP_USER_APP_JUST_B4_RUNNING,
+		SETUP_DELEGATE_AFTER_CONTENT_LOAD,
+		SETUP_DELEGATE_B4_RUNNING,
 		RUNNING,
 	};
 
-	enum UserAppSetupStage {
-		SETUP_B4_CONTENT_LOAD = SETUP_USER_APP_PRE_LOAD_CONTENT,
-		RECEIVE_CONTENT_LOAD_RESULTS = DELIVER_CONTENT_LOAD_RESULTS,
-		SETUP_AFTER_CONTENT_LOAD = SETUP_USER_APP_POST_LOAD_CONTENT,
-		SETUP_JUST_B4_RUNNING = SETUP_USER_APP_JUST_B4_RUNNING
+	//ofxAppDelegate exposed states; as they are a subset of the internal ofxApp states, enum
+	//values are matched to them
+	enum class Phase : int{
+		SETUP_B4_CONTENT_LOAD = (int)State::SETUP_DELEGATE_B4_CONTENT_LOAD,
+		RECEIVE_CONTENT = (int)State::DELIVER_CONTENT_LOAD_RESULTS,
+		SETUP_AFTER_CONTENT_LOAD = (int)State::SETUP_DELEGATE_AFTER_CONTENT_LOAD,
+		LAST_SETUP_B4_RUNNING = (int)State::SETUP_DELEGATE_B4_RUNNING
 	};
 
-	inline string toString(State s){
+	//convenience methods to be able to print state names
+	inline string toString(const State & s){
 		switch(s){
-			case SETTING_UP: return "SETTING_UP";
-			case LOADING_STATIC_TEXTURES: return "LOADING_STATIC_TEXTURES";
-			case LOADING_JSON_CONTENT: return "LOADING_JSON_CONTENT";
-			case LOADING_JSON_CONTENT_FAILED: return "LOADING_JSON_CONTENT_FAILED";
-			case DELIVER_CONTENT_LOAD_RESULTS: return "DELIVER_CONTENT_LOAD_RESULTS";
-			case SETUP_USER_APP_POST_LOAD_CONTENT: return "SETUP_USER_APP_POST_LOAD_CONTENT";
-			case SETUP_USER_APP_JUST_B4_RUNNING: return "SETUP_USER_APP_JUST_B4_RUNNING";
-			case RUNNING: return "RUNNING";
+			case State::SETUP_OFXAPP_INTERNALS: return "SETUP_OFXAPP_INTERNALS";
+			case State::LOAD_STATIC_TEXTURES: return "LOAD_STATIC_TEXTURES";
+			case State::LOAD_JSON_CONTENT: return "LOAD_JSON_CONTENT";
+			case State::LOAD_JSON_CONTENT_FAILED: return "LOAD_JSON_CONTENT_FAILED";
+			case State::DELIVER_CONTENT_LOAD_RESULTS: return "DELIVER_CONTENT_LOAD_RESULTS";
+			case State::SETUP_DELEGATE_AFTER_CONTENT_LOAD: return "SETUP_DELEGATE_AFTER_CONTENT_LOAD";
+			case State::SETUP_DELEGATE_B4_RUNNING: return "SETUP_DELEGATE_B4_RUNNING";
+			case State::RUNNING: return "RUNNING";
 			default: break;
 		}
 		ofLogError("ofxApp") << "unknown ofxApp State!";
 		return "unknown ofxApp State";
 	}
 
-	inline string toString(UserAppSetupStage s) {
+	inline string toString(const Phase& s){
 		switch (s) {
-			case SETUP_B4_CONTENT_LOAD: return "SETUP_B4_CONTENT_LOAD";
-			case RECEIVE_CONTENT_LOAD_RESULTS: return "RECEIVE_CONTENT_LOAD_RESULTS";
-			case SETUP_AFTER_CONTENT_LOAD: return "SETUP_AFTER_CONTENT_LOAD";
-			case SETUP_JUST_B4_RUNNING: return "SETUP_JUST_B4_RUNNING";
+			case Phase::SETUP_B4_CONTENT_LOAD: return "SETUP_B4_CONTENT_LOAD";
+			case Phase::RECEIVE_CONTENT: return "RECEIVE_CONTENT";
+			case Phase::SETUP_AFTER_CONTENT_LOAD: return "SETUP_AFTER_CONTENT_LOAD";
+			case Phase::LAST_SETUP_B4_RUNNING: return "LAST_SETUP_B4_RUNNING";
 			default: break;
 		}
-		ofLogError("ofxApp") << "unknown ofxApp UserAppSetupStage!";
-		return "unknown ofxApp UserAppSetupStage";
+		ofLogError("ofxApp") << "unknown ofxApp Phase!";
+		return "unknown ofxApp Phase";
 	}
 
 };
 
+
+//mostly protocol enforcment for globals & colors
 class HasRuiParams{
 public:
 	virtual void setupRemoteUIParams() = 0;

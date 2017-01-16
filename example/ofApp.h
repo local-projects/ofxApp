@@ -24,15 +24,18 @@ public:
 	void dragEvent(ofDragInfo dragInfo);
 	void gotMessage(ofMessage msg);
 
-	void setupChanged(ofxScreenSetup::ScreenSetupArg &arg){}
+	// ofxApp Callbacks /////////////////////////////////////////////////
 
-	//ofxApp imposed - callback methods
-	void ofxAppStartUserPhase(ofxApp::UserAppSetupStage);
-	bool ofxAppIsUserPhaseComplete(ofxApp::UserAppSetupStage){return true;}
-	void ofxAppDrawPhaseProgressScreen(ofxApp::UserAppSetupStage, const ofRectangle & r){};
-	float ofxAppGetProgressForUserPhase(ofxApp::UserAppSetupStage){return -1;}
+	//screen size changed
+	void	screenSetupChanged(ofxScreenSetup::ScreenSetupArg &arg){}
 
-	void ofxAppContentIsReady(const string & contentID, vector<ContentObject*>);
+	//
+	void	ofxAppPhaseWillBegin(ofxApp::Phase);
+	bool	ofxAppIsPhaseComplete(ofxApp::Phase){return true;}
+	void	ofxAppDrawPhaseProgress(ofxApp::Phase, const ofRectangle & r){};
+	float	ofxAppGetProgressForPhase(ofxApp::Phase){return -1;}
+
+	void	ofxAppContentIsReady(const string & contentID, vector<ContentObject*>);
 
 	vector<CH_Object*>		chObjects;
 	vector<CWRU_Object*>	cwruObjects;

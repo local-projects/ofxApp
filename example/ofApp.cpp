@@ -6,28 +6,29 @@ void ofApp::setup(){
 	//create my custom lambdas for parsing / preparing objects
 	ofxAppLambdas myLambdas = ofxAppLambdas();
 
-	map<string, ofxApp::UserLambdas> userLambdas;
-	//put them in a map - named as the "AppSettings.json" section ("content/JsonSources")
+	map<string, ofxApp::ParseFunctions> userLambdas;
+	//put them in a map - named as the "ofxAppSettings.json" section ("content/JsonSources")
 	userLambdas["CWRU"] = myLambdas.cwru;
 	userLambdas["CH"] = myLambdas.ch;
 
-	//start the app setup process
+	//start the ofxApp setup process
 	app.setup(userLambdas, this);
 }
 
 
-void ofApp::ofxAppStartUserPhase(ofxApp::UserAppSetupStage s){
+void ofApp::ofxAppPhaseWillBegin(ofxApp::Phase s){
 	ofLogNotice("ofApp") << "Start User Process " << ofxApp::toString(s);
 	switch (s) {
-		case ofxApp::SETUP_B4_CONTENT_LOAD: break;
-		case ofxApp::RECEIVE_CONTENT_LOAD_RESULTS: break;
-		case ofxApp::SETUP_AFTER_CONTENT_LOAD: break;
-		case ofxApp::SETUP_JUST_B4_RUNNING: break;
+		case ofxApp::Phase::SETUP_B4_CONTENT_LOAD: break;
+		case ofxApp::Phase::RECEIVE_CONTENT: break;
+		case ofxApp::Phase::SETUP_AFTER_CONTENT_LOAD: break;
+		case ofxApp::Phase::LAST_SETUP_B4_RUNNING: break;
 	}
 };
 
 
 void ofApp::ofxAppContentIsReady(const string & contentID, vector<ContentObject*> objs){
+
 	ofLogNotice("ofApp") << "Content '" << contentID << "' is ready! " << objs.size() << " objects!";
 
 	if(contentID == "CWRU"){
@@ -57,7 +58,7 @@ void ofApp::update(){
 
 void ofApp::draw(){
 
-	if(app.getState() == ofxApp::RUNNING){
+	if(app.getState() == ofxApp::State::RUNNING){
 
 		app.textures().drawAll(ofRectangle(100, 100, ofGetMouseX(), ofGetMouseY()));		
 		G_TEX("sf2")->draw(0,0);

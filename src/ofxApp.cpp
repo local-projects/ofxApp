@@ -27,12 +27,12 @@ App::App() {
 }
 
 void App::setup(ofxAppDelegate * delegate){
-	map<string,ofxApp::UserLambdas> emptyLambas;
+	map<string,ofxApp::ParseFunctions> emptyLambas;
 	setup(emptyLambas, delegate);
 }
 
 
-void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * delegate){
+void App::setup(const map<string,ofxApp::ParseFunctions> & cfgs, ofxAppDelegate * delegate){
 
 	ofLogNotice("ofxApp") << "setup()";
 
@@ -61,18 +61,18 @@ void App::setup(const map<string,ofxApp::UserLambdas> & cfgs, ofxAppDelegate * d
 		setupTimeMeasurements();
 		setupTextureLoader();
 		setupWindow();
+		setupOF();
 		ofxSimpleHttp::createSslContext();
 		setupStateMachine();
-		appState.setState(SETTING_UP);
+		appState.setState(State::SETUP_OFXAPP_INTERNALS);
 		setupListeners();
 		globals().setupRemoteUIParams();
 		colors().setupRemoteUIParams();
 		textures().setup();
 		setupTuio();
-		setupOF();
-		
+
 		if(timeSampleOfxApp) TS_START_NIF("ofxApp Load Static Textures");
-		appState.setState(SETUP_USER_APP_PRE_LOAD_CONTENT); //start loading content
+		appState.setState(State::SETUP_DELEGATE_B4_CONTENT_LOAD); //start loading content
 	}else{
 		ofxApp::utils::terminateApp("ofxApp", "Trying to setup() ofxApp a second time!");
 	}
@@ -196,6 +196,7 @@ void App::setupWindow(){
 //	ofGetWindowPtr()->update();
 //	ofGetWindowPtr()->draw();
 	ofGetMainLoop()->pollEvents();
+	windowIsSetup = true;
 }
 
 
@@ -261,17 +262,19 @@ void App::setupStateMachine(){
 	string boldFontPath = getString("Fonts/ofxApp/monospacedBold/fontFile");
 	ofxApp::utils::assertFileExists(boldFontPath);
 	appState.setup(boldFontPath, "", ofColor::black, ofColor::white);
-	//this creates strings for each of the ENUM states
 	float dark = 0.25;
-	appState.SET_NAME_AND_COLOR_FOR_STATE(SETTING_UP, ofColor(0,0,255), ofColor(0,0,128));
-	appState.SET_NAME_AND_COLOR_FOR_STATE(SETUP_USER_APP_PRE_LOAD_CONTENT, ofColor::magenta, ofColor::magenta * dark);
-	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_STATIC_TEXTURES, ofColor::darkorange, ofColor::darkorange * dark);
-	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_JSON_CONTENT, ofColor::forestGreen, ofColor::forestGreen * dark);
-	appState.SET_NAME_AND_COLOR_FOR_STATE(LOADING_JSON_CONTENT_FAILED, ofColor::crimson, ofColor::crimson * dark);
-	appState.SET_NAME_AND_COLOR_FOR_STATE(DELIVER_CONTENT_LOAD_RESULTS, ofColor::blueViolet, ofColor::blueViolet * dark);
-	appState.SET_NAME_AND_COLOR_FOR_STATE(SETUP_USER_APP_POST_LOAD_CONTENT, ofColor::royalBlue, ofColor::royalBlue * dark);
-	appState.SET_NAME_AND_COLOR_FOR_STATE(SETUP_USER_APP_JUST_B4_RUNNING, ofColor::mediumAquaMarine, ofColor::mediumAquaMarine * dark);
-	appState.SET_NAME_AND_COLOR_FOR_STATE(RUNNING, ofColor::white, ofColor::grey);
+
+	//TODO some color consitency here please? or at least uniformity
+	//this creates strings for each of the ENUM states
+	appState.setNameAndBarColorForState(State::SETUP_OFXAPP_INTERNALS, toString(State::SETUP_OFXAPP_INTERNALS), ofColor(0,0,255), ofColor(0,0,128));
+	appState.setNameAndBarColorForState(State::SETUP_DELEGATE_B4_CONTENT_LOAD, toString(State::SETUP_DELEGATE_B4_CONTENT_LOAD), ofColor::magenta, ofColor::magenta * dark);
+	appState.setNameAndBarColorForState(State::LOAD_STATIC_TEXTURES, toString(State::LOAD_STATIC_TEXTURES), ofColor::darkorange, ofColor::darkorange * dark);
+	appState.setNameAndBarColorForState(State::LOAD_JSON_CONTENT, toString(State::LOAD_JSON_CONTENT), ofColor::forestGreen, ofColor::forestGreen * dark);
+	appState.setNameAndBarColorForState(State::LOAD_JSON_CONTENT_FAILED, toString(State::LOAD_JSON_CONTENT_FAILED), ofColor::crimson, ofColor::crimson * dark);
+	appState.setNameAndBarColorForState(State::DELIVER_CONTENT_LOAD_RESULTS, toString(State::LOAD_JSON_CONTENT_FAILED), ofColor::blueViolet, ofColor::blueViolet * dark);
+	appState.setNameAndBarColorForState(State::SETUP_DELEGATE_AFTER_CONTENT_LOAD, toString(State::LOAD_JSON_CONTENT_FAILED), ofColor::royalBlue, ofColor::royalBlue * dark);
+	appState.setNameAndBarColorForState(State::SETUP_DELEGATE_B4_RUNNING, toString(State::LOAD_JSON_CONTENT_FAILED), ofColor::mediumAquaMarine, ofColor::mediumAquaMarine * dark);
+	appState.setNameAndBarColorForState(State::RUNNING, toString(State::LOAD_JSON_CONTENT_FAILED), ofColor::white, ofColor::grey);
 }
 
 void App::startLoadingStaticAssets(){
@@ -330,7 +333,7 @@ void App::printSettingsFile(){
 	}
 	ofLogNotice("ofxApp") << " %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
 	#else
-	ofLogNotice("ofxApp") << " ╔═════╣ AppSettings.json ╠═════════════════════════════════════════════════════════════════════════════════";
+	ofLogNotice("ofxApp") << " ╔═════╣ ofxAppSettings.json ╠═════════════════════════════════════════════════════════════════════════════════";
 	for (auto & l : jsonLines) {
 		ofLogNotice("ofxApp") << " ║ " << l;
 	}
@@ -394,6 +397,7 @@ void App::setupLogging(){
 
 
 void App::setupRemoteUI(){
+
 	ofLogNotice("ofxApp") << "setupRemoteUI()";
 	RUI_SET_CONFIGS_DIR(configsDir);
 	RUI_GET_INSTANCE()->setUiColumnWidth(getInt("RemoteUI/columnWidth", 280));
@@ -486,6 +490,7 @@ void App::setupRuiWatches(){
 
 
 void App::setupTimeMeasurements(){
+
 	ofLogNotice("ofxApp") << "setupTimeMeasurements()";
 	TIME_SAMPLE_SET_CONFIG_DIR(configsDir);
 	TIME_SAMPLE_SET_FRAMERATE(getInt("App/frameRate", 60));
@@ -525,6 +530,7 @@ void App::setupTuio(){
 
 
 void App::update(ofEventArgs &){
+
 	tuioClient.getMessage();
 	for(auto c : contentStorage){
 		c.second->update(dt);
@@ -535,9 +541,10 @@ void App::update(ofEventArgs &){
 
 
 void App::exit(ofEventArgs &){
+
+	ofLogWarning("ofxApp") << "OF is exitting!";
 	if(gAnalytics) gAnalytics->sendEvent("ofxApp", "exitApp", 0, "", false);
 	if (gAnalytics) delete gAnalytics;
-	ofLogWarning("ofxApp") << "OF is exitting!";
 
 	//if we are in the download stage, we would crash unless we stop the download threads
 	//before deleting ofxApp::App so here we stop all downloads.
@@ -562,7 +569,8 @@ void App::exit(ofEventArgs &){
 #pragma Draw Loading Screen
 
 void App::draw(ofEventArgs &){
-	if(appState.getState() != RUNNING){
+
+	if(appState.getState() != State::RUNNING){
 		ofSetupScreen();
 		float w = ofGetWidth();
 		float h = ofGetHeight();
@@ -576,7 +584,7 @@ void App::draw(ofEventArgs &){
 	mullions.draw();
 	ofSetColor(255);
 
-	//stack up stats
+	//stack up on screen stats
 	int x = 20;
 	int y = 27;
 	int pad = -10;
@@ -616,7 +624,7 @@ void App::onDrawLoadingScreenStatus(ofRectangle & area){
 
 	switch (appState.getState()) {
 
-		case LOADING_STATIC_TEXTURES:{
+		case State::LOAD_STATIC_TEXTURES:{
 			textures().drawAll(area);
 			float progress = textures().getNumLoadedTextures() / float(textures().getNumTextures());
 			appState.updateState( progress, "");
@@ -625,11 +633,11 @@ void App::onDrawLoadingScreenStatus(ofRectangle & area){
 			
 		}break;
 
-		case SETUP_USER_APP_PRE_LOAD_CONTENT:
-		case DELIVER_CONTENT_LOAD_RESULTS:
-		case SETUP_USER_APP_POST_LOAD_CONTENT:
-		case SETUP_USER_APP_JUST_B4_RUNNING:
-			delegate->ofxAppDrawPhaseProgressScreen((UserAppSetupStage)appState.getState(), area);
+		case State::SETUP_DELEGATE_B4_CONTENT_LOAD:
+		case State::DELIVER_CONTENT_LOAD_RESULTS:
+		case State::SETUP_DELEGATE_AFTER_CONTENT_LOAD:
+		case State::SETUP_DELEGATE_B4_RUNNING:
+			delegate->ofxAppDrawPhaseProgress((Phase)appState.getState(), area);
 			break;
 
 		default: break;
@@ -643,13 +651,13 @@ void App::updateStateMachine(float dt){
 
 	switch (appState.getState()) {
 
-		case SETUP_USER_APP_PRE_LOAD_CONTENT:
-			if (delegate->ofxAppIsUserPhaseComplete((UserAppSetupStage)SETUP_USER_APP_PRE_LOAD_CONTENT)) {
-				ofLogNotice("ofxApp") << "Done SETUP_USER_APP_PRE_LOAD_CONTENT!";
-				appState.setState(LOADING_STATIC_TEXTURES);
+		case State::SETUP_DELEGATE_B4_CONTENT_LOAD:
+			if (delegate->ofxAppIsPhaseComplete(Phase(State::SETUP_DELEGATE_B4_CONTENT_LOAD))) {
+				ofLogNotice("ofxApp") << "Done SETUP_DELEGATE_B4_CONTENT_LOAD!";
+				appState.setState(State::LOAD_STATIC_TEXTURES);
 			}break;
 
-		case LOADING_JSON_CONTENT:
+		case State::LOAD_JSON_CONTENT:
 
 			appState.updateState( contentStorage[currentContentID]->getPercentDone(), contentStorage[currentContentID]->getStatus());
 
@@ -657,7 +665,7 @@ void App::updateStateMachine(float dt){
 
 				if( appState.hasError() && appState.ranOutOfErrorRetries()){ //give up!
 					ofLogError("ofxApp") << "json failed to load too many times! Giving Up!";
-					appState.setState(LOADING_JSON_CONTENT_FAILED);
+					appState.setState(State::LOAD_JSON_CONTENT_FAILED);
 					
 					OFXAPP_REPORT(	"ofxAppJsonContentGiveUp", "Giving up on fetching JSON for '" + currentContentID +
 							 	"'!\nJsonSrc: \"" + contentStorage[currentContentID]->getJsonDownloadURL() +
@@ -674,10 +682,10 @@ void App::updateStateMachine(float dt){
 						if(timeSampleOfxApp) TS_STOP_NIF("ofxApp LoadContent " + currentContentID);
 
 						if(loadedContent.size() == contentStorage.size()){ //done loading ALL the JSON contents!
-							appState.setState(DELIVER_CONTENT_LOAD_RESULTS);
+							appState.setState(State::DELIVER_CONTENT_LOAD_RESULTS);
 						}else{ //load the next json
 							currentContentID = requestedContent[loadedContent.size()];
-							appState.setState(LOADING_JSON_CONTENT);
+							appState.setState(State::LOAD_JSON_CONTENT);
 						}
 						break;
 					}
@@ -689,19 +697,19 @@ void App::updateStateMachine(float dt){
 					appState.setError("failed to load content for \"" + currentContentID + "\"", delaySeconds /*sec*/, numRetries /*retry max*/); //report an error, retry!
 					ofLogError("ofxApp") << "json failed to load! (" << appState.getNumTimesRetried() << ")";
 					if(numRetries > 0){ //if no retry allowed, jump to fail state directly
-						appState.setState(LOADING_JSON_CONTENT, false); //note "false" << do not clear errors (to keep track of # of retries)
+						appState.setState(State::LOAD_JSON_CONTENT, false); //note "false" << do not clear errors (to keep track of # of retries)
 					}else{
-						appState.setState(LOADING_JSON_CONTENT_FAILED, false);  //note "false" << do not clear errors (to keep track of # of retries)
+						appState.setState(State::LOAD_JSON_CONTENT_FAILED, false);  //note "false" << do not clear errors (to keep track of # of retries)
 					}
 				}
 			}
 			break;
 
-		case LOADING_JSON_CONTENT_FAILED:{
+		case State::LOAD_JSON_CONTENT_FAILED:{
 			if(contentStorage[currentContentID]->isReadyToFetchContent()){
 				string knownGoodJSON = "file://" + contentStorage[currentContentID]->getLastKnownGoodJsonPath();
 				contentStorage[currentContentID]->setJsonDownloadURL(knownGoodJSON); //lets try from a known good json
-				appState.setState(LOADING_JSON_CONTENT, false);
+				appState.setState(State::LOAD_JSON_CONTENT, false);
 			}else{
 				if(appState.getElapsedTimeInCurrentState() < 0.016){
 					ofLogNotice("ofxApp") << "Json Content Load Failed but ofxAppContent not ready yet... Waiting.";
@@ -709,25 +717,25 @@ void App::updateStateMachine(float dt){
 			}
 			}break;
 
-		case DELIVER_CONTENT_LOAD_RESULTS:
-			if(delegate->ofxAppIsUserPhaseComplete((UserAppSetupStage)DELIVER_CONTENT_LOAD_RESULTS)){
+		case State::DELIVER_CONTENT_LOAD_RESULTS:
+			if(delegate->ofxAppIsPhaseComplete(Phase(State::DELIVER_CONTENT_LOAD_RESULTS))){
 				ofLogNotice("ofxApp") << "Done DELIVER_CONTENT_LOAD_RESULTS!";
-				appState.setState(SETUP_USER_APP_POST_LOAD_CONTENT);
+				appState.setState(State::SETUP_DELEGATE_AFTER_CONTENT_LOAD);
 			}break;
 
-		case SETUP_USER_APP_POST_LOAD_CONTENT:
-			if(delegate->ofxAppIsUserPhaseComplete((UserAppSetupStage)SETUP_USER_APP_POST_LOAD_CONTENT)){
-				ofLogNotice("ofxApp") << "Done SETUP_USER_APP_POST_LOAD_CONTENT!";
-				appState.setState(SETUP_USER_APP_JUST_B4_RUNNING);
+		case State::SETUP_DELEGATE_AFTER_CONTENT_LOAD:
+			if(delegate->ofxAppIsPhaseComplete(Phase(State::SETUP_DELEGATE_AFTER_CONTENT_LOAD))){
+				ofLogNotice("ofxApp") << "Done SETUP_DELEGATE_AFTER_CONTENT_LOAD!";
+				appState.setState(State::SETUP_DELEGATE_B4_RUNNING);
 			}break;
 
-		case SETUP_USER_APP_JUST_B4_RUNNING:
-			if (delegate->ofxAppIsUserPhaseComplete((UserAppSetupStage)SETUP_USER_APP_JUST_B4_RUNNING)) {
-				ofLogNotice("ofxApp") << "Done SETUP_USER_APP_JUST_B4_RUNNING!";
-				appState.setState(RUNNING);
+		case State::SETUP_DELEGATE_B4_RUNNING:
+			if (delegate->ofxAppIsPhaseComplete(Phase(State::SETUP_DELEGATE_B4_RUNNING))) {
+				ofLogNotice("ofxApp") << "Done SETUP_DELEGATE_B4_RUNNING!";
+				appState.setState(State::RUNNING);
 			}break;
 
-		case RUNNING:
+		case State::RUNNING:
 			appState.updateState( -1, "");
 			break;
 
@@ -737,24 +745,24 @@ void App::updateStateMachine(float dt){
 }
 
 
-void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& change){
+void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 
 	ofLogNotice("ofxApp") 	<< "State Changed from \"" << appState.getNameForState(change.oldState)
 							<< "\" to \"" << appState.getNameForState(change.newState) << "\"  State Duration: " << change.timeInPrevState << "sec.";
 
 	switch(change.newState){
 
-		case SETUP_USER_APP_PRE_LOAD_CONTENT:
-			ofLogNotice("ofxApp") << "Start SETUP_USER_APP_PRE_LOAD_CONTENT...";
-			delegate->ofxAppStartUserPhase((UserAppSetupStage)SETUP_USER_APP_PRE_LOAD_CONTENT);
+		case State::SETUP_DELEGATE_B4_CONTENT_LOAD:
+			ofLogNotice("ofxApp") << "Start SETUP_DELEGATE_B4_CONTENT_LOAD...";
+			delegate->ofxAppPhaseWillBegin(Phase(State::SETUP_DELEGATE_B4_CONTENT_LOAD));
 		break;
 
-		case LOADING_STATIC_TEXTURES:
+		case State::LOAD_STATIC_TEXTURES:
 			startLoadingStaticAssets();
 			break;
 
-		case LOADING_JSON_CONTENT:{
-			if(change.oldState != LOADING_JSON_CONTENT_FAILED){
+		case State::LOAD_JSON_CONTENT:{
+			if(change.oldState != State::LOAD_JSON_CONTENT_FAILED){
 				if(timeSampleOfxApp) TS_START_NIF("ofxApp LoadContent " + currentContentID);
 				logBanner("Start Loading Content  \"" + currentContentID + "\"");
 				
@@ -798,33 +806,33 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 			}
 			}break;
 
-		case LOADING_JSON_CONTENT_FAILED:
+		case State::LOAD_JSON_CONTENT_FAILED:
 			appState.setProgressBarExtraInfo(" - CONTENT LOAD FAILED");
 			//ofxSuperLog::getLogger()->setScreenLoggingEnabled(true); //show log if json error
 			break;
 
-		case DELIVER_CONTENT_LOAD_RESULTS:
+		case State::DELIVER_CONTENT_LOAD_RESULTS:
 			for(auto c : contentStorage){
 				delegate->ofxAppContentIsReady(c.first, c.second->getParsedObjects());
 			}
 			ofLogNotice("ofxApp") << "Start Loading Custom User Content...";
-			delegate->ofxAppStartUserPhase((UserAppSetupStage)DELIVER_CONTENT_LOAD_RESULTS);
+			delegate->ofxAppPhaseWillBegin(Phase(State::DELIVER_CONTENT_LOAD_RESULTS));
 			break;
 
-		case SETUP_USER_APP_POST_LOAD_CONTENT:
-			ofLogNotice("ofxApp") << "Start SETUP_USER_APP_POST_LOAD_CONTENT...";
-			delegate->ofxAppStartUserPhase((UserAppSetupStage)SETUP_USER_APP_POST_LOAD_CONTENT);
+		case State::SETUP_DELEGATE_AFTER_CONTENT_LOAD:
+			ofLogNotice("ofxApp") << "Start SETUP_DELEGATE_AFTER_CONTENT_LOAD...";
+			delegate->ofxAppPhaseWillBegin(Phase(State::SETUP_DELEGATE_AFTER_CONTENT_LOAD));
 			break;
 
-		case SETUP_USER_APP_JUST_B4_RUNNING:
+		case State::SETUP_DELEGATE_B4_RUNNING:
 			setupRuiWatches();
 			setupApp();
-			ofLogNotice("ofxApp") << "Start SETUP_USER_APP_JUST_B4_RUNNING...";
+			ofLogNotice("ofxApp") << "Start SETUP_DELEGATE_B4_RUNNING...";
 			if(gAnalytics) gAnalytics->sendEvent("ofxApp", "startApp", 0, "", false);
-			delegate->ofxAppStartUserPhase((UserAppSetupStage)SETUP_USER_APP_JUST_B4_RUNNING); //user custom code runs here
+			delegate->ofxAppPhaseWillBegin(Phase(State::SETUP_DELEGATE_B4_RUNNING)); //user custom code runs here
 			break;
 
-		case RUNNING:{
+		case State::RUNNING:{
 			float ts = -1.0f;
 			if(timeSampleOfxApp){
 				ts = TS_STOP_NIF("ofxApp Setup");
@@ -838,7 +846,7 @@ void App::onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& 
 }
 
 
-void App::onStateError(ofxStateMachine<ofxApp::State>::ErrorStateEventArgs& error){
+void App::onStateError(ofxStateMachine<State>::ErrorStateEventArgs& error){
 	ofLogError("ofxApp") << "Error '" << error.errorMsg << "' during state '" << appState.getNameForState(error.state) << "'";
 }
 
@@ -852,10 +860,10 @@ void App::onStaticTexturesLoaded(){
 	ofLogNotice("ofxApp")<< "All Static Textures Loaded!";
 	if(timeSampleOfxApp) TS_STOP_NIF("ofxApp Load Static Textures");
 	if(contentStorage.size()){
-		appState.setState(LOADING_JSON_CONTENT);
+		appState.setState(State::LOAD_JSON_CONTENT);
 	}else{
 		ofLogWarning("ofxApp")<< "Skipping JsonLoadContent phase, as there's no content to load.";
-		appState.setState(SETUP_USER_APP_POST_LOAD_CONTENT);
+		appState.setState(State::SETUP_DELEGATE_AFTER_CONTENT_LOAD);
 	}
 }
 
@@ -900,9 +908,8 @@ void App::screenSetupChanged(ofxScreenSetup::ScreenSetupArg &arg){
 }
 
 ofRectangle App::getRenderAreaForCurrentWindowSize(){
-
-	ofRectangle win = ofRectangle(0,0, ofGetWindowWidth(), ofGetWindowHeight());
-	ofRectangle render = ofRectangle(0,0,app.renderSize.x, app.renderSize.y);
+	ofRectangle win = ofRectangle(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
+	ofRectangle render = ofRectangle(0, 0, app.renderSize.x, app.renderSize.y);
 	render.scaleTo(win);
 	return render;
 }
@@ -946,7 +953,7 @@ ofRectangle App::drawMsgInBox(string msg, int x, int y, int fontSize, ofColor fo
 
 bool& App::getBool(const string & key, bool defaultVal){
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a BOOL setting but Settings have not been loaded! '" << key<< "'";
-	if(settings().exists(key)){
+	if(settings().exists(key) && hasLoadedSettings){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " Getting Bool Value for \"" << key << "\" : " << settings().getBool(key);
 		return settings().getBool(key);
 	}else{
@@ -961,7 +968,7 @@ bool& App::getBool(const string & key, bool defaultVal){
 
 int& App::getInt(const string & key, int defaultVal){
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a INT setting but Settings have not been loaded! '" << key<< "'";
-	if(settings().exists(key)){
+	if(settings().exists(key) && hasLoadedSettings){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " Getting Int Value for \"" << key << "\" : " << settings().getInt(key);
 		return settings().getInt(key);
 	}else{
@@ -975,7 +982,7 @@ int& App::getInt(const string & key, int defaultVal){
 
 float& App::getFloat(const string & key, float defaultVal){
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a FLOAT setting but Settings have not been loaded! '" << key<< "'";
-	if(settings().exists(key)){
+	if(settings().exists(key) && hasLoadedSettings){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " Getting Float Value for \"" << key << "\" : " << settings().getFloat(key);
 		return settings().getFloat(key);
 	}else{
@@ -989,7 +996,7 @@ float& App::getFloat(const string & key, float defaultVal){
 
 string& App::getString(const string & key, string defaultVal){
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a STRING setting but Settings have not been loaded! '" << key<< "'";
-	if(settings().exists(key)){
+	if(settings().exists(key) && hasLoadedSettings){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " Getting String Value for \"" << key << "\" : " << settings().getString(key);
 		return settings().getString(key);
 	}else{
@@ -1003,7 +1010,7 @@ string& App::getString(const string & key, string defaultVal){
 
 ofColor& App::getColor(const string & key, ofColor defaultVal){
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a COLOR setting but Settings have not been loaded! '" << key<< "'";
-	if(settings().exists(key)){
+	if(settings().exists(key) && hasLoadedSettings){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " Getting Color Value for \"" << key << "\" : " << settings().getColor(key);
 		return settings().getColor(key);
 	}else{

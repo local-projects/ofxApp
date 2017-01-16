@@ -22,11 +22,11 @@ public:
 	void gotMessage(ofMessage msg);
 
 	//ofxApp imposed - responder methods
-	void ofxAppStartUserPhase(ofxApp::State);
-	bool ofxAppIsUserPhaseComplete(ofxApp::State){return true;}
-	void ofxAppDrawPhaseProgressScreen(ofxApp::State, const ofRectangle & r){};
-	float ofxAppGetProgressForUserPhase(ofxApp::State){return -1;}
+	void	ofxAppPhaseWillBegin(ofxApp::Phase);
+	bool	ofxAppIsPhaseComplete(ofxApp::Phase){return true;}
+	void	ofxAppDrawPhaseProgress(ofxApp::Phase, const ofRectangle & r){};
+	float	ofxAppGetProgressForPhase(ofxApp::Phase){return -1;}
 
-	void contentIsReady(const string & contentID, vector<ContentObject*>){};
+	void	ofxAppContentIsReady(const string & contentID, vector<ContentObject*>){};
 
 };
