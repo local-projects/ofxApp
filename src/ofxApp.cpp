@@ -11,8 +11,12 @@
 #include "TexturedObjectStats.h"
 #include "ofxAppUtils.h"
 
-ofxApp::App app; //app global in your project!
-//ofxApp::App* ofxApp::App::theApp = &app; //static access to the App with ofxApp::get()
+//how to get the app from the ofxApp namespace
+namespace ofxApp{
+	App& get(){
+		return App::one();
+	}
+}
 
 using namespace ofxApp;
 
@@ -272,7 +276,7 @@ void App::setupStateMachine(){
 	appState.setNameAndBarColorForState(State::LOAD_JSON_CONTENT, toString(State::LOAD_JSON_CONTENT), ofColor::forestGreen, ofColor::forestGreen * dark);
 	appState.setNameAndBarColorForState(State::LOAD_JSON_CONTENT_FAILED, toString(State::LOAD_JSON_CONTENT_FAILED), ofColor::crimson, ofColor::crimson * dark);
 	appState.setNameAndBarColorForState(State::DELIVER_CONTENT_LOAD_RESULTS, toString(State::LOAD_JSON_CONTENT_FAILED), ofColor::blueViolet, ofColor::blueViolet * dark);
-	appState.setNameAndBarColorForState(State::SETUP_DELEGATE_AFTER_CONTENT_LOAD, toString(State::LOAD_JSON_CONTENT_FAILED), ofColor::royalBlue, ofColor::royalBlue * dark);
+	//appState.setNameAndBarColorForState(State::SETUP_DELEGATE_AFTER_CONTENT_LOAD, toString(State::LOAD_JSON_CONTENT_FAILED), ofColor::royalBlue, ofColor::royalBlue * dark);
 	appState.setNameAndBarColorForState(State::SETUP_DELEGATE_B4_RUNNING, toString(State::LOAD_JSON_CONTENT_FAILED), ofColor::mediumAquaMarine, ofColor::mediumAquaMarine * dark);
 	appState.setNameAndBarColorForState(State::RUNNING, toString(State::LOAD_JSON_CONTENT_FAILED), ofColor::white, ofColor::grey);
 }
@@ -596,7 +600,7 @@ void App::draw(ofEventArgs &){
 	}
 
 	if(globalsStorage->drawStaticTexturesMemStats){
-		float mb = app.textures().getTotalMemUsed();
+		float mb = one().textures().getTotalMemUsed();
 		ofRectangle r = drawMsgInBox("ofxApp Static Texturs Mem Used: " + ofToString(mb, 1) + "Mb", x, y, fontSize, ofColor::fuchsia);
 		y += r.height + fabs(r.y - y) + pad;
 	}
@@ -635,7 +639,6 @@ void App::onDrawLoadingScreenStatus(ofRectangle & area){
 
 		case State::SETUP_DELEGATE_B4_CONTENT_LOAD:
 		case State::DELIVER_CONTENT_LOAD_RESULTS:
-		case State::SETUP_DELEGATE_AFTER_CONTENT_LOAD:
 		case State::SETUP_DELEGATE_B4_RUNNING:
 			delegate->ofxAppDrawPhaseProgress((Phase)appState.getState(), area);
 			break;
@@ -720,14 +723,14 @@ void App::updateStateMachine(float dt){
 		case State::DELIVER_CONTENT_LOAD_RESULTS:
 			if(delegate->ofxAppIsPhaseComplete(Phase(State::DELIVER_CONTENT_LOAD_RESULTS))){
 				ofLogNotice("ofxApp") << "Done DELIVER_CONTENT_LOAD_RESULTS!";
-				appState.setState(State::SETUP_DELEGATE_AFTER_CONTENT_LOAD);
-			}break;
-
-		case State::SETUP_DELEGATE_AFTER_CONTENT_LOAD:
-			if(delegate->ofxAppIsPhaseComplete(Phase(State::SETUP_DELEGATE_AFTER_CONTENT_LOAD))){
-				ofLogNotice("ofxApp") << "Done SETUP_DELEGATE_AFTER_CONTENT_LOAD!";
 				appState.setState(State::SETUP_DELEGATE_B4_RUNNING);
 			}break;
+
+//		case State::SETUP_DELEGATE_AFTER_CONTENT_LOAD:
+//			if(delegate->ofxAppIsPhaseComplete(Phase(State::SETUP_DELEGATE_AFTER_CONTENT_LOAD))){
+//				ofLogNotice("ofxApp") << "Done SETUP_DELEGATE_AFTER_CONTENT_LOAD!";
+//				appState.setState(State::SETUP_DELEGATE_B4_RUNNING);
+//			}break;
 
 		case State::SETUP_DELEGATE_B4_RUNNING:
 			if (delegate->ofxAppIsPhaseComplete(Phase(State::SETUP_DELEGATE_B4_RUNNING))) {
@@ -778,7 +781,8 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 					int timeOutSecs = getInt("downloads/timeOutSec");
 					int speedLimitKBs = getInt("downloads/speedLimitKb");
 					float idleTimeAfterDl = getFloat("downloads/idleTimeAfterEachDownloadSec");
-					
+					string assetDownloadLocation = getString("content/JsonSources/" + currentContentID + "/assetsLocation");
+
 					contentStorage[currentContentID]->setup(currentContentID,
 															jsonURL,
 															jsonDir,
@@ -791,7 +795,8 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 															credentials,
 															proxyCfg,
 															contentCfgs[currentContentID],
-															objectUsagePolicy
+															objectUsagePolicy,
+															assetDownloadLocation
 													  );
 					
 					contentStorage[currentContentID]->fetchContent(); //this starts the ofxAppContent process!
@@ -819,10 +824,10 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 			delegate->ofxAppPhaseWillBegin(Phase(State::DELIVER_CONTENT_LOAD_RESULTS));
 			break;
 
-		case State::SETUP_DELEGATE_AFTER_CONTENT_LOAD:
-			ofLogNotice("ofxApp") << "Start SETUP_DELEGATE_AFTER_CONTENT_LOAD...";
-			delegate->ofxAppPhaseWillBegin(Phase(State::SETUP_DELEGATE_AFTER_CONTENT_LOAD));
-			break;
+//		case State::SETUP_DELEGATE_AFTER_CONTENT_LOAD:
+//			ofLogNotice("ofxApp") << "Start SETUP_DELEGATE_AFTER_CONTENT_LOAD...";
+//			delegate->ofxAppPhaseWillBegin(Phase(State::SETUP_DELEGATE_AFTER_CONTENT_LOAD));
+//			break;
 
 		case State::SETUP_DELEGATE_B4_RUNNING:
 			setupRuiWatches();
@@ -863,7 +868,7 @@ void App::onStaticTexturesLoaded(){
 		appState.setState(State::LOAD_JSON_CONTENT);
 	}else{
 		ofLogWarning("ofxApp")<< "Skipping JsonLoadContent phase, as there's no content to load.";
-		appState.setState(State::SETUP_DELEGATE_AFTER_CONTENT_LOAD);
+		appState.setState(State::DELIVER_CONTENT_LOAD_RESULTS);
 	}
 }
 
@@ -894,7 +899,13 @@ void App::onKeyPressed(ofKeyEventArgs & a){
 	bool didPress = false;
 	switch(a.key){
 		case 'W': screenSetup.cycleToNextScreenMode(); didPress = true; break;
-		case 'L': ofxSuperLog::getLogger()->setScreenLoggingEnabled(!ofxSuperLog::getLogger()->isScreenLoggingEnabled()); didPress = true; break;
+		case 'L': {
+			if(getBool("logging/toScreen")){
+				ofxSuperLog::getLogger()->setScreenLoggingEnabled(!ofxSuperLog::getLogger()->isScreenLoggingEnabled());
+				didPress = true;
+				break;
+			}
+		}
 		case 'M': mullions.toggle(); didPress = true; break;
 		case 'D': globalsStorage->debug^= true; didPress = true; break;
 	}
@@ -909,14 +920,14 @@ void App::screenSetupChanged(ofxScreenSetup::ScreenSetupArg &arg){
 
 ofRectangle App::getRenderAreaForCurrentWindowSize(){
 	ofRectangle win = ofRectangle(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
-	ofRectangle render = ofRectangle(0, 0, app.renderSize.x, app.renderSize.y);
+	ofRectangle render = ofRectangle(0, 0, one().renderSize.x, one().renderSize.y);
 	render.scaleTo(win);
 	return render;
 }
 
 
 ofRectangle App::getRenderRect() {
-	return ofRectangle(0, 0, app.renderSize.x, app.renderSize.y);
+	return ofRectangle(0, 0, one().renderSize.x, one().renderSize.y);
 }
 
 
@@ -994,7 +1005,7 @@ float& App::getFloat(const string & key, float defaultVal){
 	}
 }
 
-string& App::getString(const string & key, string defaultVal){
+string& App::getString(const string & key, const string & defaultVal){
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a STRING setting but Settings have not been loaded! '" << key<< "'";
 	if(settings().exists(key) && hasLoadedSettings){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " Getting String Value for \"" << key << "\" : " << settings().getString(key);

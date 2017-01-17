@@ -58,12 +58,11 @@ ofxAppLambdas::ofxAppLambdas(){
 		// ASSET HOLDER SETUP //
 		//setup our AssetHoler structures - we need to know where to download the assets to,
 		//our download and usage policies, and what assets do we own
-		static string assetsDir;
-		if(assetsDir.size() == 0) assetsDir = app.getString("content/JsonSources/CWRU/assetsLocation"); //TODO this is slooow!
+		string assetsDir = inOutData.userData->at("assetsLocation"); //access userData std::map<string,string> to fetch data that is provided for you
 		string assetsPath = assetsDir + "/" + inOutData.objectID;
 
-		ofxAssets::DownloadPolicy assetDownloadPolicy = app.getAssetDownloadPolicy();
-		ofxAssets::UsagePolicy assetUsagePolicy = app.getAssetUsagePolicy();
+		ofxAssets::DownloadPolicy assetDownloadPolicy = ofxApp::get().getAssetDownloadPolicy();
+		ofxAssets::UsagePolicy assetUsagePolicy = ofxApp::get().getAssetUsagePolicy(); 
 		o->AssetHolder::setup(assetsPath, assetUsagePolicy, assetDownloadPolicy);
 
 		if(imgURL.size()){
@@ -178,19 +177,22 @@ ofxAppLambdas::ofxAppLambdas(){
 			// ASSET HOLDER SETUP //
 			//setup our AssetHoler structures - we need to know where to download the assets to,
 			//our download and usage policies, and what assets do we own
-			static string assetsDir;
-			if(assetsDir.size() == 0) assetsDir = app.getString("content/JsonSources/CH/assetsLocation"); //TODO this is slooow!
+			string assetsDir = inOutData.userData->at("assetsLocation"); //access userData std::map<string,string> to fetch data that is provided for you
 			string assetsPath = assetsDir + "/" + o->objectID;
 
-			ofxAssets::DownloadPolicy assetDownloadPolicy = app.getAssetDownloadPolicy();
-			ofxAssets::UsagePolicy assetUsagePolicy = app.getAssetUsagePolicy();
+			ofxAssets::DownloadPolicy assetDownloadPolicy = ofxApp::get().getAssetDownloadPolicy(); //TODO this is slooow!
+			ofxAssets::UsagePolicy assetUsagePolicy = ofxApp::get().getAssetUsagePolicy(); //TODO this is slooow!
 			o->AssetHolder::setup(assetsPath, assetUsagePolicy, assetDownloadPolicy);
-			for(auto & i : o->images){
+
+			for(auto & i : o->images){ //lets add one "Remote Asset" for each image in this object
 
 				ofxAssets::Specs spec;
 				spec.width = i.imgSize.x;
 				spec.height = i.imgSize.y;
-				vector<string> tags;
+
+				vector<string> tags;	//note how we can "tag" assets to be able to retrieve them later
+										//in this case, we are tagging the "primary image" of each object as so
+
 				if(isPrimary[i.url]){ //only images that are primary get a tag.
 					tags.push_back("isPrimary");
 				}

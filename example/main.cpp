@@ -6,7 +6,7 @@
 //========================================================================
 int main( ){
 
-	app.loadSettings(); //ofxApp settings loaded early here.
+	ofxApp::get().loadSettings(); //ofxApp settings loaded early here.
 						//usually they are loaded automatically when you call app.setup();
 						//but in this case we need to read some settings b4 the app launches
 						//and the openGL context is created (AA samples)
@@ -14,7 +14,7 @@ int main( ){
 	//ofSetCurrentRenderer(ofGLProgrammableRenderer::TYPE);
 
 	ofGLFWWindowSettings winSettings;
-	winSettings.numSamples = app.getInt("App/numAASamples", 8);
+	winSettings.numSamples = ofxApp::get().getInt("App/numAASamples", 8);
 	winSettings.width = 1024;
 	winSettings.height = 768;
 

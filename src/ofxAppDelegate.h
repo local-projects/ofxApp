@@ -20,10 +20,9 @@ class ofxAppDelegate{
 public:
 
 	// your app will be given a chance to run 4 custom tasks during startup:
-	// 1 - To run code just b4 content loading starts (ofxApp::Phase == SETUP_B4_CONTENT_LOAD)
-	// 2 - To process the loaded content (ofxApp::State == RECEIVE_CONTENT)
-	// 3 - To set things up once content has been received (ofxApp::State == SETUP_AFTER_CONTENT_LOAD)
-	// 4 - Once last callback just b4 the app starts Running (ofxApp::State == LAST_SETUP_B4_RUNNING)
+	// 1 - To run code just b4 content loading starts (ofxApp::Phase == WILL_LOAD_CONTENT)
+	// 2 - To process the loaded content (ofxApp::State == DID_DELIVER_CONTENT)
+	// 3 - Once last callback just b4 the app starts Running (ofxApp::State == WILL_BEGIN_RUNNING)
 	//
 	// your ofxAppPhaseWillBegin(ofxApp::Phase) will get called when this happens;
 	//

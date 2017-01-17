@@ -38,18 +38,18 @@ const string FILE_ACCES_ICON = "💾";
 #endif
 
 
-#define GLOB											app.globals()
-#define G_COL											app.colors()
-#define G_COLOR											app.colors()
-#define G_TEX(name)										app.textures().getTexture(name)
-#define G_FONT(name)									app.fonts().getFont(name)
-#define G_FONT_MONO										app.fonts().getMonoFont()
-#define G_FONT_MONO_BOLD								app.fonts().getMonoBoldFont()
+#define GLOB											ofxApp::get().globals()
+#define G_COL											ofxApp::get().colors()
+#define G_COLOR											ofxApp::get().colors()
+#define G_TEX(name)										ofxApp::get().textures().getTexture(name)
+#define G_FONT(name)									ofxApp::get().fonts().getFont(name)
+#define G_FONT_MONO										ofxApp::get().fonts().getMonoFont()
+#define G_FONT_MONO_BOLD								ofxApp::get().fonts().getMonoBoldFont()
 
-#define OFXAPP_REPORT(alertID,msg,severity)						app.errorReporter().send(alertID,msg,severity)
-#define OFXAPP_REPORT_FILE(alertID,msg,severity,fileToSend)		app.errorReporter().send(alertID,msg,severity,fileToSend)
+#define OFXAPP_REPORT(alertID,msg,severity)						ofxApp::get().errorReporter().send(alertID,msg,severity)
+#define OFXAPP_REPORT_FILE(alertID,msg,severity,fileToSend)		ofxApp::get().errorReporter().send(alertID,msg,severity,fileToSend)
 
-#define OFXAPP_ANALYTICS()										app.analytics()
+#define OFXAPP_ANALYTICS()										ofxApp::get().analytics()
 
 // Logging
 //for in-class methods only - will throw compiler error in static methods or classless functions

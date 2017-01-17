@@ -20,7 +20,7 @@ A quick summary of the features offered by ofxApp:
  * Screen Management (fullscreen, windows, etc) (ofxScreenSetup)
  * All behaviors highly configurable from a single config file (ofxJsonSettings)
  
- 
+ :tada: ::fireworks::
 
 ##How To Use
 
@@ -55,7 +55,7 @@ ofxHistoryPlot
 ofxScreenSetup
 ```
 
-#####2 - Define Pre Processor macro with your project name (Optional):
+#####2 - Define Pre-Processor macro with your project name (Optional):
 
 ```
 OFX_APP_NAME=MyApp
@@ -176,12 +176,9 @@ ofxApp needs you to answer a few questions to be able to deliver on that promise
 To answer all the above questions, ofxApp offers you a Function Based protocol; you will define 3 functions that will clarify all these questions.
 	
 
-
-
 ##ofxApp Startup Stages
 
 So far we have only focused on the JSON content aspect of ofxApp, but it loads lots more during startup. In summary, ofxApp does all this at startup, in the following order:
-
 
 * Create pid file ("data/ofxApp.pid")
 * Load ofxApp Settings ("data/configs/ofxAppSettings.json")
@@ -193,22 +190,23 @@ So far we have only focused on the JSON content aspect of ofxApp, but it loads l
 * Setup Time Profiler (ofxTimeMeasurements)
 * Setup TextureLoader
 * Setup TUIO
-* Give user a chance to do custom setup ofxAppPhaseWillBegin(ofxApp::State::SETUP_B4_CONTENT_LOAD)
+* User callback to do custom setup ```ofxAppPhaseWillBegin(State::WILL_LOAD_CONTENT)```
 * Load Static textures across N threads (any images at data/images) 
 * For each JSON content source URL:  
 	* Download the JSON file  
+	* Ask the user where the data is within the JSON (Lambda)
 	* Load the JSON file / test for its integrity  
-	* Parse the JSON file with custom user lambdas > creating N "ContentObjects"  
+	* Parse the JSON file with custom user Lambdas > creating N "ContentObjects"  
 	* For each ContentObject  
 	 	* Look at its defined assets, see if they are on disk and checksum matches  
 		* If asset is missing or has a checksum mismatch, put in a download list  
 		* Download files from asset download list - keeping track of the ones that fail
  	* Remove objects from the ContentObject list that don't comply with the policies
-	* Give user a chance to setup TexturedObject for each ContentObject
+	* Give user a chance to setup TexturedObject for each ContentObject (Lambda)
 * For each JSON content source URL
-	* Deliver vector<ContentObject*> to the user. ofxAppContentIsReady("ID", vector<>)
-* Give User a chance to do custom work with the newly delivered content. ofxAppPhaseWillBegin(ofxApp::State::SETUP_B4_CONTENT_LOAD)
-* Give User a chance to do custom setup before app starts ofxAppPhaseWillBegin(ofxApp::State::LAST_SETUP_B4_RUNNING)
+	* Deliver content to the user. ```ofxAppContentIsReady("ID", vector<ContentObject*>)```
+* Give User a chance to do custom work with the newly delivered content. ```ofxAppPhaseWillBegin(State::DID_DELIVER_CONTENT)```
+* Give User a chance to do custom setup before app starts ```ofxAppPhaseWillBegin(State::WILL_BEGIN_RUNNING)```
  	 	
 
 and your app will get notified on some of those changes so you can act before / after certain things happen. Those callbacks are chances for you to load custom content that you might need before / after other content is loaded. You don't need to explicitly do anything in those phases, but an opportunity is given so that you may if you need to.
@@ -247,12 +245,81 @@ This will get called
 
 ##ofxApp Keyboard Commands
 
-* 'W' : toggle window modes
-* 'L' : toggle on screen log
-* 'M' : toggle mullions
-* 'D' : toggle debug mode
+* __'W'__ : toggle window modes (see ofxScreenSetup for mode list)
+* __'L'__ : toggle on screen log (mouse & TUIO interactive)
+* __'M'__ : toggle mullions	 (for microtile preview)
+* __'D'__ : toggle debug mode (changes state of the global var "debug");
 
 ---
+
+##MACROS
+
+* __```GLOB```__ : direct access to MyAppGlobals
+* __```G_COL | G_COLOR```__ : direct access to MyAppColors
+* __```G_TEX("texName")```__ : direct acces to the ofTexture*
+* __```G_FONT("fontID")```__ : direct acces to the ofxFontStash*
+* __```G_FONT_MONO```__ : direct acces to a monospaced ofxFontStash*
+* __```G_FONT_MONO_BOLD```__ : direct acces to a bold monospaced ofxFontStash*
+* __```OFXAPP_REPORT(alertID,msg,severity)```__ : send an ofxSensu alert (that may trigger email on the CMS)
+* __```OFXAPP_REPORT_FILE(alertID,msg,severity)```__ : send an ofxSensu alert (to the CMS) with a file attachment
+* __```OFXAPP_ANALYTICS()```__ : direct access to ofxGoogleAnalytics*
+* __```LOGV```__ : ofLogVerbose(this* typeID)[^1]
+* __```LOGN```__ : ofLogNotice(this* typeID)
+* __```LOGW```__ : ofLogWarning(this* typeID)
+* __```LOGE```__ : ofLogError(this* typeID)
+* __```LOGF```__ : ofLogFatal(this* typeID)
+
+
+[^1]: must be inside an in-class method for it to work; Use like this: ```LOGV << "hello!";```
+
+
+##Static Textures Automation
+
+ofxApp has a module named ofxAppStaticTextures that aims to simplify access to everyday textures; usually those are not cms-related textures that you need for the project like icons and such. 
+
+As the project evolves, you often find yourslef having to add extra images to have ready as ofTextures. Instead of instantiating and hardcoding the path to the texture within code, ofxAppStaticTextures allows a different approach. It will just load any image file sitting in ```data/images/``` recursively at startup, across multiple threads to speed up the process. It will also display them all as they load, so you can keep an eye on textures you might not need loaded anymore and can keep your images dir clean.
+
+For example, given this directory structure for ```data/images```:
+
+```
+images/
+		image1.png
+		icons/
+				icon1.png
+				icon2.png
+```
+
+you can access the ofTexture from code in this way:
+
+```c++
+ofxApp::get().textures().getTexture("image.png"); //returns ofTexture*
+ofxApp::get().textures().getTexture("icons/icon1.png");
+```
+
+to make things a bit shorter, the following macro is defined in ```ofxAppMacros.h```:
+
+```c++
+G_TEX("icons/icon1.png")->draw(0,0); //access global texture
+```
+
+Often you need fine grain control over how these textueres are loaded, maybe some of them need to be ```GL_TEXTURE_2D``` because you want your tex coordinates normalized, maybe you want some to have mipmaps created and some not. To allow this fine level of detail, ofxAppStaticTextures allows you to embed how you need the texture loaded in the filename. There are two modifiers you can play with:
+
+* **```"_t2d"```**: the texture should be loaded as ```GL_TEXTURE_2D```
+* **```"_mip"```**: the texture should have with mipmaps.
+
+For example, files named like this, will recieve this treatment:
+
+* **```"img.png"```** : will load as ```GL_TEXTURE_RECTANGLE_ARB``` and no mipmaps
+* **```"img_mip.png"```** : will load as ```GL_TEXTURE_2D``` with mipmaps
+* **```"img_t2d_mip.png"```** : will load as ```GL_TEXTURE_2D``` with mipmaps
+* **```"img_t2d.png"```** : will load as ```GL_TEXTURE_2D``` but no mipmaps will be created
+
+####Things to note about the texture naming:
+
+* The tex loading properties ("_t2d" and "_mip") are always removed from the texture name
+* The file extension ("jpg", etc) is removed from the texture name
+* The upper level dirname ("images" in the example above) is removed from the texture name
+* Requesting a missing texture will not crash, but you will get a 16x16 garbage texture + an error log entry
 
 
 ####TODO
@@ -266,5 +333,6 @@ This will get called
 + renderSize in settings unclear...
 + loading screen messages font size as param in settings
 + settings save method? some params (like debug) are linked to ofxRemoteUI, so it could make sense... but lots aren't.
++ user lambdas need to retrieve asset path & polices, sloooow!
 
 ```

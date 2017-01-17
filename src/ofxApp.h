@@ -52,14 +52,16 @@ public:
 	const string LogsDir = "logs";
 	const string configsDir = "configs";
 	const string pidFileName = "ofxApp.pid";
-	
-	App();
+
+	static App& one(){ //this holds the app instance
+		static App instance;
+		return instance;
+	}
+
 	~App();
-	
-//	static App& one(){
-//		static App instance;
-//		return instance;
-//	}
+
+	App(App const&) = delete; //cant copy construct, or assign
+	void operator=(App const&) = delete;
 
 	//static App * get(){return theApp;}
 	
@@ -101,7 +103,7 @@ public:
 	bool&		getBool(const string & key, bool defaultVal = true);
 	int&		getInt(const string & key, int defaultVal = 0);
 	float&		getFloat(const string & key, float defaultVal = 0.0);
-	string&		getString(const string & key, string defaultVal = "uninited!");
+	string&		getString(const string & key, const string & defaultVal = "uninited!");
 	ofColor&	getColor(const string & key, ofColor defaultVal = ofColor::red);
 
 	void		loadSettings(); //load JSON settings (data/configs/ofxAppSettings.json)
@@ -110,8 +112,8 @@ public:
 	ofxApp::State getState(){return appState.getState();}
 
 	//those are cfgs coming from the main config file
-	ofxAssets::DownloadPolicy	getAssetDownloadPolicy(){ return assetDownloadPolicy; }
-	ofxAssets::UsagePolicy		getAssetUsagePolicy(){ return assetUsagePolicy;}
+	const ofxAssets::DownloadPolicy &	getAssetDownloadPolicy(){ return assetDownloadPolicy; }
+	const ofxAssets::UsagePolicy &		getAssetUsagePolicy(){ return assetUsagePolicy;}
 
 	// CALLBACKS ///////////////////////////////////////////////////////////////////////////////////
 
@@ -221,13 +223,10 @@ protected:
 	ofVec2f									renderSize;
 	ofRectangle								startupScreenViewport; //loading screen rect area
 
-	//TBD
-	//static App *							theApp;
+private:
+	App(); //you cant make more than 1 ofxApp::get()
 };
-	
-//static ofxApp::App * get(){ return ofxApp::App::get();}
-	
+
+	App& get(); //how to get the app from the ofxApp namespace
+
 } //namespace ofxApp
-
-extern ofxApp::App app; //anyone including ofxApp.h can reach the "app".
-

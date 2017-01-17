@@ -2,17 +2,15 @@
 
 void ofApp::setup(){
 
-	app.setup(this); //start the ofxApp setup process
+	ofxApp::get().setup(this); //start the ofxApp setup process
 }
-
 
 void ofApp::ofxAppPhaseWillBegin(ofxApp::Phase s){
 	ofLogNotice("ofApp") << "Start User Process " << ofxApp::toString(s);
 	switch (s) {
-		case ofxApp::Phase::SETUP_B4_CONTENT_LOAD: break;
-		case ofxApp::Phase::RECEIVE_CONTENT: break;
-		case ofxApp::Phase::SETUP_AFTER_CONTENT_LOAD: break;
-		case ofxApp::Phase::LAST_SETUP_B4_RUNNING: break;
+		case ofxApp::Phase::WILL_LOAD_CONTENT: break;
+		case ofxApp::Phase::DID_DELIVER_CONTENT: break;
+		case ofxApp::Phase::WILL_BEGIN_RUNNING: break;
 	}
 };
 
@@ -24,9 +22,9 @@ void ofApp::update(){
 
 void ofApp::draw(){
 
-	if(app.getState() == ofxApp::State::RUNNING){
+	if(ofxApp::get().getState() == ofxApp::State::RUNNING){
 
-		app.textures().drawAll(ofRectangle(100, 100, ofGetMouseX(), ofGetMouseY()));
+		ofxApp::get().textures().drawAll(ofRectangle(100, 100, ofGetMouseX(), ofGetMouseY()));
 
 		G_TEX("sf2")->draw(0,0);
 		G_FONT("NoManSky")->draw("My Font", 20, ofGetMouseX(), ofGetMouseY());

@@ -29,7 +29,7 @@ namespace ofxApp{
 		LOAD_JSON_CONTENT,
 		LOAD_JSON_CONTENT_FAILED,
 		DELIVER_CONTENT_LOAD_RESULTS,
-		SETUP_DELEGATE_AFTER_CONTENT_LOAD,
+		//SETUP_DELEGATE_AFTER_CONTENT_LOAD,
 		SETUP_DELEGATE_B4_RUNNING,
 		RUNNING,
 	};
@@ -37,10 +37,9 @@ namespace ofxApp{
 	//ofxAppDelegate exposed states; as they are a subset of the internal ofxApp states, enum
 	//values are matched to them
 	enum class Phase : int{
-		SETUP_B4_CONTENT_LOAD = (int)State::SETUP_DELEGATE_B4_CONTENT_LOAD,
-		RECEIVE_CONTENT = (int)State::DELIVER_CONTENT_LOAD_RESULTS,
-		SETUP_AFTER_CONTENT_LOAD = (int)State::SETUP_DELEGATE_AFTER_CONTENT_LOAD,
-		LAST_SETUP_B4_RUNNING = (int)State::SETUP_DELEGATE_B4_RUNNING
+		WILL_LOAD_CONTENT = (int)State::SETUP_DELEGATE_B4_CONTENT_LOAD,
+		DID_DELIVER_CONTENT = (int)State::DELIVER_CONTENT_LOAD_RESULTS,
+		WILL_BEGIN_RUNNING = (int)State::SETUP_DELEGATE_B4_RUNNING
 	};
 
 	//convenience methods to be able to print state names
@@ -51,7 +50,7 @@ namespace ofxApp{
 			case State::LOAD_JSON_CONTENT: return "LOAD_JSON_CONTENT";
 			case State::LOAD_JSON_CONTENT_FAILED: return "LOAD_JSON_CONTENT_FAILED";
 			case State::DELIVER_CONTENT_LOAD_RESULTS: return "DELIVER_CONTENT_LOAD_RESULTS";
-			case State::SETUP_DELEGATE_AFTER_CONTENT_LOAD: return "SETUP_DELEGATE_AFTER_CONTENT_LOAD";
+			//case State::SETUP_DELEGATE_AFTER_CONTENT_LOAD: return "SETUP_DELEGATE_AFTER_CONTENT_LOAD";
 			case State::SETUP_DELEGATE_B4_RUNNING: return "SETUP_DELEGATE_B4_RUNNING";
 			case State::RUNNING: return "RUNNING";
 			default: break;
@@ -62,10 +61,9 @@ namespace ofxApp{
 
 	inline string toString(const Phase& s){
 		switch (s) {
-			case Phase::SETUP_B4_CONTENT_LOAD: return "SETUP_B4_CONTENT_LOAD";
-			case Phase::RECEIVE_CONTENT: return "RECEIVE_CONTENT";
-			case Phase::SETUP_AFTER_CONTENT_LOAD: return "SETUP_AFTER_CONTENT_LOAD";
-			case Phase::LAST_SETUP_B4_RUNNING: return "LAST_SETUP_B4_RUNNING";
+			case Phase::WILL_LOAD_CONTENT: return "WILL_LOAD_CONTENT";
+			case Phase::DID_DELIVER_CONTENT: return "DID_DELIVER_CONTENT";
+			case Phase::WILL_BEGIN_RUNNING: return "WILL_BEGIN_RUNNING";
 			default: break;
 		}
 		ofLogError("ofxApp") << "unknown ofxApp Phase!";

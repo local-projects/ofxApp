@@ -19,10 +19,10 @@
  
  Images will load with different properties according to their filenames:
  
- 	img.png >> will be load as GL_TEXTURE_RECTANGLE_ARB and (of c) no mipmaps
- 	img_mip.png >> will be load as GL_TEXTURE_2D with mipmaps
- 	img_t2d_mip.png >> will be load as GL_TEXTURE_2D with mipmaps
-	img_t2d.png >> will be loaded as GL_TEXTURE_2D but no mipmaps will be created
+ 	img.png >> will load as GL_TEXTURE_RECTANGLE_ARB and (of c) no mipmaps
+ 	img_mip.png >> will load as GL_TEXTURE_2D with mipmaps
+ 	img_t2d_mip.png >> will load as GL_TEXTURE_2D with mipmaps
+	img_t2d.png >> will load as GL_TEXTURE_2D but no mipmaps will be created
 
  so basically:
  	"_t2d" > stands for GL_TEXTURE_2D - unless specified, the tex will be loaded as GL_TEXTURE_RECTANGLE_ARB

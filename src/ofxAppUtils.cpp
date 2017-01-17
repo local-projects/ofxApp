@@ -39,7 +39,7 @@ namespace utils{
 		ofLogFatalError("ofxApp") << "-----------------------------------------------------------------------------------------------------------";
 		ofLogFatalError("ofxApp") << "";
 		ofxThreadSafeLog::one()->close();
-		if(app.isWindowSetup()){
+		if(ofxApp::get().isWindowSetup()){
 			ofxSuperLog::getLogger()->setScreenLoggingEnabled(true); //show log if json error
 			ofxSuperLog::getLogger()->getDisplayLogger().setPanelWidth(1.0);
 			int numFrames = secondsOnScreen * 1000 / 16; //stay up a bit so that you can read logs on screen

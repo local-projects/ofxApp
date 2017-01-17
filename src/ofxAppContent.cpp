@@ -21,7 +21,8 @@ void ofxAppContent::setup(	string ID,
 							const std::pair<string,string> & credentials,
 							const ofxSimpleHttp::ProxyConfig & proxyConfig,
 							const ofxApp::ParseFunctions & contentCfg,
-							const ofxAssets::ObjectUsagePolicy objectUsagePolicy){
+							const ofxAssets::ObjectUsagePolicy & objectUsagePolicy,
+							const string & assetsLocationPath){
 
 	state = ContentState::IDLE;
 	parsedObjects.clear();
@@ -32,6 +33,7 @@ void ofxAppContent::setup(	string ID,
 	this->jsonDestinationDir = jsonDestinationDir_;
 	this->numThreads = numThreads_;
 	this->shouldSkipObjectTests = shouldSkipObjectTests;
+	this->assetsLocationPath = assetsLocationPath;
 
 	//config the http downloader if you need to (proxy, etc)
 	dlc.setMaxConcurrentDownloads(numConcurrentDownloads);
@@ -115,14 +117,20 @@ void ofxAppContent::setState(ContentState s){
 
 	switch (s) {
 
-		case ContentState::DOWNLOADING_JSON:
+		case ContentState::DOWNLOADING_JSON:{
+
+			map<string,string> userData; //the end user needs some basics to parse, like where are the assets downloaded at
+			userData["assetsLocation"] = assetsLocationPath;
+
 			//start the download and parse process
 			jsonParser.downloadAndParse(jsonURL,
 										jsonDestinationDir,	//directory where to save
 										numThreads,			//num threads
 										contentCfg.pointToObjects,
-										contentCfg.parseOneObject
+										contentCfg.parseOneObject,
+										userData
 										);
+			}
 			break;
 
 		case ContentState::CHECKING_ASSET_STATUS:{

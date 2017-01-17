@@ -64,7 +64,8 @@ public:
 			   const std::pair<string,string> & credentials,
 			   const ofxSimpleHttp::ProxyConfig & proxyConfig,
 			   const ofxApp::ParseFunctions & contentCfg,
-			   const ofxAssets::ObjectUsagePolicy objectUsagePolicy
+			   const ofxAssets::ObjectUsagePolicy & objectUsagePolicy,
+			   const string & assetsLocationPath
 			   );
 
 	bool isReadyToFetchContent();
@@ -129,6 +130,7 @@ protected:
 	int numThreads = 4;
 	string objectsWithBadAssets;
 	bool shouldSkipObjectTests;
+	string assetsLocationPath;
 	string ID;
 };
 

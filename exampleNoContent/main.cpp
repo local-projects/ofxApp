@@ -6,12 +6,12 @@
 //========================================================================
 int main( ){
 
-	app.loadSettings(); //ofxApp settings loaded here!
+	ofxApp::get().loadSettings(); //ofxApp settings loaded here!
 
 	//ofSetCurrentRenderer(ofGLProgrammableRenderer::TYPE);
 
 	ofGLFWWindowSettings winSettings;
-	winSettings.numSamples = app.getInt("App/numAASamples", 8);
+	winSettings.numSamples = ofxApp::get().getInt("App/numAASamples", 8);
 	winSettings.width = 1027;
 	winSettings.height = 768;
 
