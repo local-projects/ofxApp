@@ -24,7 +24,6 @@ namespace utils{
 		}
 	}
 
-		
 	void terminateApp(const string & module, const string & reason, float secondsOnScreen){
 		
 		ofLogFatalError("ofxApp") << "terminateApp()!";
@@ -139,6 +138,53 @@ namespace utils{
 			std::replace( output.begin(), output.end(), invalidChars[i], replacementChar);
 		}
 		return output;
+	}
+
+	string getGlInfo(){
+		int i;
+		int ii[2];
+		#define OFX_APP_GL_INFO1(t)		glGetIntegerv(t, &i);\
+										ss << #t << ": " << i << endl;
+
+		#define OFX_APP_GL_INFO2(t)		glGetIntegerv(t, &ii[0]);\
+										ss << #t << ": " << ii[0] << " x " << ii[1] << endl;
+
+		stringstream ss;
+
+		OFX_APP_GL_INFO1(GL_MAX_SAMPLES);
+		OFX_APP_GL_INFO2(GL_MAX_VIEWPORT_DIMS);
+
+		OFX_APP_GL_INFO1(GL_MAX_TEXTURE_SIZE);
+		OFX_APP_GL_INFO1(GL_MAX_TEXTURE_UNITS);
+		OFX_APP_GL_INFO1(GL_MAX_TEXTURE_IMAGE_UNITS);
+		OFX_APP_GL_INFO1(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+		OFX_APP_GL_INFO1(GL_MAX_VERTEX_ATTRIBS);
+		OFX_APP_GL_INFO1(GL_MAX_VERTEX_UNIFORM_COMPONENTS);
+		OFX_APP_GL_INFO1(GL_MAX_VARYING_FLOATS);
+		OFX_APP_GL_INFO1(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS);
+		OFX_APP_GL_INFO1(GL_MAX_TEXTURE_IMAGE_UNITS);
+		OFX_APP_GL_INFO1(GL_MAX_TEXTURE_COORDS);
+		OFX_APP_GL_INFO1(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+
+		#undef OFX_APP_GL_INFO
+		return ss.str();
+	}
+
+	string getGlError(){
+		string err;
+		GLenum glErr = glGetError(); //https://www.opengl.org/wiki/GLAPI/glGetError
+
+		switch (glErr) {
+			case GL_NO_ERROR: err = "GL_NO_ERROR"; break;
+			case GL_INVALID_ENUM: err = "GL_INVALID_ENUM"; break;
+			case GL_INVALID_VALUE: err = "GL_INVALID_VALUE"; break;
+			case GL_INVALID_OPERATION: err = "GL_INVALID_OPERATION"; break;
+			case GL_INVALID_FRAMEBUFFER_OPERATION: err = "GL_INVALID_FRAMEBUFFER_OPERATION"; break;
+			case GL_OUT_OF_MEMORY: err = "GL_OUT_OF_MEMORY"; break;
+			case GL_STACK_UNDERFLOW: err = "GL_STACK_UNDERFLOW"; break;
+			case GL_STACK_OVERFLOW: err = "GL_STACK_OVERFLOW"; break;
+		}
+		return err;
 	}
 
 	bool isValidEmail(const string email){

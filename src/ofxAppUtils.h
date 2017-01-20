@@ -27,6 +27,9 @@ namespace ofxApp{
 		string getNewUUID();
 		string getFileSystemSafeString(const string & input);
 
+		string getGlInfo();
+		string getGlError();
+
 		bool isValidEmail(const string email);
 
 	} //utils

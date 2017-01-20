@@ -141,6 +141,7 @@ protected:
 	void setupContentData();
 	void setupWindow();
 	void setupOF();
+	void setupOpenGL();
 	void setupRemoteUI();
 	void setupLogging();
 	void setupErrorReporting();

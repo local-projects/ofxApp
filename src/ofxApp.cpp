@@ -52,6 +52,7 @@ void App::setup(const map<string,ofxApp::ParseFunctions> & cfgs, ofxAppDelegate 
 		if(!hasLoadedSettings) loadSettings();
 		setupContentData();
 		setupLogging();
+		setupOpenGL();
 		setupRemoteUI();
 		setupErrorReporting();
 		setupGoogleAnalytics();
@@ -112,6 +113,12 @@ void App::setupOF(){
 	else ofHideCursor();
 
 	setMouseEvents(getBool("App/enableMouse"));
+}
+
+void App::setupOpenGL(){
+	string glInfo = ofxApp::utils::getGlInfo();
+	ofLogWarning("ofxApp") << endl << "######## GL Info ###############################" << endl << endl
+	<< glInfo << "################################################" << endl ;
 }
 
 void App::setMouseEvents(bool enabled){
@@ -618,6 +625,12 @@ void App::draw(ofEventArgs &){
 
 	if(globalsStorage->drawTextureLoaderState){
 		ofRectangle r = drawMsgInBox(ProgressiveTextureLoadQueue::instance()->getStatsAsText(), x, y, fontSize, ofColor::limeGreen);
+		y += r.height + fabs(r.y - y) + pad;
+	}
+
+	const string glErr = ofxApp::utils::getGlError();
+	if(glErr.size()){
+		ofRectangle r = drawMsgInBox("OpenGL Error: " + glErr, x, y, fontSize, ofColor::red);
 		y += r.height + fabs(r.y - y) + pad;
 	}
 	
