@@ -175,7 +175,6 @@ namespace utils{
 		GLenum glErr = glGetError(); //https://www.opengl.org/wiki/GLAPI/glGetError
 
 		switch (glErr) {
-			case GL_NO_ERROR: err = "GL_NO_ERROR"; break;
 			case GL_INVALID_ENUM: err = "GL_INVALID_ENUM"; break;
 			case GL_INVALID_VALUE: err = "GL_INVALID_VALUE"; break;
 			case GL_INVALID_OPERATION: err = "GL_INVALID_OPERATION"; break;
