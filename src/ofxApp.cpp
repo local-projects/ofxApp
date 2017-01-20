@@ -52,7 +52,7 @@ void App::setup(const map<string,ofxApp::ParseFunctions> & cfgs, ofxAppDelegate 
 		if(!hasLoadedSettings) loadSettings();
 		setupContentData();
 		setupLogging();
-		setupOpenGL();
+		printOpenGlInfo();
 		setupRemoteUI();
 		setupErrorReporting();
 		setupGoogleAnalytics();
@@ -115,10 +115,9 @@ void App::setupOF(){
 	setMouseEvents(getBool("App/enableMouse"));
 }
 
-void App::setupOpenGL(){
-	string glInfo = ofxApp::utils::getGlInfo();
-	ofLogWarning("ofxApp") << endl << "######## GL Info ###############################" << endl << endl
-	<< glInfo << "################################################" << endl ;
+void App::printOpenGlInfo(){
+	logBanner("GL Info");
+	ofxApp::utils::logParagraph("ofxApp", OF_LOG_NOTICE, ofxApp::utils::getGlInfo());
 }
 
 void App::setMouseEvents(bool enabled){

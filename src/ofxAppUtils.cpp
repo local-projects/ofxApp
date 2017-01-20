@@ -200,5 +200,19 @@ namespace utils{
 	}
 
 
+	void logParagraph(const string & moduleName, ofLogLevel lev, const string & text){
+		vector<string> jsonLines = ofSplitString(text, "\n");
+		for (auto & l : jsonLines) {
+			switch(lev){
+				case OF_LOG_VERBOSE: ofLogVerbose(moduleName) << l; break;
+				case OF_LOG_NOTICE: ofLogNotice(moduleName) << l; break;
+				case OF_LOG_WARNING: ofLogWarning(moduleName) << l; break;
+				case OF_LOG_ERROR: ofLogError(moduleName) << l; break;
+				case OF_LOG_FATAL_ERROR: ofLogFatalError(moduleName) << l; break;
+			}
+		}
+	}
+
+
 //namespaces
 }}

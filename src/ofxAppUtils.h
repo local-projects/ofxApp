@@ -32,5 +32,7 @@ namespace ofxApp{
 
 		bool isValidEmail(const string email);
 
+		void logParagraph(const string & moduleName, ofLogLevel lev, const string & text);
+
 	} //utils
 }; //ofxApp
