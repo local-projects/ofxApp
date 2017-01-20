@@ -145,12 +145,11 @@ namespace utils{
 		int ii[2];
 		#define OFX_APP_GL_INFO1(t)		glGetIntegerv(t, &i);\
 										ss << #t << ": " << i << endl;
-
 		#define OFX_APP_GL_INFO2(t)		glGetIntegerv(t, &ii[0]);\
 										ss << #t << ": " << ii[0] << " x " << ii[1] << endl;
 
 		stringstream ss;
-
+		ss << "GL_RENDERER: " << string((char*)glGetString(GL_RENDERER)) << endl;
 		OFX_APP_GL_INFO1(GL_MAX_SAMPLES);
 		OFX_APP_GL_INFO2(GL_MAX_VIEWPORT_DIMS);
 
@@ -166,7 +165,8 @@ namespace utils{
 		OFX_APP_GL_INFO1(GL_MAX_TEXTURE_COORDS);
 		OFX_APP_GL_INFO1(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT);
 
-		#undef OFX_APP_GL_INFO
+		#undef OFX_APP_GL_INFO1
+		#undef OFX_APP_GL_INFO2
 		return ss.str();
 	}
 
