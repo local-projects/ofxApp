@@ -601,7 +601,7 @@ void App::draw(ofEventArgs &){
 	int fontSize = 15;
 	
 	if(globalsStorage->drawAppRunTime){
-		ofRectangle r = drawMsgInBox("App Runtime: " + ofxApp::utils::secondsToHumanReadable(ofGetElapsedTimef(), 1), x, y, fontSize, ofColor::crimson);
+		ofRectangle r = drawMsgInBox("App Runtime: " + ofxApp::utils::secondsToHumanReadable(ofGetElapsedTimef(), 1), x, y, fontSize, ofColor::turquoise);
 		y += r.height + fabs(r.y - y) + pad;
 	}
 
@@ -959,15 +959,24 @@ void App::logBanner(const string & log){
 
 ofRectangle App::drawMsgInBox(string msg, int x, int y, int fontSize, ofColor fontColor, ofColor bgColor, float edgeGrow) {
 
-	if (msg.size() == 0) return ofRectangle();
-	ofxFontStash & font = fonts().getMonoBoldFont();
-	ofRectangle bbox = font.getBBox(msg, fontSize, x, y);
-	ofSetColor(bgColor);
-	bbox.x -= edgeGrow; bbox.y -= edgeGrow; bbox.width += 2 * edgeGrow; bbox.height += 2 * edgeGrow;
-	ofDrawRectangle(bbox);
-	ofSetColor(fontColor);
-	font.drawMultiLine(msg, fontSize, x, y);
-	ofSetColor(255);
+	ofRectangle bbox;
+	if(!ofIsGLProgrammableRenderer()){
+		if (msg.size() == 0) return ofRectangle();
+		ofxFontStash & font = fonts().getMonoBoldFont();
+		bbox = font.getBBox(msg, fontSize, x, y);
+		ofSetColor(bgColor);
+		bbox.x -= edgeGrow; bbox.y -= edgeGrow; bbox.width += 2 * edgeGrow; bbox.height += 2 * edgeGrow;
+		ofDrawRectangle(bbox);
+		ofSetColor(fontColor);
+		font.drawMultiLine(msg, fontSize, x, y);
+		ofSetColor(255);
+	}else{
+		ofDrawBitmapStringHighlight(msg, x, y, bgColor, fontColor);
+		auto lines = ofSplitString(msg, "\n");
+		float lineH = 14;
+		float boxH = lineH * MAX(lines.size(),1) + 18;
+		bbox = ofRectangle(x, y, msg.size() * 8, boxH );
+	}
 	return bbox;
 }
 
