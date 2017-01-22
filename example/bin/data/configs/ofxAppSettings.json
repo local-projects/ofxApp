@@ -107,15 +107,15 @@
 		"percentageAsGraph" : true
 	},
 	
-	"textureLoader": {
-		"maxNumberSimulataneousLoads" : 3,
+	"TextureLoader": {
+		"maxNumberSimulataneousLoads" : 6,
 		"textureLodBias" : -0.3,
 		"maxTimeSpentLoadingPerFrameMs" : 4.0,//ms
 		"scanlinesPerLoop" : 128,
 		"maxLoadRequestsPerFrame" : 64
 	},
 
-	"logging":{
+	"Logging":{
 		"logLevel" : 1, //0..5 (verbose, notice, warning, error, fatal, silent)
 		"toScreen": true,
 		"toFile" : true,
@@ -159,12 +159,12 @@
 		"framerateReportInterval" : 60.0 //seconds
 	},
 
-	"tuio":{
+	"TUIO":{
 		"enabled" : true,
 		"port" : 3333
 	},
 
-	"downloads":{
+	"Downloads":{
 		"proxy":{
 			"useProxy" : false,
 			"proxyHost": "",
@@ -180,14 +180,14 @@
 			//"myHeaderName" : "myHeaderContent",
 		},
 		"verbose" : false,
-		"maxConcurrentDownloads": 5,
+		"maxConcurrentDownloads": 20,
 		"userAgent" : "", //not implemented
 		"timeOutSec" : 20,
 		"speedLimitKb" : 0, //per download - 0 means no limit
 		"idleTimeAfterEachDownloadSec" : 0.0
 	},
 
-	"content":{
+	"Content":{
 		"JsonSources":{ 
 			"CH" : {
 				"url" : "file://testJson/ch_small.json",

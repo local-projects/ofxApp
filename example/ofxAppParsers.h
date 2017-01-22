@@ -1,5 +1,5 @@
 //
-//  ofxAppLambdas.h
+//  ofxAppParsers.h
 //  BaseApp
 //
 //  Created by Oriol Ferrer Mesià on 12/8/16.
@@ -10,11 +10,11 @@
 #include "ofMain.h"
 #include "ofxApp.h"
 
-class ofxAppLambdas{
+class ofxAppParsers{
 
 public:
 	
-	ofxAppLambdas();
+	ofxAppParsers();
 
 	ofxApp::ParseFunctions cwru;
 	ofxApp::ParseFunctions ch;

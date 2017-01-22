@@ -58,8 +58,8 @@ void App::setup(const map<string,ofxApp::ParseFunctions> & cfgs, ofxAppDelegate 
 		setupGoogleAnalytics();
 		printSettingsFile();
 		fonts().setup();
-		if(getBool("logging/useFontStash")){ //set a nice font for the on screen logger if using fontstash
-			ofxSuperLog::getLogger()->setFont(&(fonts().getMonoBoldFont()), getInt("logging/fontSize"));
+		if(getBool("Logging/useFontStash")){ //set a nice font for the on screen logger if using fontstash
+			ofxSuperLog::getLogger()->setFont(&(fonts().getMonoBoldFont()), getInt("Logging/fontSize"));
 		}
 		loadModulesSettings();
 		if(timeSampleOfxApp) TS_START_NIF("ofxApp Setup");
@@ -304,11 +304,11 @@ void App::setupTextureLoader(){
 
 	ofLogNotice("ofxApp") << "setupTextureLoader()";
 	ProgressiveTextureLoadQueue * q = ProgressiveTextureLoadQueue::instance();
-	q->setNumberSimultaneousLoads( getInt("textureLoader/maxNumberSimulataneousLoads") ); //N threads loading images in the bg
-	q->setTexLodBias( getFloat("textureLoader/textureLodBias") ); //MipMap sharpness
-	q->setTargetTimePerFrame( getFloat("textureLoader/maxTimeSpentLoadingPerFrameMs") );	//spend at most 'x' milis loading textures per frame
-	q->setScanlinesPerLoop( getInt("textureLoader/scanlinesPerLoop") );
-	q->setMaximumRequestsPerFrame( getInt("textureLoader/maxLoadRequestsPerFrame") );
+	q->setNumberSimultaneousLoads( getInt("TextureLoader/maxNumberSimulataneousLoads") ); //N threads loading images in the bg
+	q->setTexLodBias( getFloat("TextureLoader/textureLodBias") ); //MipMap sharpness
+	q->setTargetTimePerFrame( getFloat("TextureLoader/maxTimeSpentLoadingPerFrameMs") );	//spend at most 'x' milis loading textures per frame
+	q->setScanlinesPerLoop( getInt("TextureLoader/scanlinesPerLoop") );
+	q->setMaximumRequestsPerFrame( getInt("TextureLoader/maxLoadRequestsPerFrame") );
 
 }
 
@@ -378,31 +378,31 @@ void App::setupApp(){
 void App::setupLogging(){
 
 	ofLogNotice("ofxApp") << "setupLogging()";
-	if(getBool("logging/deleteOldLogs")){
-		ofxSuperLog::clearOldLogs(LogsDir, getInt("logging/logExpirationInDays"));
+	if(getBool("Logging/deleteOldLogs")){
+		ofxSuperLog::clearOldLogs(LogsDir, getInt("Logging/logExpirationInDays"));
 	}
-	bool logToConsole = getBool("logging/toConsole");
-	bool logToScreen = getBool("logging/toScreen");
-	ofSetLogLevel(ofLogLevel(getInt("logging/logLevel")));
+	bool logToConsole = getBool("Logging/toConsole");
+	bool logToScreen = getBool("Logging/toScreen");
+	ofSetLogLevel(ofLogLevel(getInt("Logging/logLevel")));
 	//lets keep a ref to the logger counter around so that we can control when it gets deleted
 	
 	loggerStorage = new ofPtr<ofxSuperLog>(); //note this 2* madness is to avoid the logger being delete b4 the app is finished logging
 	*loggerStorage = ofxSuperLog::getLogger(logToConsole, logToScreen, LogsDir);
 	ofSetLoggerChannel(*loggerStorage);
-	bool visible = getBool("logging/visibleAtStartup");
+	bool visible = getBool("Logging/visibleAtStartup");
 	(*loggerStorage)->setScreenLoggingEnabled(visible);
 	(*loggerStorage)->setMaximized(true);
-	(*loggerStorage)->setMaxNumLogLines(getInt("logging/maxScreenLines"));
+	(*loggerStorage)->setMaxNumLogLines(getInt("Logging/maxScreenLines"));
 	(*loggerStorage)->setUseScreenColors(true);
-	(*loggerStorage)->setSyncronizedLogging(getBool("logging/syncronizedLogging"));
-	(*loggerStorage)->getDisplayLogger().setDisplayLogTimes(getBool("logging/displayLogTimes"));
+	(*loggerStorage)->setSyncronizedLogging(getBool("Logging/syncronizedLogging"));
+	(*loggerStorage)->getDisplayLogger().setDisplayLogTimes(getBool("Logging/displayLogTimes"));
 	
-	float panelW = getFloat("logging/screenLogPanelWidth");
+	float panelW = getFloat("Logging/screenLogPanelWidth");
 	ofxSuperLog::getLogger()->setDisplayWidth(panelW);
 
 	//asset manager uses this separate logger to create an "asset report"  file after every launch
  	//stating status of every downloaded asset (ie missing sha1, sha1 missmatch, etc)
-	ofxThreadSafeLog::one()->setPrintToConsole(getBool("logging/ThreadSafeLog/alsoPrintToConsole"));
+	ofxThreadSafeLog::one()->setPrintToConsole(getBool("Logging/ThreadSafeLog/alsoPrintToConsole"));
 }
 
 
@@ -450,32 +450,32 @@ void App::setupRemoteUI(){
 void App::loadModulesSettings(){
 
 	std::pair<string,string> credentials;
-	credentials.first = getString("downloads/credentials/username");
-	credentials.second = getString("downloads/credentials/password");
+	credentials.first = getString("Downloads/credentials/username");
+	credentials.second = getString("Downloads/credentials/password");
 
 	ofxSimpleHttp::ProxyConfig proxyCfg;
-	proxyCfg.useProxy = getBool("downloads/proxy/useProxy");
-	proxyCfg.host = getString("downloads/proxy/proxyHost");
-	proxyCfg.port = getInt("downloads/proxy/proxyPort");
-	proxyCfg.login = getString("downloads/proxy/proxyUser");
-	proxyCfg.password = getString("downloads/proxy/proxyPassword");
+	proxyCfg.useProxy = getBool("Downloads/proxy/useProxy");
+	proxyCfg.host = getString("Downloads/proxy/proxyHost");
+	proxyCfg.port = getInt("Downloads/proxy/proxyPort");
+	proxyCfg.login = getString("Downloads/proxy/proxyUser");
+	proxyCfg.password = getString("Downloads/proxy/proxyPassword");
 
-	assetDownloadPolicy.fileMissing = getBool("content/AssetDownloadPolicy/fileMissing");
-	assetDownloadPolicy.fileTooSmall = getBool("content/AssetDownloadPolicy/fileTooSmall");
-	assetDownloadPolicy.fileExistsAndNoSha1Provided = getBool("content/AssetDownloadPolicy/fileExistsAndNoSha1Provided");
-	assetDownloadPolicy.fileExistsAndProvidedSha1Missmatch = getBool("content/AssetDownloadPolicy/fileExistsAndProvidedSha1Missmatch");
-	assetDownloadPolicy.fileExistsAndProvidedSha1Match = getBool("content/AssetDownloadPolicy/fileExistsAndProvidedSha1Match");
+	assetDownloadPolicy.fileMissing = getBool("Content/AssetDownloadPolicy/fileMissing");
+	assetDownloadPolicy.fileTooSmall = getBool("Content/AssetDownloadPolicy/fileTooSmall");
+	assetDownloadPolicy.fileExistsAndNoSha1Provided = getBool("Content/AssetDownloadPolicy/fileExistsAndNoSha1Provided");
+	assetDownloadPolicy.fileExistsAndProvidedSha1Missmatch = getBool("Content/AssetDownloadPolicy/fileExistsAndProvidedSha1Missmatch");
+	assetDownloadPolicy.fileExistsAndProvidedSha1Match = getBool("Content/AssetDownloadPolicy/fileExistsAndProvidedSha1Match");
 
-	assetUsagePolicy.fileMissing = getBool("content/AssetUsagePolicy/fileMissing");
-	assetUsagePolicy.fileTooSmall = getBool("content/AssetUsagePolicy/fileTooSmall");
-	assetUsagePolicy.fileExistsAndNoSha1Provided = getBool("content/AssetUsagePolicy/fileExistsAndNoSha1Provided");
-	assetUsagePolicy.fileExistsAndProvidedSha1Missmatch = getBool("content/AssetUsagePolicy/fileExistsAndProvidedSha1Missmatch");
-	assetUsagePolicy.fileExistsAndProvidedSha1Match = getBool("content/AssetUsagePolicy/fileExistsAndProvidedSha1Match");
+	assetUsagePolicy.fileMissing = getBool("Content/AssetUsagePolicy/fileMissing");
+	assetUsagePolicy.fileTooSmall = getBool("Content/AssetUsagePolicy/fileTooSmall");
+	assetUsagePolicy.fileExistsAndNoSha1Provided = getBool("Content/AssetUsagePolicy/fileExistsAndNoSha1Provided");
+	assetUsagePolicy.fileExistsAndProvidedSha1Missmatch = getBool("Content/AssetUsagePolicy/fileExistsAndProvidedSha1Missmatch");
+	assetUsagePolicy.fileExistsAndProvidedSha1Match = getBool("Content/AssetUsagePolicy/fileExistsAndProvidedSha1Match");
 
-	objectUsagePolicy.allObjectAssetsAreOK = getBool("content/ObjectUsagePolicy/allAssetsAreOK");
-	objectUsagePolicy.minNumberOfImageAssets = getBool("content/ObjectUsagePolicy/minNumberImgAssets");
-	objectUsagePolicy.minNumberOfVideoAssets = getBool("content/ObjectUsagePolicy/minNumberVideoAssets");
-	objectUsagePolicy.minNumberOfAudioAssets = getBool("content/ObjectUsagePolicy/minNumberAudioAssets");
+	objectUsagePolicy.allObjectAssetsAreOK = getBool("Content/ObjectUsagePolicy/allAssetsAreOK");
+	objectUsagePolicy.minNumberOfImageAssets = getBool("Content/ObjectUsagePolicy/minNumberImgAssets");
+	objectUsagePolicy.minNumberOfVideoAssets = getBool("Content/ObjectUsagePolicy/minNumberVideoAssets");
+	objectUsagePolicy.minNumberOfAudioAssets = getBool("Content/ObjectUsagePolicy/minNumberAudioAssets");
 
 	renderSize.x = getInt("App/renderSize/width");
 	renderSize.y = getInt("App/renderSize/height");
@@ -528,8 +528,8 @@ void App::setupTimeMeasurements(){
 
 void App::setupTuio(){
 	ofLogNotice("ofxApp") << "setupTuio()";
-	if(getBool("tuio/enabled")){
-		int port = getInt("tuio/port");
+	if(getBool("TUIO/enabled")){
+		int port = getInt("TUIO/port");
 		ofLogNotice("ofxApp") << "Listening for TUIO events at port " << port;
 		tuioClient.start(port); //TODO - make sure we do it only once!
 		ofAddListener(tuioClient.cursorAdded, delegate, &ofxAppDelegate::tuioAdded);
@@ -781,19 +781,19 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 				if(timeSampleOfxApp) TS_START_NIF("ofxApp LoadContent " + currentContentID);
 				logBanner("Start Loading Content  \"" + currentContentID + "\"");
 				
-				bool keyExists = settings().exists("content/JsonSources/" + currentContentID);
+				bool keyExists = settings().exists("Content/JsonSources/" + currentContentID);
 				
 				if(keyExists){
-					string jsonURL = getString("content/JsonSources/" + currentContentID + "/url");
-					string jsonDir = getString("content/JsonSources/" + currentContentID + "/jsonDownloadDir");
-					bool skipPolicyTests = getBool("content/JsonSources/" + currentContentID + "/shouldSkipObjectPolicyTests");
+					string jsonURL = getString("Content/JsonSources/" + currentContentID + "/url");
+					string jsonDir = getString("Content/JsonSources/" + currentContentID + "/jsonDownloadDir");
+					bool skipPolicyTests = getBool("Content/JsonSources/" + currentContentID + "/shouldSkipObjectPolicyTests");
 					
-					int numConcurrentDownloads = getInt("downloads/maxConcurrentDownloads");
+					int numConcurrentDownloads = getInt("Downloads/maxConcurrentDownloads");
 					int numThreads = getInt("App/maxThreads");
-					int timeOutSecs = getInt("downloads/timeOutSec");
-					int speedLimitKBs = getInt("downloads/speedLimitKb");
-					float idleTimeAfterDl = getFloat("downloads/idleTimeAfterEachDownloadSec");
-					string assetDownloadLocation = getString("content/JsonSources/" + currentContentID + "/assetsLocation");
+					int timeOutSecs = getInt("Downloads/timeOutSec");
+					int speedLimitKBs = getInt("Downloads/speedLimitKb");
+					float idleTimeAfterDl = getFloat("Downloads/idleTimeAfterEachDownloadSec");
+					string assetDownloadLocation = getString("Content/JsonSources/" + currentContentID + "/assetsLocation");
 
 					contentStorage[currentContentID]->setup(currentContentID,
 															jsonURL,
@@ -814,7 +814,7 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 					contentStorage[currentContentID]->fetchContent(); //this starts the ofxAppContent process!
 					
 				}else{
-					ofxApp::utils::terminateApp("ofxApp", "Requested content ID \"content/JsonSources/" + currentContentID + "\" not found in \"" + settingsFile + "\"");
+					ofxApp::utils::terminateApp("ofxApp", "Requested content ID \"Content/JsonSources/" + currentContentID + "\" not found in \"" + settingsFile + "\"");
 				}
 
 			}else{ //We are retrying to download with a known good json! we already swapped the JSON URL to a local older JSON
@@ -912,7 +912,7 @@ void App::onKeyPressed(ofKeyEventArgs & a){
 	switch(a.key){
 		case 'W': screenSetup.cycleToNextScreenMode(); didPress = true; break;
 		case 'L': {
-			if(getBool("logging/toScreen")){
+			if(getBool("Logging/toScreen")){
 				ofxSuperLog::getLogger()->setScreenLoggingEnabled(!ofxSuperLog::getLogger()->isScreenLoggingEnabled());
 				didPress = true;
 				break;

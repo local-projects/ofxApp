@@ -87,7 +87,8 @@ public:
 
 	//call this only if isContentReady() == true
 	vector<ContentObject*> getParsedObjects(){return parsedObjects;};
-	int getNumParsedObjects(){ return parsedObjects.size();}
+	int getNumParsedObjects(){ return parsedObjects.size();} //
+	int getNumIgnoredObjects(){return numIgnoredObjects;} //total # of obj that are in json but are not used for one reason or another
 
 	void onDrawStateMachineStatus(ofRectangle & drawableArea);
 	
@@ -132,5 +133,6 @@ protected:
 	bool shouldSkipObjectTests;
 	string assetsLocationPath;
 	string ID;
+	int numIgnoredObjects = 0; //total # of obj that are in json but are not used for one reason or another
 };
 

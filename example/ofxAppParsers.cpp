@@ -1,16 +1,16 @@
 //
-//  ofxAppLambdas.cpp
+//  ofxAppParsers.cpp
 //  BaseApp
 //
 //  Created by Oriol Ferrer Mesià on 12/8/16.
 //
 //
 
-#include "ofxAppLambdas.h"
+#include "ofxAppParsers.h"
 #include "CH_Object.h"
 #include "CWRU_Object.h"
 
-ofxAppLambdas::ofxAppLambdas(){
+ofxAppParsers::ofxAppParsers(){
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// CWRU ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147,7 +147,7 @@ ofxAppLambdas::ofxAppLambdas(){
 
 				Json::Value & jsonImage = (Json::Value &)*itr;
 
-				const string imgSize = "sq"; //"x", "z", "b" and so on
+				const string imgSize = "z"; //"x", "z", "b" and so on
 
 				if(jsonImage[imgSize].isObject()){
 					//if(jsonImage[imgSize]["is_primary"].asString() == "1"){ //only primary images

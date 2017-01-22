@@ -107,7 +107,7 @@
 		"percentageAsGraph" : true
 	},
 	
-	"textureLoader": {
+	"TextureLoader": {
 		"maxNumberSimulataneousLoads" : 3,
 		"textureLodBias" : -0.3,
 		"maxTimeSpentLoadingPerFrameMs" : 4.0,//ms
@@ -115,7 +115,7 @@
 		"maxLoadRequestsPerFrame" : 64
 	},
 
-	"logging":{
+	"Logging":{
 		"logLevel" : 1, //0..5 (verbose, notice, warning, error, fatal, silent)
 		"toScreen": true,
 		"toFile" : true,
@@ -159,12 +159,12 @@
 		"framerateReportInterval" : 60.0 //seconds
 	},
 
-	"tuio":{
+	"TUIO":{
 		"enabled" : true,
 		"port" : 3333
 	},
 
-	"downloads":{
+	"Downloads":{
 		"proxy":{
 			"useProxy" : false,
 			"proxyHost": "",
@@ -187,7 +187,7 @@
 		"idleTimeAfterEachDownloadSec" : 0.0
 	},
 
-	"content":{
+	"Content":{
 		"JsonSources":{ 
 		},  
 

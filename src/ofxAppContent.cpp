@@ -222,15 +222,20 @@ void ofxAppContent::setState(ContentState s){
 				}
 
 				for(int i = badObjects.size() - 1; i >= 0; i--){
-					ofLogError("ofxAppContent") << "Dropping object " << parsedObjects[i]->getObjectUUID();
+					ofLogError("ofxAppContent") << "Dropping object \"" << parsedObjects[i]->getObjectUUID() << "\"";
 					delete parsedObjects[badObjects[i]];
 					parsedObjects.erase(parsedObjects.begin() + badObjects[i]);
 				}
+
+				numIgnoredObjects += badObjects.size();
 
 				objectsWithBadAssets = "\nRemoved " + ofToString(badObjects.size()) + " \"" + ID + "\" objects:\n\n" + objectsWithBadAssets;
 			}else{
 				ofLogWarning("ofxAppContent") << "skipping Object Drop Policy Tests!! \"" << ID << "\"";
 			}
+			ofLogWarning("ofxApp") << "Removed a total of " << numIgnoredObjects << " objects for content type \"" << ID << "\" due to various rasons. Check 'logs/assetStatus.log' for more info.";
+			float pct = 100.0f * numIgnoredObjects / float(parsedObjects.size());
+			ofLogWarning("ofxApp") << "Ignored " << ofToString(pct,2) << "% of the objects defined in the \"" << ID << "\" JSON.";
 
 		}break;
 
@@ -359,6 +364,7 @@ void ofxAppContent::jsonParseFailed(){
 
 void ofxAppContent::jsonContentReady(vector<ParsedObject*> &parsedObjects_){
 	ofLogNotice("ofxAppContent") << "JSON Content Ready! " << parsedObjects_.size() << " Objects received.";
+	numIgnoredObjects += jsonParser.getNumEntriesInJson() - parsedObjects_.size();
 	parsedObjects.reserve(parsedObjects_.size());
 	for(auto o : parsedObjects_){
 		//parsedObjects.push_back((ContentObject*)o);		

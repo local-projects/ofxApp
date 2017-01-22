@@ -4,7 +4,8 @@
 #include "ofxApp.h"
 #include "CWRU_Object.h"
 #include "CH_Object.h"
-
+#include "ofxInterface.h"
+#include "TexturedObjectScrollView.h"
 
 class ofApp : public ofBaseApp, public ofxAppDelegate{
 
@@ -26,10 +27,6 @@ public:
 
 	// ofxApp Callbacks /////////////////////////////////////////////////
 
-	//screen size changed
-	void	screenSetupChanged(ofxScreenSetup::ScreenSetupArg &arg){}
-
-	//
 	void	ofxAppPhaseWillBegin(ofxApp::Phase);
 	bool	ofxAppIsPhaseComplete(ofxApp::Phase){return true;}
 	void	ofxAppDrawPhaseProgress(ofxApp::Phase, const ofRectangle & r){};
@@ -37,6 +34,23 @@ public:
 
 	void	ofxAppContentIsReady(const string & contentID, vector<ContentObject*>);
 
+	void	screenSetupChanged(ofxScreenSetup::ScreenSetupArg &arg){}
+
+
+	// Content delivered by ofxApp ////////////////////////////////////////////
+
 	vector<CH_Object*>		chObjects;
 	vector<CWRU_Object*>	cwruObjects;
+
+	// Scrollview /////////////////////////////////////////////////////////////
+
+	void setupScrollViews();
+	ofxInterface::Node * scene;
+
+	TexturedObjectScrollView * scrollView;
+	TexturedObject * selectedObject = nullptr;
+
+	void onSrollImageClicked(TexturedObjectScrollView::TouchedImage &);
+	void onDrawTile(TexturedObjectScrollView::DrawTileInfo &);
+
 };
