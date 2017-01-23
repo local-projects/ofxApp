@@ -100,7 +100,7 @@ void ofxAppContent::update(float dt){
 			}break;
 
 		case ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS:
-			if(timeInState > 0.1){ //show this on screen for a sec
+			if(timeInState > (numIgnoredObjects > 0 ? 4.0 : 0.0)){ //show this on screen for a sec if we are dropping objects
 				setState(ContentState::SETUP_TEXTURED_OBJECTS);
 			}
 			break;

@@ -136,7 +136,6 @@ To attach all this to a real world example, let's assume we are working on a pro
 
 ```c++
 class MuseumObject : public ContentObject{
-
 public:
 	string imageURL;
 	string imageSHA1;
@@ -333,5 +332,6 @@ For example, files named like this, will recieve this treatment:
 + loading screen messages font size as param in settings
 + settings save method? some params (like debug) are linked to ofxRemoteUI, so it could make sense... but lots aren't.
 + user lambdas need to retrieve asset path & polices, sloooow!
++ unused asset cleanup! 
 
 ```

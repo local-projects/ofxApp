@@ -258,8 +258,8 @@ void App::setupGoogleAnalytics(){
 	gAnalytics->setUserID("ofxApp"); //todo
 	
 	gAnalytics->setup( googleID, appName, appVersion, appID, appInstallerID );
-
 }
+
 
 void App::setupStateMachine(){
 
@@ -271,20 +271,19 @@ void App::setupStateMachine(){
 
 	string boldFontPath = getString("Fonts/ofxApp/monospacedBold/fontFile");
 	ofxApp::utils::assertFileExists(boldFontPath);
-	appState.setup(boldFontPath, "", ofColor::black, ofColor::white);
+	appState.setup(boldFontPath, "", ofColor(0,0,0,0), ofColor::white);
 	float dark = 0.25;
 
 	//TODO some color consitency here please? or at least uniformity
 	//this creates strings for each of the ENUM states
 	appState.setNameAndBarColorForState(State::SETUP_OFXAPP_INTERNALS, toString(State::SETUP_OFXAPP_INTERNALS), ofColor(0,0,255), ofColor(0,0,128));
-	appState.setNameAndBarColorForState(State::SETUP_DELEGATE_B4_CONTENT_LOAD, toString(State::SETUP_DELEGATE_B4_CONTENT_LOAD), ofColor::magenta, ofColor::magenta * dark);
+	appState.setNameAndBarColorForState(State::SETUP_DELEGATE_B4_CONTENT_LOAD, toString(Phase::WILL_LOAD_CONTENT), ofColor::magenta, ofColor::magenta * dark);
 	appState.setNameAndBarColorForState(State::LOAD_STATIC_TEXTURES, toString(State::LOAD_STATIC_TEXTURES), ofColor::darkorange, ofColor::darkorange * dark);
 	appState.setNameAndBarColorForState(State::LOAD_JSON_CONTENT, toString(State::LOAD_JSON_CONTENT), ofColor::forestGreen, ofColor::forestGreen * dark);
 	appState.setNameAndBarColorForState(State::LOAD_JSON_CONTENT_FAILED, toString(State::LOAD_JSON_CONTENT_FAILED), ofColor::crimson, ofColor::crimson * dark);
-	appState.setNameAndBarColorForState(State::DELIVER_CONTENT_LOAD_RESULTS, toString(State::LOAD_JSON_CONTENT_FAILED), ofColor::blueViolet, ofColor::blueViolet * dark);
-	//appState.setNameAndBarColorForState(State::SETUP_DELEGATE_AFTER_CONTENT_LOAD, toString(State::LOAD_JSON_CONTENT_FAILED), ofColor::royalBlue, ofColor::royalBlue * dark);
-	appState.setNameAndBarColorForState(State::SETUP_DELEGATE_B4_RUNNING, toString(State::LOAD_JSON_CONTENT_FAILED), ofColor::mediumAquaMarine, ofColor::mediumAquaMarine * dark);
-	appState.setNameAndBarColorForState(State::RUNNING, toString(State::LOAD_JSON_CONTENT_FAILED), ofColor::white, ofColor::grey);
+	appState.setNameAndBarColorForState(State::DELIVER_CONTENT_LOAD_RESULTS, toString(Phase::DID_DELIVER_CONTENT), ofColor::blueViolet, ofColor::blueViolet * dark);
+	appState.setNameAndBarColorForState(State::SETUP_DELEGATE_B4_RUNNING, toString(Phase::WILL_BEGIN_RUNNING), ofColor::mediumAquaMarine, ofColor::mediumAquaMarine * dark);
+	appState.setNameAndBarColorForState(State::RUNNING, toString(State::RUNNING), ofColor::white, ofColor::grey);
 }
 
 
@@ -585,6 +584,7 @@ void App::draw(ofEventArgs &){
 		ofSetupScreen();
 		float w = ofGetWidth();
 		float h = ofGetHeight();
+		ofClear(0,0,0,255);
 		appState.draw(ofRectangle(startupScreenViewport.x * w,
 								  startupScreenViewport.y * h,
 								  startupScreenViewport.width * w,
@@ -671,6 +671,9 @@ void App::updateStateMachine(float dt){
 			if (delegate->ofxAppIsPhaseComplete(Phase(State::SETUP_DELEGATE_B4_CONTENT_LOAD))) {
 				ofLogNotice("ofxApp") << "Done SETUP_DELEGATE_B4_CONTENT_LOAD!";
 				appState.setState(State::LOAD_STATIC_TEXTURES);
+			}else{
+				appState.updateState(delegate->ofxAppGetProgressForPhase(Phase(State::SETUP_DELEGATE_B4_CONTENT_LOAD)),"");
+				appState.setProgressBarExtraInfo("- " + delegate->ofxAppGetStatusString(Phase(State::SETUP_DELEGATE_B4_CONTENT_LOAD)));
 			}break;
 
 		case State::LOAD_JSON_CONTENT:
@@ -737,24 +740,23 @@ void App::updateStateMachine(float dt){
 			if(delegate->ofxAppIsPhaseComplete(Phase(State::DELIVER_CONTENT_LOAD_RESULTS))){
 				ofLogNotice("ofxApp") << "Done DELIVER_CONTENT_LOAD_RESULTS!";
 				appState.setState(State::SETUP_DELEGATE_B4_RUNNING);
+			}else{
+				appState.updateState(	delegate->ofxAppGetProgressForPhase(Phase(State::DELIVER_CONTENT_LOAD_RESULTS)),"");
+				appState.setProgressBarExtraInfo("- " + delegate->ofxAppGetStatusString(Phase(State::DELIVER_CONTENT_LOAD_RESULTS)));
 			}break;
-
-//		case State::SETUP_DELEGATE_AFTER_CONTENT_LOAD:
-//			if(delegate->ofxAppIsPhaseComplete(Phase(State::SETUP_DELEGATE_AFTER_CONTENT_LOAD))){
-//				ofLogNotice("ofxApp") << "Done SETUP_DELEGATE_AFTER_CONTENT_LOAD!";
-//				appState.setState(State::SETUP_DELEGATE_B4_RUNNING);
-//			}break;
 
 		case State::SETUP_DELEGATE_B4_RUNNING:
 			if (delegate->ofxAppIsPhaseComplete(Phase(State::SETUP_DELEGATE_B4_RUNNING))) {
 				ofLogNotice("ofxApp") << "Done SETUP_DELEGATE_B4_RUNNING!";
 				appState.setState(State::RUNNING);
+			}else{
+				appState.updateState( 	delegate->ofxAppGetProgressForPhase(Phase(State::SETUP_DELEGATE_B4_RUNNING)),"");
+				appState.setProgressBarExtraInfo("- " + delegate->ofxAppGetStatusString(Phase(State::SETUP_DELEGATE_B4_RUNNING)));
 			}break;
 
 		case State::RUNNING:
 			appState.updateState( -1, "");
 			break;
-
 
 		default: break;
 	}
@@ -765,6 +767,8 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 
 	ofLogNotice("ofxApp") 	<< "State Changed from \"" << appState.getNameForState(change.oldState)
 							<< "\" to \"" << appState.getNameForState(change.newState) << "\"  State Duration: " << change.timeInPrevState << "sec.";
+
+	appState.setProgressBarExtraInfo("");
 
 	switch(change.newState){
 
@@ -825,7 +829,7 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 			}break;
 
 		case State::LOAD_JSON_CONTENT_FAILED:
-			appState.setProgressBarExtraInfo(" - CONTENT LOAD FAILED");
+			appState.setProgressBarExtraInfo("- CONTENT LOAD FAILED");
 			//ofxSuperLog::getLogger()->setScreenLoggingEnabled(true); //show log if json error
 			break;
 
@@ -836,11 +840,6 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 			ofLogNotice("ofxApp") << "Start Loading Custom User Content...";
 			delegate->ofxAppPhaseWillBegin(Phase(State::DELIVER_CONTENT_LOAD_RESULTS));
 			break;
-
-//		case State::SETUP_DELEGATE_AFTER_CONTENT_LOAD:
-//			ofLogNotice("ofxApp") << "Start SETUP_DELEGATE_AFTER_CONTENT_LOAD...";
-//			delegate->ofxAppPhaseWillBegin(Phase(State::SETUP_DELEGATE_AFTER_CONTENT_LOAD));
-//			break;
 
 		case State::SETUP_DELEGATE_B4_RUNNING:
 			setupRuiWatches();

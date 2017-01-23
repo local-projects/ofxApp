@@ -7,6 +7,8 @@
 #include "ofxInterface.h"
 #include "TexturedObjectScrollView.h"
 
+#define FAKE_LOAD_SCREEN_DURATION 5.0
+
 class ofApp : public ofBaseApp, public ofxAppDelegate{
 
 public:
@@ -28,14 +30,15 @@ public:
 	// ofxAppDelegate Callbacks /////////////////////////////////////////////////
 
 	void	ofxAppPhaseWillBegin(ofxApp::Phase);
-	bool	ofxAppIsPhaseComplete(ofxApp::Phase){return true;}
-	void	ofxAppDrawPhaseProgress(ofxApp::Phase, const ofRectangle & r){};
-	float	ofxAppGetProgressForPhase(ofxApp::Phase){return -1;}
+	bool	ofxAppIsPhaseComplete(ofxApp::Phase);
+
+	void	ofxAppDrawPhaseProgress(ofxApp::Phase, const ofRectangle & r);
+	string 	ofxAppGetStatusString(ofxApp::Phase);
+	float	ofxAppGetProgressForPhase(ofxApp::Phase);
 
 	void	ofxAppContentIsReady(const string & contentID, vector<ContentObject*>);
 
 	void	screenSetupChanged(ofxScreenSetup::ScreenSetupArg &arg){}
-
 
 	// Content delivered by ofxApp ////////////////////////////////////////////
 
@@ -52,5 +55,7 @@ public:
 
 	void onSrollImageClicked(TexturedObjectScrollView::TouchedImage &);
 	void onDrawTile(TexturedObjectScrollView::DrawTileInfo &);
+
+	float phaseStartTime;
 
 };

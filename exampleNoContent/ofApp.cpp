@@ -7,12 +7,42 @@ void ofApp::setup(){
 
 void ofApp::ofxAppPhaseWillBegin(ofxApp::Phase s){
 	ofLogNotice("ofApp") << "Start User Process " << ofxApp::toString(s);
+	phaseStartTime = ofGetElapsedTimef();
 	switch (s) {
 		case ofxApp::Phase::WILL_LOAD_CONTENT: break;
 		case ofxApp::Phase::DID_DELIVER_CONTENT: break;
 		case ofxApp::Phase::WILL_BEGIN_RUNNING: break;
 	}
 };
+
+
+bool ofApp::ofxAppIsPhaseComplete(ofxApp::Phase){
+	if(phaseStartTime + FAKE_LOAD_SCREEN_DURATION < ofGetElapsedTimef()){
+		return true;
+	}
+	return false;
+}
+
+
+void ofApp::ofxAppDrawPhaseProgress(ofxApp::Phase, const ofRectangle & r){
+};
+
+
+string ofApp::ofxAppGetStatusString(ofxApp::Phase p){
+	string s;
+	switch(p){
+		case ofxApp::Phase::WILL_LOAD_CONTENT: s = "doing stuff"; break;
+		case ofxApp::Phase::DID_DELIVER_CONTENT: s = "doing more stuff"; break;
+		case ofxApp::Phase::WILL_BEGIN_RUNNING: s = "preparing app launch";break;
+	}
+	return s;
+}
+
+
+float ofApp::ofxAppGetProgressForPhase(ofxApp::Phase){
+	float v = (ofGetElapsedTimef() - phaseStartTime) / FAKE_LOAD_SCREEN_DURATION;
+	return ofClamp(v, 0, 1);
+}
 
 
 void ofApp::update(){

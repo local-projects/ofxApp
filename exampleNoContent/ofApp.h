@@ -3,6 +3,8 @@
 #include "ofMain.h"
 #include "ofxApp.h"
 
+#define FAKE_LOAD_SCREEN_DURATION 7.0
+
 class ofApp : public ofBaseApp, public ofxAppDelegate{
 
 public:
@@ -23,10 +25,13 @@ public:
 
 	//ofxApp imposed - responder methods
 	void	ofxAppPhaseWillBegin(ofxApp::Phase);
-	bool	ofxAppIsPhaseComplete(ofxApp::Phase){return true;}
-	void	ofxAppDrawPhaseProgress(ofxApp::Phase, const ofRectangle & r){};
-	float	ofxAppGetProgressForPhase(ofxApp::Phase){return -1;}
+	bool	ofxAppIsPhaseComplete(ofxApp::Phase);
+
+	void	ofxAppDrawPhaseProgress(ofxApp::Phase, const ofRectangle & r);
+	string 	ofxAppGetStatusString(ofxApp::Phase);
+	float	ofxAppGetProgressForPhase(ofxApp::Phase);
 
 	void	ofxAppContentIsReady(const string & contentID, vector<ContentObject*>){};
 
+	float phaseStartTime;
 };

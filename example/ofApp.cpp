@@ -17,6 +17,7 @@ void ofApp::setup(){
 
 
 void ofApp::ofxAppPhaseWillBegin(ofxApp::Phase s){
+	phaseStartTime = ofGetElapsedTimef();
 	ofLogNotice("ofApp") << "Start User Process " << ofxApp::toString(s);
 	switch (s) {
 		case ofxApp::Phase::WILL_LOAD_CONTENT: break;
@@ -26,6 +27,37 @@ void ofApp::ofxAppPhaseWillBegin(ofxApp::Phase s){
 			break;
 	}
 };
+
+
+bool ofApp::ofxAppIsPhaseComplete(ofxApp::Phase){
+	if(phaseStartTime + FAKE_LOAD_SCREEN_DURATION < ofGetElapsedTimef()){
+		return true;
+	}
+	return false;
+}
+
+
+void ofApp::ofxAppDrawPhaseProgress(ofxApp::Phase, const ofRectangle & r){
+
+	
+};
+
+
+string ofApp::ofxAppGetStatusString(ofxApp::Phase p){
+	string s;
+	switch(p){
+		case ofxApp::Phase::WILL_LOAD_CONTENT: s = "doing stuff"; break;
+		case ofxApp::Phase::DID_DELIVER_CONTENT: s = "doing more stuff"; break;
+		case ofxApp::Phase::WILL_BEGIN_RUNNING: s = "preparing app launch";break;
+	}
+	return s;
+}
+
+
+float ofApp::ofxAppGetProgressForPhase(ofxApp::Phase){
+	float v = (ofGetElapsedTimef() - phaseStartTime) / FAKE_LOAD_SCREEN_DURATION;
+	return ofClamp(v, 0, 1);
+}
 
 
 void ofApp::ofxAppContentIsReady(const string & contentID, vector<ContentObject*> objs){
@@ -57,16 +89,23 @@ void ofApp::update(){
 	float dt = 1./60.;
 
 	//upate TextureObject:: for all our objects (to handle load & unload textures)
+	TS_START("update CH objects");
 	for(auto chObj : chObjects){
 		chObj->TexturedObject::update();
 	}
+	TS_STOP("update CH objects");
+
+	TS_START("update CWRU objects");
 	for(auto cwruO : cwruObjects){
 		cwruO->TexturedObject::update();
 	}
+	TS_STOP("update CWRU objects");
 
 	//update ofxInterface
 	if(scene){
+		TS_START("update scene");
 		scene->updateSubtree(dt);
+		TS_STOP("update scene");
 	}
 }
 
