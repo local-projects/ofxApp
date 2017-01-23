@@ -119,8 +119,7 @@ void ofxAppContent::setState(ContentState s){
 
 		case ContentState::DOWNLOADING_JSON:{
 
-			map<string,string> userData; //the end user needs some basics to parse, like where are the assets downloaded at
-			userData["assetsLocation"] = assetsLocationPath;
+			contentCfg.userData["assetsLocation"] = assetsLocationPath;
 
 			//start the download and parse process
 			jsonParser.downloadAndParse(jsonURL,
@@ -128,7 +127,7 @@ void ofxAppContent::setState(ContentState s){
 										numThreads,			//num threads
 										contentCfg.pointToObjects,
 										contentCfg.parseOneObject,
-										userData
+										contentCfg.userData
 										);
 			}
 			break;

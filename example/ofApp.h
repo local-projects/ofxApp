@@ -25,7 +25,7 @@ public:
 	void dragEvent(ofDragInfo dragInfo);
 	void gotMessage(ofMessage msg);
 
-	// ofxApp Callbacks /////////////////////////////////////////////////
+	// ofxAppDelegate Callbacks /////////////////////////////////////////////////
 
 	void	ofxAppPhaseWillBegin(ofxApp::Phase);
 	bool	ofxAppIsPhaseComplete(ofxApp::Phase){return true;}

@@ -34,14 +34,15 @@ public:
 	// just return true in ofxAppIsPhaseComplete() when the stage is concluded for ofxApp to proceed
 	// to the next state.
 
-	virtual void ofxAppPhaseWillBegin(ofxApp::Phase){ ofLogError("ofxApp") << "ofxAppPhaseWillBegin() not implemented!"; } //this will be your entry point to start loading stuff
+	//this will be your entry point to start loading stuff
+	virtual void ofxAppPhaseWillBegin(ofxApp::Phase) = 0;
 	//after u are asked to start loading content, ofxApp will query every frame to check if you are done
-	virtual bool ofxAppIsPhaseComplete(ofxApp::Phase){return true;} //your APP should override this method if you are loading custom content
-	virtual void ofxAppDrawPhaseProgress(ofxApp::Phase, const ofRectangle & r){}; //your APP can override the loading screen drawing
-	virtual float ofxAppGetProgressForPhase(ofxApp::Phase){return -1;} //your APP should return [0..1] to report progressbar; -1 for indeterminate
+	virtual bool ofxAppIsPhaseComplete(ofxApp::Phase){return true;} //override this method if you are loading custom content
+	virtual void ofxAppDrawPhaseProgress(ofxApp::Phase, const ofRectangle & r){}; //override the loading screen drawing
+	virtual float ofxAppGetProgressForPhase(ofxApp::Phase){return -1;} //return [0..1] to report progressbar; -1 for indeterminate
 
 	//this is how your app gets all the parsed objects - up to you how you store them
-	virtual void ofxAppContentIsReady(const string & contentID, vector<ContentObject*> ){ ofLogError("ofxApp") << "ofxAppContentIsReady(\"" << contentID << "\") not implemented!";}
+	virtual void ofxAppContentIsReady(const string & contentID, vector<ContentObject*> ) = 0;
 
 	//tuio callbacks
 	virtual void tuioAdded(ofxTuioCursor & tuioCursor){};

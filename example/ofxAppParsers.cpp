@@ -34,17 +34,17 @@ ofxAppParsers::ofxAppParsers(){
 	cwru.parseOneObject = [](ofxMtJsonParserThread::SingleObjectParseData & inOutData){
 
 		const ofxJSONElement & jsonRef = *(inOutData.jsonObj); //pointers mess up the json syntax somehow
-
 		string title, description, imgURL, imgSha1;
 
 		try{ //do some parsing - catching exceptions
-			title = ofxMtJsonParserUtils::initFromJsonString(jsonRef, "title", false, inOutData.printMutex);
-			description = ofxMtJsonParserUtils::initFromJsonString(jsonRef, "description", false, inOutData.printMutex);
+			title = jsonRef["title"].asString();
+			description = jsonRef["description"].asString();
 			imgURL = jsonRef["image"]["uri"].asString();
 			imgSha1 = jsonRef["image"]["chksum"].asString();
 		}catch(Exception exc){
 			inOutData.printMutex->lock();
-			ofLogError("ofApp") << exc.what() << " " << exc.message() << " " << exc.displayText() << " WHILE PARSING OBJ " << inOutData.objectID;
+			ofLogError("ofApp") << exc.what() << " " << exc.message() <<
+			" " << exc.displayText() << " WHILE PARSING OBJ " << inOutData.objectID;
 			inOutData.printMutex->unlock();
 		}
 
@@ -55,10 +55,10 @@ ofxAppParsers::ofxAppParsers(){
 							//bc this json happens to be a dictionary, not a list... so its
 							//smart enough to get it from there.
 
-		// ASSET HOLDER SETUP //
-		//setup our AssetHoler structures - we need to know where to download the assets to,
-		//our download and usage policies, and what assets do we own
-		string assetsDir = inOutData.userData->at("assetsLocation"); //access userData std::map<string,string> to fetch data that is provided for you
+		// ASSET HOLDER SETUP ///////////////////////////////
+		// where to download the assets to,
+		// our download and usage policies, and what assets do we own
+		string assetsDir = ((ofxJSONElement)*(inOutData.userData))["assetsLocation"].asString();
 		string assetsPath = assetsDir + "/" + inOutData.objectID;
 
 		ofxAssets::DownloadPolicy assetDownloadPolicy = ofxApp::get().getAssetDownloadPolicy();
@@ -76,24 +76,24 @@ ofxAppParsers::ofxAppParsers(){
 	// Setup Textured Objects User Lambda /////////////////////////////////////////////////////////
 	cwru.setupTexturedObject = [](ContentObject * texuredObject){
 
-		CWRU_Object * to = (CWRU_Object*)texuredObject; //cast to our obj type
+		CWRU_Object * to = dynamic_cast<CWRU_Object*>(texuredObject); //cast from ContentObject to our native type
+		int numImgAssets = to->getNumAssets();	//this will always be 1 for this example, 1 img per object
+												//this method is part of AssetHolder
 
-		int numAssets = to->getNumAssets(); //this will always be 1 for this example, 1 img per object
-
-		//assets are owned by my extended object "AssetHolder"
-		to->TexturedObject::setup(numAssets, TEXTURE_ORIGINAL); //we only use one tex size, so lets choose ORIGINAL
+		//the assets are owned by my extended object "AssetHolder"
+		to->TexturedObject::setup(numImgAssets, TEXTURE_ORIGINAL); //we only use one tex size, so lets choose ORIGINAL
 		to->TexturedObject::setResizeQuality(CV_INTER_AREA); //define resize quality (in case we use mipmaps)
 		ofPixels pix;
 
-		for(int i = 0; i < numAssets; i++){
+		for(int i = 0; i < numImgAssets; i++){
 			ofxAssets::Descriptor & d = to->getAssetDescAtIndex(i);
 
 			switch (d.type) {
-				case ofxAssets::VIDEO: break; //you might want to handle video thumbnails here?
+				case ofxAssets::VIDEO: break;
 				case ofxAssets::IMAGE:{
-					//preload images once, to find out their dimensions that we need to know beforehand
-					//for the Progressive texture loader to alloc b4 loading
-					//TODO! cms should provide img dimensions to avoid startup overhead!
+					//preload images once, to find out their dimensions that we need to know beforehand;
+					//this is a TexturedObject requirement for the Progressive texture loader to alloc b4 loading
+					//Ideally the cms provides img dimensions to avoid startup overhead.
 
 					if(ofLoadImage(pix, d.relativePath)){
 						to->imgSize = ofVec2f(pix.getWidth(), pix.getHeight());
@@ -177,7 +177,7 @@ ofxAppParsers::ofxAppParsers(){
 			// ASSET HOLDER SETUP //
 			//setup our AssetHoler structures - we need to know where to download the assets to,
 			//our download and usage policies, and what assets do we own
-			string assetsDir = inOutData.userData->at("assetsLocation"); //access userData std::map<string,string> to fetch data that is provided for you
+			string assetsDir = ((ofxJSONElement)*(inOutData.userData))["assetsLocation"].asString();
 			string assetsPath = assetsDir + "/" + o->objectID;
 
 			ofxAssets::DownloadPolicy assetDownloadPolicy = ofxApp::get().getAssetDownloadPolicy(); //TODO this is slooow!
@@ -211,7 +211,7 @@ ofxAppParsers::ofxAppParsers(){
 	// Setup Textured Objects User Lambda /////////////////////////////////////////////////////////
 	ch.setupTexturedObject = [](ContentObject * texuredObject){
 
-		CH_Object * to = (CH_Object*)texuredObject; //cast to our obj type
+		CH_Object * to = dynamic_cast<CH_Object*>(texuredObject); //cast to our obj type
 
 		int numAssets = to->images.size();
 

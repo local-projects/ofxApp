@@ -20,6 +20,7 @@ namespace ofxApp{
 		std::function<void (ofxMtJsonParserThread::JsonStructureData &)> pointToObjects;
 		std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> parseOneObject;
 		std::function<void (ContentObject*)> setupTexturedObject;
+		ofxJSON userData;
 	};
 
 	enum class State : int{ //internal states used by an ofxApp app
