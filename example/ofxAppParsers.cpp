@@ -23,9 +23,9 @@ ofxAppParsers::ofxAppParsers(){
 		if(jsonRef["data"].isObject()){
 			inOutData.objectArray = (ofxJSONElement*) &(jsonRef["data"]);
 		}else{
-
 			ofLogError("ofApp") << "JSON has unexpected format!";
-			//if the json is not what we exepcted it to be, let the parser know by filling it the data like this:
+			//if the json is not what we exepcted it to be,
+			//let the parser know by filling it the data like this:
 			inOutData.objectArray = NULL;
 		}
 	};

@@ -1,6 +1,6 @@
 #ofxApp
 
-What is ofxApp? Its the basic skeleton for an interactive installation made in OpenFrameworks. It tries to simplify your life by offering some basic functionality without much required on your side.
+What is ofxApp? Its the basic skeleton for an interactive installation made in OpenFrameworks. It tries to simplify your life by offering some basic functionality trying to minimize the effort required on your side.
 
 ##Features
 A quick summary of the features offered by ofxApp:
@@ -8,10 +8,10 @@ A quick summary of the features offered by ofxApp:
  * Startup / Loading Screen with progress (ofxStateMachine)
  * CMS Asset download/cache/checksum management (ofxSimpleHttp, ofxAssets, ofxTagSystem)
  * CMS JSON content loading & failover recovery (ofxMTJsonParser)
- * Time based profiler (ofxTimeMeasurements)
+ * CPU & GPU profiler (ofxTimeMeasurements)
  * Dynamic texture load / unload (TexturedObject)
  * Logging to file & screen (ofxSuperLog)
- * Parameter Editing (ofxRemoteUI)
+ * Parameter Tweaking (ofxRemoteUI)
  * Error Reporting to CMS (ofxSensu)
  * Static Texture Assets preloading + access by fileName + dynamic edits (ofxAutoTexture)
  * Analytics (ofxGoogleAnalytics)
@@ -20,7 +20,6 @@ A quick summary of the features offered by ofxApp:
  * Screen Management (fullscreen, windows, etc) (ofxScreenSetup)
  * All behaviors highly configurable from a single config file (ofxJsonSettings)
  
- :tada: ::fireworks::
 
 ##How To Use
 

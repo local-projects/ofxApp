@@ -24,10 +24,10 @@ void ofApp::draw(){
 
 	if(ofxApp::get().getState() == ofxApp::State::RUNNING){
 
-		ofxApp::get().textures().drawAll(ofRectangle(100, 100, ofGetMouseX(), ofGetMouseY()));
+		ofxApp::get().textures().drawAll(ofRectangle(100, 100, ofGetMouseX() - 100, ofGetMouseY() - 100));
 
-		G_TEX("sf2")->draw(0,0);
-		G_FONT("NoManSky")->draw("My Font", 20, ofGetMouseX(), ofGetMouseY());
+		G_TEX("emoji/413")->draw(0,0);
+		G_FONT("NoManSky")->draw("My Font", 20, 40, ofGetHeight() - 40);
 	}
 }
 

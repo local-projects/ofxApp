@@ -27,8 +27,11 @@ void ofxAppStaticTextures::setup(){
 
 void ofxAppStaticTextures::loadTexturesInDir(const string& imgDirPath, int maxThreads){
 	if(!isLoading){
+		//TS_START_NIF("load Textures");
+		startLoadTime = ofGetElapsedTimef();
 		this->maxThreads = maxThreads;
-		ofLogWarning("ofxAppStaticTextures") << "#### START Loading all Textures in directory \"" << imgDirPath << "\" ############################################";
+		ofLogWarning("ofxAppStaticTextures") << "#### START Loading all Textures in directory \"" <<
+		imgDirPath << "\" across " << maxThreads << " ############################################";
 		isLoading = true;
 		dirPath = ofFilePath::addTrailingSlash(imgDirPath);
 		#ifdef TARGET_WIN32 //lets make windows path prettier
@@ -68,13 +71,17 @@ void ofxAppStaticTextures::loadTexturesInDirectory(const string& path, bool recu
 			string filepath = path + "/" + file.getBaseName() + "." + file.getExtension();
 			
 			PreLoadData texData;
-			texData.filePath = filepath;
-			texData.loader = new ThreadedLoader();
-
 			texData.tex = createTexObjForPath(filepath, texData.texName, texData.createMipmap, texData.useTex2D);
-			textures[texData.texName] = texData.tex;
-			texNameOrder.push_back(texData.texName);
-			pendingToPreLoad.push_back(texData);
+			if(texData.tex){
+				texData.filePath = filepath;
+				texData.loader = new ThreadedLoader();
+
+				textures[texData.texName] = texData.tex;
+				texNameOrder.push_back(texData.texName);
+				pendingToPreLoad.push_back(texData);
+			}else{
+				ofLogError("ofxAppStaticTextures") << "Skipping image at \"" << filepath << "\" as its name collides with another one";
+			}
 		}
 	}
 }
@@ -93,7 +100,9 @@ ofxAutoTexture* ofxAppStaticTextures::loadTexture(PreLoadData data){
 		}
 	}
 
+	ofSetLogLevel("ofxAutoTexture", OF_LOG_SILENT);
 	bool loaded = data.tex->loadFromFile(data.filePath);
+	ofSetLogLevel("ofxAutoTexture", OF_LOG_NOTICE);
 
 	if(loaded){
 		float memUsedForThisOne = memUse(data.tex);
@@ -156,9 +165,9 @@ void ofxAppStaticTextures::onUpdate(ofEventArgs & ){
 		if(d.loader->preloaded) numPreloaded++;
 	}
 
-	if(numPreloaded < pendingToPreLoad.size() && numPreloading < maxThreads ){
+	if(numPreloaded < pendingToPreLoad.size() && numPreloading < maxThreads){
 		
-		int numToStart = MIN( maxThreads - numPreloading, pendingToPreLoad.size() - numPreloaded );
+		int numToStart = MIN( 1 * (maxThreads - numPreloading), pendingToPreLoad.size() - numPreloaded );
 		int i = 0;
 		while(numToStart > 0 && i < pendingToPreLoad.size()){
 			if(!pendingToPreLoad[i].loader->threadStarted){
@@ -171,8 +180,10 @@ void ofxAppStaticTextures::onUpdate(ofEventArgs & ){
 			i++;
 		}
 	}
-	
-	if(numPreloaded > 0 ){
+
+	if(numPreloaded > 0){
+		int numLoadedThisFrame = 0;
+		float t = ofGetElapsedTimef();
 		for(int i = pendingToPreLoad.size()-1; i >= 0; i--){
 			if(pendingToPreLoad[i].loader->preloaded){
 				PreLoadData currTex = pendingToPreLoad[i];
@@ -181,8 +192,13 @@ void ofxAppStaticTextures::onUpdate(ofEventArgs & ){
 				loaded.push_back(currTex);
 				if(pendingToPreLoad.size() == 0){
 					ofLogNotice("ofxAppStaticTextures") << "#### DONE loading " << textures.size() << " Static Textures! Memory used: " << ofToString(memUsed,2) << "Mb ############################################";
+					ofLogNotice("ofxAppStaticTextures") << "Loading StaticTextures took " << ofxApp::utils::secondsToHumanReadable(ofGetElapsedTimef() - startLoadTime, 2);
 					ofNotifyEvent(eventAllTexturesLoaded, this);
+					//TS_STOP_NIF("load Textures");
 				}
+			}
+			if(ofGetElapsedTimef() - t > 0.05){ //dont hog a frame too long
+				break;
 			}
 		}
 	}
@@ -231,10 +247,12 @@ ofTexture* ofxAppStaticTextures::getTexture(string fullPath){
 
 void ofxAppStaticTextures::drawAll(const ofRectangle & rect){
 
+//	return;
+
 	int n = getNumTextures();
 	float ar = rect.width / rect.height;
-	float nx = sqrtf(n / ar) * ar;// * ar);
-	float ny = sqrtf(n * ar) / ar;// * ((1 + ar) * 0.5));
+	float nx = sqrtf(n / ar) * ar;
+	float ny = sqrtf(n * ar) / ar;
 
 	int nn = ceil(nx) * ceil(ny);
 	if( nn > n){
@@ -260,20 +278,21 @@ void ofxAppStaticTextures::drawAll(const ofRectangle & rect){
 		paddedFrame.width -= 2 * pad;
 		paddedFrame.height -= 2 * pad;
 
-		ofSetColor(32);
-		ofDrawRectangle(frame);
-		ofSetColor(16);
-		ofNoFill();
-		ofDrawRectangle(frame);
-		ofFill();
+//		ofSetColor(32);
+//		ofDrawRectangle(frame);
+//		ofSetColor(16);
+//		ofNoFill();
+//		ofDrawRectangle(frame);
+//		ofFill();
 
 		if(tex->isAllocated() && tex->getWidth()){
 			ofRectangle texR = ofRectangle(0,0,tex->getWidth(), tex->getHeight());
 			texR.scaleTo(paddedFrame, OF_ASPECT_RATIO_KEEP, OF_ALIGN_HORZ_CENTER, OF_ALIGN_VERT_TOP);
-			ofSetColor(255);
 			tex->draw(texR);
 		}
-		ofDrawBitmapStringHighlight(texName, xx + 5, yy + frame.height - 8);
+		if(frame.width > 200){
+			ofDrawBitmapStringHighlight(texName, xx + 5, yy + frame.height - 8);
+		}
 		xx += ceil(frame.width);
 		if(xx >= rect.x + rect.width){
 			yy += frame.height;

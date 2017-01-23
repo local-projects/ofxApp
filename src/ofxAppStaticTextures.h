@@ -70,7 +70,7 @@ public:
 
 	ofxAppStaticTextures();
 
-	void loadTexturesInDir(const string& imgDirPath, int maxThreads = 4);
+	void loadTexturesInDir(const string& imgDirPath, int maxThreads = 8);
 	ofTexture* getTexture(string textureName);
 
 	static float memUse(ofTexture * tex); //in MBytes
@@ -131,5 +131,6 @@ protected:
 	float memUsed = 0; //MBytes
 	bool isLoading = false;
 	ofTexture missingTex;
-	
+
+	float startLoadTime;
 };

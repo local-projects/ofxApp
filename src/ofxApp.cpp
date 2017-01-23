@@ -287,12 +287,13 @@ void App::setupStateMachine(){
 	appState.setNameAndBarColorForState(State::RUNNING, toString(State::LOAD_JSON_CONTENT_FAILED), ofColor::white, ofColor::grey);
 }
 
+
 void App::startLoadingStaticAssets(){
 	ofLogNotice("ofxApp") << "startLoadingStaticAssets()";
 	string texturesPath = getString("StaticAssets/textures");
 	if(texturesPath.size()){
 		ofxApp::utils::assertFileExists(texturesPath);
-		textures().loadTexturesInDir(texturesPath, getInt("App/maxThreads"));
+		textures().loadTexturesInDir(texturesPath, 3 * getInt("App/maxThreads")); //note we 3 x threads to speed up launch
 	}else{
 		ofLogWarning("ofxApp") << "App doesnt want to load static Assets!";
 		onStaticTexturesLoaded();
