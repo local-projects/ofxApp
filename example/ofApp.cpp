@@ -184,7 +184,7 @@ void ofApp::setupScrollViews(){
 
 	scrollView = new TexturedObjectScrollView();
 	scrollView->setName("scrollView");
-	ofRectangle viewArea = ofRectangle(paddingH, paddingH + 25, ofGetWidth() - 2 * paddingH, 600);
+	ofRectangle viewArea = ofRectangle(paddingH, paddingH + 25, ofGetWidth() - 2 * paddingH, 610);
 
 	scrollView->setup(viewArea, config);
 	scene->addChild(scrollView);
@@ -219,7 +219,7 @@ void ofApp::setupScrollViews(){
 	}
 
 	//shuffle images
-	std::random_shuffle(imagesToShow.begin(), imagesToShow.end());
+	//std::random_shuffle(imagesToShow.begin(), imagesToShow.end());
 
 	//finally load the contents
 	scrollView->loadContent(imagesToShow);
