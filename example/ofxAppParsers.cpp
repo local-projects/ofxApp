@@ -79,7 +79,7 @@ ofxAppParsers::ofxAppParsers(){
 		string assetsPath = data.assetsLocation + "/" + cwru->getObjectUUID();
 		cwru->AssetHolder::setup(assetsPath, data.assetUsagePolicy, data.assetDownloadPolicy);
 		if(cwru->imgURL.size()){
-			cwru->imagePath = cwru->addRemoteAsset(cwru->imgURL, cwru->imgSha1);
+			cwru->imagePath = cwru->AssetHolder::addRemoteAsset(cwru->imgURL, cwru->imgSha1);
 		}
 	};
 
@@ -100,7 +100,7 @@ ofxAppParsers::ofxAppParsers(){
 		//but we need to check the pixel size of each image for TextureLoader to be able to work;
 		//so we do that here.
 		for(int i = 0; i < numImgAssets; i++){
-			ofxAssets::Descriptor & d = cwruO->getAssetDescAtIndex(i);
+			ofxAssets::Descriptor & d = cwruO->AssetHolder::getAssetDescAtIndex(i);
 
 			switch (d.type) {
 				case ofxAssets::VIDEO: break;
@@ -196,7 +196,7 @@ ofxAppParsers::ofxAppParsers(){
 
 		CH_Object * cho = dynamic_cast<CH_Object*>(data.object); //cast from ContentObject to our native type
 
-		string assetsPath = data.assetsLocation + "/" + cho->getObjectUUID();
+		string assetsPath = data.assetsLocation + "/" + cho->ParsedObject::getObjectUUID();
 		cho->AssetHolder::setup(assetsPath, data.assetUsagePolicy, data.assetDownloadPolicy);
 
 		for(auto & i : cho->images){ //lets add one "Remote Asset" for each image in this object
@@ -213,7 +213,7 @@ ofxAppParsers::ofxAppParsers(){
 			}
 
 			//add N Remote Assets to the object - one per each image it contains
-			i.localAssetPath = cho->addRemoteAsset(i.url, i.sha1, tags, spec);
+			i.localAssetPath = cho->AssetHolder::addRemoteAsset(i.url, i.sha1, tags, spec);
 		}
 	};
 
