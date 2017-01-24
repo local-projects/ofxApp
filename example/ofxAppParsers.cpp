@@ -76,7 +76,7 @@ ofxAppParsers::ofxAppParsers(){
 
 		//cast from ContentObject to our native type
 		CWRU_Object * cwru = dynamic_cast<CWRU_Object*>(data.object);
-		string assetsPath = data.assetLocation + "/" + cwru->getObjectUUID();
+		string assetsPath = data.assetsLocation + "/" + cwru->getObjectUUID();
 		cwru->AssetHolder::setup(assetsPath, data.assetUsagePolicy, data.assetDownloadPolicy);
 		if(cwru->imgURL.size()){
 			cwru->imagePath = cwru->addRemoteAsset(cwru->imgURL, cwru->imgSha1);
@@ -196,7 +196,7 @@ ofxAppParsers::ofxAppParsers(){
 
 		CH_Object * cho = dynamic_cast<CH_Object*>(data.object); //cast from ContentObject to our native type
 
-		string assetsPath = data.assetLocation + "/" + cho->getObjectUUID();
+		string assetsPath = data.assetsLocation + "/" + cho->getObjectUUID();
 		cho->AssetHolder::setup(assetsPath, data.assetUsagePolicy, data.assetDownloadPolicy);
 
 		for(auto & i : cho->images){ //lets add one "Remote Asset" for each image in this object

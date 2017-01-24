@@ -38,8 +38,6 @@ bool ofApp::ofxAppIsPhaseComplete(ofxApp::Phase){
 
 
 void ofApp::ofxAppDrawPhaseProgress(ofxApp::Phase, const ofRectangle & r){
-
-	
 };
 
 

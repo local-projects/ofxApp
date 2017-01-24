@@ -19,7 +19,7 @@ namespace ofxApp{
 	struct CatalogAssetsData{ //data sent to the user for him/her to report object assets
 		ContentObject * object;
 		ofxJSONElement * userData;
-		string assetLocation;
+		string assetsLocation;
 		ofxAssets::DownloadPolicy assetDownloadPolicy;
 		ofxAssets::UsagePolicy assetUsagePolicy;
 	};

@@ -137,7 +137,7 @@ void ofxAppContent::threadedFunction(){
 
 	ofxApp::CatalogAssetsData d;
 	d.userData = &contentCfg.userData;
-	d.assetLocation = assetsLocationPath;
+	d.assetsLocation = assetsLocationPath;
 	d.assetUsagePolicy = assetUsagePolicy;
 	d.assetDownloadPolicy = assetDownloadPolicy;
 
