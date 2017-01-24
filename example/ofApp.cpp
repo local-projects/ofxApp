@@ -87,15 +87,16 @@ void ofApp::update(){
 	float dt = 1./60.;
 
 	//upate TextureObject:: for all our objects (to handle load & unload textures)
+	float time = ofGetElapsedTimef();
 	TS_START("update CH objects");
 	for(auto chObj : chObjects){
-		chObj->TexturedObject::update();
+		chObj->TexturedObject::update(time);
 	}
 	TS_STOP("update CH objects");
 
 	TS_START("update CWRU objects");
 	for(auto cwruO : cwruObjects){
-		cwruO->TexturedObject::update();
+		cwruO->TexturedObject::update(time);
 	}
 	TS_STOP("update CWRU objects");
 
@@ -269,8 +270,8 @@ void ofApp::onDrawTile(TexturedObjectScrollView::DrawTileInfo & d){
 
 
 void ofApp::keyPressed(int key){
-	if (key == 'a') {
-		OFXAPP_REPORT("testAlert", "testing", 0);
+	if (key == '1' || key == '2' || key == '3') {
+		OFXAPP_REPORT("testAlert", "testing", key - '1' /* [0..2]*/);
 	}
 }
 

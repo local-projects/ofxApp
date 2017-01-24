@@ -163,12 +163,14 @@ void App::setupErrorReporting(){
 		string email = getString("ErrorReporting/email");
 		emails.push_back(email);
 	}
+
+	bool attachGitStatus = getBool("ErrorReporting/reportGitStatus");
 	
-	
-	errorReporterObj.setup(host, port, emails, reportErrors,
-						   RUI_GET_INSTANCE()->getComputerName(),
-						   RUI_GET_INSTANCE()->getComputerIP(),
-						   RUI_GET_INSTANCE()->getBinaryName()
+	errorReporterObj.setup(	host, port, emails, reportErrors,
+						   	RUI_GET_INSTANCE()->getComputerName(),
+						   	RUI_GET_INSTANCE()->getComputerIP(),
+						   	RUI_GET_INSTANCE()->getBinaryName(),
+							attachGitStatus
 						   );
 }
 

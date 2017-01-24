@@ -20,16 +20,16 @@ public:
 	const string indent = " + ";
 
 	void setup(string host, int port, string email, bool shouldReportErrors,
-			   string hostName = "", string hostIP = "", string binaryName = ""){
+			   string hostName, string hostIP, string binaryName, bool attachGitStatus){
 		
 		vector<string>emails;
 		emails.push_back(email);
-		setup(host, port, email, shouldReportErrors, hostName, hostIP, binaryName);
+		setup(host, port, email, shouldReportErrors, hostName, hostIP, binaryName, attachGitStatus);
 	}
 
 	
 	void setup(string host, int port, const vector<string>& emails, bool shouldReportErrors,
-			   string hostName = "", string hostIP = "", string binaryName = ""){
+			   string hostName , string hostIP , string binaryName, bool attachGitStatus ){
 		
 		sensu.setup(host, port);
 		this->emails = emails;
@@ -44,8 +44,11 @@ public:
 		"\n" + indent + "Host IP: " + hostIP +
 		"\n" + indent + "BinaryName: " + binaryName + "\n";
 		
-		hostInfo += indent + "Git Revision: " + gitRev + "\n" +
-					indent + "Git Status: " + gitStatus + "\n";		
+		hostInfo += indent + "Git Revision: " + gitRev + "\"n";
+
+		if(attachGitStatus){
+			hostInfo += indent + "Git Status: " + gitStatus + "\n";
+		}
 	}
 	
 	void send(string alertName, string msg, int level02, string filePath = ""){
@@ -55,7 +58,7 @@ public:
 			logSend(alertName, msg, level02, false);
 			sensu.send(alertName, msg2, ofxSensu::Status(level02), emails, filePath, false);
 		}else{
-			ofLogError("ofxAppErrorReporter") << "Skipping Send Error Report '" << alertName<< "' : '" << msg << "' bc Err Reports are disabled";
+			ofLogNotice("ofxAppErrorReporter") << "Skipping Send Error Report '" << alertName<< "' : '" << msg << "' bc Err Reports are disabled";
 		}
 	}
 
@@ -65,7 +68,7 @@ public:
 			string msg2 = addContext(msg);
 			sensu.send(alertName, msg2, ofxSensu::Status(level02), emails, filePaths, false);
 		}else{
-			ofLogError("ofxAppErrorReporter") << "Skipping Send Error Report '" << alertName<< "' : '" << msg << "' bc Err Reports are disabled";
+			ofLogNotice("ofxAppErrorReporter") << "Skipping Send Error Report '" << alertName<< "' : '" << msg << "' bc Err Reports are disabled";
 		}
 	}
 	
@@ -78,7 +81,7 @@ public:
 			string msg2 = addContext(msg);
 			sensu.send(alertName, msg2, ofxSensu::Status(level02), emails, filePath, true);
 		}else{
-			ofLogError("ofxAppErrorReporter") << "Skipping Send Error Report '" << alertName<< "' : '" << msg << "' bc Err Reports are disabled";
+			ofLogNotice("ofxAppErrorReporter") << "Skipping Send Error Report '" << alertName<< "' : '" << msg << "' bc Err Reports are disabled";
 		}
 	}
 
@@ -88,7 +91,7 @@ public:
 			string msg2 = addContext(msg);
 			sensu.send(alertName, msg2, ofxSensu::Status(level02), emails, filePaths, true);
 		}else{
-			ofLogError("ofxAppErrorReporter") << "Skipping Send Error Report '" << alertName<< "' : '" << msg << "' bc Err Reports are disabled";
+			ofLogNotice("ofxAppErrorReporter") << "Skipping Send Error Report '" << alertName<< "' : '" << msg << "' bc Err Reports are disabled";
 		}
 	}
 	
