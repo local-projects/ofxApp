@@ -1,7 +1,7 @@
 #include "ofApp.h"
 
-void ofApp::setup(){
 
+void ofApp::setup(){
 	ofxApp::get().setup(this); //start the ofxApp setup process
 }
 

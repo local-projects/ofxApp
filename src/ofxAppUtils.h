@@ -15,7 +15,14 @@
 namespace ofxApp{
 	
 	namespace utils{
-		
+
+		struct ImageInfo{
+			bool valid;
+			int width;
+			int height;
+			int nChannels;
+		};
+
 		void assertFileExists(const string & path);
 		void terminateApp(const string & module, const string & reason, float secondsOnScreen = 15);
 				
@@ -33,6 +40,8 @@ namespace ofxApp{
 		bool isValidEmail(const string email);
 
 		void logParagraph(const string & moduleName, ofLogLevel lev, const string & text);
+
+		ImageInfo getImageDimensions(const string & filePath);
 
 	} //utils
 }; //ofxApp

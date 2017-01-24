@@ -335,3 +335,8 @@ For example, files named like this, will recieve this treatment:
 + unused asset cleanup! 
 
 ```
+
+
+## Included Libraries
+
+- [stb_image](https://github.com/nothings/stb) by Sean Barrett: Public domain

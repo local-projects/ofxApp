@@ -8,10 +8,13 @@
 class CWRU_Object : public ContentObject{
 
 public:
+	
 	string title;
 	string description;
 	string imagePath;
 	ofVec2f imgSize;
+	string imgURL;
+	string imgSha1;
 
 	//TexturedObject imposes some method implementation so it can query about textures:
 	//in this case we only have one img per obj to simplify the example

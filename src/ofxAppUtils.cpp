@@ -10,9 +10,12 @@
 #include "ofxApp.h"
 #include <regex>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "../lib/stb/stb_image.h"
+#undef STB_IMAGE_IMPLEMENTATION
+
 namespace ofxApp{
 namespace utils{
-
 
 	void assertFileExists(const string & path){
 		if(!ofFile::doesFileExist(path)){
@@ -210,6 +213,17 @@ namespace utils{
 				case OF_LOG_FATAL_ERROR: ofLogFatalError(moduleName) << l; break;
 			}
 		}
+	}
+
+	ImageInfo getImageDimensions(const string & filePath){
+		string path = ofToDataPath(filePath, true);
+		ImageInfo info;
+		int ret = stbi_info(path.c_str(), &info.width, &info.height, &info.nChannels);
+		info.valid = (ret != 0);
+		if(!info.valid){
+			ofLogError("ofxApp::utils") << "getImageDimensions() failed for image \"" << filePath << "\"";
+		}
+		return info;
 	}
 
 

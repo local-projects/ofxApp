@@ -72,8 +72,7 @@ public:
 	void exit(ofEventArgs &);
 	void draw(ofEventArgs &);
 
-	
-	
+
 	// Crazy Macro magic here!! Beware!!
 	// this compounds some classnames to match whatever you decided to name your app;
 	// so "OFX_APP_CLASS_NAME(Colors)" becomes "MyAppColors"

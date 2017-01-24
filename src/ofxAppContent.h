@@ -32,7 +32,7 @@ class ContentObject : public ParsedObject, public AssetHolder, public TexturedOb
 };
 
 
-class ofxAppContent{
+class ofxAppContent : public ofThread{
 
 public:
 
@@ -43,6 +43,7 @@ public:
 		CHECKING_JSON,
 		JSON_PARSE_FAILED,
 		PARSING_JSON,
+		CATALOG_ASSETS,
 		CHECKING_ASSET_STATUS,
 		DOWNLOADING_ASSETS,
 		FILTER_OBJECTS_WITH_BAD_ASSETS,
@@ -64,6 +65,8 @@ public:
 			   const std::pair<string,string> & credentials,
 			   const ofxSimpleHttp::ProxyConfig & proxyConfig,
 			   const ofxApp::ParseFunctions & contentCfg,
+			   const ofxAssets::DownloadPolicy assetDownloadPolicy,
+			   const ofxAssets::UsagePolicy assetUsagePolicy,
 			   const ofxAssets::ObjectUsagePolicy & objectUsagePolicy,
 			   const string & assetsLocationPath
 			   );
@@ -111,6 +114,8 @@ public:
 
 protected:
 
+	void threadedFunction();
+
 	void setState(ContentState s);
 
 	ContentState state = ContentState::IDLE;
@@ -120,6 +125,9 @@ protected:
 	ofxMtJsonParser jsonParser;
 	ofxApp::ParseFunctions contentCfg;
 	ofxAssets::ObjectUsagePolicy objectUsagePolicy;
+	ofxAssets::DownloadPolicy assetDownloadPolicy;
+	ofxAssets::UsagePolicy assetUsagePolicy;
+
 
 	vector<ContentObject*> parsedObjects;
 	AssetChecker assetChecker;
@@ -134,5 +142,6 @@ protected:
 	string assetsLocationPath;
 	string ID;
 	int numIgnoredObjects = 0; //total # of obj that are in json but are not used for one reason or another
+	int numSetupTexuredObjects = 0;
 };
 

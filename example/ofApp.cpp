@@ -76,9 +76,9 @@ void ofApp::ofxAppContentIsReady(const string & contentID, vector<ContentObject*
 			chObjects.push_back(cho); //cast up to CWRU_Object*
 			//demo on how to "fish back" asset info
 			vector<ofxAssets::Descriptor> assetKeys = cho->getAssetDescsWithTag("isPrimary");
-			if(assetKeys.size() == 1){
-				ofLogNotice("ofApp") << assetKeys.back().relativePath << " is Primary for " << cho->objectID;
-			}
+//			if(assetKeys.size() == 1){
+//				ofLogNotice("ofApp") << assetKeys.back().relativePath << " is Primary for " << cho->objectID;
+//			}
 		}
 	}
 }
@@ -137,7 +137,7 @@ void ofApp::draw(){
 				info = "UUID: " + cwruO->getObjectUUID() +
 				"\nTitle: " + cwruO->title +
 				"\nDescription: " + cwruO->description +
-				"\nNum Images: " + cwruO->imagePath +
+				"\nNum Images: 1" +
 				"\nImg Size: " + ofToString(cwruO->getTextureDimensions(TEXTURE_ORIGINAL,0));
 			}
 
@@ -198,12 +198,16 @@ void ofApp::setupScrollViews(){
 	//prepare the list of objects you want to show on the scrollview
 	vector<TexturedObjectScrollView::TexturedObjectTexture> imagesToShow;
 
-	//add CH content
+	//add CH content - every image inside every object
 	for(auto chObj : chObjects){
 		TexturedObjectScrollView::TexturedObjectTexture tex;
 		tex.texObj = chObj;
-		tex.texIndex = 0;
-		imagesToShow.push_back(tex);
+		int c = 0;
+		for(auto img : chObj->images){
+			tex.texIndex = c;
+			imagesToShow.push_back(tex);
+			c++;
+		}
 	}
 
 	//add cwru content
@@ -214,10 +218,14 @@ void ofApp::setupScrollViews(){
 		imagesToShow.push_back(tex);
 	}
 
+	//shuffle images
+	std::random_shuffle(imagesToShow.begin(), imagesToShow.end());
+
 	//finally load the contents
 	scrollView->loadContent(imagesToShow);
-
+	ofLogNotice("ofApp") << "showing " << imagesToShow.size() << " images.";
 }
+
 
 void ofApp::onSrollImageClicked(TexturedObjectScrollView::TouchedImage & ti){
 
@@ -235,6 +243,7 @@ void ofApp::onSrollImageClicked(TexturedObjectScrollView::TouchedImage & ti){
 	ofLogNotice("ofxApp") << "clicked on object " << co->getObjectUUID();
 	
 }
+
 
 void ofApp::onDrawTile(TexturedObjectScrollView::DrawTileInfo & d){
 

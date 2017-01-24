@@ -21,6 +21,8 @@ void ofxAppContent::setup(	string ID,
 							const std::pair<string,string> & credentials,
 							const ofxSimpleHttp::ProxyConfig & proxyConfig,
 							const ofxApp::ParseFunctions & contentCfg,
+							const ofxAssets::DownloadPolicy assetDownloadPolicy,
+						  	const ofxAssets::UsagePolicy assetUsagePolicy,
 							const ofxAssets::ObjectUsagePolicy & objectUsagePolicy,
 							const string & assetsLocationPath){
 
@@ -29,6 +31,8 @@ void ofxAppContent::setup(	string ID,
 	this->ID = ID;
 	this->jsonURL = jsonSrc;
 	this->contentCfg = contentCfg;
+	this->assetDownloadPolicy = assetDownloadPolicy;
+	this->assetUsagePolicy = assetUsagePolicy;
 	this->objectUsagePolicy = objectUsagePolicy;
 	this->jsonDestinationDir = jsonDestinationDir_;
 	this->numThreads = numThreads_;
@@ -93,10 +97,29 @@ void ofxAppContent::update(float dt){
 
 	switch(state){
 
+		case ContentState::CATALOG_ASSETS:
+			if(!isThreadRunning()){
+				setState(ContentState::CHECKING_ASSET_STATUS);
+			}
+			break;
 		case ContentState::DOWNLOADING_ASSETS:
 			if(!dlc.isBusy()){ //downloader finished!
 				ofLogNotice("ofxAppContent") << "Finished Asset downloads for \"" << ID << "\"!";
 				setState(ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS);
+			}break;
+
+		case ContentState::SETUP_TEXTURED_OBJECTS:{
+			int maxObjectsToSetupInOneFrame = 50; //stagger across frames, to avoid hogging the app
+			int start = numSetupTexuredObjects;
+			int end = MIN(parsedObjects.size(), numSetupTexuredObjects + maxObjectsToSetupInOneFrame);
+			for(int i = start; i < end; i++){
+				//call the User Supplied Lambda to setup the user's TexturedObject
+				contentCfg.setupTexturedObject( parsedObjects[i] );
+				numSetupTexuredObjects++;
+			}
+			if(numSetupTexuredObjects == parsedObjects.size()){
+				setState(ContentState::JSON_CONTENT_READY);
+			}
 			}break;
 
 		case ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS:
@@ -110,6 +133,21 @@ void ofxAppContent::update(float dt){
 }
 
 
+void ofxAppContent::threadedFunction(){
+
+	ofxApp::CatalogAssetsData d;
+	d.userData = &contentCfg.userData;
+	d.assetLocation = assetsLocationPath;
+	d.assetUsagePolicy = assetUsagePolicy;
+	d.assetDownloadPolicy = assetDownloadPolicy;
+
+	for(auto co : parsedObjects){
+		d.object = co;
+		contentCfg.defineObjectAssets(d);
+	}
+}
+
+
 void ofxAppContent::setState(ContentState s){
 
 	state = s;
@@ -118,8 +156,6 @@ void ofxAppContent::setState(ContentState s){
 	switch (s) {
 
 		case ContentState::DOWNLOADING_JSON:{
-
-			contentCfg.userData["assetsLocation"] = assetsLocationPath;
 
 			//start the download and parse process
 			jsonParser.downloadAndParse(jsonURL,
@@ -130,6 +166,10 @@ void ofxAppContent::setState(ContentState s){
 										contentCfg.userData
 										);
 			}
+			break;
+
+		case ContentState::CATALOG_ASSETS:
+			startThread();
 			break;
 
 		case ContentState::CHECKING_ASSET_STATUS:{
@@ -238,14 +278,9 @@ void ofxAppContent::setState(ContentState s){
 
 		}break;
 
-		case ContentState::SETUP_TEXTURED_OBJECTS:
-			for(int i = 0; i < parsedObjects.size(); i++){
-				auto setupTexObjUserLambda = contentCfg.setupTexturedObject;
-				//call the User Supplied Lambda to setup the user's TexturedObject
-				setupTexObjUserLambda( parsedObjects[i] );
-			}
-			setState(ContentState::JSON_CONTENT_READY);
-			break;
+		case ContentState::SETUP_TEXTURED_OBJECTS:{
+			numSetupTexuredObjects = 0;
+			}break;
 
 		case ContentState::JSON_CONTENT_READY:{
 			//keep the json as a good one
@@ -255,7 +290,7 @@ void ofxAppContent::setState(ContentState s){
 			string dir = ofFilePath::getEnclosingDirectory(jsonPath);
 			ofFilePath::createEnclosingDirectory(dir + "knownGood");
 			jsonFile.moveTo(dir + "/knownGood/" + ID + ".json", false, true);
-		}break;
+			}break;
 
 		default: break;
 	}
@@ -282,6 +317,7 @@ string ofxAppContent::getStatus(bool formatted){
 		case ContentState::JSON_DOWNLOAD_FAILED: r = string(formatted ? errorFormat : "") + errorMessage; break;
 		case ContentState::CHECKING_JSON: r = string(formatted ? plainFormat : "") + jsonParser.getDrawableState(); break;
 		case ContentState::PARSING_JSON: r = string(formatted ? plainFormat : "") + jsonParser.getDrawableState(); break;
+		case ContentState::CATALOG_ASSETS: r = string(formatted ? plainFormat : "") ; break;
 		case ContentState::CHECKING_ASSET_STATUS: r = string(formatted ? plainFormat : "") + assetChecker.getDrawableState(); break;
 		case ContentState::JSON_PARSE_FAILED: r = string(formatted ? errorFormat : "") +  errorMessage; break;
 		case ContentState::DOWNLOADING_ASSETS: r =  string(formatted ? plainFormat : "") + dlc.getDrawableInfo(true, false); break;
@@ -300,8 +336,10 @@ float ofxAppContent::getPercentDone(){
 		case ContentState::DOWNLOADING_JSON: p = jsonParser.getHttp().getCurrentDownloadProgress(); break;
 		case ContentState::CHECKING_JSON: p = -1.0; break;
 		case ContentState::PARSING_JSON: p = jsonParser.getTotalProgress(); break;
+		case ContentState::CATALOG_ASSETS: p = -1; break;
 		case ContentState::CHECKING_ASSET_STATUS: p = assetChecker.getProgress(); break;
 		case ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS: p = -1; break;
+		case ContentState::SETUP_TEXTURED_OBJECTS: p = numSetupTexuredObjects / float(parsedObjects.size()); break;
 		case ContentState::DOWNLOADING_ASSETS:
 			p = 1.0 - float(dlc.getNumPendingDownloads()) / totalAssetsToDownload;
 			break;
@@ -372,7 +410,8 @@ void ofxAppContent::jsonContentReady(vector<ParsedObject*> &parsedObjects_){
 
 		parsedObjects.push_back(co);
 	}
-	setState(ContentState::CHECKING_ASSET_STATUS);
+	//setState(ContentState::CHECKING_ASSET_STATUS);
+	setState(ContentState::CATALOG_ASSETS);
 }
 
 
@@ -391,6 +430,7 @@ string ofxAppContent::getNameForState(ofxAppContent::ContentState state){
 		case ContentState::CHECKING_JSON: return "CHECKING_JSON";
 		case ContentState::JSON_PARSE_FAILED: return "JSON_PARSE_FAILED";
 		case ContentState::PARSING_JSON: return "PARSING_JSON";
+		case ContentState::CATALOG_ASSETS: return "CATALOG_ASSETS";
 		case ContentState::CHECKING_ASSET_STATUS: return "CHECKING_ASSET_STATUS";
 		case ContentState::DOWNLOADING_ASSETS: return "DOWNLOADING_ASSETS";
 		case ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS: return "FILTER_OBJECTS_WITH_BAD_ASSETS";

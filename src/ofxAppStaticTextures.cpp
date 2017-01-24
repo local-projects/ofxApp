@@ -112,9 +112,11 @@ ofxAutoTexture* ofxAppStaticTextures::loadTexture(PreLoadData data){
 			data.tex->setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 		}
 
+		string memUsedStr = ofxApp::utils::bytesToHumanReadable(memUsedForThisOne * 1024 * 1024, 2);
+
 		ofLogNotice("ofxAppStaticTextures") 	<< "#### Loaded \"" << data.filePath << "\" ######################################################";
 		ofLogNotice("ofxAppStaticTextures")	<< "     Name:\"" << data.texName << "\"  " << "[" << data.tex->getWidth() << "x" << data.tex->getHeight() << "]" <<
-		"  Mipmap:" << data.createMipmap << "  Format:" << ofGetGlInternalFormatName(data.tex->getTextureData().glInternalFormat) << "  Mem:" << ofToString(memUsedForThisOne, 2) << "Mb";
+		"  Mipmap:" << data.createMipmap << "  Format:" << ofGetGlInternalFormatName(data.tex->getTextureData().glInternalFormat) << "  Mem: " << memUsedStr ;
 		return data.tex;
 	}else{
 		delete data.tex;

@@ -608,7 +608,7 @@ void App::draw(ofEventArgs &){
 
 	if(globalsStorage->drawStaticTexturesMemStats){
 		float mb = one().textures().getTotalMemUsed();
-		ofRectangle r = drawMsgInBox("ofxApp Static Texturs Mem Used: " + ofToString(mb, 1) + "Mb", x, y, fontSize, ofColor::fuchsia);
+		ofRectangle r = drawMsgInBox("ofxApp Static Textures Mem Used: " + ofToString(mb, 1) + "Mb", x, y, fontSize, ofColor::fuchsia);
 		y += r.height + fabs(r.y - y) + pad;
 	}
 
@@ -678,7 +678,7 @@ void App::updateStateMachine(float dt){
 
 		case State::LOAD_JSON_CONTENT:
 
-			appState.updateState( contentStorage[currentContentID]->getPercentDone(), contentStorage[currentContentID]->getStatus());
+			appState.updateState( contentStorage[currentContentID]->getPercentDone(), contentStorage[currentContentID]->getStatus( !ofIsGLProgrammableRenderer()));
 
 			if(appState.isReadyToProceed() ){ //slow down the state machine to handle error / retry
 
@@ -812,6 +812,8 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 															credentials,
 															proxyCfg,
 															contentCfgs[currentContentID],
+															assetDownloadPolicy,
+															assetUsagePolicy,
 															objectUsagePolicy,
 															assetDownloadLocation
 													  );

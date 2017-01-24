@@ -36,7 +36,7 @@ public:
 		
 		RUI_NEW_GROUP("OFXAPP PROTOTYPE VARS");
 		RUI_SHARE_PARAM(tempFloat1, -1, 1);
-		RUI_SHARE_PARAM(tempFloat4k, 0, 4000);
+		RUI_SHARE_PARAM(tempFloat4k, 0, 3840);
 
 	 };
 
@@ -51,7 +51,7 @@ public:
 	bool drawStaticTexturesMemStats = false;
 	bool drawAutoTextureMemStats = false;
 	
-	float tempFloat1;
-	float tempFloat4k;
+	float tempFloat1 = 0;
+	float tempFloat4k = 0;
 };
 

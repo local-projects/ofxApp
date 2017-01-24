@@ -10,16 +10,25 @@
 #include "ofMain.h"
 #include "ofxAppMacros.h"
 #include "ofxMtJsonParser.h"
+#include "ofxAssets.h"
 
 class ContentObject;
 
 namespace ofxApp{
 
+	struct CatalogAssetsData{ //data sent to the user for him/her to report object assets
+		ContentObject * object;
+		ofxJSONElement * userData;
+		string assetLocation;
+		ofxAssets::DownloadPolicy assetDownloadPolicy;
+		ofxAssets::UsagePolicy assetUsagePolicy;
+	};
+
 	//user created lambdas to do custom actions at the crucial points
 	struct ParseFunctions{
 		std::function<void (ofxMtJsonParserThread::JsonStructureData &)> pointToObjects;
 		std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> parseOneObject;
-		//std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> defineObjectAssets;
+		std::function<void (ofxApp::CatalogAssetsData &)> defineObjectAssets;
 		std::function<void (ContentObject*)> setupTexturedObject;
 		ofxJSON userData;
 	};

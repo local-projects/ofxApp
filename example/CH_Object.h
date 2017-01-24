@@ -16,6 +16,7 @@ public:
 		string sha1;
 		string localAssetPath;
 		ofVec2f imgSize;
+		bool isPrimary;
 	};
 
 	vector<CH_Image> images;
