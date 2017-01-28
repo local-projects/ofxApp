@@ -52,6 +52,7 @@ ofxTimeMeasurements
 ofxRemoteUI
 ofxHistoryPlot
 ofxScreenSetup
+ofxPoco* on recent (>0.9.8) versions of OpenFrameworks
 ```
 
 #####2 - Define Pre-Processor macro with your project name (Optional):

@@ -135,6 +135,11 @@ void ofxAppContent::update(float dt){
 
 void ofxAppContent::threadedFunction(){
 
+	#ifdef TARGET_WIN32
+	#else
+	pthread_setname_np("ofxAppContent");
+	#endif
+
 	ofxApp::CatalogAssetsData d;
 	d.userData = &contentCfg.userData;
 	d.assetsLocation = assetsLocationPath;

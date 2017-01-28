@@ -108,6 +108,10 @@ protected:
 		bool threadStarted = false;
 		bool preloaded = false;
 		void threadedFunction(){
+			#ifdef TARGET_WIN32
+			#else
+			pthread_setname_np("ofxAppStaticTextures");
+			#endif
 			data.tex->preloadPixelsFromFile(data.filePath);
 			preloaded = true;
 		}
