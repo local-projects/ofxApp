@@ -118,6 +118,14 @@ void App::setupOF(){
 void App::printOpenGlInfo(){
 	logBanner("GL Info");
 	ofxApp::utils::logParagraph("ofxApp", OF_LOG_NOTICE, ofxApp::utils::getGlInfo());
+
+	auto exts = ofGLSupportedExtensions();
+	if(exts.size()){
+		logBanner("Available GL Extensions");
+		for(auto & ext: exts){
+			ofLogNotice("ofxApp") << ext;
+		}
+	}
 }
 
 void App::setMouseEvents(bool enabled){
