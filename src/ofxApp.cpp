@@ -41,6 +41,7 @@ void App::setup(const map<string,ofxApp::ParseFunctions> & cfgs, ofxAppDelegate 
 	ofLogNotice("ofxApp") << "setup()";
 
 	//create pid file
+	bool pidFileFound = ofFile::doesFileExist(pidFileName);
 	ofLogNotice("ofxApp") << "Create PID file at " << pidFileName;
 	ofFile pid;
 	pid.open(pidFileName, ofFile::WriteOnly, true);
@@ -52,6 +53,9 @@ void App::setup(const map<string,ofxApp::ParseFunctions> & cfgs, ofxAppDelegate 
 		if(!hasLoadedSettings) loadSettings();
 		setupContentData();
 		setupLogging();
+		if(pidFileFound){
+			ofLogNotice("ofxApp") << "Found '" << pidFileName << "' file! The App did not exit cleanly when it was last run.";
+		}
 		printOpenGlInfo();
 		setupRemoteUI();
 		setupErrorReporting();
