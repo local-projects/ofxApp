@@ -186,6 +186,25 @@ namespace utils{
 		return err;
 	}
 
+
+	bool loadTexture(ofTexture & tex, const string & path, bool mipmap, float bias, int anisotropy){
+		bool ok = ofLoadImage(tex, path);
+		if (ok){
+			tex.generateMipmap();
+			tex.enableMipmap();
+			tex.setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+			tex.bind();
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, bias);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy); //TODO check for hw support!
+			tex.unbind();
+			ofLogError("ofxApp") << "Failed to load texture at \"" << path << "\"";
+		}else{
+			ofLogError("ofxApp") << "Failed to load texture at \"" << path << "\"";
+		}
+		return ok;
+	}
+
+
 	bool isValidEmail(const string email){
 		// define a regular expression
 		//http://stackoverflow.com/questions/46155/validate-email-address-in-javascript/46181#46181

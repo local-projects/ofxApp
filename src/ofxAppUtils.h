@@ -37,6 +37,8 @@ namespace ofxApp{
 		string getGlInfo();
 		string getGlError();
 
+		bool loadTexture(ofTexture & tex, const string & path, bool mipmap, float bias, int anisotropy);
+
 		bool isValidEmail(const string email);
 
 		void logParagraph(const string & moduleName, ofLogLevel lev, const string & text);
