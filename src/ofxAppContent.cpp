@@ -50,7 +50,9 @@ void ofxAppContent::setup(	string ID,
 	jsonParser.getHttp().setTimeOut(timeout);
 	jsonParser.getHttp().setSpeedLimit(speedLimitKBs);
 	jsonParser.getHttp().setProxyConfiguration(proxyConfig);
-	jsonParser.getHttp().setCredentials(credentials.first, credentials.second);
+	if(credentials.first.size() || credentials.second.size()){
+		jsonParser.getHttp().setCredentials(credentials.first, credentials.second);
+	}
 
 	//subscribe to parsing events
 	ofAddListener(jsonParser.eventJsonDownloaded, this, 	&ofxAppContent::jsonDownloaded);
