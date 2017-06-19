@@ -27,7 +27,9 @@ class ContentObject : public ParsedObject, public AssetHolder, public TexturedOb
 		virtual ofVec2f getTextureDimensions(TexturedObjectSize, int){ return ofVec2f(0,0);}
 		virtual string getLocalTexturePath(TexturedObjectSize, int){ return "";}
 
-		//this is effectively the destructor of the object
+		//this is effectively the destructor of the object - bc of texturedObject loading assets
+ 		//in secondary threads, we can't use an in-place destructor as you could destruct the object
+		//while a thread is loading it - thus we have this GarbageCollector-like behavior.
 		virtual void deleteWithGC(){}
 };
 

@@ -47,10 +47,9 @@ ofxAppParsers::ofxAppParsers(){
 			description = jsonRef["description"].asString();
 			imgURL = jsonRef["image"]["uri"].asString();
 			imgSha1 = jsonRef["image"]["chksum"].asString();
-		}catch(Exception exc){
+		}catch(exception exc){
 			inOutData.printMutex->lock();
-			ofLogError("ofApp") << exc.what() << " " << exc.message() <<
-			" " << exc.displayText() << " WHILE PARSING OBJ " << inOutData.objectID;
+			ofLogError("ofApp") << exc.what() << " WHILE PARSING OBJ " << inOutData.objectID;
 			inOutData.printMutex->unlock();
 		}
 
@@ -109,7 +108,7 @@ ofxAppParsers::ofxAppParsers(){
 					if(info.valid){
 						cwruO->imgSize = ofVec2f(info.width, info.height);
 					}else{
-						ofLogError("TexturedObject") << "cant load image at " << d.relativePath;
+						ofLogError("TexturedObject") << "cant get metadata image info at " << d.relativePath;
 					}break;
 				}
 				default: break;
@@ -173,9 +172,9 @@ ofxAppParsers::ofxAppParsers(){
 					o->images.push_back(img);
 				}
 			}
-		}catch(Exception exc){
+		}catch(exception exc){
 			inOutData.printMutex->lock();
-			ofLogError("ofApp") << exc.what() << " " << exc.message() << " " << exc.displayText() << " WHILE PARSING OBJ " << inOutData.objectID;
+			ofLogError("ofApp") << exc.what() << " WHILE PARSING OBJ " << inOutData.objectID;
 			inOutData.printMutex->unlock();
 		}
 

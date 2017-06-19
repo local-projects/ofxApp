@@ -780,7 +780,7 @@ void App::updateStateMachine(float dt){
 void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 
 	ofLogNotice("ofxApp") 	<< "State Changed from \"" << appState.getNameForState(change.oldState)
-							<< "\" to \"" << appState.getNameForState(change.newState) << "\"  State Duration: " << change.timeInPrevState << "sec.";
+							<< "\" to \"" << appState.getNameForState(change.newState) << "\". Previous State Duration: " << change.timeInPrevState << "sec.";
 
 	appState.setProgressBarExtraInfo("");
 
