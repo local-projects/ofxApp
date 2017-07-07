@@ -19,7 +19,7 @@ A quick summary of the features offered by ofxApp:
  * TUIO setup (ofxTuio)
  * Screen Management (fullscreen, windows, etc) (ofxScreenSetup)
  * All behaviors highly configurable from a single config file (ofxJsonSettings)
- 
+
 
 ##How To Use
 
@@ -93,8 +93,8 @@ By doing so, you are guaranteed to get some callbacks when certain things happen
 ofxApp abstracts content fetching, checking and loading through several means; it's basic unit is the ```ContentObject```. A ContentObject is basic unit of content; for example a collection object in a museum. Your objects will have to inherit from ContentObject to gain its functionality. The ```ContentObject``` class inherits from 3 classes that handle different behaviors:
 
 * __ParsedObject__: minimal class that holds the object UUID. This almost generic class is used across the board to have a common ground for any JSON parseable object, and you don't really interact much with it.
-* __AssetHolder__: an object that contains assets (i.e. a museum object with N assets of different kinds). Once the ContentObject has its AssetHolder properties defined, the process of checking if the assets required for that object are present locally, if they changed or are damaged (SHA1 checksum), if the object is asset complete, what size are each of the assets, they filetype, etc becomes an automated one. 
-* __TexturedObject__: this allows your object to dynamically load and unload ofTextures on the fly, without halting your app to do so. It does so by progressively loading them, so you first request a texture you need, and you will get notified when its ready (usually a few frames after the request has been placed). When you don't need the texture (because your object is not on screen anymore), you can release it and it will be unloaded for you. 
+* __AssetHolder__: an object that contains assets (i.e. a museum object with N assets of different kinds). Once the ContentObject has its AssetHolder properties defined, the process of checking if the assets required for that object are present locally, if they changed or are damaged (SHA1 checksum), if the object is asset complete, what size are each of the assets, they filetype, etc becomes an automated one.
+* __TexturedObject__: this allows your object to dynamically load and unload ofTextures on the fly, without halting your app to do so. It does so by progressively loading them, so you first request a texture you need, and you will get notified when its ready (usually a few frames after the request has been placed). When you don't need the texture (because your object is not on screen anymore), you can release it and it will be unloaded for you.
 
 ### The JSON file structure
 
@@ -112,7 +112,7 @@ ofxApp abstracts content fetching, checking and loading through several means; i
 			"ID" : "objID2",
 			"imageURL" : "http://museum.com/image2.jpg",
 			"imageSha1" : "c376992f8a141c388faf6227b9e72749f6065650"
-		} 
+		}
 	]
 }
 ```
@@ -130,7 +130,6 @@ ofxApp abstracts content fetching, checking and loading through several means; i
 		}
 	}
 }
-
 ```
 
 To attach all this to a real world example, let's assume we are working on a project for a museum that has a collection of objects, whose contents are stored in a JSON like the one defined above. We will create our own C++ object and we will call it MuseumObject. It will look like this:
@@ -141,7 +140,6 @@ public:
 	string imageURL;
 	string imageSHA1;
 }
-
 ```
 
 
@@ -151,31 +149,31 @@ ofxApp allows you to go from a JSON sitting on an API endpoint, to a filtered ``
 
 ofxApp takes a divide an conquer approach to parsing; it will break up the JSON into lots of little JSON bits you can parse individually (one per each object defined in the JSON). It does this for clarity, but also to be able to speed up the parsing of big JSON files by using threads.
 
-ofxApp will download, parse and split up the JSON file into N little bits of JSON (ofxJSONElement) that will deliver to you one by one (through callbacks) so you can focus only in parsing what you need for each object, and create each one of your "MuseumObjects" on each callback. 
+ofxApp will download, parse and split up the JSON file into N little bits of JSON (ofxJSONElement) that will deliver to you one by one (through callbacks) so you can focus only in parsing what you need for each object, and create each one of your "MuseumObjects" on each callback.
 
 What defines a "bad object" can be configured, but it mostly boils down to assets referenced in the JSON not being there (wrong URL), or their checksum not checking out (SHA1 mismatch) or some other custom rules (image size too small, missing fields, etc). Through de definition of various policies (ofxAssets::DownloadPolicy, ofxAssets::UsagePolicy), you can define when assets need to be re-downloaded, if you trust the local files even if the SHA1 doesn't match, etc. And you always have the ultimate say through the parsing lambda you provide to ofxApp.
 
 ofxApp needs you to answer a few questions to be able to deliver on that promise:
 
-* __Where are the Objects?__ 
+* __Where are the Objects?__
 	You have to locate objects are inside the JSON (in our case, JSON["MuseumObjects"])
 
 * __What fields do you need from each object?__  
 	Extract the data that you need from the JSON data, copying it over to your custom MuseumObject.
 
 * __Is the object valid?__  
-	You must decide for each object if it looks valid; i.e. Is it cool if it's missing the title field? 
-	
+	You must decide for each object if it looks valid; i.e. Is it cool if it's missing the title field?
+
 * __What is the Object UUID?__  
 	ofxApp needs to know each object's UUID. If the JSON is a dictionary of objects, the UUID will be each object's key; but if it's an array, you will have to manually deliver.
 
 * __Does the object have textures you want to dynamically load and unload?__  
-	If you want to use dynamic texture loading, this is where you set it up the TexturedObject par of each ContentAsset. 
-	
-To answer all the above questions, ofxApp offers you a Function Based protocol; you will define 3 functions that will clarify all these questions.
-	
+	If you want to use dynamic texture loading, this is where you set it up the TexturedObject par of each ContentAsset.
 
-##ofxApp Startup Stages
+To answer all the above questions, ofxApp offers you a Function Based protocol; you will define 3 functions that will clarify all these questions.
+
+
+## ofxApp Startup Stages
 
 So far we have only focused on the JSON content aspect of ofxApp, but it loads lots more during startup. In summary, ofxApp does all this at startup, in the following order:
 
@@ -190,7 +188,7 @@ So far we have only focused on the JSON content aspect of ofxApp, but it loads l
 * Setup TextureLoader
 * Setup TUIO
 * User callback to do custom setup ```ofxAppPhaseWillBegin(State::WILL_LOAD_CONTENT)```
-* Load Static textures across N threads (any images at data/images) 
+* Load Static textures across N threads (any images at data/images)
 * For each JSON content source URL:  
 	* Download the JSON file  
 	* Ask the user where the data is within the JSON (Lambda)
@@ -206,7 +204,7 @@ So far we have only focused on the JSON content aspect of ofxApp, but it loads l
 	* Deliver content to the user. ```ofxAppContentIsReady("ID", vector<ContentObject*>)```
 * Give User a chance to do custom work with the newly delivered content. ```ofxAppPhaseWillBegin(State::DID_DELIVER_CONTENT)```
 * Give User a chance to do custom setup before app starts ```ofxAppPhaseWillBegin(State::WILL_BEGIN_RUNNING)```
- 	 	
+
 
 and your app will get notified on some of those changes so you can act before / after certain things happen. Those callbacks are chances for you to load custom content that you might need before / after other content is loaded. You don't need to explicitly do anything in those phases, but an opportunity is given so that you may if you need to.
 
@@ -226,23 +224,23 @@ void ofxAppContentIsReady(const string & contentID, vector<ContentObject*>);
 ```
 
 
-first, ofxApp will call ofxAppPhaseWillBegin(ofxApp::Phase) on the delegate (your app), informing it's time for the delegate to do whatever it needs to do in that particular phase.
+First, ofxApp will call ofxAppPhaseWillBegin(ofxApp::Phase) on the delegate (your app), informing it is time for the delegate to do whatever it needs to do in that particular phase.
 
 There are 4 specified Phases in which you can act:
 
 
-####1. ofxApp::Phase::SETUP_B4_CONTENT_LOAD
+#### 1. ofxApp::Phase::SETUP_B4_CONTENT_LOAD
 
 This will get called
 
-####2. ofxApp::Phase::RECEIVE_CONTENT
-####3. ofxApp::Phase::SETUP_AFTER_CONTENT_LOAD
-####4. ofxApp::Phase::LAST_SETUP_B4_RUNNING
+#### 2. ofxApp::Phase::RECEIVE_CONTENT
+#### 3. ofxApp::Phase::SETUP_AFTER_CONTENT_LOAD
+#### 4. ofxApp::Phase::LAST_SETUP_B4_RUNNING
 
 
 
 
-##ofxApp Keyboard Commands
+## ofxApp Keyboard Commands
 
 * __'W'__ : toggle window modes (see ofxScreenSetup for mode list)
 * __'L'__ : toggle on screen log (mouse & TUIO interactive)
@@ -251,7 +249,7 @@ This will get called
 
 ---
 
-##MACROS
+## MACROS
 
 * __```GLOB```__ : direct access to MyAppGlobals
 * __```G_COL | G_COLOR```__ : direct access to MyAppColors
@@ -272,9 +270,9 @@ This will get called
 [^1]: must be inside an in-class method for it to work; Use like this: ```LOGV << "hello!";```
 
 
-##Static Textures Automation
+## Static Textures Automation
 
-ofxApp has a module named ofxAppStaticTextures that aims to simplify access to everyday textures; usually those are not cms-related textures that you need for the project like icons and such. 
+ofxApp has a module named ofxAppStaticTextures that aims to simplify access to everyday textures; usually those are not cms-related textures that you need for the project like icons and such.
 
 As the project evolves, you often find yourslef having to add extra images to have ready as ofTextures. Instead of instantiating and hardcoding the path to the texture within code, ofxAppStaticTextures allows a different approach. It will just load any image file sitting in ```data/images/``` recursively at startup, across multiple threads to speed up the process. It will also display them all as they load, so you can keep an eye on textures you might not need loaded anymore and can keep your images dir clean.
 
@@ -313,27 +311,43 @@ For example, files named like this, will recieve this treatment:
 * **```"img_t2d_mip.png"```** : will load as ```GL_TEXTURE_2D``` with mipmaps
 * **```"img_t2d.png"```** : will load as ```GL_TEXTURE_2D``` but no mipmaps will be created
 
-####Things to note about the texture naming:
+#### Things to note about the texture naming:
 
-* The tex loading properties ("_t2d" and "_mip") are always removed from the texture name
+* The tex loading properties (```"_t2d"``` and ```"_mip"```) are always removed from the texture name
 * The file extension ("jpg", etc) is removed from the texture name
 * The upper level dirname ("images" in the example above) is removed from the texture name
 * Requesting a missing texture will not crash, but you will get a 16x16 garbage texture + an error log entry
 
 
-####TODO
+# Creating an IDE Project using ofxApp
+
+This applies to Windows and OS X platforms.
+
+* Get OpenFrameworks; should be 0.9.8 or newer.
+* Launch the OF Project Generator for your platform and set it up.
+* Set a "Project Path", where do you want to create your Project.
+* Set a "Project Name", the name you want your binary to have.
+* click "Generate" to create the project; keep Project Generator open.
+* Go to ```Your_Repo/ExternalAddons/ofxApp/``` and copy the file ```addon_config.make``` to your new project folder; and rename it to ```addons.make```.
+* Back to Project Generator, click on the "Project Path" texfield once to make the app refresh - the addons list should update. Click on "Update" to re-create your project files. At this point, all the addons dependencies for ofxApp should be covered.
+* Add these __PreProcessor Macros__ to your project: ```USE_OFX_FONTSTASH```, ```USE_OFX_HISTORYPLOT```.
+* Your project should compile cleanly now.
+
+
+
+#### TODO
 ```
-+ add a toggle for "service mode" for when the app is "down" so we can inform visitors the installation is not currently working. 
-+ add easy way for delegate to set dynamic "error screen" states with useful debug info
++ Add a toggle for "service mode" for when the app is "down" so we can inform visitors the installation is not currently working.
++ Add easy way for delegate to set dynamic "error screen" states with useful debug info
 + ofxSuperLog ofLog("") << "" vs ofLog("","")
 + Globals + Colors macro file naming gimmick is not ideal
 + unhappy about AppSettings.json sharing "default" options with user-defined-content src options
-+ ofxApp assumes the app is using a glfw window...
-+ renderSize in settings unclear...
++ ofxApp assumes the app is using a GLFW window...
++ ```renderSize``` in settings unclear...
 + loading screen messages font size as param in settings
 + settings save method? some params (like debug) are linked to ofxRemoteUI, so it could make sense... but lots aren't.
 + user lambdas need to retrieve asset path & polices, sloooow!
-+ unused asset cleanup! 
++ unused asset cleanup!
 
 ```
 

@@ -1,7 +1,8 @@
+ofxNetwork
 ofxOpenCv
 ofxOsc
+ofxPoco
 ofxXmlSettings
-ofxNetwork
 ../../ExternalAddons/ofxFontStash
 ../../ExternalAddons/ofxTuio
 ../../ExternalAddons/ofxJson
