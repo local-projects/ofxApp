@@ -136,7 +136,7 @@ void TexturedObjectScrollView::setup(const ofRectangle& r, ScrollViewConfig cfg)
 void TexturedObjectScrollView::loadContent(const vector<TexturedObject*>& textures_){
 
 	vector<TexturedObjectTexture> tots;
-	for(int i = 0; i < textures_.size(); i++){
+	for(size_t i = 0; i < textures_.size(); i++){
 		TexturedObjectTexture texObjTex;
 		texObjTex.texIndex = 0;
 		texObjTex.texObj = textures_[i];
@@ -149,7 +149,7 @@ void TexturedObjectScrollView::loadContent(const vector<TexturedObject*>& textur
 void TexturedObjectScrollView::unloadContentGivenNewContent(vector<TexturedObjectTexture>& textures_){
 
 	//lets walk the list of images to be dropped, and unload them if they are loaded
-	for(int i = 0; i < objects.size(); i++){
+	for(size_t i = 0; i < objects.size(); i++){
 
 		ofTexture * t = objects[i].texObj->getRealTexture(config.sizeToLoad, objects[i].texIndex);
 
@@ -201,7 +201,7 @@ void TexturedObjectScrollView::loadContent(vector<TexturedObjectTexture>& textur
 	std::vector<double> x(config.numRows, config.marginPadding);
 	std::vector<int> cols(config.numRows, 0);
 
-	for(int i = 0; i < objects.size(); i++){
+	for(size_t i = 0; i < objects.size(); i++){
 
 		LayoutObject lo;
 		int texIndex = objects[i].texIndex;
@@ -293,7 +293,7 @@ void TexturedObjectScrollView::update(float dt){
 		if (config.snapToImage){ //find the closest slide to snap to
 			float closestX = -1;
 			float minDiff = FLT_MAX;
-			for(int i = 0; i < objects.size(); i++){
+			for(size_t i = 0; i < objects.size(); i++){
 				float firstMargin = (i == 0 ? config.marginPadding : config.padding);
 				float dist = fabs(xOffset - layout[i].placement.x + firstMargin);
 				if(dist < minDiff){
@@ -325,7 +325,7 @@ void TexturedObjectScrollView::update(float dt){
 	scrollCanvas.x += xOffset;
 
 	//take care of loading and unloading textures that are on view
-	for(int i = 0; i < layout.size(); i++){
+	for(size_t i = 0; i < layout.size(); i++){
 
 		ofRectangle rWithOffset = layout[i].placement;
 		bool onView = scrollCanvas.intersects(rWithOffset);
@@ -476,7 +476,7 @@ void TexturedObjectScrollView::updateFbo(){
 	ofPushMatrix();
 	ofTranslate(-xOffset, 0);
 
-	for(int i = 0; i < objects.size(); i++){
+	for(size_t i = 0; i < objects.size(); i++){
 
 		if(layout[i].enabled){
 			ofRectangle rWithOffset = layout[i].placement;
@@ -633,7 +633,7 @@ void TexturedObjectScrollView::onTouchUp(TouchEvent &event){
 		int ID = -1;
 		ofVec2f virtualPoint = toLocal(event.position);
 		virtualPoint.x += xOffset;
-		for(int i = 0; i < layout.size(); i++){
+		for(size_t i = 0; i < layout.size(); i++){
 			if(layout[i].placement.inside(virtualPoint)){
 				touchedObject = layout[i].texObjTex.texObj;
 				texIndex = layout[i].texObjTex.texIndex;

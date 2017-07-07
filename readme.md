@@ -280,10 +280,10 @@ For example, given this directory structure for ```data/images```:
 
 ```
 images/
-		image1.png
-		icons/
-				icon1.png
-				icon2.png
+	image1.png
+	icons/
+		icon1.png
+		icon2.png
 ```
 
 you can access the ofTexture from code in this way:
