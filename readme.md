@@ -1,8 +1,8 @@
-#ofxApp
+# ofxApp
 
 What is ofxApp? Its the basic skeleton for an interactive installation made in OpenFrameworks. It tries to simplify your life by offering some basic functionality trying to minimize the effort required on your side.
 
-##Features
+## Features
 A quick summary of the features offered by ofxApp:
 
  * Startup / Loading Screen with progress (ofxStateMachine)
@@ -21,9 +21,9 @@ A quick summary of the features offered by ofxApp:
  * All behaviors highly configurable from a single config file (ofxJsonSettings)
 
 
-##How To Use
+## How To Use
 
-#####1 - Setup a project with all the required addons:
+##### 1 - Setup a project with all the required addons:
 
 ```
 *ofxApp
@@ -55,14 +55,14 @@ ofxScreenSetup
 ofxPoco* on recent (>0.9.8) versions of OpenFrameworks
 ```
 
-#####2 - Define Pre-Processor macro with your project name (Optional):
+##### 2 - Define Pre-Processor macro with your project name (Optional):
 
 ```
 OFX_APP_NAME=MyApp
 ```
 This is used to automatically handle your custom Global Variables & Global Colors files. This is so that your Global Vars and colors classes are automatically included in the ofxApp instance.
 
-#####3 - Create files for your Global Variables & Global Colors:
+##### 3 - Create files for your Global Variables & Global Colors:
 
 These files must follow this naming convention; and it's where you will place global variables/colors that you might need to access from anywhere. These files are only required if you defined ```OFX_APP_NAME``` in the previous step
 
@@ -76,7 +76,7 @@ Those two files should be classes that inherit from a basic set of globals that 
 
 Look at the example to see how they look like.
 
-#####4 - Make your onApp class a subclass of ofxAppDelegate
+##### 4 - Make your onApp class a subclass of ofxAppDelegate
 
 This usually means your ofApp (a subclass of ofBaseApp, the basic OpenFrameworks app) should also subclass ofxAppDelegate, as shown here:
 
