@@ -306,6 +306,9 @@ void App::startLoadingStaticAssets(){
 	string texturesPath = getString("StaticAssets/textures");
 	if(texturesPath.size()){
 		ofxApp::utils::assertFileExists(texturesPath);
+		if(settingExists("StaticAssets/forceMipMaps")){
+			textures().setForceMipmaps(getBool("StaticAssets/forceMipMaps"));
+		}
 		textures().loadTexturesInDir(texturesPath, 3 * getInt("App/maxThreads")); //note we 3 x threads to speed up launch
 	}else{
 		ofLogWarning("ofxApp") << "App doesnt want to load static Assets!";
@@ -1068,6 +1071,14 @@ ofColor& App::getColor(const string & key, ofColor defaultVal){
 		static auto def = defaultVal;
 		return def; //mmmm....
 	}
+}
+
+bool App::settingExists(const string & key){
+	if(!hasLoadedSettings){
+		ofLogError("ofxApp") << "Trying to get a COLOR setting but Settings have not been loaded! '" << key<< "'";
+		return false;
+	}
+	return settings().exists(key);
 }
 
 //////////////////////////////////////////////////////////////////////////

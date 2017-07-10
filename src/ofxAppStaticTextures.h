@@ -74,9 +74,13 @@ public:
 	ofTexture* getTexture(string textureName);
 
 	static float memUse(ofTexture * tex); //in MBytes
+	void setForceMipmaps(bool f){forceMipmapsOnAll = f;}
 
 	int getNumTextures(){ return textures.size();}
 	int getNumLoadedTextures(){ return loaded.size();}
+
+	vector<string> getTextureNames(){return texNameOrder;};
+
 	float getTotalMemUsed(){ return memUsed;} //in MBytes
 
 	void drawAll(const ofRectangle & rect); //debug call to see all textures in one giant grid
@@ -137,4 +141,6 @@ protected:
 	ofTexture missingTex;
 
 	float startLoadTime;
+
+	bool forceMipmapsOnAll = false;
 };

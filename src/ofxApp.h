@@ -104,6 +104,7 @@ public:
 	float&		getFloat(const string & key, float defaultVal = 0.0);
 	string&		getString(const string & key, const string & defaultVal = "uninited!");
 	ofColor&	getColor(const string & key, ofColor defaultVal = ofColor::red);
+	bool		settingExists(const string & key);
 
 	void		loadSettings(); //load JSON settings (data/configs/ofxAppSettings.json)
 	void		saveSettings();//not really used / tested! TODO!

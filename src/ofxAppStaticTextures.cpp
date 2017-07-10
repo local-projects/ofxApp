@@ -133,6 +133,10 @@ ofxAutoTexture* ofxAppStaticTextures::createTexObjForPath(string filePath, strin
 	useTex2D = ofIsStringInString(lowercaseFilePath, filenameHintTex2D);
 	createMipMap = ofIsStringInString(lowercaseFilePath, filenameHintMipMap);
 
+	if(forceMipmapsOnAll){
+		createMipMap = true;
+	}
+
 	texName = ofFilePath::removeExt(filePath);
 	#ifdef TARGET_WIN32 //lets make windows path prettier
 	ofStringReplace(texName, "\\", "/");
