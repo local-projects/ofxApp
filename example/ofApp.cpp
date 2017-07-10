@@ -231,7 +231,7 @@ void ofApp::onSrollImageClicked(TexturedObjectScrollView::TouchedImage & ti){
 	int index = ti.objTex.texIndex;
 	TexturedObject * to = dynamic_cast<TexturedObject *>(ti.objTex.texObj);
 
-	ofLogNotice() << "Clicked Image #" << ti.layoutID << " (" <<
+	ofLogNotice("ofApp") << "Clicked Image #" << ti.layoutID << " (" <<
 	to->getLocalTexturePath(TEXTURE_ORIGINAL, index) << ") on ScrollView " << ti.who->getName();
 
 	ti.who->forceRedraw();
