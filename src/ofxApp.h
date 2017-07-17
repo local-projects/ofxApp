@@ -31,6 +31,7 @@
 
 //Check if the user created the required macro to include his custom sub-classes for Colors, Globals and Fonts.
 #ifndef OFX_APP_NAME
+#error you must define a PREPROCESSOR MACRO with the name of your app, as in OFX_APP_NAME=MyApp
 	#define OFX_APP_NONAME
 	//#warning You should define an app Name for your app in the preprocessor macros; ie OFX_APP_NAME=MyApp
 	//#define OFX_APP_NAME MyApp /*you define your App's name in your PREPROCESSOR MACROS*/
