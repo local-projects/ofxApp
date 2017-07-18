@@ -319,13 +319,19 @@ void App::startLoadingStaticAssets(){
 
 void App::setupTextureLoader(){
 
-	ofLogNotice("ofxApp") << "setupTextureLoader()";
+	int maxThreads = getInt("TextureLoader/maxNumberSimulataneousLoads");
+	float mipmapBias = getFloat("TextureLoader/textureLodBias");
+	float maxMsPerFrame = getFloat("TextureLoader/maxTimeSpentLoadingPerFrameMs");
+	int scanLinesPerLoop = getInt("TextureLoader/scanlinesPerLoop");
+	int maxReq = getInt("TextureLoader/maxLoadRequestsPerFrame");
+	ofLogNotice("ofxApp") << "setupTextureLoader() [maxThreads:" << maxThreads << " maxMsPerFrame:" << maxMsPerFrame <<
+	" nScanLinesPerLoop:" << scanLinesPerLoop << " mipmapBias:" << mipmapBias << " maxReqPerFrame:" << maxReq << "]";
 	ProgressiveTextureLoadQueue * q = ProgressiveTextureLoadQueue::instance();
-	q->setNumberSimultaneousLoads( getInt("TextureLoader/maxNumberSimulataneousLoads") ); //N threads loading images in the bg
-	q->setTexLodBias( getFloat("TextureLoader/textureLodBias") ); //MipMap sharpness
-	q->setTargetTimePerFrame( getFloat("TextureLoader/maxTimeSpentLoadingPerFrameMs") );	//spend at most 'x' milis loading textures per frame
-	q->setScanlinesPerLoop( getInt("TextureLoader/scanlinesPerLoop") );
-	q->setMaximumRequestsPerFrame( getInt("TextureLoader/maxLoadRequestsPerFrame") );
+	q->setMaxThreads( maxThreads ); //N threads loading images in the bg
+	q->setTexLodBias( mipmapBias ); //MipMap sharpness
+	q->setTargetTimePerFrame( maxMsPerFrame );	//spend at most 'x' milis loading textures per frame
+	q->setScanlinesPerLoop( scanLinesPerLoop );
+	q->setMaximumRequestsPerFrame( maxReq );
 
 }
 
