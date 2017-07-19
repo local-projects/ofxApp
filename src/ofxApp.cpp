@@ -879,7 +879,7 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 			if(timeSampleOfxApp){
 				ts = TS_STOP_NIF("ofxApp Setup");
 			}
-			logBanner(" ofxApp Setup Complete! " + string((ts > 0.0f) ? ofToString(ts, 1) + "sec." : "") );
+			logBanner(" ofxApp Setup Complete! " + ofToString(ofGetElapsedTimef(), 2) + "sec." );
 			}
 			break;
 
