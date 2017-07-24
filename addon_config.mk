@@ -25,9 +25,13 @@ common:
 	# dependencies with other addons, a list of them separated by spaces 
 	# or use += in several lines
 	ADDON_DEPENDENCIES = ofxNetwork
+	ADDON_DEPENDENCIES = ofxOpenCv
+	ADDON_DEPENDENCIES = ofxOsc
+	ADDON_DEPENDENCIES = ofxPoco
+	ADDON_DEPENDENCIES = ofxXmlSettings
 	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxFontStash
 	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxTuio
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxJson
+	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxJSON
 	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxSuperLog
 	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxAutoTexture
 	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxApp
@@ -52,7 +56,7 @@ common:
 	# include search paths, this will be usually parsed from the file system
 	# but if the addon or addon libraries need special search paths they can be
 	# specified here separated by spaces or one per line using +=
-	# ADDON_INCLUDES =
+	 ADDON_INCLUDES = lib/stb/stb_image.h
 	
 	# any special flag that should be passed to the compiler when using this
 	# addon
