@@ -33,7 +33,7 @@ common:
 	
 	# any special flag that should be passed to the compiler when using this
 	# addon
-	ADDON_CFLAGS = USE_OFX_TIME_MEASUREMENTS USE_OFX_FONTSTASH 
+	# ADDON_CFLAGS = USE_OFX_TIME_MEASUREMENTS USE_OFX_FONTSTASH 
 	
 	# any special flag that should be passed to the linker when using this
 	# addon, also used for system libraries with -lname
