@@ -24,34 +24,7 @@ meta:
 common:
 	# dependencies with other addons, a list of them separated by spaces 
 	# or use += in several lines
-	ADDON_DEPENDENCIES = ofxNetwork
-	ADDON_DEPENDENCIES += ofxOpenCv
-	ADDON_DEPENDENCIES += ofxOsc
-	ADDON_DEPENDENCIES += ofxPoco
-	ADDON_DEPENDENCIES += ofxXmlSettings
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxFontStash
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxTuio
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxJSON
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxSuperLog
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxAutoTexture
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxApp
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxMTJsonParser
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxSimpleHttp
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxTagSystem
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxStateMachine
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxAssets
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxThreadSafeLog
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxProgressiveTextureLoad
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxTexturedObject
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxMullion
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxJsonSettings
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxTimeMeasurements
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxRemoteUI
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxHistoryPlot
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxAnimatable
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxScreenSetup
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxSensu
-	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxGoogleAnalytics	
+	ADDON_DEPENDENCIES = ofxNetwork ofxOpenCv ofxOsc ofxPoco ofxXmlSettings ofxFontStash ofxTuio ofxJSON ofxSuperLog ofxAutoTexture ofxApp ofxMTJsonParser ofxSimpleHttp ofxTagSystem ofxStateMachine ofxAssets ofxThreadSafeLog ofxProgressiveTextureLoad ofxTexturedObject ofxMullion ofxJsonSettings ofxTimeMeasurements ofxRemoteUI ofxHistoryPlot ofxAnimatable ofxScreenSetup ofxSensu ofxGoogleAnalytics	
 	
 	# include search paths, this will be usually parsed from the file system
 	# but if the addon or addon libraries need special search paths they can be
@@ -60,7 +33,7 @@ common:
 	
 	# any special flag that should be passed to the compiler when using this
 	# addon
-	ADDON_CFLAGS = USE_OFX_TIME_MEASUREMENTS USE_OFX_FONTSTASH OFX_APP
+	ADDON_CFLAGS = USE_OFX_TIME_MEASUREMENTS USE_OFX_FONTSTASH 
 	
 	# any special flag that should be passed to the linker when using this
 	# addon, also used for system libraries with -lname
