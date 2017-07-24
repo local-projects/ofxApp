@@ -27,3 +27,4 @@ ofxAnimatable
 ofxScreenSetup
 ofxSensu
 ofxGoogleAnalytics
+ofxInterface
