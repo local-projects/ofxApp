@@ -138,6 +138,8 @@ void ofxAppContent::update(float dt){
 void ofxAppContent::threadedFunction(){
 
 	#ifdef TARGET_WIN32
+	#elif defined(TARGET_LINUX)
+	pthread_setname_np(pthread_self(), "ofxAppContent");
 	#else
 	pthread_setname_np("ofxAppContent");
 	#endif
