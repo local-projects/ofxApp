@@ -29,7 +29,7 @@ common:
 	# include search paths, this will be usually parsed from the file system
 	# but if the addon or addon libraries need special search paths they can be
 	# specified here separated by spaces or one per line using +=
-	 ADDON_INCLUDES = lib/stb/stb_image.h
+	# ADDON_INCLUDES = lib/stb/
 	
 	# any special flag that should be passed to the compiler when using this
 	# addon
