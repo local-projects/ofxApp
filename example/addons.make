@@ -1,3 +1,4 @@
+ofxApp
 ofxNetwork
 ofxOpenCv
 ofxOsc
