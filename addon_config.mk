@@ -25,10 +25,10 @@ common:
 	# dependencies with other addons, a list of them separated by spaces 
 	# or use += in several lines
 	ADDON_DEPENDENCIES = ofxNetwork
-	ADDON_DEPENDENCIES = ofxOpenCv
-	ADDON_DEPENDENCIES = ofxOsc
-	ADDON_DEPENDENCIES = ofxPoco
-	ADDON_DEPENDENCIES = ofxXmlSettings
+	ADDON_DEPENDENCIES += ofxOpenCv
+	ADDON_DEPENDENCIES += ofxOsc
+	ADDON_DEPENDENCIES += ofxPoco
+	ADDON_DEPENDENCIES += ofxXmlSettings
 	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxFontStash
 	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxTuio
 	ADDON_DEPENDENCIES += ../../ExternalAddons/ofxJSON
@@ -60,7 +60,7 @@ common:
 	
 	# any special flag that should be passed to the compiler when using this
 	# addon
-	ADDON_CFLAGS = USE_OFX_TIME_MEASUREMENTS USE_OFX_FONTSTASH OFX_APP=MyApp
+	ADDON_CFLAGS = USE_OFX_TIME_MEASUREMENTS USE_OFX_FONTSTASH OFX_APP
 	
 	# any special flag that should be passed to the linker when using this
 	# addon, also used for system libraries with -lname
