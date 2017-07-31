@@ -70,7 +70,6 @@ void ofApp::ofxAppContentIsReady(const string & contentID, vector<ContentObject*
 		//here we demsontrate how to find out if the content is different from the last launch or not.
 		string freshJsonSha1, oldJsonSha1;
 		bool jsonChanged = ofxApp::get().isJsonContentDifferentFromLastLaunch("CWRU", freshJsonSha1, oldJsonSha1);
-
 	}
 
 	if(contentID == "CH"){

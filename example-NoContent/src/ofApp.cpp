@@ -67,8 +67,7 @@ void ofApp::keyPressed(int key){
 	if(key == 'k'){
 		OFXAPP_REPORT("myAlertID","something went wrong", 2);
 		OFXAPP_REPORT_FILE("myAlertID","something went wrong", 2, "path/to/my/File");
-
-		//ofxApp::utils::terminateApp("ofApp", "user forced terminate!");
+		ofxApp::utils::terminateApp("ofApp", "user forced terminate!");
 	}
 }
 
