@@ -112,11 +112,12 @@ public:
 
 	ofxApp::State getState(){return appState.getState();}
 
-	//those are cfgs coming from the main config file
+	// RETRIEVE POLICIES /////////////////////////////////////////////////////////////////////
+	// Those are cfgs coming from the main config file
 	const ofxAssets::DownloadPolicy &	getAssetDownloadPolicy(){ return assetDownloadPolicy; }
 	const ofxAssets::UsagePolicy &		getAssetUsagePolicy(){ return assetUsagePolicy;}
 
-	// CALLBACKS ///////////////////////////////////////////////////////////////////////////////////
+	// CALLBACKS /////////////////////////////////////////////////////////////////////////////
 
 	void onRemoteUINotification(RemoteUIServerCallBackArg & arg);
 	void onStaticTexturesLoaded();
@@ -130,6 +131,7 @@ public:
 	ofRectangle 	getStartupScreenViewport(){return startupScreenViewport;} //loading screen rect area
 	ofVec2f			getRenderSize(){return renderSize;}
 	bool			isWindowSetup(){return windowIsSetup;}
+	bool 			isJsonContentDifferentFromLastLaunch(string contentID, string & freshJsonSha1, string & oldJsonSha1);
 
 	//to draw debug msgs
 	ofRectangle		drawMsgInBox(string msg, int x, int y, int fontSize, ofColor fontColor, ofColor bgColor = ofColor::black, float edgeGrow = 5);

@@ -8,6 +8,7 @@
 #include "ofxAppContent.h"
 #include "ofxAppUtils.h"
 #include "ofxApp.h"
+#include "ofxChecksum.h"
 
 void ofxAppContent::setup(	string ID,
 							string jsonSrc,
@@ -298,7 +299,17 @@ void ofxAppContent::setState(ContentState s){
 			string jsonPath = jsonParser.getJsonLocalPath();
 			string dir = ofFilePath::getEnclosingDirectory(jsonPath);
 			ofFilePath::createEnclosingDirectory(dir + "knownGood");
-			jsonFile.moveTo(dir + "/knownGood/" + ID + ".json", false, true);
+			string oldJsonPath = dir + "/knownGood/" + ID + ".json";
+
+			//calc sha1 for the last konwn json, and the fresh one
+			newJsonSha1 = ofxChecksum::calcSha1(jsonParser.getJsonLocalPath());
+			if(ofFile::doesFileExist(oldJsonPath)){
+				oldJsonSha1 = ofxChecksum::calcSha1(oldJsonPath);
+			}
+
+			//replace the old json with the fresh one
+			jsonFile.moveTo(oldJsonPath, false, true);
+
 			}break;
 
 		default: break;

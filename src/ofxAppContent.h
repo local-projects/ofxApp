@@ -110,6 +110,9 @@ public:
 
 	string getNameForState(ofxAppContent::ContentState state);
 
+	string getFreshJsonSha1(){return newJsonSha1;}
+	string getOldJsonSha1(){return oldJsonSha1;}
+
 	// EVENTS //////////////////////////////////////////////////////////////////////////////////////
 
 	ofEvent<string> eventStateChanged; //its your responsability to trigger this on every state change
@@ -145,5 +148,8 @@ protected:
 	string ID;
 	int numIgnoredObjects = 0; //total # of obj that are in json but are not used for one reason or another
 	int numSetupTexuredObjects = 0;
+
+	string oldJsonSha1;
+	string newJsonSha1;
 };
 

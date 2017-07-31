@@ -656,7 +656,6 @@ void App::draw(ofEventArgs &){
 		ofRectangle r = drawMsgInBox("OpenGL Error: " + glErr, x, y, fontSize, ofColor::red);
 		y += r.height + fabs(r.y - y) + pad;
 	}
-	
 }
 
 
@@ -955,6 +954,8 @@ void App::screenSetupChanged(ofxScreenSetup::ScreenSetupArg &arg){
 	if(delegate) delegate->screenSetupChanged(arg);
 }
 
+#pragma mark Utils
+
 ofRectangle App::getRenderAreaForCurrentWindowSize(){
 	ofRectangle win = ofRectangle(0, 0, ofGetWindowWidth(), ofGetWindowHeight());
 	ofRectangle render = ofRectangle(0, 0, one().renderSize.x, one().renderSize.y);
@@ -1003,6 +1004,20 @@ ofRectangle App::drawMsgInBox(string msg, int x, int y, int fontSize, ofColor fo
 		bbox = ofRectangle(x, y, msg.size() * 8, boxH );
 	}
 	return bbox;
+}
+
+
+bool App::isJsonContentDifferentFromLastLaunch(string contentID, string & freshJsonSha1, string & oldJsonSha1){
+
+	if(contentStorage.find(contentID) == contentStorage.end()){
+		ofLogError("ofxApp") << "cant find content matching this contentID \"" << contentID << "\"";
+		return false;
+	}
+	freshJsonSha1 = contentStorage[contentID]->getFreshJsonSha1();
+	oldJsonSha1 = contentStorage[contentID]->getOldJsonSha1();
+
+	ofLogNotice("ofxApp") << "JSON sha1s for contentID: \"" << contentID << "\" freshJson: \"" << freshJsonSha1 << "\" oldJson: \"" << oldJsonSha1 << "\"";
+	return freshJsonSha1 != oldJsonSha1;
 }
 
 ///////////////////// SETTINGS //////////////////////////////////////////////////////////////////////
