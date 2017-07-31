@@ -339,7 +339,7 @@ This applies to Windows and OS X platforms.
 
 
 #### TODO
-```
+
 + Add a toggle for "service mode" for when the app is "down" so we can inform visitors the installation is not currently working.
 + Add easy way for delegate to set dynamic "error screen" states with useful debug info
 + ofxSuperLog ofLog("") << "" vs ofLog("","")
@@ -349,10 +349,10 @@ This applies to Windows and OS X platforms.
 + ```renderSize``` in settings unclear...
 + loading screen messages font size as param in settings
 + settings save method? some params (like debug) are linked to ofxRemoteUI, so it could make sense... but lots aren't.
-+ user lambdas need to retrieve asset path & polices, sloooow!
 + unused asset cleanup!
++ ofxFontStash dependency! ofxApp cant do GL3 bc of that!
 
-```
+
 
 
 ## Included Libraries
