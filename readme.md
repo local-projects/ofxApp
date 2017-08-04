@@ -355,6 +355,12 @@ This applies to Windows and OS X platforms.
 
 
 
-## Included Libraries
+## Included Libraries / assets
 
-- [stb_image](https://github.com/nothings/stb) by Sean Barrett: Public domain
+* [stb_image](https://github.com/nothings/stb) by Sean Barrett: Public domain
+* [Ubuntu] (http://font.ubuntu.com) Font Family : [Ubuntu Font License](http://font.ubuntu.com/ufl/ubuntu-font-licence-1.0.txt)
+* [Montserrat](https://www.fontsquirrel.com/fonts/montserrat) Font Family : [SIL Open Font License](https://www.fontsquirrel.com/license/montserrat)
+* [Pacifico](https://www.fontsquirrel.com/fonts/pacifico) Font : [SIL Open Font License](https://www.fontsquirrel.com/license/pacifico)
+* [Fantasque Sansa Mono](https://fontlibrary.org/en/font/fantasque-sans-mono) Font : [SIL Open Font License](http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL)
+
+

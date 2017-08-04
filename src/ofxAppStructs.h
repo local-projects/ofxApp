@@ -42,6 +42,8 @@ namespace ofxApp{
 		DELIVER_CONTENT_LOAD_RESULTS,
 		SETUP_DELEGATE_B4_RUNNING,
 		RUNNING,
+		MAINTENANCE,
+		DEVELOPER_REQUESTED_ERROR_SCREEN
 	};
 
 	//ofxAppDelegate exposed states; as they are a subset of the internal ofxApp states, enum
@@ -63,6 +65,8 @@ namespace ofxApp{
 			case State::DELIVER_CONTENT_LOAD_RESULTS: return "DELIVER_CONTENT_LOAD_RESULTS";
 			case State::SETUP_DELEGATE_B4_RUNNING: return "SETUP_DELEGATE_B4_RUNNING";
 			case State::RUNNING: return "RUNNING";
+			case State::MAINTENANCE: return "MAINTENANCE";
+			case State::DEVELOPER_REQUESTED_ERROR_SCREEN: return "DEVELOPER_REQUESTED_ERROR_SCREEN";
 			default: break;
 		}
 		ofLogError("ofxApp") << "unknown ofxApp State!";

@@ -81,7 +81,13 @@ void App::setup(const map<string,ofxApp::ParseFunctions> & cfgs, ofxAppDelegate 
 		setupTuio();
 
 		if(timeSampleOfxApp) TS_START_NIF("ofxApp Load Static Textures");
-		appState.setState(State::SETUP_DELEGATE_B4_CONTENT_LOAD); //start loading content
+
+		bool maintenance = getBool("App/MaintenanceMode/enabled");
+		if(!maintenance){
+			appState.setState(State::SETUP_DELEGATE_B4_CONTENT_LOAD); //start loading content
+		}else{
+			appState.setState(State::MAINTENANCE);
+		}
 	}else{
 		ofxApp::utils::terminateApp("ofxApp", "Trying to setup() ofxApp a second time!");
 	}
@@ -283,7 +289,7 @@ void App::setupStateMachine(){
 	ofAddListener(appState.eventStateError, this, &App::onStateError);
 	ofAddListener(appState.eventDraw, this, &App::onDrawLoadingScreenStatus);
 
-	string boldFontPath = getString("Fonts/ofxApp/monospacedBold/fontFile");
+	string boldFontPath = ofxAppFonts::getMonoBoldFontPath();
 	ofxApp::utils::assertFileExists(boldFontPath);
 	appState.setup(boldFontPath, "", ofColor(0,0,0,0), ofColor::white);
 	float dark = 0.25;
@@ -298,6 +304,8 @@ void App::setupStateMachine(){
 	appState.setNameAndBarColorForState(State::DELIVER_CONTENT_LOAD_RESULTS, toString(Phase::DID_DELIVER_CONTENT), ofColor::blueViolet, ofColor::blueViolet * dark);
 	appState.setNameAndBarColorForState(State::SETUP_DELEGATE_B4_RUNNING, toString(Phase::WILL_BEGIN_RUNNING), ofColor::mediumAquaMarine, ofColor::mediumAquaMarine * dark);
 	appState.setNameAndBarColorForState(State::RUNNING, toString(State::RUNNING), ofColor::white, ofColor::grey);
+	appState.setNameAndBarColorForState(State::MAINTENANCE, toString(State::MAINTENANCE), ofColor::white, ofColor::grey);
+	appState.setNameAndBarColorForState(State::DEVELOPER_REQUESTED_ERROR_SCREEN, toString(State::DEVELOPER_REQUESTED_ERROR_SCREEN), ofColor::white, ofColor::grey);
 }
 
 
@@ -309,7 +317,7 @@ void App::startLoadingStaticAssets(){
 		if(settingExists("StaticAssets/forceMipMaps")){
 			textures().setForceMipmaps(getBool("StaticAssets/forceMipMaps"));
 		}
-		textures().loadTexturesInDir(texturesPath, 3 * getInt("App/maxThreads")); //note we 3 x threads to speed up launch
+		textures().loadTexturesInDir(texturesPath, getInt("App/maxThreads"));
 	}else{
 		ofLogWarning("ofxApp") << "App doesnt want to load static Assets!";
 		onStaticTexturesLoaded();
@@ -436,10 +444,14 @@ void App::setupRemoteUI(){
 	RUI_GET_INSTANCE()->setUiColumnWidth(getInt("RemoteUI/columnWidth", 280));
 	RUI_GET_INSTANCE()->setBuiltInUiScale(getFloat("RemoteUI/uiScale", 1.0));
 	bool useFontStash = getBool("RemoteUI/useFontStash");
-	if(useFontStash){
-		string fontFile = getString("RemoteUI/fontFile");
-		ofxApp::utils::assertFileExists(fontFile);
-		RUI_GET_INSTANCE()->drawUiWithFontStash(fontFile, getInt("RemoteUI/fontSize", 15));
+	if(useFontStash ){
+		if(!ofIsGLProgrammableRenderer()){
+			string fontFile = getString("RemoteUI/fontFile");
+			ofxApp::utils::assertFileExists(fontFile);
+			RUI_GET_INSTANCE()->drawUiWithFontStash(fontFile, getInt("RemoteUI/fontSize", 15));
+		}else{
+			ofLogError("ofxApp") << "can't use fontstash with the programmable renderer!";
+		}
 	}
 	bool ruiSaveOnQuit = getBool("RemoteUI/saveSettingsOnExit");
 	RUI_GET_INSTANCE()->setSaveToXMLOnExit(ruiSaveOnQuit);
@@ -538,7 +550,12 @@ void App::setupTimeMeasurements(){
 	if(useFontStash){
 		string fontFile = getString("TimeMeasurements/fontFile");
 		ofxApp::utils::assertFileExists(fontFile);
-		TIME_SAMPLE_GET_INSTANCE()->drawUiWithFontStash(fontFile, getInt("TimeMeasurements/fontSize", 13));
+		if( !ofIsGLProgrammableRenderer()){
+			TIME_SAMPLE_GET_INSTANCE()->drawUiWithFontStash(fontFile, getInt("TimeMeasurements/fontSize", 13));
+		}else{
+			ofLogWarning("ofxApp") << "Using ofxFontStash2 for TimeMeasurements as we are using the programmable renderer!";
+			TIME_SAMPLE_GET_INSTANCE()->drawUiWithFontStash2(fontFile, getInt("TimeMeasurements/fontSize", 13));
+		}
 	}
 	TIME_SAMPLE_GET_INSTANCE()->setMsPrecision(getInt("TimeMeasurements/msPrecision", 2));
 	TIME_SAMPLE_GET_INSTANCE()->setPlotResolution(getFloat("TimeMeasurements/plotResolution", 1.0));
@@ -603,27 +620,51 @@ void App::exit(ofEventArgs &){
 
 void App::draw(ofEventArgs &){
 
-	if(appState.getState() != State::RUNNING){
-		ofSetupScreen();
-		float w = ofGetWidth();
-		float h = ofGetHeight();
-		ofClear(0,0,0,255);
-		appState.draw(ofRectangle(startupScreenViewport.x * w,
-								  startupScreenViewport.y * h,
-								  startupScreenViewport.width * w,
-								  startupScreenViewport.height * h)
-					  );
+	switch(appState.getState()){
+
+		case State::SETUP_OFXAPP_INTERNALS:
+		case State::SETUP_DELEGATE_B4_CONTENT_LOAD:
+		case State::LOAD_STATIC_TEXTURES:
+		case State::LOAD_JSON_CONTENT:
+		case State::LOAD_JSON_CONTENT_FAILED:
+		case State::DELIVER_CONTENT_LOAD_RESULTS:
+		case State::SETUP_DELEGATE_B4_RUNNING:{
+			ofSetupScreen();
+			float w = ofGetWidth();
+			float h = ofGetHeight();
+			ofClear(0,0,0,255);
+			appState.draw(ofRectangle(startupScreenViewport.x * w,
+									  startupScreenViewport.y * h,
+									  startupScreenViewport.width * w,
+									  startupScreenViewport.height * h)
+						  );
+			}break;
+
+		case State::RUNNING:
+			drawStats(); break;
+
+		case State::MAINTENANCE:
+			drawMaintenanceScreen(); break;
+
+		case State::DEVELOPER_REQUESTED_ERROR_SCREEN:
+			drawErrorScreen(); break;
+			break;
+
 	}
-	ofSetColor(0);
-	mullions.draw();
-	ofSetColor(255);
+
+	ofSetColor(0); mullions.draw(); ofSetColor(255);
+
+}
+
+
+void App::drawStats(){
 
 	//stack up on screen stats
 	int x = 20;
 	int y = 27;
 	int pad = -10;
 	int fontSize = 15;
-	
+
 	if(globalsStorage->drawAppRunTime){
 		ofRectangle r = drawMsgInBox("App Runtime: " + ofxApp::utils::secondsToHumanReadable(ofGetElapsedTimef(), 1), x, y, fontSize, ofColor::turquoise);
 		y += r.height + fabs(r.y - y) + pad;
@@ -658,6 +699,77 @@ void App::draw(ofEventArgs &){
 	}
 }
 
+void App::drawMaintenanceScreen(){
+
+	ofColor bgcolor = getColor("App/MaintenanceMode/bgColor");
+
+	string header = getString("App/MaintenanceMode/header/text");
+	float headerSpacing = getFloat("App/MaintenanceMode/header/spacing");
+	float headerScaleup = getFloat("App/MaintenanceMode/header/fontScaleup");
+	string headerFont = getString("App/MaintenanceMode/header/fontID");
+	ofColor headerColor = getColor("App/MaintenanceMode/header/color");
+
+	string body = getString("App/MaintenanceMode/body/text");
+	float bodySpacing = getFloat("App/MaintenanceMode/body/spacing");
+	float bodyScaleup = getFloat("App/MaintenanceMode/body/fontScaleup");
+	string bodyFont = getString("App/MaintenanceMode/body/fontID");
+	ofColor bodyColor = getColor("App/MaintenanceMode/body/color");
+
+	if(!G_FS2.isFontLoaded(headerFont)){
+		if(ofGetFrameNum()%120 == 1) ofLogError("ofxApp") << "Maintenance Mode Font not found! " << headerFont;
+		headerFont = "mono";
+	}
+
+	ofClear(bgcolor);
+
+	float fontSize = ofGetHeight() / 30.;
+	float headerY = ofGetHeight() * 0.46;
+
+	ofxFontStashStyle headerStyle = ofxFontStashStyle(headerFont, fontSize * headerScaleup, headerColor);
+	headerStyle.spacing = headerSpacing;
+	int lineH = G_FS2.getTextBounds("Mp", headerStyle, 0, 0).height;
+	ofRectangle headerRect = G_FS2.drawColumn(header, headerStyle, 0, headerY, ofGetWidth(), OF_ALIGN_HORZ_CENTER);
+
+	ofxFontStashStyle bodyStyle = ofxFontStashStyle(bodyFont, fontSize * bodyScaleup, bodyColor);
+	bodyStyle.spacing = bodySpacing;
+	ofRectangle bodyRect = G_FS2.drawColumn(body, bodyStyle, 0, headerRect.getBottom() + 2 * lineH, ofGetWidth(), OF_ALIGN_HORZ_CENTER);
+}
+
+
+void App::drawErrorScreen(){
+
+	ofColor bgcolor = getColor("App/ErrorScreen/bgColor");
+
+	float headerSpacing = getFloat("App/ErrorScreen/title/spacing");
+	float headerScaleup = getFloat("App/ErrorScreen/title/fontScaleup");
+	string headerFont = getString("App/ErrorScreen/title/fontID");
+	ofColor headerColor = getColor("App/ErrorScreen/title/color");
+
+	float bodySpacing = getFloat("App/ErrorScreen/body/spacing");
+	float bodyScaleup = getFloat("App/ErrorScreen/body/fontScaleup");
+	string bodyFont = getString("App/ErrorScreen/body/fontID");
+	ofColor bodyColor = getColor("App/ErrorScreen/body/color");
+
+	if(!G_FS2.isFontLoaded(headerFont)){
+		if(ofGetFrameNum()%120 == 1) ofLogError("ofxApp") << "Maintenance Mode Font not found! " << headerFont;
+		headerFont = "mono";
+	}
+
+	ofClear(bgcolor);
+
+	float fontSize = ofGetHeight() / 30.;
+	float headerY = ofGetHeight() * 0.46;
+
+	ofxFontStashStyle headerStyle = ofxFontStashStyle(headerFont, fontSize * headerScaleup, headerColor);
+	headerStyle.spacing = headerSpacing;
+	int lineH = G_FS2.getTextBounds("Mp", headerStyle, 0, 0).height;
+	ofRectangle headerRect = G_FS2.drawColumn(errorStateHeader, headerStyle, 0, headerY, ofGetWidth(), OF_ALIGN_HORZ_CENTER);
+
+	ofxFontStashStyle bodyStyle = ofxFontStashStyle(bodyFont, fontSize * bodyScaleup, bodyColor);
+	bodyStyle.spacing = bodySpacing;
+	ofRectangle bodyRect = G_FS2.drawColumn(errorStateBody, bodyStyle, 0, headerRect.getBottom() + 2 * lineH, ofGetWidth(), OF_ALIGN_HORZ_CENTER);
+}
+
 
 void App::onDrawLoadingScreenStatus(ofRectangle & area){
 
@@ -666,10 +778,8 @@ void App::onDrawLoadingScreenStatus(ofRectangle & area){
 		case State::LOAD_STATIC_TEXTURES:{
 			textures().drawAll(area);
 			float progress = textures().getNumLoadedTextures() / float(textures().getNumTextures());
-			appState.updateState( progress, "");
-			string msg = ofToString(textures().getTotalMemUsed(), 1) + "MBytes used";
-			drawMsgInBox(msg, 20, 60, loadingScreenFontSize, ofColor::white);
-			
+			string msg = ofToString(textures().getTotalMemUsed(), 1) + " Mb used";
+			appState.updateState(progress, msg);
 		}break;
 
 		case State::SETUP_DELEGATE_B4_CONTENT_LOAD:
@@ -694,13 +804,17 @@ void App::updateStateMachine(float dt){
 				ofLogNotice("ofxApp") << "Done SETUP_DELEGATE_B4_CONTENT_LOAD!";
 				appState.setState(State::LOAD_STATIC_TEXTURES);
 			}else{
-				appState.updateState(delegate->ofxAppGetProgressForPhase(Phase(State::SETUP_DELEGATE_B4_CONTENT_LOAD)),"");
+				appState.updateState(delegate->ofxAppGetProgressForPhase(Phase(State::SETUP_DELEGATE_B4_CONTENT_LOAD)),
+									 delegate->ofxAppGetLogString(Phase(State::SETUP_DELEGATE_B4_CONTENT_LOAD))
+									 );
 				appState.setProgressBarExtraInfo("- " + delegate->ofxAppGetStatusString(Phase(State::SETUP_DELEGATE_B4_CONTENT_LOAD)));
 			}break;
 
 		case State::LOAD_JSON_CONTENT:
 
-			appState.updateState( contentStorage[currentContentID]->getPercentDone(), contentStorage[currentContentID]->getStatus( !ofIsGLProgrammableRenderer()));
+			appState.updateState(contentStorage[currentContentID]->getPercentDone(),
+								 contentStorage[currentContentID]->getStatus()
+								 );
 
 			if(appState.isReadyToProceed() ){ //slow down the state machine to handle error / retry
 
@@ -709,10 +823,10 @@ void App::updateStateMachine(float dt){
 					appState.setState(State::LOAD_JSON_CONTENT_FAILED);
 					
 					OFXAPP_REPORT(	"ofxAppJsonContentGiveUp", "Giving up on fetching JSON for '" + currentContentID +
-							 	"'!\nJsonSrc: \"" + contentStorage[currentContentID]->getJsonDownloadURL() +
-							 	"\"\nStatus: " + contentStorage[currentContentID]->getStatus(false) +
-							 	"\"ErrorMsg: \"" + contentStorage[currentContentID]->getErrorMsg(),
-							 	2);
+							 		"'!\nJsonSrc: \"" + contentStorage[currentContentID]->getJsonDownloadURL() +
+								 	"\"\nStatus: " + contentStorage[currentContentID]->getStatus() +
+								 	"\"ErrorMsg: \"" + contentStorage[currentContentID]->getErrorMsg(),
+								 	2);
 					break;
 					
 				}else{
@@ -763,7 +877,9 @@ void App::updateStateMachine(float dt){
 				ofLogNotice("ofxApp") << "Done DELIVER_CONTENT_LOAD_RESULTS!";
 				appState.setState(State::SETUP_DELEGATE_B4_RUNNING);
 			}else{
-				appState.updateState(	delegate->ofxAppGetProgressForPhase(Phase(State::DELIVER_CONTENT_LOAD_RESULTS)),"");
+				appState.updateState(delegate->ofxAppGetProgressForPhase(Phase(State::DELIVER_CONTENT_LOAD_RESULTS)),
+									 delegate->ofxAppGetLogString(Phase(State::DELIVER_CONTENT_LOAD_RESULTS))
+									 );
 				appState.setProgressBarExtraInfo("- " + delegate->ofxAppGetStatusString(Phase(State::DELIVER_CONTENT_LOAD_RESULTS)));
 			}break;
 
@@ -772,7 +888,9 @@ void App::updateStateMachine(float dt){
 				ofLogNotice("ofxApp") << "Done SETUP_DELEGATE_B4_RUNNING!";
 				appState.setState(State::RUNNING);
 			}else{
-				appState.updateState( 	delegate->ofxAppGetProgressForPhase(Phase(State::SETUP_DELEGATE_B4_RUNNING)),"");
+				appState.updateState(delegate->ofxAppGetProgressForPhase(Phase(State::SETUP_DELEGATE_B4_RUNNING)),
+									 delegate->ofxAppGetLogString(Phase(State::SETUP_DELEGATE_B4_RUNNING))
+									 );
 				appState.setProgressBarExtraInfo("- " + delegate->ofxAppGetStatusString(Phase(State::SETUP_DELEGATE_B4_RUNNING)));
 			}break;
 
@@ -897,6 +1015,31 @@ void App::onContentManagerStateChanged(string& s){
 }
 
 
+bool App::enterErrorState(string errorHeader, string errorBody){
+
+	if(appState.getState() == State::RUNNING || appState.getState() == State::DEVELOPER_REQUESTED_ERROR_SCREEN){
+		errorStateHeader = errorHeader;
+		errorStateBody = errorBody;
+		appState.setState(State::DEVELOPER_REQUESTED_ERROR_SCREEN);
+		return true;
+	}
+	ofLogError("ofxApp") << "can't enterErrorState() until we hit the RUNNING State";
+	return false;
+}
+
+
+bool App::exitErrorState(){
+	if(appState.getState() == State::DEVELOPER_REQUESTED_ERROR_SCREEN){
+		errorStateHeader = "";
+		errorStateBody = "";
+		appState.setState(State::RUNNING);
+		return true;
+	}
+	ofLogError("ofxApp") << "cant exitErrorState() unless we are in DEVELOPER_REQUESTED_ERROR_SCREEN State";
+	return false;
+}
+
+
 void App::onStaticTexturesLoaded(){
 	ofLogNotice("ofxApp")<< "All Static Textures Loaded!";
 	if(timeSampleOfxApp) TS_STOP_NIF("ofxApp Load Static Textures");
@@ -986,7 +1129,7 @@ void App::logBanner(const string & log){
 ofRectangle App::drawMsgInBox(string msg, int x, int y, int fontSize, ofColor fontColor, ofColor bgColor, float edgeGrow) {
 
 	ofRectangle bbox;
-	if(!ofIsGLProgrammableRenderer()){
+	if(!ofIsGLProgrammableRenderer()){ //use ofxFontStash
 		if (msg.size() == 0) return ofRectangle();
 		ofxFontStash & font = fonts().getMonoBoldFont();
 		bbox = font.getBBox(msg, fontSize, x, y);
@@ -995,14 +1138,20 @@ ofRectangle App::drawMsgInBox(string msg, int x, int y, int fontSize, ofColor fo
 		ofDrawRectangle(bbox);
 		ofSetColor(fontColor);
 		font.drawMultiLine(msg, fontSize, x, y);
-		ofSetColor(255);
-	}else{
-		ofDrawBitmapStringHighlight(msg, x, y, bgColor, fontColor);
-		auto lines = ofSplitString(msg, "\n");
-		float lineH = 14;
-		float boxH = lineH * MAX(lines.size(),1) + 18;
-		bbox = ofRectangle(x, y, msg.size() * 8, boxH );
+	}else{ //use ofxFontStash2
+		ofxFontStashStyle style = ofxFontStashStyle(fonts().monoBoldID, fontSize, fontColor);
+		auto bbox = fonts().getFontStash2().getTextBoundsNVG(msg, style, x, y, ofGetWidth(), OF_ALIGN_HORZ_LEFT );
+		ofSetColor(bgColor);
+		bbox.x -= edgeGrow; bbox.y -= edgeGrow; bbox.width += 2 * edgeGrow; bbox.height += 2 * edgeGrow;
+		ofDrawRectangle(bbox);
+		fonts().getFontStash2().drawColumnNVG(msg, style, x, y, bbox.width, OF_ALIGN_HORZ_LEFT);
+		//ofDrawBitmapStringHighlight(msg, x, y, bgColor, fontColor);
+		//auto lines = ofSplitString(msg, "\n");
+		//float lineH = 14;
+		//float boxH = lineH * MAX(lines.size(),1) + 18;
+		//bbox = ofRectangle(x, y, msg.size() * 8, boxH );
 	}
+	ofSetColor(255);
 	return bbox;
 }
 

@@ -40,6 +40,7 @@ public:
 	virtual bool ofxAppIsPhaseComplete(ofxApp::Phase){return true;} //override this method if you are loading custom content
 	virtual void ofxAppDrawPhaseProgress(ofxApp::Phase, const ofRectangle & r){}; //override the loading screen drawing
 	virtual string ofxAppGetStatusString(ofxApp::Phase){return "";}; //override the progress bar status text
+	virtual string ofxAppGetLogString(ofxApp::Phase){return "";}; //override the text message above the progress bar (ie for showing script logs)
 	virtual float ofxAppGetProgressForPhase(ofxApp::Phase){return -1;} //return [0..1] to report progressbar; -1 for indeterminate
 
 	//this is how your app gets all the parsed objects - up to you how you store them

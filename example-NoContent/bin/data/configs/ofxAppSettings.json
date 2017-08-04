@@ -1,5 +1,4 @@
 {
-
 	"App":{		
 		"frameRate" : 60,
 		"numAASamples" : 8,
@@ -8,23 +7,55 @@
 		"maxThreads" : 8,
 		"window":{
 			"windowMode" : 8, //see ofxScreenSetup::ScreenMode; windowed=8, fullOneMonitor=1, fullAllMonitors=0
-			"customWidth": 800, //540
-			"customHeight": 800,
+			"customWidth": 1900, //540
+			"customHeight": 1400,
 			"customWindowPosition" : false,
 			"customPositionX" : 1950,
 			"customPositionY" : -450
 		},
 		"startupScreenViewport":{ "x":0.0, "y":0.0, "w":1.0, "h":1.0 }, //define what part of the window is used to draw loading screens
 		"renderSize":{ //get it with app.renderSize
-			"width" : 1080,
-			"height" : 1920
+			"width" : 800,
+			"height" : 800
 		},
 		"mullions": {
 			"numX" : 4,
 			"numY" : 4,
 			"visibleAtStartup" : false
 		},
-		"onErrorContactMessage": "call 911", //TODO!
+		"MaintenanceMode":{
+			"enabled" : false,
+			"header" : {
+				"text" : "Zzzzzzzz",
+				"fontScaleup" : 1.0,
+				"spacing" : 6.0,
+				"fontID" : "montserrat", //this is the ofxFontStash2 ID, built in fontIDs are "mono", "monoBold", "regular", "bold"
+				"color" : [0,228,130]
+			},
+			"body" : {
+				"text" : "Sorry! The wall is resting.\nIt will be back at work soon.",
+				"fontScaleup" : 1.0,
+				"spacing" : 0.0,
+				"fontID" : "montserrat", //this is the ofxFontStash2 ID, built in fontIDs are "mono", "monoBold", "regular", "bold"
+				"color" : [255]
+			},
+			"bgColor" : [0,0,0,255]
+		},
+		"ErrorScreen":{
+			"bgColor" : [0,0,0,255],
+			"title":{
+				"fontID" : "regular",
+				"fontScaleup" : 1.0,
+				"spacing" : 0.0,
+				"color" : [0,228,130]
+			},
+			"body":{
+				"fontID" : "regular",
+				"fontScaleup" : 1.0,
+				"spacing" : 0.0,
+				"color" : [255]
+			}
+		},
 		"TimeSampleOfxApp" : false
 	},
 
@@ -33,39 +64,42 @@
 		"onErrorWaitTimeSec" : 10
 	},
 
-	"Fonts":{
-		"ofxApp":{ //required by ofxApp, dont remove the "monospaced" & "monospacedBold" sections!
-			"monospaced":{
-				"fontFile" : "fonts/UbuntuMono-R.ttf",
-				"atlasSize" : 512,
-				"lineHeight" : 1.4,
-				"mipmaps" : false,
-				"mipmapPadding" : 0,
-				"uiScale" : 1.0
-			},
-			"monospacedBold":{
-				"fontFile" : "fonts/UbuntuMono-B.ttf",
-				"atlasSize" : 512,
-				"lineHeight" : 1.4,
-				"mipmaps" : false,
-				"mipmapPadding" : 0,
-				"uiScale" : 1.0
-			}
-		},
-		
-		"user":{ //place your custom fonts here
-			"NoManSky":{
-				"fontFile" : "fonts/geonms-webfont.ttf",
+	"Fonts":{ //place your custom fonts here
+		"ofxFontStash":{ //ofxFontStash fonts
+			"pacifico":{
+				"fontFile" : "fonts/Pacifico.ttf",
 				"atlasSize" : 512,
 				"lineHeight" : 1.3,
 				"mipmaps" : false,
 				"mipmapPadding" : 0,
 				"uiScale" : 1.0
 			}
+		},
+		"ofxFontStash2":{ //ofxFontStash2 fonts
+			"fonts":{
+				"fantasque" : "fonts/FantasqueSansMono-Regular.ttf",
+				"pacifico" : "fonts/Pacifico.ttf"
+			},
+			"pixelDensity" : 2.0,
+			"styles":{ //ofxFontStash2 style definitions
+				"MyStyle1":{ //all avaialble options for a font style listed here
+					"fontID" : "fantasque",
+					"fontSize" : 30.0,
+					"color" : "#ffff00",
+					"blur" : 0.0,
+					"alignV" : "NVG_ALIGN_BASELINE",
+					"lineHeightMult" : 1.0,
+					"spacing" : 5.0
+				},
+				"MyStyle2":{ //omitted fields take sensible defaults
+					"fontID" : "pacifico",
+					"fontSize" : 30.0,
+					"color" : "#00FF55",
+					"blur" : 2.0
+				}
+			}
 		}
-
 	},
-
 
 	"StaticAssets":{
 		"textures" : "images" //this is where the static assets live; under "data"
@@ -77,7 +111,7 @@
 		"uiScale" : 1.0,
 		"useFontStash" : true,
 		"fontSize" : 15,
-		"fontFile" : "fonts/UbuntuMono-B.ttf",
+		"fontFile" : "ofxAppAssets/fonts/UbuntuMono-B.ttf",
 		"saveSettingsOnExit" : true,
 		"showUiDuringEdits" : false,
 		"automaticBackupsOnSave" : false,
@@ -96,7 +130,7 @@
 		"threadTimeDecay" : 0.985,
 		"frameRate" : 60,
 		"fontSize" : 13,
-		"fontFile" : "fonts/UbuntuMono-R.ttf",
+		"fontFile" : "ofxAppAssets/fonts/UbuntuMono-R.ttf",
 		"useFontStash" : true,
 		"msPrecision" : 1,
 		"plotResolution" : 0.33,
@@ -136,11 +170,12 @@
 	},
 	
 	"ErrorReporting":{
-		"enabled" : true,
+		"enabled" : false,
 		//"host" : "127.0.0.1",
-		"host" : "192.168.103.10",
+		"host" : "192.168.42.119",
 		"port" : 3030,
-		"emails" : ["oriol@localprojects.com"]
+		"emails" : ["oriol@localprojects.com"],
+		"reportGitStatus" : false
 	},
 	
 	"GoogleAnalytics" : {

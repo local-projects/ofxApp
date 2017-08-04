@@ -8,6 +8,7 @@ ofxOsc
 ofxPoco
 ofxXmlSettings
 ../../ExternalAddons/ofxFontStash
+../../ExternalAddons/ofxFontStash2
 ../../ExternalAddons/ofxTuio
 ../../ExternalAddons/ofxJSON
 ../../ExternalAddons/ofxSuperLog

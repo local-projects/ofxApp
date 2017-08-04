@@ -263,7 +263,7 @@ void ofxAppStaticTextures::drawAll(const ofRectangle & rect){
 	int nn = ceil(nx) * ceil(ny);
 	if( nn > n){
 		if(nn - n > nx){
-			ny-=1;
+			ny -= 1;
 		}
 	}
 
@@ -275,23 +275,16 @@ void ofxAppStaticTextures::drawAll(const ofRectangle & rect){
 	ofSetColor(255);
 
 	for(auto & texName : texNameOrder){
-		ofTexture * tex = textures[texName];
+		ofxAutoTexture * tex = textures[texName];
 		ofRectangle frame = ofRectangle(xx,yy, rect.width / ceil(nx), rect.height / ceil(ny));
-		float pad = 0.05 * MAX(frame.width, frame.height);
+		float pad = 0.1 * MAX(frame.width, frame.height);
 		ofRectangle paddedFrame = frame;
 		paddedFrame.x += pad;
 		paddedFrame.y += pad;
 		paddedFrame.width -= 2 * pad;
 		paddedFrame.height -= 2 * pad;
 
-//		ofSetColor(32);
-//		ofDrawRectangle(frame);
-//		ofSetColor(16);
-//		ofNoFill();
-//		ofDrawRectangle(frame);
-//		ofFill();
-
-		if(tex->isAllocated() && tex->getWidth()){
+		if(!tex->isPreloadingPixels() && tex->isAllocated() && tex->getWidth()){
 			ofRectangle texR = ofRectangle(0,0,tex->getWidth(), tex->getHeight());
 			texR.scaleTo(paddedFrame, OF_ASPECT_RATIO_KEEP, OF_ALIGN_HORZ_CENTER, OF_ALIGN_VERT_TOP);
 			tex->draw(texR);

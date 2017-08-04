@@ -5,6 +5,7 @@ ofxOsc
 ofxPoco
 ofxXmlSettings
 ofxFontStash
+ofxFontStash2
 ofxTuio
 ofxJSON
 ofxSuperLog

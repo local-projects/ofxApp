@@ -73,13 +73,13 @@ public:
 	void exit(ofEventArgs &);
 	void draw(ofEventArgs &);
 
-
 	// Crazy Macro magic here!! Beware!!
 	// this compounds some classnames to match whatever you decided to name your app;
 	// so "OFX_APP_CLASS_NAME(Colors)" becomes "MyAppColors"
 	// "MyApp" is a macro you MUST define in your pre-processor macros:
 	// OFX_APP_NAME=MyApp
 	// alternativelly, only the default Globals & colors will be defined (ofxAppColorsBasic & ofxAppGlobalsBasic)
+	//so you would have to cast the globals to get access to your projec's globals
 	#ifdef OFX_APP_NONAME
 	ofxAppColorsBasic & 			colors(){return colorsStorage;}
 	ofxAppGlobalsBasic & 			globals(){return *globalsStorage;}
@@ -97,7 +97,7 @@ public:
 	ofxGoogleAnalytics *			analytics(){ return gAnalytics; }
 	ofxScreenSetup					screenSetup;
 
-	// SETTINGS ////////////////////////////////////////////////////////
+	// SETTINGS /////////////////////////////////////////////////////////////////////////////
 	// Convenience methods to easily get values from "data/configs/ofxAppSettings.json"
 
 	bool&		getBool(const string & key, bool defaultVal = true);
@@ -111,6 +111,12 @@ public:
 	void		saveSettings();//not really used / tested! TODO!
 
 	ofxApp::State getState(){return appState.getState();}
+
+	// ERROR STATES / MSGs ///////////////////////////////////////////////////////////////////
+
+	bool enterErrorState(string errorHeader, string errorBody); //app shows error screen
+	bool exitErrorState(); //goes back to RUNNING
+	bool isInDevInducedErrorState(){return appState.getState() == State::DEVELOPER_REQUESTED_ERROR_SCREEN;}
 
 	// RETRIEVE POLICIES /////////////////////////////////////////////////////////////////////
 	// Those are cfgs coming from the main config file
@@ -160,14 +166,21 @@ protected:
 	//utils
 	void logBanner(const string & log); //to make prettier log headers
 	void printSettingsFile(); //print JSON settings file to stdout (and logs)
+	void drawStats();
+	void drawMaintenanceScreen();
+	void drawErrorScreen();
+
 
 	// STATE MACHINE ///////////////////////////////////////////////////////////////////////////////
+
 	virtual void updateStateMachine(float dt);
 	virtual void onDrawLoadingScreenStatus(ofRectangle & area); //override to customize loading screen
 
 	virtual void onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& change);
 	virtual void onStateError(ofxStateMachine<ofxApp::State>::ErrorStateEventArgs& error);
 	virtual void onContentManagerStateChanged(string&);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////
 
 	ofxTuioClient							tuioClient;
 	ofxAppStaticTextures					texStorage;
@@ -202,7 +215,10 @@ protected:
 	map<string, ofxApp::ParseFunctions>		contentCfgs; //user supplied custom parsing code - indexed by contentID
 
 	ofPtr<ofxSuperLog> *					loggerStorage; //note its a * to an ofPtr - TODO!
+
 	ofxDrawableStateMachine<ofxApp::State>	appState; //ofxApp State Machine to handle all loading stages
+	string									errorStateHeader; //holds current error msg header (only applies when state == DEVELOPER_REQUESTED_ERROR_SCREEN)
+	string									errorStateBody; //holds current error msg body (only applies when state == DEVELOPER_REQUESTED_ERROR_SCREEN)
 	
 	ofxAppErrorReporter						errorReporterObj; //send live error reports to our CMS over sensu
 	ofxGoogleAnalytics *					gAnalytics = nullptr;
@@ -228,6 +244,7 @@ protected:
 	ofRectangle								startupScreenViewport; //loading screen rect area
 
 private:
+
 	App(); //you cant make more than 1 ofxApp::get()
 };
 

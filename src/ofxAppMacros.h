@@ -46,6 +46,12 @@ const string FILE_ACCES_ICON = "💾";
 #define G_FONT_MONO										ofxApp::get().fonts().getMonoFont()
 #define G_FONT_MONO_BOLD								ofxApp::get().fonts().getMonoBoldFont()
 
+#define G_FS2											ofxApp::get().fonts().getFontStash2()
+#define G_FSTYLE(S)										ofxApp::get().fonts().getFontStyle(S)
+
+
+
+
 #define OFXAPP_REPORT(alertID,msg,severity)						ofxApp::get().errorReporter().send(alertID,msg,severity)
 #define OFXAPP_REPORT_FILE(alertID,msg,severity,fileToSend)		ofxApp::get().errorReporter().send(alertID,msg,severity,fileToSend)
 

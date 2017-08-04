@@ -326,24 +326,21 @@ string ofxAppContent::getLastKnownGoodJsonPath(){
 }
 
 
-string ofxAppContent::getStatus(bool formatted){
+string ofxAppContent::getStatus(){
 
 	string r;
-	string plainFormat = " %0.8 #0x888888 \n"; //text format for logging on screen - see ofxFontStash.h drawMultiLineColumn()
-	string errorFormat = " %0.8 #0xBB0000 \n"; //text format for logging on screen - see ofxFontStash.h drawMultiLineColumn()
-
 	switch (state) {
-		case ContentState::DOWNLOADING_JSON: r = string(formatted ? plainFormat : "") + jsonParser.getHttp().drawableString(); break;
-		case ContentState::JSON_DOWNLOAD_FAILED: r = string(formatted ? errorFormat : "") + errorMessage; break;
-		case ContentState::CHECKING_JSON: r = string(formatted ? plainFormat : "") + jsonParser.getDrawableState(); break;
-		case ContentState::PARSING_JSON: r = string(formatted ? plainFormat : "") + jsonParser.getDrawableState(); break;
-		case ContentState::CATALOG_ASSETS: r = string(formatted ? plainFormat : "") ; break;
-		case ContentState::CHECKING_ASSET_STATUS: r = string(formatted ? plainFormat : "") + assetChecker.getDrawableState(); break;
-		case ContentState::JSON_PARSE_FAILED: r = string(formatted ? errorFormat : "") +  errorMessage; break;
-		case ContentState::DOWNLOADING_ASSETS: r =  string(formatted ? plainFormat : "") + dlc.getDrawableInfo(true, false); break;
-		case ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS: r = string(formatted ? plainFormat : "") + objectsWithBadAssets; break;
-		case ContentState::SETUP_TEXTURED_OBJECTS: r = string(formatted ? plainFormat : ""); break;
-		case ContentState::JSON_CONTENT_READY: r = string(formatted ? plainFormat : "") + "READY"; break;
+		case ContentState::DOWNLOADING_JSON: r = jsonParser.getHttp().drawableString(); break;
+		case ContentState::JSON_DOWNLOAD_FAILED: r = errorMessage; break;
+		case ContentState::CHECKING_JSON: r = jsonParser.getDrawableState(); break;
+		case ContentState::PARSING_JSON: r = jsonParser.getDrawableState(); break;
+		case ContentState::CATALOG_ASSETS: break;
+		case ContentState::CHECKING_ASSET_STATUS: r = assetChecker.getDrawableState(); break;
+		case ContentState::JSON_PARSE_FAILED: r = errorMessage; break;
+		case ContentState::DOWNLOADING_ASSETS: r = dlc.getDrawableInfo(true, false); break;
+		case ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS: r = objectsWithBadAssets; break;
+		case ContentState::SETUP_TEXTURED_OBJECTS:  break;
+		case ContentState::JSON_CONTENT_READY: r = "READY"; break;
 		default: break;
 	}
 	return r;

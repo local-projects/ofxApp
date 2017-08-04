@@ -38,6 +38,17 @@ string ofApp::ofxAppGetStatusString(ofxApp::Phase p){
 	return s;
 }
 
+string ofApp::ofxAppGetLogString(ofxApp::Phase phase){
+
+	float progress = ofxAppGetProgressForPhase(phase);
+	int numLines = 50 * progress;
+	string log;
+	for(int i = 0; i < numLines; i++){
+		log += "this is a log line - " + ofToString(i) + "\n";
+	}
+	return log;
+}
+
 
 float ofApp::ofxAppGetProgressForPhase(ofxApp::Phase){
 	float v = (ofGetElapsedTimef() - phaseStartTime) / FAKE_LOAD_SCREEN_DURATION;
@@ -54,10 +65,26 @@ void ofApp::draw(){
 
 	if(ofxApp::get().getState() == ofxApp::State::RUNNING){
 
+		//see a list of all static textures loaded from the "StaticAssets/textures" section in ofxAppSettings.json
+		TS_START("drawImages"); //we are time profiling this section
 		ofxApp::get().textures().drawAll(ofRectangle(100, 100, ofGetMouseX() - 100, ofGetMouseY() - 100));
+		TS_STOP("drawImages");
 
+		//get a texture from the "StaticAssets/textures" section
 		G_TEX("emoji/413")->draw(0,0);
-		G_FONT("NoManSky")->draw("My Font", 20, 40, ofGetHeight() - 40);
+
+		//use ofxFontStash to draw text
+		float y = ofGetHeight() -  120;
+		float x = 100;
+
+		G_FONT("pacifico")->draw("Pacifico font test woth ofxFontStash.", 40, x, y);
+		y += 30;
+
+		//use ofxFontStash2 to draw text - note font styles are defined in the ofxAppSettings.json file
+		G_FS2.draw("MyHeaderStyle font test with ofxFontStash2", G_FSTYLE("MyStyle1"), x, y);
+		y += 30;
+		G_FS2.draw("MyBodyStyle font test with ofxFontStash2", G_FSTYLE("MyStyle2"), x, y);
+
 	}
 }
 
@@ -68,6 +95,14 @@ void ofApp::keyPressed(int key){
 		OFXAPP_REPORT("myAlertID","something went wrong", 2);
 		OFXAPP_REPORT_FILE("myAlertID","something went wrong", 2, "path/to/my/File");
 		ofxApp::utils::terminateApp("ofApp", "user forced terminate!");
+	}
+
+	if(key == 'e'){ //get ofxApp into Error State
+		ofxApp::get().enterErrorState("Uh Oh!", "Some error occurred!\nContact oriol@localprojects.com\nPress 'E' to continue.");
+	}
+
+	if(key == 'E'){ //recover from Error State
+		ofxApp::get().exitErrorState();
 	}
 }
 

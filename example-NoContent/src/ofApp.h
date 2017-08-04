@@ -3,7 +3,7 @@
 #include "ofMain.h"
 #include "ofxApp.h"
 
-#define FAKE_LOAD_SCREEN_DURATION 2.0
+#define FAKE_LOAD_SCREEN_DURATION 5.0
 
 class ofApp : public ofBaseApp, public ofxAppDelegate{
 
@@ -28,7 +28,8 @@ public:
 	bool	ofxAppIsPhaseComplete(ofxApp::Phase);
 
 	void	ofxAppDrawPhaseProgress(ofxApp::Phase, const ofRectangle & r);
-	string 	ofxAppGetStatusString(ofxApp::Phase);
+	string 	ofxAppGetStatusString(ofxApp::Phase); //short status on the progress bar
+	string 	ofxAppGetLogString(ofxApp::Phase); //long status (ie log / script output) above the progress bar
 	float	ofxAppGetProgressForPhase(ofxApp::Phase);
 
 	void	ofxAppContentIsReady(const string & contentID, vector<ContentObject*>){};

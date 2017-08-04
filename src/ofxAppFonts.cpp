@@ -8,18 +8,32 @@
 #include "ofxAppFonts.h"
 #include "ofxJsonSettings.h"
 #include "ofxAppUtils.h"
-
+#include "ofxFontStashParser.h"
 
 void ofxAppFonts::setup(){
-	loadOfxAppFont("monospaced", monospaced);
-	loadOfxAppFont("monospacedBold", monospacedBold);
-	loadUseFonts();
+
+	//load default ofxFontStash fonts
+	loadOfxAppFont(getMonoFontPath(), monospaced);
+	loadOfxAppFont(getMonoBoldFontPath(), monospacedBold);
+
+	//Setup ofxFontStash2 & add default fonts
+	fonts2.pixelDensity = ofxJsonSettings::get().getFloat("Fonts/ofxFontStash2/pixelDensity");
+	fonts2.setup();
+	fonts2.addFont(monoID, getMonoFontPath());
+	fonts2.addFont(monoBoldID, getMonoBoldFontPath());
+	fonts2.addFont(regularID, getRegularFontPath());
+	fonts2.addFont(boldID, getBoldFontPath());
+
+
+	loadFontStashFonts();
+	loadFontStash2Fonts();
+	loadFontStash2Styles();
 }
 
 ofxFontStash* ofxAppFonts::getFont(const string& name){
 
-	auto search = userFonts.find(name);
-	if (search != userFonts.end()){
+	auto search = userFS_Fonts.find(name);
+	if (search != userFS_Fonts.end()){
 		return search->second;
 	}else{
 		string msg = "Can't find a font with that name! (" + name + ")";
@@ -28,13 +42,28 @@ ofxFontStash* ofxAppFonts::getFont(const string& name){
 	}
 }
 
-void ofxAppFonts::loadUseFonts(){
+const ofxFontStashStyle& ofxAppFonts::getFontStyle(const string & styleID){
+
+	auto it = fs2Styles.find(styleID);
+	if(it != fs2Styles.end()){
+		return it->second;
+	}
+	static ofxFontStashStyle errStyle = ofxFontStashStyle(monoID, 22);
+	ofLogError("ofxAppFonts") << "can't find an ofxFontStash2 style named \"" << styleID << "\"";
+	return errStyle;
+}
+
+
+void ofxAppFonts::loadFontStashFonts(){
 
 	ofxJsonSettings & settings = ofxJsonSettings::get();
-	if(settings.exists("Fonts/user")){
-		ofxJSON json = settings.getJson("Fonts/user");
+
+	if(settings.exists("Fonts/ofxFontStash")){
+
+		ofxJSON json = settings.getJson("Fonts/ofxFontStash");
 
 		if(json.isObject()){
+
 			for( auto itr = json.begin(); itr != json.end(); itr++ ) { //walk all user fonts
 				string fontName = itr.key().asString();
 				string fontFile = (*itr)["fontFile"].asString();
@@ -47,6 +76,7 @@ void ofxAppFonts::loadUseFonts(){
 				ofxApp::utils::assertFileExists(fontFile);
 				ofxFontStash * font = new ofxFontStash();
 
+				ofLogNotice("ofxAppFonts") << "Loading User ofxFontStash Font '" << fontName << "' from '" << fontFile << "'";
 				font->setup(fontFile,
 							lineH, 		//line height
 							atlasSize, 		//tex atlas size
@@ -60,12 +90,12 @@ void ofxAppFonts::loadUseFonts(){
 					font->setKerning(doKerning);
 				}
 
-				auto search = userFonts.find(fontName);
-				if (search == userFonts.end()){
-					ofLogNotice("ofxAppFonts") << "Loading User Font '" << fontName << "' from '" << fontFile << "'";
-					userFonts[fontName] = font;
+				auto search = userFS_Fonts.find(fontName);
+				if (search == userFS_Fonts.end()){
+					ofLogNotice("ofxAppFonts") << "Loading User ofxFontStash Font '" << fontName << "' from '" << fontFile << "'";
+					userFS_Fonts[fontName] = font;
 				}else{
-					ofxApp::utils::terminateApp("ofxAppFonts", "User Font with this name already exists! (" + fontName + ")");
+					ofxApp::utils::terminateApp("ofxAppFonts", "User ofxFontStash Font with this name already exists! (" + fontName + ")");
 				}
 
 				float charSpacing = 0;
@@ -76,37 +106,121 @@ void ofxAppFonts::loadUseFonts(){
 				}
 			}
 		}else{
-			ofxApp::utils::terminateApp("ofxAppFonts", "User Fonts (\"Fonts/user\")is not a Json Object! Check your \"ofxAppSettings.json\" file!");
+			ofxApp::utils::terminateApp("ofxAppFonts", "User Fonts (\"Fonts/ofxFontStash\")is not a Json Object! Check your \"ofxAppSettings.json\" file!");
 		}
 	}
 }
 
-void ofxAppFonts::loadOfxAppFont(const string & key, ofxFontStash & font){
+
+void ofxAppFonts::loadFontStash2Fonts(){
 
 	ofxJsonSettings & settings = ofxJsonSettings::get();
 
-	if(settings.exists("Fonts/ofxApp/" + key)){
+	if(settings.exists("Fonts/ofxFontStash2/fonts")){
 
-		string fontFile = settings.getString("Fonts/ofxApp/" + key + "/fontFile");
-		int atlasSize = settings.getInt("Fonts/ofxApp/" + key + "/atlasSize");
-		float lineH = settings.getFloat("Fonts/ofxApp/" + key + "/lineHeight");
-		bool mipmaps = settings.getBool("Fonts/ofxApp/" + key + "/mipmaps");
-		int mipMapPadding = settings.getInt("Fonts/ofxApp/" + key + "/mipmapPadding");
-		float retinaScale = settings.getFloat("Fonts/ofxApp/" + key + "/uiScale");
+		ofxJSON json = settings.getJson("Fonts/ofxFontStash2/fonts");
 
-		ofxApp::utils::assertFileExists(fontFile);
+		if(json.isObject()){
+			for( auto itr = json.begin(); itr != json.end(); itr++ ) { //walk all user fonts
+				string fontName = itr.key().asString();
+				string fontFile = (*itr).asString();
+				ofxApp::utils::assertFileExists(fontFile);
+				bool ok = fonts2.addFont(fontName, fontFile);
+				if(!ok){
+					ofLogError("ofxAppFonts") << "failed to load ofxFontStash2 Font \"" << fontName << "\" from file at \"" << fontFile << "\"";
+				}
+			}
 
-		ofLogNotice("ofxAppFonts") << "Loading ofxApp Font'" << fontFile << "'";
-		font.setup(	fontFile,
-					lineH, 		//line height
-					atlasSize, 		//tex atlas size
-					mipmaps,		//mipmaps
-					mipMapPadding, 	//atlas extra intra-char padding
-					retinaScale 	//ui Scale (per-char texture upscale)
-					);
-
-
-	}else{
-		ofxApp::utils::terminateApp("ofxAppFonts", "Missing required ofxApp font! Check your \"ofxAppSettings.json\" file in \"Fonts/ofxApp/" + key + "\"");
+			ofLogNotice("ofxAppFonts") << "#### ofxFontStash2 available fonts #######################################################";
+			auto ids = fonts2.getFontIDs();
+			for(auto id: ids){
+				ofLogNotice("ofxAppFonts") << "# \"" << id << "\"";
+			}
+		}else{
+			ofxApp::utils::terminateApp("ofxAppFonts", "User ofxFontStash2 Fonts (\"Fonts/ofxFontStash2/fonts\")is not a Json Object! Check your \"ofxAppSettings.json\" file!");
+		}
 	}
+}
+
+NVGalign ofxAppFonts::getAlignmentFromString(const string & str){
+	if(str == "NVG_ALIGN_TOP") return NVG_ALIGN_TOP;
+	if(str == "NVG_ALIGN_MIDDLE") return NVG_ALIGN_MIDDLE;
+	if(str == "NVG_ALIGN_BOTTOM") return NVG_ALIGN_BOTTOM;
+	if(str == "NVG_ALIGN_BASELINE") return NVG_ALIGN_BASELINE;
+	return (NVGalign)(NVG_ALIGN_BASELINE);
+}
+
+void ofxAppFonts::loadFontStash2Styles(){
+
+	ofxJsonSettings & settings = ofxJsonSettings::get();
+
+	if(settings.exists("Fonts/ofxFontStash2/styles")){
+
+		ofxJSON json = settings.getJson("Fonts/ofxFontStash2/styles");
+
+		if(json.isObject()){
+
+			for( auto itr = json.begin(); itr != json.end(); itr++ ) { //walk all user styles
+
+				string styleName = itr.key().asString();
+				ofxJSON styleObj = (*itr);
+				ofxFontStashStyle style;
+				bool ok = true;
+
+				if(!styleObj["fontID"].isNull()){
+					style.fontID = styleObj["fontID"].asString();
+				}else{
+					ofLogError("ofxAppFonts") << " style '" << styleName << "' is missing a \"fontID\"! Ignoring that style!"; ok = false;
+				}
+
+				if(!styleObj["fontSize"].isNull()){
+					style.fontSize = styleObj["fontSize"].asFloat();
+				}else{
+					ofLogError("ofxAppFonts") << " style '" << styleName << "' is missing a \"fontSize\"! Ignoring that style!"; ok = false;
+				}
+
+				if(!styleObj["color"].isNull()) style.color = ofxFontStashParser::colorFromHex(styleObj["color"].asString());
+				if(!styleObj["blur"].isNull()) style.blur = styleObj["blur"].asFloat();
+				if(!styleObj["lineHeightMult"].isNull()) style.lineHeightMult = styleObj["lineHeightMult"].asFloat();
+				if(!styleObj["alignV"].isNull()) style.alignmentV = getAlignmentFromString(styleObj["alignV"].asString());
+
+				if(ok){
+					fonts2.addStyle(styleName, style);
+					fs2Styles[styleName] = style;
+				}
+			}
+
+			ofLogNotice("ofxAppFonts") << "#### ofxFontStash2 available Styles ######################################################";
+			auto styles = fonts2.getStyles();
+			for(auto st : styles){
+				ofLogNotice("ofxAppFonts") << "# \"" << st.first << "\": \"" << st.second.toString() << "\"";
+			}
+			ofLogNotice("ofxAppFonts") << "########################################################################################";
+		}else{
+			ofxApp::utils::terminateApp("ofxAppFonts", "User ofxFontStash2 styles (\"Fonts/ofxFontStash2/styles\")is not a Json Object! Check your \"ofxAppSettings.json\" file!");
+		}
+	}
+}
+
+
+void ofxAppFonts::loadOfxAppFont(const string & file, ofxFontStash & font){
+
+	string fontFile = file;
+	int atlasSize = 512;
+	float lineH = 1.4;
+	bool mipmaps = false;
+	int mipMapPadding = 0;
+	float retinaScale = 1.0;
+
+	ofxApp::utils::assertFileExists(fontFile);
+
+	ofLogNotice("ofxAppFonts") << "Loading ofxApp Font'" << fontFile << "'";
+	font.setup(	fontFile,
+				lineH, 		//line height
+				atlasSize, 		//tex atlas size
+				mipmaps,		//mipmaps
+				mipMapPadding, 	//atlas extra intra-char padding
+				retinaScale 	//ui Scale (per-char texture upscale)
+				);
+
 }

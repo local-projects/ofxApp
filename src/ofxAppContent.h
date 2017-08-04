@@ -84,7 +84,7 @@ public:
 	bool foundError();
 	bool isContentReady();
 
-	string getStatus(bool formatted = true);
+	string getStatus();
 	string getErrorMsg(){return errorMessage;}
 	float getPercentDone();
 
