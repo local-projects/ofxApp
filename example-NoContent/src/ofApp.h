@@ -3,7 +3,7 @@
 #include "ofMain.h"
 #include "ofxApp.h"
 
-#define FAKE_LOAD_SCREEN_DURATION 5.0
+#define FAKE_LOAD_SCREEN_DURATION 1.0
 
 class ofApp : public ofBaseApp, public ofxAppDelegate{
 

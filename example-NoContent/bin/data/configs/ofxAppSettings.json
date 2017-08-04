@@ -29,14 +29,14 @@
 				"text" : "Zzzzzzzz",
 				"fontScaleup" : 1.0,
 				"spacing" : 6.0,
-				"fontID" : "montserrat", //this is the ofxFontStash2 ID, built in fontIDs are "mono", "monoBold", "regular", "bold"
+				"fontID" : "regular", //this is the ofxFontStash2 ID, built in fontIDs are "mono", "monoBold", "regular", "bold"
 				"color" : [0,228,130]
 			},
 			"body" : {
 				"text" : "Sorry! The wall is resting.\nIt will be back at work soon.",
 				"fontScaleup" : 1.0,
 				"spacing" : 0.0,
-				"fontID" : "montserrat", //this is the ofxFontStash2 ID, built in fontIDs are "mono", "monoBold", "regular", "bold"
+				"fontID" : "regular", //this is the ofxFontStash2 ID, built in fontIDs are "mono", "monoBold", "regular", "bold"
 				"color" : [255]
 			},
 			"bgColor" : [0,0,0,255]

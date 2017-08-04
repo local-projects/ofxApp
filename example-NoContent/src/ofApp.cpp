@@ -83,7 +83,13 @@ void ofApp::draw(){
 		//use ofxFontStash2 to draw text - note font styles are defined in the ofxAppSettings.json file
 		G_FS2.draw("MyHeaderStyle font test with ofxFontStash2", G_FSTYLE("MyStyle1"), x, y);
 		y += 30;
+
 		G_FS2.draw("MyBodyStyle font test with ofxFontStash2", G_FSTYLE("MyStyle2"), x, y);
+		y += 30;
+
+		//you can also draw formated paragraphs combining styles
+		string styledText = "<style id='MyStyle1'>And you can</style><style id='MyStyle2'>MIX</style><style id='MyStyle1'>styles!</style>";
+		G_FS2.drawFormatted(styledText, x, y);
 
 	}
 }

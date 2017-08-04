@@ -23,8 +23,8 @@ public:
 
 	static string getMonoFontPath(){return "ofxAppAssets/fonts/UbuntuMono-R.ttf";}
 	static string getMonoBoldFontPath(){return "ofxAppAssets/fonts/UbuntuMono-B.ttf";}
-	static string getRegularFontPath(){return "ofxAppAssets/fonts/Montserrat-Bold.ttf";}
-	static string getBoldFontPath(){return "ofxAppAssets/fonts/Montserrat-Regular.ttf";}
+	static string getRegularFontPath(){return "ofxAppAssets/fonts/Montserrat-Regular.ttf";}
+	static string getBoldFontPath(){return "ofxAppAssets/fonts/Montserrat-Bold.ttf";}
 
 	ofxFontStash& getMonoFont(){return monospaced;}
 	ofxFontStash& getMonoBoldFont(){return monospacedBold;}
