@@ -33,7 +33,7 @@ common:
 	
 	# any special flag that should be passed to the compiler when using this
 	# addon
-	ADDON_CFLAGS = -DNANOVG_GL2_IMPLEMENTATION -DUSE_OFX_TIME_MEASUREMENTS -DUSE_OFX_FONTSTASH 
+	ADDON_CFLAGS = -DNANOVG_GL2_IMPLEMENTATION -DUSE_OFX_TIME_MEASUREMENTS -DUSE_OFX_FONTSTASH -DUSE_OFX_FONTSTASH2
 	
 	# any special flag that should be passed to the linker when using this
 	# addon, also used for system libraries with -lname
