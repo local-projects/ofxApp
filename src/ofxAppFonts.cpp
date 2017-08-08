@@ -42,13 +42,13 @@ ofxFontStash* ofxAppFonts::getFont(const string& name){
 	}
 }
 
-const ofxFontStashStyle& ofxAppFonts::getFontStyle(const string & styleID){
+const ofxFontStash2::Style& ofxAppFonts::getFontStyle(const string & styleID){
 
 	auto it = fs2Styles.find(styleID);
 	if(it != fs2Styles.end()){
 		return it->second;
 	}
-	static ofxFontStashStyle errStyle = ofxFontStashStyle(monoID, 22);
+	static ofxFontStash2::Style errStyle = ofxFontStash2::Style(monoID, 22);
 	ofLogError("ofxAppFonts") << "can't find an ofxFontStash2 style named \"" << styleID << "\"";
 	return errStyle;
 }
@@ -164,7 +164,7 @@ void ofxAppFonts::loadFontStash2Styles(){
 
 				string styleName = itr.key().asString();
 				ofxJSON styleObj = (*itr);
-				ofxFontStashStyle style;
+				ofxFontStash2::Style style;
 				bool ok = true;
 
 				if(!styleObj["fontID"].isNull()){
@@ -179,7 +179,7 @@ void ofxAppFonts::loadFontStash2Styles(){
 					ofLogError("ofxAppFonts") << " style '" << styleName << "' is missing a \"fontSize\"! Ignoring that style!"; ok = false;
 				}
 
-				if(!styleObj["color"].isNull()) style.color = ofxFontStashParser::colorFromHex(styleObj["color"].asString());
+				if(!styleObj["color"].isNull()) style.color = ofxFontStash2::Parser::colorFromHex(styleObj["color"].asString());
 				if(!styleObj["blur"].isNull()) style.blur = styleObj["blur"].asFloat();
 				if(!styleObj["lineHeightMult"].isNull()) style.lineHeightMult = styleObj["lineHeightMult"].asFloat();
 				if(!styleObj["alignV"].isNull()) style.alignmentV = getAlignmentFromString(styleObj["alignV"].asString());

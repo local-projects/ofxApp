@@ -244,7 +244,6 @@ void ofApp::onSrollImageClicked(TexturedObjectScrollView::TouchedImage & ti){
 
 	ContentObject * co = dynamic_cast<ContentObject*>(ti.objTex.texObj);
 	ofLogNotice("ofxApp") << "clicked on object " << co->getObjectUUID();
-	
 }
 
 

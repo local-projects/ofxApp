@@ -444,13 +444,15 @@ void App::setupRemoteUI(){
 	RUI_GET_INSTANCE()->setUiColumnWidth(getInt("RemoteUI/columnWidth", 280));
 	RUI_GET_INSTANCE()->setBuiltInUiScale(getFloat("RemoteUI/uiScale", 1.0));
 	bool useFontStash = getBool("RemoteUI/useFontStash");
-	if(useFontStash ){
+	if(useFontStash){
+		string fontFile = getString("RemoteUI/fontFile");
+		ofxApp::utils::assertFileExists(fontFile);
 		if(!ofIsGLProgrammableRenderer()){
-			string fontFile = getString("RemoteUI/fontFile");
-			ofxApp::utils::assertFileExists(fontFile);
+			ofLogWarning("ofxApp") << "Using ofxFontStash2 for RemoteUI as we are using GL2!";
 			RUI_GET_INSTANCE()->drawUiWithFontStash(fontFile, getInt("RemoteUI/fontSize", 15));
 		}else{
-			ofLogError("ofxApp") << "can't use fontstash with the programmable renderer!";
+			ofLogWarning("ofxApp") << "Using ofxFontStash2 for RemoteUI as we are using GL3+!";
+			RUI_GET_INSTANCE()->drawUiWithFontStash2(fontFile, getInt("RemoteUI/fontSize", 15));
 		}
 	}
 	bool ruiSaveOnQuit = getBool("RemoteUI/saveSettingsOnExit");
@@ -551,9 +553,10 @@ void App::setupTimeMeasurements(){
 		string fontFile = getString("TimeMeasurements/fontFile");
 		ofxApp::utils::assertFileExists(fontFile);
 		if( !ofIsGLProgrammableRenderer()){
+			ofLogWarning("ofxApp") << "Using ofxFontStash for TimeMeasurements as we are using GL2!";
 			TIME_SAMPLE_GET_INSTANCE()->drawUiWithFontStash(fontFile, getInt("TimeMeasurements/fontSize", 13));
 		}else{
-			ofLogWarning("ofxApp") << "Using ofxFontStash2 for TimeMeasurements as we are using the programmable renderer!";
+			ofLogWarning("ofxApp") << "Using ofxFontStash2 for TimeMeasurements as we are using GL3+!";
 			TIME_SAMPLE_GET_INSTANCE()->drawUiWithFontStash2(fontFile, getInt("TimeMeasurements/fontSize", 13));
 		}
 	}
@@ -725,12 +728,12 @@ void App::drawMaintenanceScreen(){
 	float fontSize = ofGetHeight() / 30.;
 	float headerY = ofGetHeight() * 0.46;
 
-	ofxFontStashStyle headerStyle = ofxFontStashStyle(headerFont, fontSize * headerScaleup, headerColor);
+	ofxFontStash2::Style headerStyle = ofxFontStash2::Style(headerFont, fontSize * headerScaleup, headerColor);
 	headerStyle.spacing = headerSpacing;
 	int lineH = G_FS2.getTextBounds("Mp", headerStyle, 0, 0).height;
 	ofRectangle headerRect = G_FS2.drawColumn(header, headerStyle, 0, headerY, ofGetWidth(), OF_ALIGN_HORZ_CENTER);
 
-	ofxFontStashStyle bodyStyle = ofxFontStashStyle(bodyFont, fontSize * bodyScaleup, bodyColor);
+	ofxFontStash2::Style bodyStyle = ofxFontStash2::Style(bodyFont, fontSize * bodyScaleup, bodyColor);
 	bodyStyle.spacing = bodySpacing;
 	ofRectangle bodyRect = G_FS2.drawColumn(body, bodyStyle, 0, headerRect.getBottom() + 2 * lineH, ofGetWidth(), OF_ALIGN_HORZ_CENTER);
 }
@@ -760,12 +763,12 @@ void App::drawErrorScreen(){
 	float fontSize = ofGetHeight() / 30.;
 	float headerY = ofGetHeight() * 0.46;
 
-	ofxFontStashStyle headerStyle = ofxFontStashStyle(headerFont, fontSize * headerScaleup, headerColor);
+	ofxFontStash2::Style headerStyle = ofxFontStash2::Style(headerFont, fontSize * headerScaleup, headerColor);
 	headerStyle.spacing = headerSpacing;
 	int lineH = G_FS2.getTextBounds("Mp", headerStyle, 0, 0).height;
 	ofRectangle headerRect = G_FS2.drawColumn(errorStateHeader, headerStyle, 0, headerY, ofGetWidth(), OF_ALIGN_HORZ_CENTER);
 
-	ofxFontStashStyle bodyStyle = ofxFontStashStyle(bodyFont, fontSize * bodyScaleup, bodyColor);
+	ofxFontStash2::Style bodyStyle = ofxFontStash2::Style(bodyFont, fontSize * bodyScaleup, bodyColor);
 	bodyStyle.spacing = bodySpacing;
 	ofRectangle bodyRect = G_FS2.drawColumn(errorStateBody, bodyStyle, 0, headerRect.getBottom() + 2 * lineH, ofGetWidth(), OF_ALIGN_HORZ_CENTER);
 }
@@ -1139,7 +1142,7 @@ ofRectangle App::drawMsgInBox(string msg, int x, int y, int fontSize, ofColor fo
 		ofSetColor(fontColor);
 		font.drawMultiLine(msg, fontSize, x, y);
 	}else{ //use ofxFontStash2
-		ofxFontStashStyle style = ofxFontStashStyle(fonts().monoBoldID, fontSize, fontColor);
+		ofxFontStash2::Style style = ofxFontStash2::Style(fonts().monoBoldID, fontSize, fontColor);
 		auto bbox = fonts().getFontStash2().getTextBoundsNVG(msg, style, x, y, ofGetWidth(), OF_ALIGN_HORZ_LEFT );
 		ofSetColor(bgColor);
 		bbox.x -= edgeGrow; bbox.y -= edgeGrow; bbox.width += 2 * edgeGrow; bbox.height += 2 * edgeGrow;

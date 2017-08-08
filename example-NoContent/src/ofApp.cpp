@@ -88,7 +88,7 @@ void ofApp::draw(){
 		y += 30;
 
 		//you can also draw formated paragraphs combining styles
-		string styledText = "<style id='MyStyle1'>And you can</style><style id='MyStyle2'>MIX</style><style id='MyStyle1'>styles!</style>";
+		string styledText = "<MyStyle1>And you can </MyStyle1><MyStyle2>MIX</MyStyle2><MyStyle1> styles!</MyStyle1>";
 		G_FS2.drawFormatted(styledText, x, y);
 
 	}

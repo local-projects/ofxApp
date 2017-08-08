@@ -30,8 +30,8 @@ public:
 	ofxFontStash& getMonoBoldFont(){return monospacedBold;}
 	ofxFontStash* getFont(const string& name);
 
-	ofxFontStash2& getFontStash2(){return fonts2;}
-	const ofxFontStashStyle& getFontStyle(const string & styleID);
+	ofxFontStash2::Fonts & getFontStash2(){return fonts2;}
+	const ofxFontStash2::Style& getFontStyle(const string & styleID);
 
 protected:
 
@@ -48,8 +48,8 @@ protected:
 	std::map<string, ofxFontStash*> userFS_Fonts;
 
 	// ofxFontStash2
-	ofxFontStash2 fonts2;
-	map<string, ofxFontStashStyle> fs2Styles;
+	ofxFontStash2::Fonts fonts2;
+	map<string, ofxFontStash2::Style> fs2Styles;
 
 	NVGalign getAlignmentFromString(const string & str);
 
