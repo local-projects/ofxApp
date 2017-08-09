@@ -5,23 +5,25 @@
 
 What is ofxApp? Its the basic skeleton for an interactive installation made in OpenFrameworks. It tries to simplify your life by offering some basic functionality trying to minimize the effort required on your side.
 
+There are also some [slides](https://github.com/local-projects/ofxApp/raw/master/introduction.pdf) that might help understand what ofxApp is.
+
 ## Features
 A quick summary of the features offered by ofxApp:
 
- * Startup / Loading Screen with progress (ofxStateMachine)
- * CMS Asset download/cache/checksum management (ofxSimpleHttp, ofxAssets, ofxTagSystem)
- * CMS JSON content loading & failover recovery (ofxMTJsonParser)
- * CPU & GPU profiler (ofxTimeMeasurements)
- * Dynamic texture load / unload (TexturedObject)
- * Logging to file & screen (ofxSuperLog)
- * Parameter Tweaking (ofxRemoteUI)
- * Error Reporting to CMS (ofxSensu)
- * Static Texture Assets preloading + access by fileName + dynamic edits (ofxAutoTexture)
- * Analytics (ofxGoogleAnalytics)
- * Fonts (ofxFontStash)
- * TUIO setup (ofxTuio)
- * Screen Management (fullscreen, windows, etc) (ofxScreenSetup)
- * All behaviors highly configurable from a single config file (ofxJsonSettings)
+ * Startup / Loading Screen with progress ([ofxStateMachine](https://github.com/armadillu/ofxStateMachine))
+ * CMS Asset download/cache/checksum management ([ofxSimpleHttp](https://github.com/armadillu/ofxSimpleHttp), [ofxAssets](https://github.com/armadillu/ofxAssets), [ofxTagSystem](https://github.com/armadillu/ofxTagSystem))
+ * CMS JSON content loading & failover recovery ([ofxMTJsonParser](https://github.com/armadillu/ofxMTJsonParser))
+ * CPU & GPU profiler ([ofxTimeMeasurements](https://github.com/armadillu/ofxTimeMeasurements))
+ * Dynamic texture load / unload ([TexturedObject](https://github.com/armadillu/TexturedObject))
+ * Logging to file & screen ([ofxSuperLog](https://github.com/armadillu/ofxSuperLog), [ofxThreadSafeLog](https://github.com/armadillu/ofxThreadSafeLog))
+ * Parameter Tweaking ([ofxRemoteUI](https://github.com/armadillu/ofxRemoteUI))
+ * Error Reporting to CMS ([ofxSensu](https://github.com/local-projects/ofxSensu))
+ * Static Texture Assets preloading + access by fileName + dynamic edits ([ofxAutoTexture](https://github.com/armadillu/ofxAutoTexture))
+ * Analytics ([ofxGoogleAnalytics](https://github.com/armadillu/ofxGoogleAnalytics))
+ * Fonts ([ofxFontStash](https://github.com/armadillu/ofxFontStash), [ofxFontStash2](https://github.com/armadillu/ofxFontStash2))
+ * TUIO setup ([ofxTuio](https://github.com/local-projects/ofxTuio))
+ * Screen Management (fullscreen, windows, etc) ([ofxScreenSetup](https://github.com/armadillu/ofxScreenSetup))
+ * All behaviours highly configurable from a single config file ([ofxJsonSettings](https://github.com/loca-projects/ofxJsonSettings))
 
 
 ## How To Use
@@ -33,6 +35,7 @@ A quick summary of the features offered by ofxApp:
 ofxOSC
 ofxXmlSettings
 ofxFontStash
+ofxFontStash2
 ofxTuio
 ofxJson
 ofxSuperLog
@@ -58,12 +61,12 @@ ofxScreenSetup
 ofxPoco* on recent (>0.9.8) versions of OpenFrameworks
 ```
 
-##### 2 - Define Pre-Processor macro with your project name (Optional):
+##### 2 - Define Pre-Processor macro with your project name:
 
 ```
 OFX_APP_NAME=MyApp
 ```
-This is used to automatically handle your custom Global Variables & Global Colors files. This is so that your Global Vars and colors classes are automatically included in the ofxApp instance.
+This is used to automatically handle your custom Global Variables & Global Colors files. This is so that your Global Vars and Colors classes are automatically included in the ofxApp instance. The whole point of this is to avoid casting.
 
 ##### 3 - Create files for your Global Variables & Global Colors:
 
@@ -234,20 +237,57 @@ There are 4 specified Phases in which you can act:
 
 #### 1. ofxApp::Phase::SETUP_B4_CONTENT_LOAD
 
-This will get called
+This will get called... TODO!
 
 #### 2. ofxApp::Phase::RECEIVE_CONTENT
 #### 3. ofxApp::Phase::SETUP_AFTER_CONTENT_LOAD
 #### 4. ofxApp::Phase::LAST_SETUP_B4_RUNNING
 
 
+## Maintenance Mode
 
+Sometimes you just need to keep an installation off because of extraordinary reasons (ie some hardware is missing, cms is down, etc). ofxApp makes it easy to set a placeholder message on screen when the installation needs maintenance. Inside the config file ```bin/data/ofxAppSettings.json```there's a section named "MaintenanceMode" (in ```App/MaintenanceMode```).
+
+The config file should be pretty self-explanatory; just set "enabled" to true to make the app skip all init & cms steps and jump straight into the "Maintenance Mode" screen at startup.
+
+```
+"MaintenanceMode":{
+	"enabled" : true,
+	"layout" : {
+		"x" : 0.5, //this is the normalized X location on screen (0.5 = middle of screen)
+		"y" : 0.46, //this is the normalized Y location on screen (0.5 = middle of screen)
+		"width" : 0.75, //this is the normalized width of the text column (based on screen Width)
+		"rotation" : 0.0, //in degrees
+		"scale" : 1.0 //scale up or down as desired
+	},
+	"header" : {
+		"text" : "Zzzzzzzz",
+		"fontScaleup" : 1.0,
+		"spacing" : 6.0,
+		"fontID" : "regular", //this is the ofxFontStash2 ID, built in fontIDs are "mono", "monoBold", "regular", "bold"
+		"color" : [0,228,130]
+	},
+	"body" : {
+		"text" : "Sorry! The wall is resting.\nIt will be back at work soon.",
+		"fontScaleup" : 1.0,
+		"spacing" : 0.0,
+		"fontID" : "regular", //this is the ofxFontStash2 ID, built in fontIDs are "mono", "monoBold", "regular", "bold"
+		"color" : [255]
+	},
+	"bgColor" : [0,0,0,255]
+},
+```
+
+This config would give you a screen like this:
+
+![maintenance.PNG](ReadMeImages/maintenance.PNG)
 
 ## ofxApp Keyboard Commands
 
-* __'W'__ : toggle window modes (see ofxScreenSetup for mode list)
+* __'W'__ : cycle through different window modes (see ofxScreenSetup for mode list)
 * __'L'__ : toggle on screen log (mouse & TUIO interactive)
-* __'M'__ : toggle mullions	 (for microtile preview)
+* __'M'__ : toggle mullions	(for microtile/videowall grid preview)
+* __'R'__ : reload ofxApp settings file (data/configs/ofxAppSettings.json) for live changes
 * __'D'__ : toggle debug mode (changes state of the global var "debug");
 
 ---
@@ -260,6 +300,8 @@ This will get called
 * __```G_FONT("fontID")```__ : direct acces to the ofxFontStash*
 * __```G_FONT_MONO```__ : direct acces to a monospaced ofxFontStash*
 * __```G_FONT_MONO_BOLD```__ : direct acces to a bold monospaced ofxFontStash*
+* __```G_FS2```__ : direct acces to ofxFontStash2 font manager
+* __```G_FSTYLE("styleID")```__ : get access to a specific ofxFontstash2::Style (styles defined in cfg file)
 * __```OFXAPP_REPORT(alertID,msg,severity)```__ : send an ofxSensu alert (that may trigger email on the CMS)
 * __```OFXAPP_REPORT_FILE(alertID,msg,severity)```__ : send an ofxSensu alert (to the CMS) with a file attachment
 * __```OFXAPP_ANALYTICS()```__ : direct access to ofxGoogleAnalytics*
@@ -277,7 +319,7 @@ This will get called
 
 ofxApp has a module named ofxAppStaticTextures that aims to simplify access to everyday textures; usually those are not cms-related textures that you need for the project like icons and such.
 
-As the project evolves, you often find yourslef having to add extra images to have ready as ofTextures. Instead of instantiating and hardcoding the path to the texture within code, ofxAppStaticTextures allows a different approach. It will just load any image file sitting in ```data/images/``` recursively at startup, across multiple threads to speed up the process. It will also display them all as they load, so you can keep an eye on textures you might not need loaded anymore and can keep your images dir clean.
+As the project evolves, you often find yourself having to add extra images to have ready as ofTextures. Instead of instantiating and hardcoding the path to the texture within code, ofxAppStaticTextures allows a different approach. It will just load any image file sitting in ```data/images/``` recursively at startup, across multiple threads to speed up the process. It will also display them all as they load, so you can keep an eye on textures you might not need loaded anymore and can keep your images dir clean.
 
 For example, given this directory structure for ```data/images```:
 
@@ -302,12 +344,12 @@ to make things a bit shorter, the following macro is defined in ```ofxAppMacros.
 G_TEX("icons/icon1.png")->draw(0,0); //access global texture
 ```
 
-Often you need fine grain control over how these textueres are loaded, maybe some of them need to be ```GL_TEXTURE_2D``` because you want your tex coordinates normalized, maybe you want some to have mipmaps created and some not. To allow this fine level of detail, ofxAppStaticTextures allows you to embed how you need the texture loaded in the filename. There are two modifiers you can play with:
+Often you need fine grain control over how these textures are loaded, maybe some of them need to be ```GL_TEXTURE_2D``` because you want your tex coordinates normalized, maybe you want some to have mipmaps created and some not. To allow this fine level of detail, ofxAppStaticTextures allows you to embed how you need the texture loaded in the filename. There are two modifiers you can play with:
 
 * **```"_t2d"```**: the texture should be loaded as ```GL_TEXTURE_2D```
 * **```"_mip"```**: the texture should have with mipmaps.
 
-For example, files named like this, will recieve this treatment:
+For example, files named like this, will receive this treatment:
 
 * **```"img.png"```** : will load as ```GL_TEXTURE_RECTANGLE_ARB``` and no mipmaps
 * **```"img_mip.png"```** : will load as ```GL_TEXTURE_2D``` with mipmaps
