@@ -25,18 +25,25 @@
 			"visibleAtStartup" : false
 		},
 		"MaintenanceMode":{
-			"enabled" : false,
+			"enabled" : true,
+			"layout" : {
+				"x" : 0.5, //this is the normalized X location on screen (0.5 = middle of screen)
+				"y" : 0.46, //this is the normalized Y location on screen (0.5 = middle of screen)
+				"width" : 0.75, //this is the normalized width of the text column (based on screen Width)
+				"rotation" : 0.0, //in degrees
+				"scale" : 1.0 //scale up or down as desired
+			},
 			"header" : {
 				"text" : "Zzzzzzzz",
 				"fontScaleup" : 1.0,
-				"spacing" : 6.0,
-				"fontID" : "regular", //this is the ofxFontStash2 ID, built in fontIDs are "mono", "monoBold", "regular", "bold"
+				"spacing" : 6.0, //letter spacing
+				"fontID" : "bold", //this is the ofxFontStash2 ID, built in fontIDs are "mono", "monoBold", "regular", "bold"
 				"color" : [0,228,130]
 			},
 			"body" : {
 				"text" : "Sorry! The wall is resting.\nIt will be back at work soon.",
 				"fontScaleup" : 1.0,
-				"spacing" : 0.0,
+				"spacing" : 0.0, //letter spacing
 				"fontID" : "regular", //this is the ofxFontStash2 ID, built in fontIDs are "mono", "monoBold", "regular", "bold"
 				"color" : [255]
 			},
@@ -44,6 +51,13 @@
 		},
 		"ErrorScreen":{
 			"bgColor" : [0,0,0,255],
+			"layout" : {
+				"x" : 0.5, //this is the normalized X location on screen (0.5 = middle of screen)
+				"y" : 0.46, //this is the normalized Y location on screen (0.5 = middle of screen)
+				"width" : 0.75, //this is the normalized width of the text column (based on screen Width)
+				"rotation" : 0.0, //in degrees
+				"scale" : 1.0 //scale up or down as desired
+			},
 			"title":{
 				"fontID" : "regular",
 				"fontScaleup" : 1.0,

@@ -581,6 +581,7 @@ void App::setupTuio(){
 	}
 }
 
+#pragma mark - draw
 
 void App::update(ofEventArgs &){
 
@@ -647,10 +648,10 @@ void App::draw(ofEventArgs &){
 			drawStats(); break;
 
 		case State::MAINTENANCE:
-			drawMaintenanceScreen(); break;
+			drawMaintenanceScreen(); drawStats(); break;
 
 		case State::DEVELOPER_REQUESTED_ERROR_SCREEN:
-			drawErrorScreen(); break;
+			drawErrorScreen(); drawStats(); break;
 			break;
 
 	}
@@ -704,19 +705,29 @@ void App::drawStats(){
 
 void App::drawMaintenanceScreen(){
 
-	ofColor bgcolor = getColor("App/MaintenanceMode/bgColor");
+	string settName = "MaintenanceMode";
+	ofColor bgcolor = getColor("App/" + settName + "/bgColor");
 
-	string header = getString("App/MaintenanceMode/header/text");
-	float headerSpacing = getFloat("App/MaintenanceMode/header/spacing");
-	float headerScaleup = getFloat("App/MaintenanceMode/header/fontScaleup");
-	string headerFont = getString("App/MaintenanceMode/header/fontID");
-	ofColor headerColor = getColor("App/MaintenanceMode/header/color");
+	//read layout settings
+	float x = getFloat("App/" + settName + "/layout/x");
+	float y = getFloat("App/" + settName + "/layout/y");
+	float colW = getFloat("App/" + settName + "/layout/width");
+	float rotation = getFloat("App/" + settName + "/layout/rotation");
+	float scale = getFloat("App/" + settName + "/layout/scale");
 
-	string body = getString("App/MaintenanceMode/body/text");
-	float bodySpacing = getFloat("App/MaintenanceMode/body/spacing");
-	float bodyScaleup = getFloat("App/MaintenanceMode/body/fontScaleup");
-	string bodyFont = getString("App/MaintenanceMode/body/fontID");
-	ofColor bodyColor = getColor("App/MaintenanceMode/body/color");
+	//read header settings
+	string header = getString("App/" + settName + "/header/text");
+	float headerSpacing = getFloat("App/" + settName + "/header/spacing");
+	float headerScaleup = getFloat("App/" + settName + "/header/fontScaleup");
+	string headerFont = getString("App/" + settName + "/header/fontID");
+	ofColor headerColor = getColor("App/" + settName + "/header/color");
+
+	//read body settings
+	string body = getString("App/" + settName + "/body/text");
+	float bodySpacing = getFloat("App/" + settName + "/body/spacing");
+	float bodyScaleup = getFloat("App/" + settName + "/body/fontScaleup");
+	string bodyFont = getString("App/" + settName + "/body/fontID");
+	ofColor bodyColor = getColor("App/" + settName + "/body/color");
 
 	if(!G_FS2.isFontLoaded(headerFont)){
 		if(ofGetFrameNum()%120 == 1) ofLogError("ofxApp") << "Maintenance Mode Font not found! " << headerFont;
@@ -725,33 +736,49 @@ void App::drawMaintenanceScreen(){
 
 	ofClear(bgcolor);
 
-	float fontSize = ofGetHeight() / 30.;
-	float headerY = ofGetHeight() * 0.46;
+	float fontSize = scale * ofGetHeight() / 30.;
+	float colWidth = ofGetWidth() * colW;
+	float headerY = ofGetHeight() * y;
+	float headerX = ofGetWidth() * x;
 
+	ofPushMatrix();
+	ofTranslate(headerX, headerY);
+	ofRotateDeg(rotation, 0, 0, 1);
 	ofxFontStash2::Style headerStyle = ofxFontStash2::Style(headerFont, fontSize * headerScaleup, headerColor);
 	headerStyle.spacing = headerSpacing;
 	int lineH = G_FS2.getTextBounds("Mp", headerStyle, 0, 0).height;
-	ofRectangle headerRect = G_FS2.drawColumn(header, headerStyle, 0, headerY, ofGetWidth(), OF_ALIGN_HORZ_CENTER);
+	ofRectangle headerRect = G_FS2.drawColumn(header, headerStyle, -colWidth/2, 0, colWidth , OF_ALIGN_HORZ_CENTER);
 
 	ofxFontStash2::Style bodyStyle = ofxFontStash2::Style(bodyFont, fontSize * bodyScaleup, bodyColor);
 	bodyStyle.spacing = bodySpacing;
-	ofRectangle bodyRect = G_FS2.drawColumn(body, bodyStyle, 0, headerRect.getBottom() + 2 * lineH, ofGetWidth(), OF_ALIGN_HORZ_CENTER);
+	ofRectangle bodyRect = G_FS2.drawColumn(body, bodyStyle, -colWidth/2, headerRect.getBottom() + 1.5 * lineH, colWidth, OF_ALIGN_HORZ_CENTER);
+	ofPopMatrix();
 }
 
 
 void App::drawErrorScreen(){
 
-	ofColor bgcolor = getColor("App/ErrorScreen/bgColor");
+	string settName = "ErrorScreen";
+	ofColor bgcolor = getColor("App/" + settName + "/bgColor");
 
-	float headerSpacing = getFloat("App/ErrorScreen/title/spacing");
-	float headerScaleup = getFloat("App/ErrorScreen/title/fontScaleup");
-	string headerFont = getString("App/ErrorScreen/title/fontID");
-	ofColor headerColor = getColor("App/ErrorScreen/title/color");
+	//read layout settings
+	float x = getFloat("App/" + settName + "/layout/x");
+	float y = getFloat("App/" + settName + "/layout/y");
+	float colW = getFloat("App/" + settName + "/layout/width");
+	float rotation = getFloat("App/" + settName + "/layout/rotation");
+	float scale = getFloat("App/" + settName + "/layout/scale");
 
-	float bodySpacing = getFloat("App/ErrorScreen/body/spacing");
-	float bodyScaleup = getFloat("App/ErrorScreen/body/fontScaleup");
-	string bodyFont = getString("App/ErrorScreen/body/fontID");
-	ofColor bodyColor = getColor("App/ErrorScreen/body/color");
+	//read header settings
+	float headerSpacing = getFloat("App/" + settName + "/title/spacing");
+	float headerScaleup = getFloat("App/" + settName + "/title/fontScaleup");
+	string headerFont = getString("App/" + settName + "/title/fontID");
+	ofColor headerColor = getColor("App/" + settName + "/title/color");
+
+	//read body settings
+	float bodySpacing = getFloat("App/" + settName + "/body/spacing");
+	float bodyScaleup = getFloat("App/" + settName + "/body/fontScaleup");
+	string bodyFont = getString("App/" + settName + "/body/fontID");
+	ofColor bodyColor = getColor("App/" + settName + "/body/color");
 
 	if(!G_FS2.isFontLoaded(headerFont)){
 		if(ofGetFrameNum()%120 == 1) ofLogError("ofxApp") << "Maintenance Mode Font not found! " << headerFont;
@@ -760,17 +787,23 @@ void App::drawErrorScreen(){
 
 	ofClear(bgcolor);
 
-	float fontSize = ofGetHeight() / 30.;
-	float headerY = ofGetHeight() * 0.46;
+	float fontSize = scale * ofGetHeight() / 30.;
+	float colWidth = ofGetWidth() * colW;
+	float headerY = ofGetHeight() * y;
+	float headerX = ofGetWidth() * x;
 
-	ofxFontStash2::Style headerStyle = ofxFontStash2::Style(headerFont, fontSize * headerScaleup, headerColor);
-	headerStyle.spacing = headerSpacing;
-	int lineH = G_FS2.getTextBounds("Mp", headerStyle, 0, 0).height;
-	ofRectangle headerRect = G_FS2.drawColumn(errorStateHeader, headerStyle, 0, headerY, ofGetWidth(), OF_ALIGN_HORZ_CENTER);
+	ofPushMatrix();
+	ofTranslate(headerX, headerY);
+	ofRotateDeg(rotation, 0, 0, 1);
+		ofxFontStash2::Style headerStyle = ofxFontStash2::Style(headerFont, fontSize * headerScaleup, headerColor);
+		headerStyle.spacing = headerSpacing;
+		int lineH = G_FS2.getTextBounds("Mp", headerStyle, 0, 0).height;
+		ofRectangle headerRect = G_FS2.drawColumn(errorStateHeader, headerStyle, -colWidth/2, 0, colWidth, OF_ALIGN_HORZ_CENTER);
 
-	ofxFontStash2::Style bodyStyle = ofxFontStash2::Style(bodyFont, fontSize * bodyScaleup, bodyColor);
-	bodyStyle.spacing = bodySpacing;
-	ofRectangle bodyRect = G_FS2.drawColumn(errorStateBody, bodyStyle, 0, headerRect.getBottom() + 2 * lineH, ofGetWidth(), OF_ALIGN_HORZ_CENTER);
+		ofxFontStash2::Style bodyStyle = ofxFontStash2::Style(bodyFont, fontSize * bodyScaleup, bodyColor);
+		bodyStyle.spacing = bodySpacing;
+		ofRectangle bodyRect = G_FS2.drawColumn(errorStateBody, bodyStyle, -colWidth/2, headerRect.getBottom() + 1.5 * lineH, colWidth, OF_ALIGN_HORZ_CENTER);
+	ofPopMatrix();
 }
 
 
@@ -996,10 +1029,12 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 
 		case State::RUNNING:{
 			float ts = -1.0f;
-			if(timeSampleOfxApp){
-				ts = TS_STOP_NIF("ofxApp Setup");
+			if(change.oldState != State::DEVELOPER_REQUESTED_ERROR_SCREEN){
+				if(timeSampleOfxApp){
+					ts = TS_STOP_NIF("ofxApp Setup");
+				}
+				logBanner(" ofxApp Setup Complete! " + ofToString(ofGetElapsedTimef(), 2) + "sec." );
 			}
-			logBanner(" ofxApp Setup Complete! " + ofToString(ofGetElapsedTimef(), 2) + "sec." );
 			}
 			break;
 
@@ -1024,6 +1059,7 @@ bool App::enterErrorState(string errorHeader, string errorBody){
 		errorStateHeader = errorHeader;
 		errorStateBody = errorBody;
 		appState.setState(State::DEVELOPER_REQUESTED_ERROR_SCREEN);
+		ofLogWarning("ofxApp") << "enterErrorState() - \"" << errorHeader << "\" : \"" << errorBody << "\"";
 		return true;
 	}
 	ofLogError("ofxApp") << "can't enterErrorState() until we hit the RUNNING State";
@@ -1036,6 +1072,7 @@ bool App::exitErrorState(){
 		errorStateHeader = "";
 		errorStateBody = "";
 		appState.setState(State::RUNNING);
+		ofLogWarning("ofxApp") << "exitErrorState()";
 		return true;
 	}
 	ofLogError("ofxApp") << "cant exitErrorState() unless we are in DEVELOPER_REQUESTED_ERROR_SCREEN State";
@@ -1080,16 +1117,16 @@ void App::onRemoteUINotification(RemoteUIServerCallBackArg &arg){
 void App::onKeyPressed(ofKeyEventArgs & a){
 	bool didPress = false;
 	switch(a.key){
-		case 'W': screenSetup.cycleToNextScreenMode(); didPress = true; break;
+		case 'W': screenSetup.cycleToNextScreenMode(); break;
 		case 'L': {
 			if(getBool("Logging/toScreen")){
 				ofxSuperLog::getLogger()->setScreenLoggingEnabled(!ofxSuperLog::getLogger()->isScreenLoggingEnabled());
-				didPress = true;
 				break;
 			}
 		}
-		case 'M': mullions.toggle(); didPress = true; break;
-		case 'D': globalsStorage->debug^= true; didPress = true; break;
+		case 'R': loadSettings(); RUI_LOG("[ofxApp : keyPress 'R'] Loaded Settings from \"ofxAppSettings.json\""); break;
+		case 'M': mullions.toggle(); RUI_LOG("[ofxApp : keyPress 'M'] Toggled Mullions"); break;
+		case 'D': globalsStorage->debug ^= true; didPress = true; break;
 	}
 	if(didPress){
 		RUI_PUSH_TO_CLIENT();
