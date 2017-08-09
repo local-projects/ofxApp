@@ -1,6 +1,6 @@
-# this will work for LP-style project filesystem layout
+# this will work for LocalProjects-style project filesystem organization
 # copy this file into your project dir for ProjectGenerator to find your addons
-# this will not work for in a standard OF addon locations (remove ../../ExternalAddons/ for it to work)
+# this will not work for in a standard OF addon locations (remove "../../ExternalAddons/" for it to work)
 
 ofxNetwork
 ofxOpenCv
@@ -31,3 +31,4 @@ ofxXmlSettings
 ../../ExternalAddons/ofxScreenSetup
 ../../ExternalAddons/ofxSensu
 ../../ExternalAddons/ofxGoogleAnalytics
+../../ExternalAddons/ofxInterface
