@@ -89,7 +89,7 @@ _ofxApp_ covers a lot of areas, we will break them down in several sections:
 TODO!
 2.1 Content
 2.2 Startup & Init stages
-2.3 Static Image assets
+2.3 Static Textures loading Automation
 2.4 Maintenance Mode
 2.5 Error Screens
 ...
@@ -449,7 +449,58 @@ This diagram shows the most relevant callbacks will receive over time:
 
 <img src="ReadMeImages/callbacks.png" width="740">
 
-### 2.3 Maintenance Mode
+### 2.3 Static Textures loading Automation
+
+_ofxApp_ has a module named ofxAppStaticTextures that aims to simplify access to everyday textures; usually those textures that you need available all the time, and you never dynamically load & unload them; this includes things like icons and such.
+
+As the project evolves, you often find yourself having to add extra images to have ready as ofTextures. Instead of instantiating and hardcoding the path to the texture within code, ofxAppStaticTextures allows a different approach. It will just load any image file sitting in ```data/images/``` recursively at startup, across multiple threads to speed up the process. It will also display them all as they load, so you can keep an eye on textures you might not need loaded anymore and can keep your images dir clean.
+
+For example, given this directory structure for ```data/images```:
+
+```
+images/
+	image1.png
+	icons/
+		icon1.png
+		icon2.png
+```
+
+you can access the ofTexture from code in this way:
+
+```c++
+ofxApp::get().textures().getTexture("image.png"); //returns ofTexture*
+ofxApp::get().textures().getTexture("icons/icon1.png");
+```
+
+to make things a bit shorter, the following macro is defined in ```ofxAppMacros.h```:
+
+```c++
+G_TEX("icons/icon1.png")->draw(0,0); //access global texture
+```
+
+Often you need fine grain control over how these textures are loaded; maybe some of them need to be ```GL_TEXTURE_2D``` because you want your tex coordinates normalized, maybe you want some to have mipmaps created and some not. To allow this fine level of detail, ofxAppStaticTextures allows you to embed how you need the texture loaded in the filename.
+
+There are two filename modifiers you can add to the end of your texture files:
+
+* **```"_t2d"```**: the texture should be loaded as ```GL_TEXTURE_2D```
+* **```"_mip"```**: the texture should have with mipmaps.
+
+For example, files named like this, will receive this treatment:
+
+* **```"img.png"```** : will load as ```GL_TEXTURE_RECTANGLE_ARB``` and no mipmaps
+* **```"img_mip.png"```** : will load as ```GL_TEXTURE_2D``` with mipmaps
+* **```"img_t2d_mip.png"```** : will load as ```GL_TEXTURE_2D``` with mipmaps
+* **```"img_t2d.png"```** : will load as ```GL_TEXTURE_2D``` but no mipmaps will be created
+
+__Things to note about the texture naming:__
+
+* The tex loading properties (```"_t2d"``` and ```"_mip"```) are always removed from the texture name
+* The file extension ("jpg", etc) is removed from the texture name
+* The upper level dirname ("images" in the example above) is removed from the texture name
+* Requesting a missing texture will not crash, but you will get a 16x16 garbage texture + an error log entry
+
+
+### 2.4 Maintenance Mode
 
 Sometimes you just need to keep an installation off because of extraordinary reasons (ie some hardware is missing, cms is down, etc). _ofxApp_ makes it easy to set a placeholder message on screen when the installation needs maintenance. Inside the config file ```bin/data/ofxAppSettings.json``` there is a section named "MaintenanceMode" (in ```App/MaintenanceMode``` ).
 
@@ -519,56 +570,6 @@ This config would give you a screen like this:
 
 [^1]: must be inside an in-class method for it to work; Use like this: ```LOGV << "hello!";```
 
-
-## Static Textures Automation
-
-_ofxApp_ has a module named ofxAppStaticTextures that aims to simplify access to everyday textures; usually those textures that you need available all the time, and you never dynamically load & unload them; this includes things like icons and such.
-
-As the project evolves, you often find yourself having to add extra images to have ready as ofTextures. Instead of instantiating and hardcoding the path to the texture within code, ofxAppStaticTextures allows a different approach. It will just load any image file sitting in ```data/images/``` recursively at startup, across multiple threads to speed up the process. It will also display them all as they load, so you can keep an eye on textures you might not need loaded anymore and can keep your images dir clean.
-
-For example, given this directory structure for ```data/images```:
-
-```
-images/
-	image1.png
-	icons/
-		icon1.png
-		icon2.png
-```
-
-you can access the ofTexture from code in this way:
-
-```c++
-ofxApp::get().textures().getTexture("image.png"); //returns ofTexture*
-ofxApp::get().textures().getTexture("icons/icon1.png");
-```
-
-to make things a bit shorter, the following macro is defined in ```ofxAppMacros.h```:
-
-```c++
-G_TEX("icons/icon1.png")->draw(0,0); //access global texture
-```
-
-Often you need fine grain control over how these textures are loaded; maybe some of them need to be ```GL_TEXTURE_2D``` because you want your tex coordinates normalized, maybe you want some to have mipmaps created and some not. To allow this fine level of detail, ofxAppStaticTextures allows you to embed how you need the texture loaded in the filename.
-
-There are two filename modifiers you can add to the end of your texture files:
-
-* **```"_t2d"```**: the texture should be loaded as ```GL_TEXTURE_2D```
-* **```"_mip"```**: the texture should have with mipmaps.
-
-For example, files named like this, will receive this treatment:
-
-* **```"img.png"```** : will load as ```GL_TEXTURE_RECTANGLE_ARB``` and no mipmaps
-* **```"img_mip.png"```** : will load as ```GL_TEXTURE_2D``` with mipmaps
-* **```"img_t2d_mip.png"```** : will load as ```GL_TEXTURE_2D``` with mipmaps
-* **```"img_t2d.png"```** : will load as ```GL_TEXTURE_2D``` but no mipmaps will be created
-
-#### Things to note about the texture naming:
-
-* The tex loading properties (```"_t2d"``` and ```"_mip"```) are always removed from the texture name
-* The file extension ("jpg", etc) is removed from the texture name
-* The upper level dirname ("images" in the example above) is removed from the texture name
-* Requesting a missing texture will not crash, but you will get a 16x16 garbage texture + an error log entry
 
 
 
