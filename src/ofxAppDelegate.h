@@ -1,5 +1,5 @@
 //
-//  HasRuiParams.h
+//  ofxAppDelegate.h
 //  BaseApp
 //
 //  Created by Oriol Ferrer Mesià on 4/8/16.

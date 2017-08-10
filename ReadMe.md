@@ -73,9 +73,8 @@ Look at the example to see how they look like.
 
 This usually means your ofApp (a subclass of ofBaseApp, the basic OpenFrameworks app) should also subclass ofxAppDelegate, as shown here:
 
-```
-class ofApp : public ofBaseApp, public ofxAppDelegate{
-
+```c++
+class YourApp : public ofBaseApp, public ofxAppDelegate{
 }
 ```
 
@@ -87,28 +86,60 @@ _ofxApp_ covers a lot of areas, we will break them down in several sections:
 
 
 ```
+TODO!
 2.1 Content
-2.2 Startup & init stages
+2.2 Startup & Init stages
+2.3 Static Image assets
+2.4 Maintenance Mode
+2.5 Error Screens
+...
+2.N The Config file `data/configs/ofxAppSettings.json` 
 ```
 
-### 2.1 ofxApp Content Abstraction
 
-_ofxApp_ abstracts content fetching, checking and loading through several means; it's basic unit is the ```ContentObject```. A ContentObject is basic unit of content; for example a collection object in a museum. Your objects will have to inherit from ContentObject to gain its functionality. The ```ContentObject``` class inherits from 3 classes that handle different behaviors:
+### 2.1 ofxApp and Content
 
-![](ReadMeImages/contentObjectInher.png)
+One of the goals of _ofxApp_ is to abstract content ingestion and sync with a remote CMS for you.
 
-* __ParsedObject__: minimal class that holds the object UUID. This almost generic class is used across the board to have a common ground for any JSON parseable object, and you don't really interact much with it.
+#### 2.1.1 How does ofxApp Handle Content?
 
-* __AssetHolder__: an object that contains assets (i.e. a museum object with N assets of different kinds). Once the ContentObject has its AssetHolder properties defined, the process of checking if the assets required for that object are present locally, if they changed or are damaged (SHA1 checksum), if the object is asset complete, what size are each of the assets, they filetype, etc becomes an automated one.
+_ofxApp_ allows you to go from a JSON sitting on an API endpoint, to a filtered ```vector<YourContentObject*>``` with all the assets listed in the JSON guaranteed to be on disk at the specified paths and ready to go.
 
-* __TexturedObject__: this allows your object to dynamically load and unload ofTextures on the fly, without halting your app to do so. It does so by progressively loading them, so you first request a texture you need, and you will get notified when its ready (usually a few frames after the request has been placed). When you don't need the texture (because your object is not on screen anymore), you can release it and it will be unloaded for you.
+![](ReadMeImages/content.png)
+
+_ofxApp_ takes a divide an conquer approach to JSON parsing; it will break up the large JSON into lots of little JSON bits you can parse individually (one per each object defined in the JSON – one per each museum object). It does this for clarity, but also to be able to speed up the parsing of big JSON files by using threads.
+
+_ofxApp_ will download, parse and split up the JSON file into N little bits of JSON (ofxJSONElement objects, a [jsoncpp](https://github.com/open-source-parsers/jsoncpp) Json::Value wrapper) that will deliver to you one by one (through callbacks) so you can focus only in parsing what you need for each object, and create each one of your ```MuseumObjects``` on each callback. You will write the code to parse each object, allowing to use or ignore whatever fields you need, or processing them as desired.
+
+_ofxApp_ will also handle the rejection of invalid objects. What defines a "invalid object" can be configured, but it mostly boils down to assets referenced in the JSON not being there (wrong URL, 404, no URL, etc), or their checksum not checking out (SHA1 mismatch) or some other custom rules (image size too small, missing fields, etc). Through the definition of various policies (ofxAssets::DownloadPolicy, ofxAssets::UsagePolicy), you can define when assets need to be re-downloaded from source (in case they have been modified), if you trust the local files even if the SHA1 doesn't match, etc. And you always have the ultimate say through the parsing lambda you provide to _ofxApp_.
+
+![](ReadMeImages/content2.png)
+
+_ofxApp_ needs you to answer a few questions to be able to fulfill that content delivery:
+
+* __Where are the Objects?__  
+	You have to locate where the objects are inside the JSON (in our case, JSON["MuseumObjects"])
+
+* __What fields do you need from each object?__  
+	Extract the data that you need from the JSON data, copying it over to the variables defined in your MuseumObject.
+
+* __Is the object valid?__  
+	You must decide for each object if it looks valid; i.e. Is it cool if it's missing the Title field? If it's not valid, it will be discarded so it never shows in your app.
+
+* __What is the Object UUID?__  
+	_ofxApp_ needs to know each object's UUID. If the JSON is a dictionary of objects, the UUID will be each object's key; but if it's an array, you will have to manually deliver one.
+
+* __Does the object have textures you want to dynamically load and unload?__  
+	If you want to use dynamic texture loading, this is where you set it up. You will tell _ofxApp_ what textures does the object have, and where are they located for each resolution.
+
+To answer all the above questions, _ofxApp_ offers you a Function Based protocol; you will be asked to define a few functions that will clarify all these questions. We will see those a bit further in.
 
 
-### The JSON file structure
+#### 2.1.2 The JSON file structure
 
- Usually you have a JSON file for each content type; for example, the objects of a museum collection will all live in a single JSON file. They are often arranged in a JSON array, or in a JSON dictionary, as shown below:
+ _ofxApp_ assumes your content comes in JSON form. It also assumes you will get one JSON file per content source/type. Let's chose a real world example; imagine your project is an interactive wall that aims to show the collection of a Museum. In such a situation, you will probably have 1 JSON file with a list of all the objects in the collection. But you might also have 1 JSON with the list of all the Artist Bios, and one for all the curators, etc. This content is often arranged in a JSON array, or in a JSON dictionary, as shown below in a fictional ```MuseumObjects``` JSON.
 
-```
+```c++
 ///Objects in JSON array; objectID must be supplied per object
 { "MuseumObjects" : [
 		{
@@ -125,7 +156,7 @@ _ofxApp_ abstracts content fetching, checking and loading through several means;
 }
 ```
 
-```
+```c++
 ///Objects in JSON dictionary;
 { "MuseumObjects" : {
 	"objID1" : {
@@ -140,9 +171,9 @@ _ofxApp_ abstracts content fetching, checking and loading through several means;
 }
 ```
 
-To attach all this to a real world example, let's assume we are working on a project for a museum that has a collection of objects, whose contents are stored in a JSON like the one defined above. We will create our own C++ object and we will call it ```MuseumObject```. It will look like this:
+Let's continue with our example; to hold the information about each object in your JSON you will create your own C++ object, let's call it ```MuseumObject```. It will look like similar to this:
 
-```
+```c++
 class MuseumObject : public ContentObject{
 public:
 	string imageURL;
@@ -150,113 +181,183 @@ public:
 }
 ```
 
-### What is it ofxApp does for you?
+Note how your ```MuseumObject``` inherits from ```ContentObject```; by doing so your ```MuseumObject``` gets a lot of functionality out of the box. More on that later.
 
-_ofxApp_ allows you to go from a JSON sitting on an API endpoint, to a filtered ```vector<MuseumObject*>``` with all the assets listed in the JSON guaranteed to be on disk and ready to go.
-
-![](ReadMeImages/content.png)
-
-_ofxApp_ takes a divide an conquer approach to parsing; it will break up the JSON into lots of little JSON bits you can parse individually (one per each object defined in the JSON). It does this for clarity, but also to be able to speed up the parsing of big JSON files by using threads.
-
-_ofxApp_ will download, parse and split up the JSON file into N little bits of JSON (ofxJSONElement, a [jsoncpp](https://github.com/open-source-parsers/jsoncpp) Json::Value wrapper) that will deliver to you one by one (through callbacks) so you can focus only in parsing what you need for each object, and create each one of your "MuseumObjects" on each callback.
-
-What defines a "invalid object" can be configured, but it mostly boils down to assets referenced in the JSON not being there (wrong URL), or their checksum not checking out (SHA1 mismatch) or some other custom rules (image size too small, missing fields, etc). Through de definition of various policies (ofxAssets::DownloadPolicy, ofxAssets::UsagePolicy), you can define when assets need to be re-downloaded, if you trust the local files even if the SHA1 doesn't match, etc. And you always have the ultimate say through the parsing lambda you provide to _ofxApp_.
+Alos, note how there's one variable to hold each JSON field. The idea here is to mirror the JSON structure pretty closely. In fact, using the name variable names as the JSON field can really help code understanding later on.
 
 
-![](ReadMeImages/content2.png)
+#### 2.1.3 ofxApp Content Abstraction
 
-_ofxApp_ needs you to answer a few questions to be able to deliver on that promise:
+_ofxApp_ abstracts content fetching, parsing, checking and loading through several means. To do so, it defines a class hierarchy for the minimum content unit you will deal with, the ```ContentObject``` class. A ```ContentObject``` is basic unit of content; for example a collection object in a Museum. All your ```MuseumObject``` objects will inherit from ```ContentObject``` to gain its functionality. The ```ContentObject``` also inherits from three other classes, that handle different behaviors:
 
-* __Where are the Objects?__
-	You have to locate objects are inside the JSON (in our case, JSON["MuseumObjects"])
+![](ReadMeImages/contentObjectInher.png)
 
-* __What fields do you need from each object?__  
-	Extract the data that you need from the JSON data, copying it over to your custom MuseumObject.
+* __ParsedObject__: minimal class that holds the object UUID. This almost generic class is used across the board to have a common ground for any JSON parseable object, and you don't really interact much with it.
 
-* __Is the object valid?__  
-	You must decide for each object if it looks valid; i.e. Is it cool if it's missing the title field?
+* __AssetHolder__: an object that contains assets (i.e. a museum object with N assets of different kinds). Assets are any kind of file that might be used by the app to represent that object (jpegs, mp4s, aiff's, etc). Once the ContentObject has its AssetHolder properties defined, the process of checking if the assets required for that object are present locally, if they changed or are damaged (through SHA1 checksum), if the object is asset complete, what size are each of the assets, their filetype, etc becomes an automated one.
 
-* __What is the Object UUID?__  
-	_ofxApp_ needs to know each object's UUID. If the JSON is a dictionary of objects, the UUID will be each object's key; but if it's an array, you will have to manually deliver.
+* __TexturedObject__: A TexturedObject is an object that owns textures (images) at different resolutions that you might want to draw. This allows your object to dynamically load and unload ofTextures on the fly, without halting your app to do so. It does so by progressively loading them, so you first request a texture you need, and you will get notified when its ready (usually a few frames after the request has been placed). When you don't need the texture (because your object is not on screen anymore), you can release it and it will be unloaded for you. This allows your app to hold a lot of image content (ie an entire museum collection - that would be too much to completely pre-load) and keeping interactive framerates when showing it.
 
-* __Does the object have textures you want to dynamically load and unload?__  
-	If you want to use dynamic texture loading, this is where you set it up the TexturedObject par of each ContentAsset.
+#### 2.1.4 Content Sources
 
-To answer all the above questions, _ofxApp_ offers you a Function Based protocol; you will define 3 functions that will clarify all these questions.
+For _ofxApp_ to know what content you want in your app, you must tell it what that is. _ofxApp_ expects you to supply a config file in your `data/configs/ofxAppSettings.json` (see section 2.7). In there, there's a whole section about Content Sources named `Content/JsonSources`.
 
+```c++
+data/configs/ofxAppSettings.json
+{
+...
+	"Content":{
+		"JsonSources":{ 
+			"CooperHewitt" : { //content ID - this is whatever you want to name that content source.
+				"url" : "http://uri.cat/LP/ch_small.json", //API endpoint or local JSON file
+				"jsonDownloadDir": "CH_JsonDownloads", //where to store the downloaded JSON
+				"assetsLocation": "CH_assets",  //where the assets for each obj in the JSON will be stored
+				"shouldSkipObjectPolicyTests" : false  //set this to true to avoid the object cleanup according to the policies
+			},
+			"CWRU" : { //another content source's contentID
+				"url" : "file://testJson/cwru.json",
+				"jsonDownloadDir": "CWRU_JsonDownloads",
+				"assetsLocation": "CWRU_assets",  
+				"shouldSkipObjectPolicyTests" : false 
+			}
+		}
+	}
+	...
+}
+```
 
-## ofxApp Startup Stages
+As you can see in the JSON config bit above, each Content Source is identified with a contentID of your choosing; in the example above we have two content sources : "CooperHewitt" and "CWRU". 
+
+Each Content Source must have a few fields defined:
+
+* `url` : this is where _ofxApp_ will get the content JSON from; can be an endpoint (http://www.../API) or a local file (file://testJson/testContent.json).
+* `jsonDownloadDir` : this is where the json will be stored after downloading it from the source above.
+* `assetsLocation`: this is where all the assets referenced in every object inside the JSON will be downloaded.
+* `shouldSkipObjectPolicyTests `: this bool allows skipping the policy tests (more on that later) to accept all the objects in the JSON regardless - usually you want this to be false.
+
+If you suddenly have another content source, just add it in that section. _ofxApp_ will ask your help to parse each content source through callback and lambda functions you will need to deliver. (more on that later).
+
+#### 2.1.6 Content Ingestion
+
+##### 2.1.6.1 ....
+##### 2.1.6.2 Customized Parsing Functions
+
+#### 2.1.5 Content Fail and Recovery
+
+What happens if _ofxApp_ starts but the API endpoint is down? What happens if the JSON is malformed and can't be parsed? .... TODO!
+
+## 2.2 ofxApp Startup Stages
 
 So far we have only focused on the JSON content aspect of _ofxApp_, but it loads lots more during startup. In summary, _ofxApp_ does all this at startup, in the following order:
 
-* Create pid file ("data/ofxApp.pid")
+* Create pid file ("data/ofxApp.pid") for clean exit checks.
 * Load _ofxApp_ Settings ("data/configs/ofxAppSettings.json")
 * Setup Logging; to screen and file ("data/logs/")[ofxSuperLog]
-* Setup ofxRemoteUI
-* Setup Error Reports (ofxSensu)
+* Setup ofxRemoteUI - for parameter tweaking
+* Setup CMS Error Reports (ofxSensu)
 * Setup Google Analytics (ofxGoogleAnalytics)
-* Load fonts requested in settings file (ofxFontStash)
-* Setup Time Profiler (ofxTimeMeasurements)
-* Setup TextureLoader
-* Setup TUIO
-* User callback to do custom setup ```ofxAppPhaseWillBegin(State::WILL_LOAD_CONTENT)```
-* Load Static textures across N threads (any images at data/images)
+* Load fonts requested in settings file (ofxFontStash, ofxFontStash2)
+* Setup a CPU and GPU Profiler (ofxTimeMeasurements)
+* Setup TextureLoader (for dynamic texture loading)
+* Setup TUIO (for multitouch input)
+* User callback to allow you to do custom setup ```ofxAppPhaseWillBegin(State::WILL_LOAD_CONTENT)```
+* Load Static textures across N threads (any images at ```data/images```)
 * For each JSON content source URL:  
 	* Download the JSON file  
-	* Ask the user where the data is within the JSON (Lambda)
+	* Ask the user where the data is within the JSON (user supplied Lambda)
 	* Load the JSON file / test for its integrity  
 	* Parse the JSON file with custom user Lambdas > creating N "ContentObjects"  
-	* For each ContentObject  
-	 	* Look at its defined assets, see if they are on disk and checksum matches  
-		* If asset is missing or has a checksum mismatch, put in a download list  
-		* Download files from asset download list - keeping track of the ones that fail
+	* For each ContentObject
+	   * Look at its defined assets, see if they are on disk and checksum matches
+       * If asset is missing or has a checksum mismatch, put in a download list
+	   * Download files from asset download list - keeping track of the ones that fail  
  	* Remove objects from the ContentObject list that don't comply with the policies
-	* Give user a chance to setup TexturedObject for each ContentObject (Lambda)
+	* Give user a chance to setup TexturedObject for each ContentObject (custom user Lambda)
 * For each JSON content source URL
-	* Deliver content to the user. ```ofxAppContentIsReady("ID", vector<ContentObject*>)```
-* Give User a chance to do custom work with the newly delivered content. ```ofxAppPhaseWillBegin(State::DID_DELIVER_CONTENT)```
+	* Deliver content to the user through the ```ofxAppContentIsReady("ID", vector<ContentObject*>)``` callback.
+* Give User a chance to do custom setup with the newly delivered content. ```ofxAppPhaseWillBegin(State::DID_DELIVER_CONTENT)```
 * Give User a chance to do custom setup before app starts ```ofxAppPhaseWillBegin(State::WILL_BEGIN_RUNNING)```
 
 
-and your app will get notified on some of those changes so you can act before / after certain things happen. Those callbacks are chances for you to load custom content that you might need before / after other content is loaded. You don't need to explicitly do anything in those phases, but an opportunity is given so that you may if you need to.
+Your app will get notified on some of those changes so you can act before / after certain things happen. Each those steps are called an ```ofxApp::Phase```, and that's how _ofxApp_ divides the startup process. Those callbacks are chances for you to load custom content / interface with hardware that you might need before / after other content is loaded. You may not need to do anything in those phases, but an opportunity is given so that you can if you need to.
 
-There's a callback mechanism that allows _ofxApp_ to wait or proceed to the next Phase, according to your needs. The mechanism involves 2 callback methods:
+There are three phases you will get callbacks for;
 
-
-
-```
-ofxAppPhaseWillBegin(ofxApp::Phase);
-ofxAppIsPhaseComplete(ofxApp::Phase);
-```
-
-There is also a callback method that will get called N times, depending on how many content pieces you setup _ofxApp_ to load. This is:
-
-```
-void ofxAppContentIsReady(const string & contentID, vector<ContentObject*>);
+```c++
+enum Phase{
+	WILL_LOAD_CONTENT,
+	DID_DELIVER_CONTENT,
+	WILL_BEGIN_RUNNING
+};
 ```
 
+You will get this callbacks because as we saw before, your app will have to subclass ```ofxAppDelegate``` to use _ofxApp_.
 
-First, _ofxApp_ will call ofxAppPhaseWillBegin(ofxApp::Phase) on the delegate (your app), informing it is time for the delegate to do whatever it needs to do in that particular phase.
+```c++
+class YourApp : public ofBaseApp, public ofxAppDelegate{  };
+```
+By doing so, you adhere to a protocol that includes quite a few callbacks; some of them are designed to allow you to interact with the startup process.
 
-There are 4 specified Phases in which you can act:
+You can see all those callback definitions in the `ofxAppDelegate.h` file, which defines all the deleagte methods _ofxApp_ will need you to respond to. 
+
+There's a callback mechanism that allows _ofxApp_ to wait or proceed to the next Phase, according to your needs. The goal here is for ofxApp to give you a chance to do your custom setup at key moments during startup; maybe you need to pre-process all the content before the app starts, maybe you need to connect to some external hardware before you get the content, etc. _ofxApp_ allows you to do your setup when you need to, but also it makes it easy for you to inform the staff of progress or potential problems during setup by letting you control what's drawn on screen during each phase. The mechanism involves 2 callback methods, with a few more optional methods:
+
+```c++
+void ofxAppPhaseWillBegin(ofxApp::Phase);
+bool ofxAppIsPhaseComplete(ofxApp::Phase);
+```
+
+Your app will get the callback `ofxAppPhaseWillBegin(ofxApp::Phase currentPhase)` for every phase in which you can intervene, and you can make _ofxApp_ hold on that phase as long as you want. You control when the phase is complete by returning `true` or `false` to the `bool ofxAppIsPhaseComplete(ofxApp::Phase);` callback. Once a phase has started, _ofxApp_ will fire the `ofxAppIsPhaseComplete` callback asking you if you are done with that phase every frame, if you return `false`, _ofxApp_ will stay on that phase until the next frame, when it will ask you again.
+
+There are more callbacks that you can implement to control the look of the startup process if you are so inclined;
+
+```c++
+//override the loading screen drawing
+void ofxAppDrawPhaseProgress(ofxApp::Phase, const ofRectangle & r); 
+
+//override the progress bar status text
+string ofxAppGetStatusString(ofxApp::Phase){return "";}; 
+
+//override the text message above the progress bar (ie for showing script logs)
+string ofxAppGetLogString(ofxApp::Phase){return "";}; 
+
+//return [0..1] to report progressbar; -1 for 
+float ofxAppGetProgressForPhase(ofxApp::Phase){return -1;} indeterminate
+
+```
+
+Those will allow you to control how the startup screen looks like as the phase takes place; This is how the startup screen looks for each phase:
+
+<img src="ReadMeImages/initScreen.png" width="740">
+
+The Progress Bar shows the current phase name right in the middle; and the progress is directly mapped to the value you return on the `ofxAppGetProgressForPhase(ofxApp::Phase)` callback. You should return a value in the [0..1] range, or -1 if the progress bar should be indeterminate.
+
+The Progress Bar also allows you to control the little bit of text that goes besides the phase name; basically a quick status update. You can specify this by returning the string in `ofxAppGetStatusString(ofxApp::Phase)`.
+
+The startup process also allows you to show text that will match the overall style of the screen, useful for logs and other information you might want to have on screen while the app starts. This is designed so that you can easily feed it the output of a script, etc. Just return that output (or any text you want drawn) at the `ofxAppGetLogString(ofxApp::Phase)` callback.
+
+And for ultimate customization, you can also completely override what's drawn in the startup screen for a particular phase by just drawing it yourself; implement the `ofxAppDrawPhaseProgress(ofxApp::Phase, const ofRectangle & r)` callback and just draw what you need in the specified bounds, which are roughly the area above the progress bar.
 
 
-#### 1. ofxApp::Phase::SETUP_B4_CONTENT_LOAD
+There is also a callback method that will get called N times, depending on how many content sources you setup _ofxApp_ to load. This is callback is executed whenever a content source is ready for you to use;
 
-This will get called... TODO!
+```c++
+void ofxAppContentIsReady(const string & contentID, vector<ContentObject*> content);
+```
 
-#### 2. ofxApp::Phase::RECEIVE_CONTENT
-#### 3. ofxApp::Phase::SETUP_AFTER_CONTENT_LOAD
-#### 4. ofxApp::Phase::LAST_SETUP_B4_RUNNING
+it contains the `contentID` (which is a string that identifies a content type, ie "MuseumObjects") and the vector containing the list of all the objects in the JSON API that passed all the content filters that are setup.
 
+This diagram shows the most relevant callbacks will receive over time: 
 
-## Maintenance Mode
+<img src="ReadMeImages/callbacks.png" width="740">
+
+### 2.3 Maintenance Mode
 
 Sometimes you just need to keep an installation off because of extraordinary reasons (ie some hardware is missing, cms is down, etc). _ofxApp_ makes it easy to set a placeholder message on screen when the installation needs maintenance. Inside the config file ```bin/data/ofxAppSettings.json``` there is a section named "MaintenanceMode" (in ```App/MaintenanceMode``` ).
 
 The config file should be pretty self-explanatory; just set "enabled" to true to make the app skip all init & CMS steps and jump straight into the "Maintenance Mode" screen at startup.
 
-```
+```c++
 "MaintenanceMode":{
 	"enabled" : true,
 	"layout" : {
@@ -339,14 +440,14 @@ images/
 
 you can access the ofTexture from code in this way:
 
-```
+```c++
 ofxApp::get().textures().getTexture("image.png"); //returns ofTexture*
 ofxApp::get().textures().getTexture("icons/icon1.png");
 ```
 
 to make things a bit shorter, the following macro is defined in ```ofxAppMacros.h```:
 
-```
+```c++
 G_TEX("icons/icon1.png")->draw(0,0); //access global texture
 ```
 
