@@ -231,13 +231,111 @@ As you can see in the JSON config bit above, each Content Source is identified w
 Each Content Source must have a few fields defined:
 
 * `url` : this is where _ofxApp_ will get the content JSON from; can be an endpoint (http://www.../API) or a local file (file://testJson/testContent.json).
-* `jsonDownloadDir` : this is where the json will be stored after downloading it from the source above.
-* `assetsLocation`: this is where all the assets referenced in every object inside the JSON will be downloaded.
+* `jsonDownloadDir` : this is the path where the json will be stored after downloading it from the source above.
+* `assetsLocation`: this is the path where the assets referenced in every object inside the JSON will be downloaded.
 * `shouldSkipObjectPolicyTests `: this bool allows skipping the policy tests (more on that later) to accept all the objects in the JSON regardless - usually you want this to be false.
 
-If you suddenly have another content source, just add it in that section. _ofxApp_ will ask your help to parse each content source through callback and lambda functions you will need to deliver. (more on that later).
+If you suddenly have another content source, just add it in that section with its own unique contentID. _ofxApp_ will ingest the content in that source during the startup phases (more on that later).
 
 #### 2.1.6 Content Ingestion
+
+We have seen how a content JSON might look like, and how you specify your content sources, and some of the classes involved in the different functionalities offered for your content objects. Now we will see how the content is actually converted from JSON to C++ objects. We have seen in 2.1.1 that _ofxApp_ needs to ask you a few questions to be able to parse JSON; here we see how you will answer them through code.
+
+For every content source you want to use, you will have to provide a set of lambda functions to give _ofxApp_ directions on how to parse it. These std::functions are packaged into a struct named `ParseFunctions`.
+
+```c++
+struct ParseFunctions{
+	std::function<void (ofxMtJsonParserThread::JsonStructureData &)> pointToObjects;
+	std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> parseOneObject;
+	std::function<void (ofxApp::CatalogAssetsData &)> defineObjectAssets;
+	std::function<void (ContentObject*)> setupTexturedObject;
+	ofxJSON userData;
+};
+```
+
+As you can see, there's 4 `std::function` objects you must provide, let's analyse them one by one.
+
+* `std::function<void (ofxMtJsonParserThread::JsonStructureData &)> pointToObjects;`
+
+  The goal here is to simply point _ofxApp_ to the content within the JSON content source. For example, in a JSON like this:
+  
+  ```c++
+  {
+  	"data":
+  		[
+  			{
+	  			"objectID" : "af74rfssg",
+  				"img" : "http://uri.cat/img.jpg"
+  			},
+  			{
+				"objectID" : "af74rfssg",
+  				"img" : "http://uri.cat/img.jpg"
+  			}
+  		]
+  	}
+  ```
+  
+  where the content is in an array under JSON["data"], you want to do something like:
+  
+	```c++
+	std::function ofxApp::ParseFunctions::pointToObjects(JsonStructureData & inOutData){
+		ofxJSONElement & jsonRef = *(inOutData.fullJson);
+		if(jsonRef["data"].isArray()){
+			inOutData.objectArray = (ofxJSONElement*) &(jsonRef["data"]);
+		}else{
+			ofLogError("ofApp") << "JSON has unexpected format!";
+			//if the json is not what we exepcted it to be,
+			//let the parser know by filling it the data like this:
+			inOutData.objectArray = nullptr;
+		}
+	}
+	```
+  
+  Let's see what's going on here: the std::function signature provides you with an argument `JsonStructureData & inOutData`. This is passed to you by reference, so you can write on that object (and you are expected to). If see look at the definition of `JsonStructureData`, we see it contains:
+  
+  ```c++
+  	struct JsonStructureData{
+		ofxJSONElement * fullJson;		//this will provide you the full json data (aka the whole json)
+		ofxJSONElement * objectArray; 	//you are supposed to send back a ptr to the json structure that has the object array OR dictionary you want to parse
+	};
+  ```
+  
+  so the function signature is providing with the whole JSON (as an ofxJSONElement *) but also another pointer named objectArray for you to "fill in". The provided `JsonStructureData` is being used as a two-way communication tool between _ofxApp_ and you; _ofxApp_ provides a full JSON, and expects you to give it back a pointer to where the content is within that JSON.
+  
+  If we look at the implementation proposed above, you can see we first cast the ofxJSONElement* of the whole JSON doc to a reference (for nicer syntax):
+  
+  ```c++
+  ofxJSONElement & jsonRef = *(inOutData.fullJson);
+  ```
+  
+  And then I check if "data" exists in the JSON and if it is an array (as we expect)...
+  
+  ```c++
+  if(jsonRef["data"].isArray()){
+  ```
+  
+  And if the "data" looks correct, we point _ofxApp_ to it by "filling in" the inOutData.objectArray pointer:
+  
+  ```c++
+  inOutData.objectArray = (ofxJSONElement*) &(jsonRef["data"]);
+  ```
+  
+  and if the data in the JSON did not match our expectation, we give back a nullptr to _ofxApp_
+  
+  ```c++
+  inOutData.objectArray = nullptr;
+  ```
+    
+  
+* `std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> parseOneObject;`  
+  This too
+  
+* `std::function<void (ofxApp::CatalogAssetsData &)> defineObjectAssets;`  
+  This too
+  
+* `std::function<void (ContentObject*)> setupTexturedObject;`  
+  This too
+
 
 ##### 2.1.6.1 ....
 ##### 2.1.6.2 Customized Parsing Functions
