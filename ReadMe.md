@@ -444,7 +444,7 @@ As you can see, there's 4 `std::function` objects for you to provide code for, a
   inOutData.object = dynamic_cast<ParsedObject*> (o);
   ```
 
-  It's important to note that your `MuseumObject` is here "downcasted" to a `ParsedObject` using **`dynamic_cast<ParsedObject*>()``**. This is extremely important as otherwise some of the object contents might be lost when _ofxApp_ copies data across different pointer types.
+  It's important to note that your `MuseumObject` is here "downcasted" to a `ParsedObject` using **`dynamic_cast<ParsedObject*>()`**. This is extremely important as otherwise some of the object contents might be lost when _ofxApp_ copies data across different pointer types.
 
 
   ---
