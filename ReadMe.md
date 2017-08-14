@@ -53,7 +53,7 @@ To do so, given the high number of addon dependencies, I suggest you use the Ope
 ```
 OFX_APP_NAME=MyApp
 ```
-This is used to automatically handle your custom Global Variables & Global Colors files. This is so that your Global Vars and Colors classes are automatically included in the _ofxApp_ instance. The whole point of this is to avoid casting.
+This is used to automatically handle your custom Global Variables & Global Colors files. This is so that your Global Vars and Colors classes are automatically included in the _ofxApp_ instance. The whole point of this is to avoid dynamic casting all over the place just to acces your globals; this allows your globals object (`MyAppGlobals`) to be stored inside _ofxApp_ in their native Class, so they can be totally overridden by you and still be included in _ofxApp_ at compile time.
 
 ### 1.3 - Create files for your Global Variables & Global Colors:
 
@@ -181,15 +181,18 @@ Let's continue with our example; to hold the information about each object in yo
 class MuseumObject : public ContentObject{
 public:
     string title; //data defined in JSON
-	string imageURL; //data defined in JSON
-	string imageSHA1; //data defined in JSON
+    string imageURL; //data defined in JSON
+    string imageSHA1; //data defined in JSON
+
     string imageLocalPath; //where will the image be stored when downloaded by ofxApp?
+    ofVec2f imgSize; //it might be useful to know the pixel dimensions of out image beforehand (for layout)
+    //so we create a variable to store them here,
 }
 ```
 
 Note how your ```MuseumObject``` inherits from ```ContentObject```; by doing so your ```MuseumObject``` gets a lot of functionality out of the box. More on that later.
 
-Alos, note how there's one variable to hold each JSON field. The idea here is to mirror the JSON structure pretty closely. In fact, using the name variable names as the JSON field can really help code understanding later on.
+Also, note how there's one variable to hold each JSON field. The idea here is to mirror the JSON structure pretty closely. In fact, using the name variable names as the JSON field can really help code understanding later on.
 
 ---
 #### 2.1.3 ofxApp Content Abstraction
@@ -481,11 +484,13 @@ As you can see, there's 4 `std::function` objects for you to provide code for, a
   You are in charge of defining all the assets for the provided object. In our example, each `MuseumObject` has a single asset (an image), for which we have an URL and an expected file checksum (sha1). Let's see how we can setup the `AssetHolder` side of our object:
 
   ```c++
-  MuseumObject * mo = dynamic_cast<MuseumObject*>(data.object);
-  string assetsPath = data.assetsLocation + "/" + mo->getObjectUUID();
-  mo->AssetHolder::setup(assetsPath, data.assetUsagePolicy, data.assetDownloadPolicy);
-  if(mo->imgURL.size()){
-      mo->imageLocalPath = mo->AssetHolder::addRemoteAsset(mo->imgURL, mo->imgSha1);
+  auto defineObjectAssets = [](ofxApp::CatalogAssetsData & data){
+      MuseumObject * mo = dynamic_cast<MuseumObject*>(data.object);
+      string assetsPath = data.assetsLocation + "/" + mo->getObjectUUID();
+      mo->AssetHolder::setup(assetsPath, data.assetUsagePolicy, data.assetDownloadPolicy);
+      if(mo->imgURL.size()){
+          mo->imageLocalPath = mo->AssetHolder::addRemoteAsset(mo->imgURL, mo->imgSha1);
+      }
   }
   ```
 
@@ -539,7 +544,80 @@ As you can see, there's 4 `std::function` objects for you to provide code for, a
 
   ---
 
-  This too  
+  This is the last `std::function` you will have to define; and you might not need to define it at all. This is where you setup your Textured Objects; which only really makes sense if your object contains image assets that you want to dynamically load and unload. Within the scope of our `MuseumObject` example, it makes sense to define our TexturedObjects as each MuseumObject holds one image that we will want to load & unload on the fly.
+
+  This std::function's signature provides you with the `ContentObject *` currently at play; as usual your std::function will be executed once per each object defined inside the "MuseumObject.JSON" file, each call providing a pointer to the `ContentObject` that corresponds.
+
+  Ultimately, the goal is to define per object how many textures exist, and at what sizes. [TexturedObject](https://github.com/armadillu/ofxTexturedObject) is designed in a way that each object is assumed to be able to hold N textures (ie, for our MuseumObject example, you can imagine N photographs of the same sculpture as being N possible textures) and a few size representations (or image resolutions) for each of the N images. Each different texture gets an index, and also a size tag. For example, if your app needs to draw a table with a bunch of icons representing `MusemObject`s, you probably only need to load the smallest size texture for each of them. But if your GUI allows the user to focus on a single `MusemObject` and offers a fullscreen image viewer, you probably want to load the largest available texture size for that image. At this stage, we are defining these variables; how many images/textures does my object hold, and at what different sizes do they exist.
+
+  Let's see how we would define the Textured Objects for our example:
+
+  ```c++
+    auto setupTexturedObject = [](ContentObject * texuredObject){
+
+		MuseumObject * mo = dynamic_cast<MuseumObject*>(texuredObject); //cast from ContentObject* to our native type
+		int numImgAssets = mo->AssetHolder::getNumAssets();	//retrieve the total # of assets for this object
+          //this will always be 1 for this example, and we know it will be 1 image asset.
+	      //Note that the assets are owned by my object's superclass "AssetHolder"
+
+		mo->TexturedObject::setup(numImgAssets, {TEXTURE_ORIGINAL}); //we only use one texture size, so lets choose ORIGINAL
+
+		//this example shows how to tackle certain problems; would not usually be necessary
+		//but we need to check the pixel size of each image for TextureLoader to be able to work;
+		//so we do that here.
+		for(int i = 0; i < numImgAssets; i++){
+			ofxAssets::Descriptor & d = mo->AssetHolder::getAssetDescAtIndex(i);
+
+			switch (d.type) {
+				case ofxAssets::VIDEO: break;
+				case ofxAssets::IMAGE:{
+					auto info = ofxApp::utils::getImageDimensions(d.relativePath);
+					if(info.valid){
+						mo->imgSize = ofVec2f(info.width, info.height);
+					}else{
+						ofLogError("TexturedObject") << "cant get metadata image info at " << d.relativePath;
+					}break;
+				}
+				default: break;
+			}
+		}
+	};
+  ```
+
+  There's a lot going on in this bit of code, and not all of it is essential for our example... Let's look at it line by line.
+
+  First we cast the supplied generic `ContentObject *` to our native type `MuseumObject *`.
+
+  ```c++
+  MuseumObject * mo = dynamic_cast<MuseumObject*>(texuredObject);
+  ```
+
+  Then we retrieve information about the # of assets from the object itself; because at this stage we already setup the `AssetHolder` superclass, we can retrieve information from it. The goal here is to find out how many textures this object owns. Because we know beforehand that `MuseumObject`s only have image assets, this is good enough. If there were other kinds of assets involves, this would not be enough, and we would need to drill down a bit furhter into `ofxAssetHolder` to get the real # of image-type assets. At this point we could also use the tag system (see the [example supplied](https://github.com/local-projects/ofxApp/blob/master/example/src/ofxAppParsers.cpp#L207) with ofxApp for more on this), or use the `ofxAssets::Descriptor`s through `AssetHolder::getAssetDescAtIndex()` or similar to query information about the assets.
+
+  ```c++
+  int numImgAssets = mo->AssetHolder::getNumAssets();
+  ```
+
+  The next line sets up the `TexturedObject` superclass part of our `MuseumObject`. To do so, we need to provide how many texturedObjects this object needs (one in our case), and at what sizes. For this examples, we are assuming our app will only ever draw the images at their original resolution, so we will only be using one representation. We can choose whatever "label" we want to give that size, and it seems appropriate to label them as "original size". `ofxTexturedObject` defines [4 size labels](https://github.com/armadillu/ofxTexturedObject/blob/master/src/TexturedObjectSizes.h#L13-L20) that should cover most cases; It's up to you to decide how to assign a label to a resolution for your case. In most cases you will only need 2-3 texture sizes, one "icon" size (ie 256px) (which as usually label as `TEXTURE_SMALL`), one "medium" (ie 1024px) size which I usually label `TEXTURE_MEDIUM`, and the largest available size which I usually label `TEXTURE_ORIGINAL`. The label itself doesn't mean anything; it's just a mnemonic to be able to request a certain texture size category; for example, if I am rendering a view in which `MusumeObject`s icons are drawn, then most likely I will request loading the `TEXTURE_SMALL` representation of my object's textures. We will see more of this further ahead, but you can get an idea on how you will be requesting textures and releasing them in the [ofxTexturedObject API](https://github.com/armadillu/ofxTexturedObject/blob/master/src/TexturedObject.h#L119-L131).  
+
+  Finally down below we see how to setup the `TexturedObject`, in this case we supply the # of images and an array of all the sizes we will be using (in this case only one size, `TEXTURE_ORIGINAL`).
+
+
+  ```c++
+  mo->TexturedObject::setup(numImgAssets, {TEXTURE_ORIGINAL});
+  ```
+
+  The rest of the `std::function` demonstrates how to iterate through all the assets defined in our object, only focusing on the image types, and how to extract the image dimensions for each of our image assets using one of the _ofxApp_ utility methods. This is relevant because when you implement your `MuseumObject` class, by inheriting from `ContentObject` you will automatically be asked to implement a few methods that `TexturedObject` relies on to be able to load and unload textures. Note how when we setup() the `TexturedObject` we never specified what textures to load, only the # of textures that existed. That is because `TexturedObject` works by enforcing a subclass protocol on your object. To use `TexturedObject`, your object must subclass it, and then implement a [couple of methods](https://github.com/armadillu/ofxTexturedObject/blob/master/src/TexturedObject.h#L94-L97) so that whenever `TexturedObject` needs information about your textures, it can ask you. Those methods are `ofVec2f getTextureDimensions(TexturedObjectSize size, int index);` and `string getLocalTexturePath(TexturedObjectSize size , int index)`. When `TexturedObject` needs to load a texture, it will ask you where to find it by calling getLocalTexturePath() supplying a texture size and an index. Its up to you to point it to the right file. Same applies to image dimensions, although that's more for your own benefit; often in GUI layouts you need to be able to know the size of a texture before you load it; so it will be convenient for you to be able to query the object directly about that texture size (with getTextureDimensions()).
+
+  After this short into to `ofxTextureLoader`, we can justify why ```ofxApp::utils::getImageDimensions(string path)``` is there. What the [function](https://github.com/armadillu/ofxApp/blob/master/src/ofxAppUtils.h#L46) is doing is finding out an image size from the filesystem; it makes sense to do this at this stage because finding dimensions of an image is a fairly expensive operation, so doing it once at the startup of the app (instead of during the app's normal operation) can help keep the framerates stable. Note that `ofxApp::utils::getImageDimensions(string path)` isn't actually loading the full image, it only peeks at the image headers to extract the dimensions, so it's not a terribly slow operation, but still too slow for realtime. Also note how in the code above we store those image dimensions inside the object (in `mo->imgSize`), so that the implementation of `MuseumObject::getTextureDimensions(TexturedObjectSize size, int index);` can just return that value.
+
+  ```
+  auto info = ofxApp::utils::getImageDimensions(d.relativePath);
+  if(info.valid){
+      mo->imgSize = ofVec2f(info.width, info.height);
+  }
+  ```
+
 
 
 ##### 2.1.6.1 ....
