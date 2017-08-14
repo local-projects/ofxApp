@@ -377,8 +377,10 @@ As you can see, there's 4 `std::function` objects for you to provide code for, a
 	}
   ```
 
-  * `ParsedObject * object`: This is the pointer to final object that will hold all the information you will extract from the JSON. It is your responsibility to allocate the object and assign it to `object*`. The argument will come initialized as `nullptr`; if you leave it as `nullptr` _ofxApp_ will interpret that the object is to be dropped, and it will not show in the app.
+  * `ParsedObject * object`: This is the pointer to final object that will hold all the information you will extract from the JSON. It is your responsibility to allocate the object and assign it to `object*`. The argument will come initialized as `nullptr`; if you leave it as `nullptr` _ofxApp_ will interpret that the object is to be dropped, and it will not show in the app.  
 
+
+  To parse our "MuseumObjects.json", we can write our std::function like this:
 
   ```c++
     auto parseOneObject = [](ofxMtJsonParserThread::SingleObjectParseData & inOutData){
@@ -388,13 +390,13 @@ As you can see, there's 4 `std::function` objects for you to provide code for, a
 
 		try{ //do some parsing - catching exceptions
 			objID = jsonRef["ID"].asString();
-            title = jsonRef["title"].asString();
+			title = jsonRef["title"].asString();
 			imgURL = jsonRef["imageURL"].asString();
 			imgSha1 = jsonRef["imageSha1"].asString();
 		}catch(exception exc){}
 
 		MuseumObject * o = new MuseumObject(); //allocate our MuseumObject
-		o->title = title;
+		o->title = title; //copy over all the parsed data
 		o->imgURL = imgURL;
 		o->imgSha1 = imgSha1;
 		inOutData.objectID = objID; //this is how we tell ofxApp the ObjID for this object		
@@ -402,14 +404,64 @@ As you can see, there's 4 `std::function` objects for you to provide code for, a
 	};
   ```
 
+  Let's look at the proposed `std::function` line by line:
+
+  We first cast the JSON data represeting this object's JSON so its easier to handle syntax
+
+  ```c++
+  ofxJSONElement & jsonRef = *(inOutData.fullJson);
+  ```
+
+  Then we create a few temp variables to store the parsed data.
+
+  ```c++
+  string objID, title, imgURL, imgSha1; //create temp vars to hold the data in JSON
+  ```
+
+  And the parsing begins; note it's all done around a `try/catch` because accessing `ofxJSONElement`s can rise exceptions.
+
+  ```c++
+  try{
+      objID = jsonRef["ID"].asString();
+      title = jsonRef["title"].asString();
+      imgURL = jsonRef["imageURL"].asString();
+      imgSha1 = jsonRef["imageSha1"].asString();
+  }catch(exception exc){}
+  ```
+
+  Once we have all the data parsed out of the `ofxJSONElement`, it's time to allocate the `MuseumObject` that will hold it, and we fill it with the parsed data.
+
+  ```c++
+  MuseumObject * o = new MuseumObject(); //allocate our MuseumObject
+  o->title = title;
+  ...
+  ```
+
+  And now its time to fill in the `SingleObjectParseData` data structure to communicate to _ofxApp_ the results of our parsing. There's two things we need to copy over to the structure; the newly allocated object, and it's objectID.
+
+  ```
+  inOutData.objectID = objID;
+  inOutData.object = dynamic_cast<ParsedObject*> (o);
+  ```
+
+  It's important to note that your `MuseumObject` is here "downcasted" to a `ParsedObject` using **`dynamic_cast<ParsedObject*>()``**. This is extremely important as otherwise some of the object contents might be lost when _ofxApp_ copies data across different pointer types.
 
 
+  ---
 
 * **`std::function<void (ofxApp::CatalogAssetsData &)> defineObjectAssets;`**  
+
+  ---
+
   This too  
 
 
+  ---
+
 * **`std::function<void (ContentObject*)> setupTexturedObject;`**  
+
+  ---
+
   This too  
 
 
