@@ -42,7 +42,7 @@ To do so, given the high number of addon dependencies, I suggest you use the Ope
 * Set a "Project Name", the name you want your project binary to have.
 * Click "Generate" to create the project; keep Project Generator open.
 * Go to ```Your_Repo/ExternalAddons/ofxApp/``` (or ```/addons/ofxApp``` if you use vanilla OF) and copy the file ```addon_config.make``` to your new project folder; and rename it to ```addons.make```.
-* Back to Project Generator, click on the "Project Path" texfield once to make the app refresh - the addons list should update. Click on "Update" to re-create your project files. At this point, all the addons dependencies for _ofxApp_ should be covered.
+* Back to Project Generator, click on the "Project Path" text field once to make the app refresh - the addons list should update. Click on "Update" to re-create your project files. At this point, all the addons dependencies for _ofxApp_ should be covered.
 * Add these __PreProcessor Macros__ to your project: ```USE_OFX_FONTSTASH```, ```USE_OFX_FONTSTASH2```, ```USE_OFX_HISTORYPLOT```, ```NANOVG_GL2_IMPLEMENTATION``` (\*or NANOVG_GL3_IMPLEMENTATION) and ```OFX_APP_NAME=xxxx``` (where xxxx is your "Project Name" - see 1.2).
 * Your project should compile cleanly now.
 
@@ -241,7 +241,7 @@ As you can see in the JSON config bit above, each Content Source is identified w
 Each Content Source must have a few fields defined:
 
 * `url` : this is where _ofxApp_ will get the content JSON from; can be an endpoint (http://www.../API) or a local file (file://testJson/testContent.json).
-* `jsonDownloadDir` : this is the path where the json will be stored after downloading it from the source above.
+* `jsonDownloadDir` : this is the path where the JSON will be stored after downloading it from the source above.
 * `assetsLocation`: this is the path where the assets referenced in every object inside the JSON will be downloaded.
 * `shouldSkipObjectPolicyTests `: this bool allows skipping the policy tests (more on that later) to accept all the objects in the JSON regardless - usually you want this to be false.
 
@@ -410,7 +410,7 @@ As you can see, there's 4 `std::function` objects for you to provide code for, a
 
   Let's look at the proposed `std::function` line by line:
 
-  We first cast the JSON data represeting this object's JSON so its easier to handle syntax
+  We first cast the JSON data representing this object's JSON so its easier to handle syntax
 
   ```c++
   ofxJSONElement & jsonRef = *(inOutData.fullJson);
@@ -473,13 +473,13 @@ As you can see, there's 4 `std::function` objects for you to provide code for, a
 
   The structure provides you with the object in question (`ContentObject * object`), a string giving you the location in which the assets for this ContentSource should be stored (defined in the config file `ofxAppSettings.json`), some policy objects, and the previously seen userData object.
 
-  The `ContentObject * object` is the `MuseumObject *` you just allocated in the previously defined `std::function`. The object is provided so that you can setup its `AssetHolder` part. In the section `2.1.3 ofxApp Content Abstraction` we saw the class hierarchy of a ContentObject included `ParsedObject` (which we have already used for parsing), `AssetHolder` (which we will interact with in this section) and `TexturedObject` which we will look at later on. The `AssetHolder` part of yor object is used to define all the assets that that particular `MuseumObject` contains. _ofxApp_ can't just guess what assets does an object include, so you must define those first. And this is what we will do in this `std::function`. Note that you will have to cast it again to your object type to interact with it (more on this in a second).
+  The `ContentObject * object` is the `MuseumObject *` you just allocated in the previously defined `std::function`. The object is provided so that you can setup its `AssetHolder` part. In the section `2.1.3 ofxApp Content Abstraction` we saw the class hierarchy of a ContentObject included `ParsedObject` (which we have already used for parsing), `AssetHolder` (which we will interact with in this section) and `TexturedObject` which we will look at later on. The `AssetHolder` part of your object is used to define all the assets that that particular `MuseumObject` contains. _ofxApp_ can't just guess what assets does an object include, so you must define those first. And this is what we will do in this `std::function`. Note that you will have to cast it again to your object type to interact with it (more on this in a second).
 
   The `assetsLocation` string will be the path specified in `ofxAppSettings.json`, precisely at `Content/JsonSources/MuseumObjects/assetsLocation` for our example. It represents where in the filesystem those assets will be downloaded/copied to.  
 
   The Policy objects `ofxAssets::DownloadPolicy` and `ofxAssets::UsagePolicy` are objects that define a set of rules to help decide if 1: an asset needs to be re-downloaded and 2: the asset should be used or not. We will see more about policies later on.
 
-  The `ofxJSONElement * userData` is just an object provided for you to be able to get access to any sort of information you might need within those std::functions. You can initialize this object before you start the parsing process and provide it to _ofxApp_, and it will be given back to you for each of the std::function executions. Becasue of abstracted nature of the parsing process (you just define object-level std::functions), it might be hard to get access to external data otherwise.
+  The `ofxJSONElement * userData` is just an object provided for you to be able to get access to any sort of information you might need within those std::functions. You can initialize this object before you start the parsing process and provide it to _ofxApp_, and it will be given back to you for each of the std::function executions. Because of abstracted nature of the parsing process (you just define object-level std::functions), it might be hard to get access to external data otherwise.
 
   You are in charge of defining all the assets for the provided object. In our example, each `MuseumObject` has a single asset (an image), for which we have an URL and an expected file checksum (sha1). Let's see how we can setup the `AssetHolder` side of our object:
 
@@ -520,11 +520,11 @@ As you can see, there's 4 `std::function` objects for you to provide code for, a
   mo->AssetHolder::setup(assetsPath, data.assetUsagePolicy, data.assetDownloadPolicy);
   ```
 
-  And finally, you can see how we define the existance of one asset for our object;by calling the method [addRemoteAsset()](https://github.com/armadillu/ofxAssets/blob/master/src/AssetHolder.h#L48) from the `AssetHolder` superclass. A *Remote Asset* is an asset that is located in a remote server; this is the most common type of asset. To define this remote asset, we choose to supply the remote asset `URL`, and its `sha1` checksum. This is enough for most situations, but in others you might want to provide more information about the asset so that you can retrieve it later. Refer to the documentation in [ofxAssetHolder](https://github.com/armadillu/ofxAssets/blob/master/src/AssetHolder.h#L48) for more detail.
+  And finally, you can see how we define the existence of one asset for our object; by calling the method [addRemoteAsset()](https://github.com/armadillu/ofxAssets/blob/master/src/AssetHolder.h#L48) from the `AssetHolder` superclass. A *Remote Asset* is an asset that is located in a remote server; this is the most common type of asset. To define this remote asset, we choose to supply the remote asset `URL`, and its `sha1` checksum. This is enough for most situations, but in others you might want to provide more information about the asset so that you can retrieve it later. Refer to the documentation in [ofxAssetHolder](https://github.com/armadillu/ofxAssets/blob/master/src/AssetHolder.h#L48) for more detail.
 
   With this two bits of information, _ofxApp_ can attempt to download the asset from the remote server, and compare the obtained file's sha1 checksum with the expected one, to see if the file integrity checks out. It's important to note that if our `MuseumObject` had more assets, we would just keep doing `ofxAssetHolder::addRemoteAsset()` until all assets were added; and _ofxApp_ would take care of downloading and checking them.
 
-  We are still missing one bit about the upcoming line of code; that is the fact that `AssetHolder::addRemoteAsset()` returns a string. This string will be the relative path to that asset on the filesystem; but more importantly it will be the `key` which you can use to refer to the asset later on. `ofxAsset` has several API methods to [retrieve](https://github.com/armadillu/ofxAssets/blob/master/src/AssetHolder.h#L67-L78) all the defined assets for an object. You can iterate through all the assets within an object by `index` pr by `key` (the relative path returned when addRemoteAsset() is called). Doing so will give you access to infromation about the assets, like their status, mime/type, any tags you might have provided them with, asset file specs, etc.
+  We are still missing one bit about the upcoming line of code; that is the fact that `AssetHolder::addRemoteAsset()` returns a string. This string will be the relative path to that asset on the filesystem; but more importantly it will be the `key` which you can use to refer to the asset later on. `ofxAsset` has several API methods to [retrieve](https://github.com/armadillu/ofxAssets/blob/master/src/AssetHolder.h#L67-L78) all the defined assets for an object. You can iterate through all the assets within an object by `index` pr by `key` (the relative path returned when addRemoteAsset() is called). Doing so will give you access to information about the assets, like their status, mime/type, any tags you might have provided them with, asset file specs, etc.
 
   ```c++
   mo->imageLocalPath = mo->AssetHolder::addRemoteAsset(mo->imgURL, mo->imgSha1);
@@ -592,7 +592,7 @@ As you can see, there's 4 `std::function` objects for you to provide code for, a
   MuseumObject * mo = dynamic_cast<MuseumObject*>(texuredObject);
   ```
 
-  Then we retrieve information about the # of assets from the object itself; because at this stage we already setup the `AssetHolder` superclass, we can retrieve information from it. The goal here is to find out how many textures this object owns. Because we know beforehand that `MuseumObject`s only have image assets, this is good enough. If there were other kinds of assets involves, this would not be enough, and we would need to drill down a bit furhter into `ofxAssetHolder` to get the real # of image-type assets. At this point we could also use the tag system (see the [example supplied](https://github.com/local-projects/ofxApp/blob/master/example/src/ofxAppParsers.cpp#L207) with ofxApp for more on this), or use the `ofxAssets::Descriptor`s through `AssetHolder::getAssetDescAtIndex()` or similar to query information about the assets.
+  Then we retrieve information about the # of assets from the object itself; because at this stage we already setup the `AssetHolder` superclass, we can retrieve information from it. The goal here is to find out how many textures this object owns. Because we know beforehand that `MuseumObject`s only have image assets, this is good enough. If there were other kinds of assets involves, this would not be enough, and we would need to drill down a bit further into `ofxAssetHolder` to get the real # of image-type assets. At this point we could also use the tag system (see the [example supplied](https://github.com/local-projects/ofxApp/blob/master/example/src/ofxAppParsers.cpp#L207) with ofxApp for more on this), or use the `ofxAssets::Descriptor`s through `AssetHolder::getAssetDescAtIndex()` or similar to query information about the assets.
 
   ```c++
   int numImgAssets = mo->AssetHolder::getNumAssets();
@@ -785,7 +785,7 @@ __Things to note about the texture naming:__
 
 ### 2.4 Maintenance Mode
 
-Sometimes you just need to keep an installation off because of extraordinary reasons (ie some hardware is missing, cms is down, etc). _ofxApp_ makes it easy to set a placeholder message on screen when the installation needs maintenance. Inside the config file ```bin/data/ofxAppSettings.json``` there is a section named "MaintenanceMode" (in ```App/MaintenanceMode``` ).
+Sometimes you just need to keep an installation off because of extraordinary reasons (ie some hardware is missing, CMS is down, etc). _ofxApp_ makes it easy to set a placeholder message on screen when the installation needs maintenance. Inside the config file ```bin/data/ofxAppSettings.json``` there is a section named "MaintenanceMode" (in ```App/MaintenanceMode``` ).
 
 The config file should be pretty self-explanatory; just set "enabled" to true to make the app skip all init & CMS steps and jump straight into the "Maintenance Mode" screen at startup.
 
@@ -802,14 +802,14 @@ The config file should be pretty self-explanatory; just set "enabled" to true to
 	"header" : {
 		"text" : "Zzzzzzzz",
 		"fontScaleup" : 1.0,
-		"spacing" : 6.0,
+		"spacing" : 6.0, //character spacing, 0 is neutral
 		"fontID" : "regular", //this is the ofxFontStash2 ID, built in fontIDs are "mono", "monoBold", "regular", "bold"
 		"color" : [0,228,130]
 	},
 	"body" : {
 		"text" : "Sorry! The wall is resting.\nIt will be back at work soon.",
 		"fontScaleup" : 1.0,
-		"spacing" : 0.0,
+		"spacing" : 0.0, //character spacing, 0 is neutral
 		"fontID" : "regular", //this is the ofxFontStash2 ID, built in fontIDs are "mono", "monoBold", "regular", "bold"
 		"color" : [255]
 	},
@@ -819,8 +819,55 @@ The config file should be pretty self-explanatory; just set "enabled" to true to
 
 This config would give you a screen like this:
 
-![maintenance.PNG](ReadMeImages/maintenance.PNG)
+<img src="ReadMeImages/maintenance.PNG" width="560">
 
+### 2.5 Error handling
+
+_ofxApp_ has two ways of handling runtime errors
+
+### 2.6 Analytics
+
+Analytics in _ofxApp_ are handled by [ofxGoogleAnalytics](https://github.com/armadillu/ofxGoogleAnalytics), but its configuration is handled through the `ofxAppSettings.json` configuration file found at `data/configs/ofxAppSettings.json`. It contains a section named `GoogleAnalytics` with all the necessary configuration options.
+
+_ofxApp_ will send automatic analytics events when the app starts running, and when the app exits.
+
+You can access the `ofxGoogleAnalytics` object to send your custom event from anywhere by requesting it to _ofxApp_ with the macro `OFXAPP_ANALYTICS()` or by calling `ofxApp::get().analytics()`. Refer to the examples and documentation in [ofxGoogleAnalytics](https://github.com/armadillu/ofxGoogleAnalytics) for help on how to setup & report analytics on your app.
+
+### 2.7 PID file
+
+_ofxApp_ tries to keeps track its last launch by creating a file named `ofxApp.pid` in the `data` directory as soon as it launches, and it will delete the file when the app exits cleanly. If the app launches and it finds the `ofxApp.pid` file, it means the last time it was launched, it didn't quit nicely (because a crash, a power cut, etc). You can also check on previous session logs for reports on this, as it will be registered in the app's logs as `The App did not exit cleanly when it was last run.`
+
+### 2.8 Logging
+
+_ofxApp_ handles logging for you by offering several log channels. The _ofxApp_ configuration file `ofxAppSettings.json` contains a section about logging named `"Logging"`. In there you can configure where do you want your log lines to go (to console AND/OR to file AND/OR to screen), your log rotation strategy, and others.
+
+_ofxApp_ will create a new file named after the current timestamp each time the app is launched (if the config file specifies to write logs to file). Log names will look like `2017-07-31 | 11-24-02 | Monday.log` and they will be stored in the `data/logs` directory. Log files older than N days can be deleted automatically by setting so in the config file.
+
+You can inspect the logs on screen as the app is running, to do so you must toggle the screen logs. You can do so by pressing 'L' on the keyboard. The screen logs responds to mouse and TUIO input, it has a certain amount of history (`maxScreenLines` in config file) you can reach through scrolling. It is also possible to toggle the visibility of log times by pressing 't' while the log is visible. You can also adjust the dimensions of the log panel by dragging its frame.
+
+<img src="ReadMeImages/log.PNG">
+
+Logging follows the standard OpenFrameworks logging protocols, so each log line can specify a module that triggered the log by using it together with the stream operator:
+
+```c++
+ofLogWarning("moduleName") << "something worth logging happened."
+```
+There are 5 log levels, `ofLogVerbose()`, `ofLogNotice()`, `ofLogWarning()`, `ofLogError()` and `ofLogFatalError()`. You can set the log threshold in the config file to ignore certain log commands, specified in `Logging/logLevel`.
+
+Note how all the log outputs (file, console and screen) indent the output according to the longest module name width.
+
+Log output on the command line interface (on Win >=10 & OSX) will be colored by logLevel (verbose: gray, notice: green, warning: yellow, error: red, fatalError: purple), and so will be on the screen log.
+
+There is an extra log created on every app launch regarding content; it's named `assetStatus.log` and it's re-created on every app launch. It contains a list of all the assets requested by _ofxApp_, and the checksum/download state for it. This can be useful when debugging content.
+
+The config file also offers an option to synchronize logging across threads; if the `Logging/syncronizedLogging` section is set to true, all the logging commands will be mutexed avoiding the dreaded garbled logs when multiple threads are logging at the same time. This can be useful during development, but for production this option should be set to `false` to avoid performance bottlenecks.
+
+### 2.9 The Configuration File - "ofxAppSettings.json"
+
+---
+
+
+# Appendix
 ## ofxApp Keyboard Commands
 
 * __'W'__ : cycle through different window modes (see ofxScreenSetup for mode list)
@@ -829,9 +876,8 @@ This config would give you a screen like this:
 * __'R'__ : reload _ofxApp_ settings file (data/configs/ofxAppSettings.json) for live changes
 * __'D'__ : toggle debug mode (changes state of the global var "debug");
 
----
 
-## MACROS
+## ofxApp MACROS
 
 * __```GLOB```__ : direct access to MyAppGlobals
 * __```G_COL | G_COLOR```__ : direct access to MyAppColors
