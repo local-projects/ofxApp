@@ -134,7 +134,7 @@ _ofxApp_ needs you to answer a few questions to be able to fulfill that content 
 
 To answer all the above questions, _ofxApp_ offers you a Function Based protocol; you will be asked to define a few functions that will clarify all these questions. We will see those a bit further in.
 
-
+---
 #### 2.1.2 The JSON file structure
 
  _ofxApp_ assumes your content comes in JSON form. It also assumes you will get one JSON file per content source/type. Let's chose a real world example; imagine your project is an interactive wall that aims to show the collection of a Museum. In such a situation, you will probably have 1 JSON file with a list of all the objects in the collection. But you might also have 1 JSON with the list of all the Artist Bios, and one for all the curators, etc. This content is often arranged in a JSON array, or in a JSON dictionary, as shown below in a fictional ```MuseumObjects``` JSON.
@@ -190,7 +190,7 @@ Note how your ```MuseumObject``` inherits from ```ContentObject```; by doing so 
 
 Alos, note how there's one variable to hold each JSON field. The idea here is to mirror the JSON structure pretty closely. In fact, using the name variable names as the JSON field can really help code understanding later on.
 
-
+---
 #### 2.1.3 ofxApp Content Abstraction
 
 _ofxApp_ abstracts content fetching, parsing, checking and loading through several means. To do so, it defines a class hierarchy for the minimum content unit you will deal with, the ```ContentObject``` class. A ```ContentObject``` is basic unit of content; for example a collection object in a Museum. All your ```MuseumObject``` objects will inherit from ```ContentObject``` to gain its functionality. The ```ContentObject``` also inherits from three other classes, that handle different behaviors:
@@ -203,6 +203,7 @@ _ofxApp_ abstracts content fetching, parsing, checking and loading through sever
 
 * __TexturedObject__: A TexturedObject is an object that owns textures (images) at different resolutions that you might want to draw. This allows your object to dynamically load and unload ofTextures on the fly, without halting your app to do so. It does so by progressively loading them, so you first request a texture you need, and you will get notified when its ready (usually a few frames after the request has been placed). When you don't need the texture (because your object is not on screen anymore), you can release it and it will be unloaded for you. This allows your app to hold a lot of image content (ie an entire museum collection - that would be too much to completely pre-load) and keeping interactive framerates when showing it.
 
+---
 #### 2.1.4 Content Sources
 
 For _ofxApp_ to know what content you want in your app, you must tell it what that is. _ofxApp_ expects you to supply a config file in your `data/configs/ofxAppSettings.json` (see section 2.7). In there, there's a whole section about Content Sources named `Content/JsonSources`.
@@ -242,6 +243,7 @@ Each Content Source must have a few fields defined:
 
 If you suddenly have another content source, just add it in that section with its own unique contentID. _ofxApp_ will ingest the content in that source during the startup phases (more on that later).
 
+---
 #### 2.1.6 Content Ingestion
 
 We have seen how a content JSON might look like, and how you specify your content sources, and some of the classes involved in the different functionalities offered for your content objects. Now we will see how the content is actually converted from JSON to C++ objects you can use. We have seen in 2.1.1 that _ofxApp_ needs to ask you a few questions to be able to parse JSON; here we see how you will answer them through code. We will do so for the `MuseumObject` hypothetical example JSON we've been looking at.
@@ -260,23 +262,27 @@ struct ParseFunctions{
 
 As you can see, there's 4 `std::function` objects for you to provide code for, and one ofxJSON object for you to place any data you might need. Let's analyze them one by one:
 
+  ---
+
 * _**`std::function<void (ofxMtJsonParserThread::JsonStructureData &)> pointToObjects;`**_  
+
+  ---
 
   The goal here is to simply point _ofxApp_ to the content within the JSON content source. For example, in a JSON like this:
 
   ```c++
   { "MuseumObjects" : [
   		{
-  			"ID" : "objID1",
-            "title" : "Magical Chair",
-  			"imageURL" : "http://museum.com/image1.jpg",
-  			"imageSha1" : "8d25fa0135fe0a3771dfa09f1331e3ea7c8b888f"
+			"ID" : "objID1",
+			"title" : "Magical Chair",
+			"imageURL" : "http://museum.com/image1.jpg",
+			"imageSha1" : "8d25fa0135fe0a3771dfa09f1331e3ea7c8b888f"
   		},
   		{
-  			"ID" : "objID2",
-            "title" : "Man standing looking at birds",
-  			"imageURL" : "http://museum.com/image2.jpg",
-  			"imageSha1" : "c376992f8a141c388faf6227b9e72749f6065650"
+			"ID" : "objID2",
+			"title" : "Man standing looking at birds",
+			"imageURL" : "http://museum.com/image2.jpg",
+			"imageSha1" : "c376992f8a141c388faf6227b9e72749f6065650"
   		}
   	]
   }
@@ -336,8 +342,13 @@ As you can see, there's 4 `std::function` objects for you to provide code for, a
 
   ---
 
-* **`std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> parseOneObject;`**  
-  This function will be called once for each object inside JSON["MuseumObjects"]. This is where you allocate and fill in the data for each of your `MuseumObjects*`. _ofxApp_ (with the help of [`ofxMtJsonParser`](https://github.com/armadillu/ofxMTJsonParser)) will take care of splitting the JSON into different smaller JSON bits, so from your point of view, you are parsing a single JSON object. One thing to be aware is that this `std::function` will be called concurrently from different threads; this is done to speed up the parsing (which can get quite slow for large JSON content sets). This should be ok for most cases, but depending on what you do you should be aware of this; a mutex object is provided in case you may need it.
+* **`std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> parseOneObject;`**
+
+  ---
+
+  This function will be called once for each object inside JSON["MuseumObjects"]. This is where you allocate and fill in the data for each of your `MuseumObjects*`. _ofxApp_ (with the help of [`ofxMtJsonParser`](https://github.com/armadillu/ofxMTJsonParser)) will take care of splitting the JSON into different smaller JSON bits, so from your point of view, you are parsing a single JSON object.
+
+  One thing to be aware is that this `std::function` will be called concurrently from different threads; this is done to speed up the parsing (which can get quite slow for large JSON content sets). This should be ok for most cases, but depending on what you do you should be aware of this; a mutex object is provided in case you may need it.
 
   Let's look at the function signature, and more specifically, what do we get as an argument. _ofxApp_ provides us with a structure named [`SingleObjectParseData`](https://github.com/local-projects/ofxMTJsonParser/blob/master/src/ofxMtJsonParserThread.h#L41).
 
@@ -370,7 +381,7 @@ As you can see, there's 4 `std::function` objects for you to provide code for, a
 
 
   ```c++
-  auto parseOneObject = [](ofxMtJsonParserThread::SingleObjectParseData & inOutData){
+    auto parseOneObject = [](ofxMtJsonParserThread::SingleObjectParseData & inOutData){
 
 		const ofxJSONElement & jsonRef = *(inOutData.jsonObj);
 		string objID, title, imgURL, imgSha1; //create temp vars to hold the data in JSON
@@ -390,7 +401,7 @@ As you can see, there's 4 `std::function` objects for you to provide code for, a
 		inOutData.object = dynamic_cast<ParsedObject*> (o); //this is how we return the fully-parsed object to ofxApp;
 	};
   ```
-  
+
 
 
 
