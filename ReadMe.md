@@ -29,6 +29,10 @@ There are also some (slightly outdated) [Slides](https://github.com/local-projec
 			- [2.1.3 ofxApp Content Abstraction](#213-ofxapp-content-abstraction)
 			- [2.1.4 Content Sources](#214-content-sources)
 			- [2.1.4 Content Ingestion & Texture Loading Setup](#214-content-ingestion-texture-loading-setup)
+			- [2.1.4.1 std::function<void (ofxMtJsonParserThread::JsonStructureData &)> pointToObjects;](#2141-stdfunctionvoid-ofxmtjsonparserthreadjsonstructuredata-pointtoobjects)
+			- [2.1.4.2 std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> parseOneObject;](#2142-stdfunctionvoid-ofxmtjsonparserthreadsingleobjectparsedata-parseoneobject)
+			- [2.1.4.3 std::function<void (ofxApp::CatalogAssetsData & data)> defineObjectAssets;](#2143-stdfunctionvoid-ofxappcatalogassetsdata-data-defineobjectassets)
+			- [2.1.4.4 std::function<void (ContentObject*)> setupTexturedObject;](#2144-stdfunctionvoid-contentobject-setuptexturedobject)
 			- [2.1.5 Content Fail and Recovery](#215-content-fail-and-recovery)
 	- [2.2 ofxApp Startup & Init stages](#22-ofxapp-startup-init-stages)
 		- [2.3 Static Textures loading Automation](#23-static-textures-loading-automation)
@@ -295,360 +299,344 @@ struct ParseFunctions{
 
 As you can see, there's 4 `std::function` objects for you to provide code for, and one ofxJSON object for you to place any data you might need. Let's analyze them one by one:
 
-  ---
 
-* _**`std::function<void (ofxMtJsonParserThread::JsonStructureData &)> pointToObjects;`**_  
+#### 2.1.4.1 std::function<void (ofxMtJsonParserThread::JsonStructureData &)> pointToObjects;
 
-  ---
+The goal here is to simply point _ofxApp_ to the content within the JSON content source. For example, in a JSON like this:
 
-  The goal here is to simply point _ofxApp_ to the content within the JSON content source. For example, in a JSON like this:
-
-  ```c++
-  { "MuseumObjects" : [
-  		{
-			"ID" : "objID1",
-			"title" : "Magical Chair",
-			"imageURL" : "http://museum.com/image1.jpg",
-			"imageSha1" : "8d25fa0135fe0a3771dfa09f1331e3ea7c8b888f"
-  		},
-  		{
-			"ID" : "objID2",
-			"title" : "Man standing looking at birds",
-			"imageURL" : "http://museum.com/image2.jpg",
-			"imageSha1" : "c376992f8a141c388faf6227b9e72749f6065650"
-  		}
-  	]
-  }
-  ```
-
-  where the content is in an array under JSON["MuseumObjects"], you want to write something like:
-
-	```c++
-	auto pointToObjects = [](ofxMtJsonParserThread::JsonStructureData & inOutData){
-		ofxJSONElement & jsonRef = *(inOutData.fullJson);
-		if(jsonRef["MuseumObjects"].isArray()){
-			inOutData.objectArray = (ofxJSONElement*) &(jsonRef["MuseumObjects"]);
-		}else{
-			ofLogError("ofApp") << "JSON has unexpected format!";
-			//if the json is not what we exepcted it to be,
-			//let the parser know by filling it the data like this:
-			inOutData.objectArray = nullptr;
+```c++
+{ "MuseumObjects" : [
+		{
+		"ID" : "objID1",
+		"title" : "Magical Chair",
+		"imageURL" : "http://museum.com/image1.jpg",
+		"imageSha1" : "8d25fa0135fe0a3771dfa09f1331e3ea7c8b888f"
+		},
+		{
+		"ID" : "objID2",
+		"title" : "Man standing looking at birds",
+		"imageURL" : "http://museum.com/image2.jpg",
+		"imageSha1" : "c376992f8a141c388faf6227b9e72749f6065650"
 		}
+	]
+}
+```
+
+where the content is in an array under JSON["MuseumObjects"], you want to write something like:
+
+```c++
+auto pointToObjects = [](ofxMtJsonParserThread::JsonStructureData & inOutData){
+	ofxJSONElement & jsonRef = *(inOutData.fullJson);
+	if(jsonRef["MuseumObjects"].isArray()){
+		inOutData.objectArray = (ofxJSONElement*) &(jsonRef["MuseumObjects"]);
+	}else{
+		ofLogError("ofApp") << "JSON has unexpected format!";
+		//if the json is not what we exepcted it to be,
+		//let the parser know by filling it the data like this:
+		inOutData.objectArray = nullptr;
 	}
-	```
+}
+```
 
-  Let's see what's going on here; the `std::function` signature provides you with an argument `ofxMtJsonParserThread::JsonStructureData & inOutData`. This structure is defined in one of the dependencies of _ofxApp_, [`ofxMtJsonParser`](https://github.com/armadillu/ofxMTJsonParser), which is used to handle most of the JSON parsing. The structure is passed to you by reference intentionally, so that you can write back on that object (you are expected to), which is a bit unusual. If see look at the definition of [`JsonStructureData`](https://github.com/local-projects/ofxMTJsonParser/blob/master/src/ofxMtJsonParserThread.h#L30), we see it contains:
+Let's see what's going on here; the `std::function` signature provides you with an argument `ofxMtJsonParserThread::JsonStructureData & inOutData`. This structure is defined in one of the dependencies of _ofxApp_, [`ofxMtJsonParser`](https://github.com/armadillu/ofxMTJsonParser), which is used to handle most of the JSON parsing. The structure is passed to you by reference intentionally, so that you can write back on that object (you are expected to), which is a bit unusual. If see look at the definition of [`JsonStructureData`](https://github.com/local-projects/ofxMTJsonParser/blob/master/src/ofxMtJsonParserThread.h#L30), we see it contains:
 
-  ```c++
-  struct JsonStructureData{
-		ofxJSONElement * fullJson; //this will provide you the full json data (aka the whole json)
-		ofxJSONElement * objectArray; //you are supposed to send back a ptr to the json structure that has the object array OR dictionary you want to parse
-  };
-  ```
+```c++
+struct JsonStructureData{
+	ofxJSONElement * fullJson; //this will provide you the full json data (aka the whole json)
+	ofxJSONElement * objectArray; //you are supposed to send back a ptr to the json structure that has the object array OR dictionary you want to parse
+};
+```
 
-  So the function signature is providing with the whole JSON (as an `ofxJSONElement *`) but also another pointer named `objectArray` for you to "fill in". The provided `JsonStructureData` is being used as a two-way communication tool between _ofxApp_ and you; _ofxApp_ provides a full JSON, and expects you to give it back a pointer to where the content is within that JSON.
+So the function signature is providing with the whole JSON (as an `ofxJSONElement *`) but also another pointer named `objectArray` for you to "fill in". The provided `JsonStructureData` is being used as a two-way communication tool between _ofxApp_ and you; _ofxApp_ provides a full JSON, and expects you to give it back a pointer to where the content is within that JSON.
 
-  If we look at the implementation proposed above, line by line, you can see that we first cast the `ofxJSONElement *` of the whole JSON doc to a reference (for nicer syntax):
+If we look at the implementation proposed above, line by line, you can see that we first cast the `ofxJSONElement *` of the whole JSON doc to a reference (for nicer syntax):
 
-  ```c++
-  ofxJSONElement & jsonRef = *(inOutData.fullJson);
-  ```
+```c++
+ofxJSONElement & jsonRef = *(inOutData.fullJson);
+```
 
-  And then we check if "MuseumObjects" exists in the JSON, and if it is an array (as we expect, because we know beforehand how the JSON is structured)...
+And then we check if "MuseumObjects" exists in the JSON, and if it is an array (as we expect, because we know beforehand how the JSON is structured)...
 
-  ```c++
-  if(jsonRef["MuseumObjects"].isArray()){
-  ```
+```c++
+if(jsonRef["MuseumObjects"].isArray()){
+```
 
-  If the "MuseumObjects looks correct, we point _ofxApp_ to it by "filling in" the inOutData.objectArray pointer:
+If the "MuseumObjects looks correct, we point _ofxApp_ to it by "filling in" the inOutData.objectArray pointer:
 
-  ```c++
-  inOutData.objectArray = (ofxJSONElement*) &(jsonRef["MuseumObjects]);
-  ```
+```c++
+inOutData.objectArray = (ofxJSONElement*) &(jsonRef["MuseumObjects]);
+```
 
-  If the data in the JSON did not match our expectation, we give back a `_nullptr` to _ofxApp_
+If the data in the JSON did not match our expectation, we give back a `_nullptr` to _ofxApp_
 
-  ```c++
-  inOutData.objectArray = nullptr;
-  ```
-  And by doing this, _ofxApp_ now knows where to start parsing from.
-
-  ---
-
-* **`std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> parseOneObject;`**
-
-  ---
-
-  This function will be called once for each object inside JSON["MuseumObjects"]. This is where you allocate and fill in the data for each of your `MuseumObjects*`. _ofxApp_ (with the help of [`ofxMtJsonParser`](https://github.com/armadillu/ofxMTJsonParser)) will take care of splitting the JSON into different smaller JSON bits, so from your point of view, you are parsing a single JSON object.
-
-  One thing to be aware is that this `std::function` will be called concurrently from different threads; this is done to speed up the parsing (which can get quite slow for large JSON content sets). This should be ok for most cases, but depending on what you do you should be aware of this; a mutex object is provided in case you may need it.
-
-  Let's look at the function signature, and more specifically, what do we get as an argument. _ofxApp_ provides us with a structure named [`SingleObjectParseData`](https://github.com/local-projects/ofxMTJsonParser/blob/master/src/ofxMtJsonParserThread.h#L41).
-
-  ```c++
-  struct SingleObjectParseData{
-	string objectID; //user is responsible of providing one if the JSON is an Array (instead of a Dictionary)
-	ofxJSONElement * jsonObj; //json data for this object		
-	ParsedObject * object; //its the user's job to allocate a new ParsedObject,
-    int threadID;
-    ofMutex * printMutex; //mutex for your convenience
-	ofxJSONElement * userData; //custom user data you might need from inside the thread;
-    //be extra careful NOT TO WRITE into it from the thread! READ ONLY!
-  }
-  ```
-
-  The structure holds quite a bit of fields, some of them are not relevant most of the time but may sometimes be needed. Let's start with the important ones:
-
-  * `string objectID`: _ofxApp_ needs a uniqueID for each object in a content source. If the JSON data comes in the form of a  dictionary, the key for each object will be used as a UUID. But if the JSON data comes in Array form, then _ofxApp_ has no way of knowing what the object's UUID is, so you will need to provide it.
-  * `ofxJSONElement * jsonObj`: This is a pointer to the JSON data for that object. For our ongoing Museum example, for the first object call would give us this JSON:
-  ```
-    {
-	    "ID" : "objID1",
-        "title" : "Magical Chair",
-	    "imageURL" : "http://museum.com/image1.jpg",
-	    "imageSha1" : "8d25fa0135fe0a3771dfa09f1331e3ea7c8b888f"
-	}
-  ```
-
-  * `ParsedObject * object`: This is the pointer to final object that will hold all the information you will extract from the JSON. It is your responsibility to allocate the object and assign it to `object*`. The argument will come initialized as `nullptr`; if you leave it as `nullptr` _ofxApp_ will interpret that the object is to be dropped, and it will not show in the app.  
+```c++
+inOutData.objectArray = nullptr;
+```
+And by doing this, _ofxApp_ now knows where to start parsing from.
 
 
-  To parse our "MuseumObjects.json", we can write our std::function like this:
 
-  ```c++
-    auto parseOneObject = [](ofxMtJsonParserThread::SingleObjectParseData & inOutData){
+#### 2.1.4.2 std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> parseOneObject;
 
-		const ofxJSONElement & jsonRef = *(inOutData.jsonObj);
-		string objID, title, imgURL, imgSha1; //create temp vars to hold the data in JSON
+This function will be called once for each object inside JSON["MuseumObjects"]. This is where you allocate and fill in the data for each of your `MuseumObjects*`. _ofxApp_ (with the help of [`ofxMtJsonParser`](https://github.com/armadillu/ofxMTJsonParser)) will take care of splitting the JSON into different smaller JSON bits, so from your point of view, you are parsing a single JSON object.
 
-		try{ //do some parsing - catching exceptions
-			objID = jsonRef["ID"].asString();
-			title = jsonRef["title"].asString();
-			imgURL = jsonRef["imageURL"].asString();
-			imgSha1 = jsonRef["imageSha1"].asString();
-		}catch(exception exc){}
+One thing to be aware is that this `std::function` will be called concurrently from different threads; this is done to speed up the parsing (which can get quite slow for large JSON content sets). This should be ok for most cases, but depending on what you do you should be aware of this; a mutex object is provided in case you may need it.
 
-		MuseumObject * o = new MuseumObject(); //allocate our MuseumObject
-		o->title = title; //copy over all the parsed data
-		o->imgURL = imgURL;
-		o->imgSha1 = imgSha1;
-		inOutData.objectID = objID; //this is how we tell ofxApp the ObjID for this object		
-		inOutData.object = dynamic_cast<ParsedObject*> (o); //this is how we return the fully-parsed object to ofxApp;
-	};
-  ```
+Let's look at the function signature, and more specifically, what do we get as an argument. _ofxApp_ provides us with a structure named [`SingleObjectParseData`](https://github.com/local-projects/ofxMTJsonParser/blob/master/src/ofxMtJsonParserThread.h#L41).
 
-  Let's look at the proposed `std::function` line by line:
+```c++
+struct SingleObjectParseData{
+string objectID; //user is responsible of providing one if the JSON is an Array (instead of a Dictionary)
+ofxJSONElement * jsonObj; //json data for this object		
+ParsedObject * object; //its the user's job to allocate a new ParsedObject,
+int threadID;
+ofMutex * printMutex; //mutex for your convenience
+ofxJSONElement * userData; //custom user data you might need from inside the thread;
+//be extra careful NOT TO WRITE into it from the thread! READ ONLY!
+}
+```
 
-  We first cast the JSON data representing this object's JSON so its easier to handle syntax
+The structure holds quite a bit of fields, some of them are not relevant most of the time but may sometimes be needed. Let's start with the important ones:
 
-  ```c++
-  ofxJSONElement & jsonRef = *(inOutData.fullJson);
-  ```
+* `string objectID`: _ofxApp_ needs a uniqueID for each object in a content source. If the JSON data comes in the form of a  dictionary, the key for each object will be used as a UUID. But if the JSON data comes in Array form, then _ofxApp_ has no way of knowing what the object's UUID is, so you will need to provide it.
+* `ofxJSONElement * jsonObj`: This is a pointer to the JSON data for that object. For our ongoing Museum example, for the first object call would give us this JSON:
+```
+{
+    "ID" : "objID1",
+    "title" : "Magical Chair",
+    "imageURL" : "http://museum.com/image1.jpg",
+    "imageSha1" : "8d25fa0135fe0a3771dfa09f1331e3ea7c8b888f"
+}
+```
 
-  Then we create a few temp variables to store the parsed data.
-
-  ```c++
-  string objID, title, imgURL, imgSha1; //create temp vars to hold the data in JSON
-  ```
-
-  And the parsing begins; note it's all done around a `try/catch` because accessing `ofxJSONElement`s can rise exceptions.
-
-  ```c++
-  try{
-      objID = jsonRef["ID"].asString();
-      title = jsonRef["title"].asString();
-      imgURL = jsonRef["imageURL"].asString();
-      imgSha1 = jsonRef["imageSha1"].asString();
-  }catch(exception exc){}
-  ```
-
-  Once we have all the data parsed out of the `ofxJSONElement`, it's time to allocate the `MuseumObject` that will hold it, and we fill it with the parsed data.
-
-  ```c++
-  MuseumObject * o = new MuseumObject(); //allocate our MuseumObject
-  o->title = title;
-  ...
-  ```
-
-  And now its time to fill in the `SingleObjectParseData` data structure to communicate to _ofxApp_ the results of our parsing. There's two things we need to copy over to the structure; the newly allocated object, and it's objectID.
-
-  ```
-  inOutData.objectID = objID;
-  inOutData.object = dynamic_cast<ParsedObject*> (o);
-  ```
-
-  It's important to note that your `MuseumObject` is here "downcasted" to a `ParsedObject` using **`dynamic_cast<ParsedObject*>()`**. This is extremely important as otherwise some of the object contents might be lost when _ofxApp_ copies data across different pointer types.
+* `ParsedObject * object`: This is the pointer to final object that will hold all the information you will extract from the JSON. It is your responsibility to allocate the object and assign it to `object*`. The argument will come initialized as `nullptr`; if you leave it as `nullptr` _ofxApp_ will interpret that the object is to be dropped, and it will not show in the app.  
 
 
-  ---
+To parse our "MuseumObjects.json", we can write our std::function like this:
 
-* **`std::function<void (ofxApp::CatalogAssetsData & data)> defineObjectAssets;`**  
+```c++
+auto parseOneObject = [](ofxMtJsonParserThread::SingleObjectParseData & inOutData){
 
-  ---
+	const ofxJSONElement & jsonRef = *(inOutData.jsonObj);
+	string objID, title, imgURL, imgSha1; //create temp vars to hold the data in JSON
 
-  In this std::function, _ofxApp_ is asking you to define the assets that each object owns. An asset is any sort of file that you will need to load during the app's life - a JPG, an MP4, a text file, etc.
+	try{ //do some parsing - catching exceptions
+		objID = jsonRef["ID"].asString();
+		title = jsonRef["title"].asString();
+		imgURL = jsonRef["imageURL"].asString();
+		imgSha1 = jsonRef["imageSha1"].asString();
+	}catch(exception exc){}
 
-  The `std::function` signature provides you with a CatalogAssetsData & structure, which looks like this:
+	MuseumObject * o = new MuseumObject(); //allocate our MuseumObject
+	o->title = title; //copy over all the parsed data
+	o->imgURL = imgURL;
+	o->imgSha1 = imgSha1;
+	inOutData.objectID = objID; //this is how we tell ofxApp the ObjID for this object		
+	inOutData.object = dynamic_cast<ParsedObject*> (o); //this is how we return the fully-parsed object to ofxApp;
+};
+```
 
-  ```c++
-  struct CatalogAssetsData{ //data sent to the user for him/her to report object assets
-      ContentObject * object;
-      string assetsLocation;      
-      ofxAssets::DownloadPolicy assetDownloadPolicy;
-      ofxAssets::UsagePolicy assetUsagePolicy;
-      ofxJSONElement * userData;
-  };
-  ```
+Let's look at the proposed `std::function` line by line:
 
-  The structure provides you with the object in question (`ContentObject * object`), a string giving you the location in which the assets for this ContentSource should be stored (defined in the config file `ofxAppSettings.json`), some policy objects, and the previously seen userData object.
+We first cast the JSON data representing this object's JSON so its easier to handle syntax
 
-  The `ContentObject * object` is the `MuseumObject *` you just allocated in the previously defined `std::function`. The object is provided so that you can setup its `AssetHolder` part. In the section `2.1.3 ofxApp Content Abstraction` we saw the class hierarchy of a ContentObject included `ParsedObject` (which we have already used for parsing), `AssetHolder` (which we will interact with in this section) and `TexturedObject` which we will look at later on. The `AssetHolder` part of your object is used to define all the assets that that particular `MuseumObject` contains. _ofxApp_ can't just guess what assets does an object include, so you must define those first. And this is what we will do in this `std::function`. Note that you will have to cast it again to your object type to interact with it (more on this in a second).
+```c++
+ofxJSONElement & jsonRef = *(inOutData.fullJson);
+```
 
-  The `assetsLocation` string will be the path specified in `ofxAppSettings.json`, precisely at `Content/JsonSources/MuseumObjects/assetsLocation` for our example. It represents where in the filesystem those assets will be downloaded/copied to.  
+Then we create a few temp variables to store the parsed data.
 
-  The Policy objects `ofxAssets::DownloadPolicy` and `ofxAssets::UsagePolicy` are objects that define a set of rules to help decide if 1: an asset needs to be re-downloaded and 2: the asset should be used or not. We will see more about policies later on.
+```c++
+string objID, title, imgURL, imgSha1; //create temp vars to hold the data in JSON
+```
 
-  The `ofxJSONElement * userData` is just an object provided for you to be able to get access to any sort of information you might need within those std::functions. You can initialize this object before you start the parsing process and provide it to _ofxApp_, and it will be given back to you for each of the std::function executions. Because of abstracted nature of the parsing process (you just define object-level std::functions), it might be hard to get access to external data otherwise.
+And the parsing begins; note it's all done around a `try/catch` because accessing `ofxJSONElement`s can rise exceptions.
 
-  You are in charge of defining all the assets for the provided object. In our example, each `MuseumObject` has a single asset (an image), for which we have an URL and an expected file checksum (sha1). Let's see how we can setup the `AssetHolder` side of our object:
+```c++
+try{
+  objID = jsonRef["ID"].asString();
+  title = jsonRef["title"].asString();
+  imgURL = jsonRef["imageURL"].asString();
+  imgSha1 = jsonRef["imageSha1"].asString();
+}catch(exception exc){}
+```
 
-  ```c++
-  auto defineObjectAssets = [](ofxApp::CatalogAssetsData & data){
-      MuseumObject * mo = dynamic_cast<MuseumObject*>(data.object);
-      string assetsPath = data.assetsLocation + "/" + mo->getObjectUUID();
-      mo->AssetHolder::setup(assetsPath, data.assetUsagePolicy, data.assetDownloadPolicy);
-      if(mo->imgURL.size()){
-          mo->imageLocalPath = mo->AssetHolder::addRemoteAsset(mo->imgURL, mo->imgSha1);
-      }
-  }
-  ```
+Once we have all the data parsed out of the `ofxJSONElement`, it's time to allocate the `MuseumObject` that will hold it, and we fill it with the parsed data.
 
-  And let's analyze this line by line:
-  First we cast the provided generic `ContentObject` to our native `MuseumObject` object type:
+```c++
+MuseumObject * o = new MuseumObject(); //allocate our MuseumObject
+o->title = title;
+...
+```
 
-  ```c++
+And now its time to fill in the `SingleObjectParseData` data structure to communicate to _ofxApp_ the results of our parsing. There's two things we need to copy over to the structure; the newly allocated object, and it's objectID.
+
+```
+inOutData.objectID = objID;
+inOutData.object = dynamic_cast<ParsedObject*> (o);
+```
+
+It's important to note that your `MuseumObject` is here "downcasted" to a `ParsedObject` using **`dynamic_cast<ParsedObject*>()`**. This is extremely important as otherwise some of the object contents might be lost when _ofxApp_ copies data across different pointer types.
+
+
+#### 2.1.4.3 std::function<void (ofxApp::CatalogAssetsData & data)> defineObjectAssets;
+
+In this std::function, _ofxApp_ is asking you to define the assets that each object owns. An asset is any sort of file that you will need to load during the app's life - a JPG, an MP4, a text file, etc.
+
+The `std::function` signature provides you with a CatalogAssetsData & structure, which looks like this:
+
+```c++
+struct CatalogAssetsData{ //data sent to the user for him/her to report object assets
+  ContentObject * object;
+  string assetsLocation;      
+  ofxAssets::DownloadPolicy assetDownloadPolicy;
+  ofxAssets::UsagePolicy assetUsagePolicy;
+  ofxJSONElement * userData;
+};
+```
+
+The structure provides you with the object in question (`ContentObject * object`), a string giving you the location in which the assets for this ContentSource should be stored (defined in the config file `ofxAppSettings.json`), some policy objects, and the previously seen userData object.
+
+The `ContentObject * object` is the `MuseumObject *` you just allocated in the previously defined `std::function`. The object is provided so that you can setup its `AssetHolder` part. In the section `2.1.3 ofxApp Content Abstraction` we saw the class hierarchy of a ContentObject included `ParsedObject` (which we have already used for parsing), `AssetHolder` (which we will interact with in this section) and `TexturedObject` which we will look at later on. The `AssetHolder` part of your object is used to define all the assets that that particular `MuseumObject` contains. _ofxApp_ can't just guess what assets does an object include, so you must define those first. And this is what we will do in this `std::function`. Note that you will have to cast it again to your object type to interact with it (more on this in a second).
+
+The `assetsLocation` string will be the path specified in `ofxAppSettings.json`, precisely at `Content/JsonSources/MuseumObjects/assetsLocation` for our example. It represents where in the filesystem those assets will be downloaded/copied to.  
+
+The Policy objects `ofxAssets::DownloadPolicy` and `ofxAssets::UsagePolicy` are objects that define a set of rules to help decide if 1: an asset needs to be re-downloaded and 2: the asset should be used or not. We will see more about policies later on.
+
+The `ofxJSONElement * userData` is just an object provided for you to be able to get access to any sort of information you might need within those std::functions. You can initialize this object before you start the parsing process and provide it to _ofxApp_, and it will be given back to you for each of the std::function executions. Because of abstracted nature of the parsing process (you just define object-level std::functions), it might be hard to get access to external data otherwise.
+
+You are in charge of defining all the assets for the provided object. In our example, each `MuseumObject` has a single asset (an image), for which we have an URL and an expected file checksum (sha1). Let's see how we can setup the `AssetHolder` side of our object:
+
+```c++
+auto defineObjectAssets = [](ofxApp::CatalogAssetsData & data){
   MuseumObject * mo = dynamic_cast<MuseumObject*>(data.object);
-  ```
-
-  Then we construct a full filesystem path to define where all the assets for this particular object will be stored. Note that we do so by compounding the provided `data.assetsLocation` with the provided `objectID` (by querying the provided object itself). By doing this, we will end up with each object owning a directory (named after its `ObjectID`) in which all of its assets will be stored. All those directories will be stored inside the directory defined in `data.assetsLocation`, which it's in turn coming from the `ofxAppSettings.json` config file.
-
-  ```c++
   string assetsPath = data.assetsLocation + "/" + mo->getObjectUUID();
-  ```
-
-  And now we setup the `AssetHolder` side of our `MuseumObject`. Note how we explicitly call setup on the `AssetHolder` superclass with `AssetHolder::setup()`. Let's look at the signature of the setup() method (in [`ofxAssets`](https://github.com/armadillu/ofxAssets/blob/master/src/AssetHolder.h#L37)); it takes three arguments:
-
-  `string & directoryForAssets`: that is where _ofxApp_ will store all the assets for that particular object. To keep things tidy, we usually use the `objectID` as the name of the directory that will hold the assets;
-
-  `ofxAssets::UsagePolicy & assetOkPolicy`: the set of policies used to dictate if an asset is considered valid
-  `ofxAssets::DownloadPolicy & downloadPolicy`: similarly, a set of policies that will dictate if an asset should be downloaded from the server or not (ie what do we do if the asset is already on disk, but the sha1 checksum doesn't match?)
-
-  So you can see we just feed the assetPath and the provided policies into the AssetHolder::setup() method.
-
-  ```c++
   mo->AssetHolder::setup(assetsPath, data.assetUsagePolicy, data.assetDownloadPolicy);
-  ```
-
-  And finally, you can see how we define the existence of one asset for our object; by calling the method [addRemoteAsset()](https://github.com/armadillu/ofxAssets/blob/master/src/AssetHolder.h#L48) from the `AssetHolder` superclass. A *Remote Asset* is an asset that is located in a remote server; this is the most common type of asset. To define this remote asset, we choose to supply the remote asset `URL`, and its `sha1` checksum. This is enough for most situations, but in others you might want to provide more information about the asset so that you can retrieve it later. Refer to the documentation in [ofxAssetHolder](https://github.com/armadillu/ofxAssets/blob/master/src/AssetHolder.h#L48) for more detail.
-
-  With this two bits of information, _ofxApp_ can attempt to download the asset from the remote server, and compare the obtained file's sha1 checksum with the expected one, to see if the file integrity checks out. It's important to note that if our `MuseumObject` had more assets, we would just keep doing `ofxAssetHolder::addRemoteAsset()` until all assets were added; and _ofxApp_ would take care of downloading and checking them.
-
-  We are still missing one bit about the upcoming line of code; that is the fact that `AssetHolder::addRemoteAsset()` returns a string. This string will be the relative path to that asset on the filesystem; but more importantly it will be the `key` which you can use to refer to the asset later on. `ofxAsset` has several API methods to [retrieve](https://github.com/armadillu/ofxAssets/blob/master/src/AssetHolder.h#L67-L78) all the defined assets for an object. You can iterate through all the assets within an object by `index` pr by `key` (the relative path returned when addRemoteAsset() is called). Doing so will give you access to information about the assets, like their status, mime/type, any tags you might have provided them with, asset file specs, etc.
-
-  ```c++
-  mo->imageLocalPath = mo->AssetHolder::addRemoteAsset(mo->imgURL, mo->imgSha1);
-  ```
-
-  Also worth noting is that you don't have to add a remote asset to an object, in the example above, we only do so if the `imgURL` is actually defined in the JSON. It may or may not be ok for an object to have 0 assets, the asset policies will dictate if the object will still be used or dropped.
-
-  ```c++
   if(mo->imgURL.size()){
-      //AssetHolder::addRemoteAsset();
+      mo->imageLocalPath = mo->AssetHolder::addRemoteAsset(mo->imgURL, mo->imgSha1);
   }
-  ```
+}
+```
 
-  ---
+And let's analyze this line by line:
+First we cast the provided generic `ContentObject` to our native `MuseumObject` object type:
 
-* **`std::function<void (ContentObject*)> setupTexturedObject;`**  
+```c++
+MuseumObject * mo = dynamic_cast<MuseumObject*>(data.object);
+```
 
-  ---
+Then we construct a full filesystem path to define where all the assets for this particular object will be stored. Note that we do so by compounding the provided `data.assetsLocation` with the provided `objectID` (by querying the provided object itself). By doing this, we will end up with each object owning a directory (named after its `ObjectID`) in which all of its assets will be stored. All those directories will be stored inside the directory defined in `data.assetsLocation`, which it's in turn coming from the `ofxAppSettings.json` config file.
 
-  This is the last `std::function` you will have to define; and you might not need to define it at all. This is where you setup your Textured Objects; which only really makes sense if your object contains image assets that you want to dynamically load and unload. Within the scope of our `MuseumObject` example, it makes sense to define our TexturedObjects as each MuseumObject holds one image that we will want to load & unload on the fly.
+```c++
+string assetsPath = data.assetsLocation + "/" + mo->getObjectUUID();
+```
 
-  This std::function's signature provides you with the `ContentObject *` currently at play; as usual your std::function will be executed once per each object defined inside the "MuseumObject.JSON" file, each call providing a pointer to the `ContentObject` that corresponds.
+And now we setup the `AssetHolder` side of our `MuseumObject`. Note how we explicitly call setup on the `AssetHolder` superclass with `AssetHolder::setup()`. Let's look at the signature of the setup() method (in [`ofxAssets`](https://github.com/armadillu/ofxAssets/blob/master/src/AssetHolder.h#L37)); it takes three arguments:
 
-  Ultimately, the goal is to define per object how many textures exist, and at what sizes. [TexturedObject](https://github.com/armadillu/ofxTexturedObject) is designed in a way that each object is assumed to be able to hold N textures (ie, for our MuseumObject example, you can imagine N photographs of the same sculpture as being N possible textures) and a few size representations (or image resolutions) for each of the N images. Each different texture gets an index, and also a size tag. For example, if your app needs to draw a table with a bunch of icons representing `MusemObject`s, you probably only need to load the smallest size texture for each of them. But if your GUI allows the user to focus on a single `MusemObject` and offers a fullscreen image viewer, you probably want to load the largest available texture size for that image. At this stage, we are defining these variables; how many images/textures does my object hold, and at what different sizes do they exist.
+`string & directoryForAssets`: that is where _ofxApp_ will store all the assets for that particular object. To keep things tidy, we usually use the `objectID` as the name of the directory that will hold the assets;
 
-  Let's see how we would define the Textured Objects for our example:
+`ofxAssets::UsagePolicy & assetOkPolicy`: the set of policies used to dictate if an asset is considered valid
+`ofxAssets::DownloadPolicy & downloadPolicy`: similarly, a set of policies that will dictate if an asset should be downloaded from the server or not (ie what do we do if the asset is already on disk, but the sha1 checksum doesn't match?)
 
-  ```c++
-    auto setupTexturedObject = [](ContentObject * texuredObject){
+So you can see we just feed the assetPath and the provided policies into the AssetHolder::setup() method.
 
-		MuseumObject * mo = dynamic_cast<MuseumObject*>(texuredObject); //cast from ContentObject* to our native type
-		int numImgAssets = mo->AssetHolder::getNumAssets();	//retrieve the total # of assets for this object
-          //this will always be 1 for this example, and we know it will be 1 image asset.
-	      //Note that the assets are owned by my object's superclass "AssetHolder"
+```c++
+mo->AssetHolder::setup(assetsPath, data.assetUsagePolicy, data.assetDownloadPolicy);
+```
 
-		mo->TexturedObject::setup(numImgAssets, {TEXTURE_ORIGINAL}); //we only use one texture size, so lets choose ORIGINAL
+And finally, you can see how we define the existence of one asset for our object; by calling the method [addRemoteAsset()](https://github.com/armadillu/ofxAssets/blob/master/src/AssetHolder.h#L48) from the `AssetHolder` superclass. A *Remote Asset* is an asset that is located in a remote server; this is the most common type of asset. To define this remote asset, we choose to supply the remote asset `URL`, and its `sha1` checksum. This is enough for most situations, but in others you might want to provide more information about the asset so that you can retrieve it later. Refer to the documentation in [ofxAssetHolder](https://github.com/armadillu/ofxAssets/blob/master/src/AssetHolder.h#L48) for more detail.
 
-		//this example shows how to tackle certain problems; would not usually be necessary
-		//but we need to check the pixel size of each image for TextureLoader to be able to work;
-		//so we do that here.
-		for(int i = 0; i < numImgAssets; i++){
-			ofxAssets::Descriptor & d = mo->AssetHolder::getAssetDescAtIndex(i);
+With this two bits of information, _ofxApp_ can attempt to download the asset from the remote server, and compare the obtained file's sha1 checksum with the expected one, to see if the file integrity checks out. It's important to note that if our `MuseumObject` had more assets, we would just keep doing `ofxAssetHolder::addRemoteAsset()` until all assets were added; and _ofxApp_ would take care of downloading and checking them.
 
-			switch (d.type) {
-				case ofxAssets::VIDEO: break;
-				case ofxAssets::IMAGE:{
-					auto info = ofxApp::utils::getImageDimensions(d.relativePath);
-					if(info.valid){
-						mo->imgSize = ofVec2f(info.width, info.height);
-					}else{
-						ofLogError("TexturedObject") << "cant get metadata image info at " << d.relativePath;
-					}break;
-				}
-				default: break;
+We are still missing one bit about the upcoming line of code; that is the fact that `AssetHolder::addRemoteAsset()` returns a string. This string will be the relative path to that asset on the filesystem; but more importantly it will be the `key` which you can use to refer to the asset later on. `ofxAsset` has several API methods to [retrieve](https://github.com/armadillu/ofxAssets/blob/master/src/AssetHolder.h#L67-L78) all the defined assets for an object. You can iterate through all the assets within an object by `index` pr by `key` (the relative path returned when addRemoteAsset() is called). Doing so will give you access to information about the assets, like their status, mime/type, any tags you might have provided them with, asset file specs, etc.
+
+```c++
+mo->imageLocalPath = mo->AssetHolder::addRemoteAsset(mo->imgURL, mo->imgSha1);
+```
+
+Also worth noting is that you don't have to add a remote asset to an object, in the example above, we only do so if the `imgURL` is actually defined in the JSON. It may or may not be ok for an object to have 0 assets, the asset policies will dictate if the object will still be used or dropped.
+
+```c++
+if(mo->imgURL.size()){
+  //AssetHolder::addRemoteAsset();
+}
+```
+
+#### 2.1.4.4 std::function<void (ContentObject*)> setupTexturedObject;
+
+This is the last `std::function` you will have to define; and you might not need to define it at all. This is where you setup your Textured Objects; which only really makes sense if your object contains image assets that you want to dynamically load and unload. Within the scope of our `MuseumObject` example, it makes sense to define our TexturedObjects as each MuseumObject holds one image that we will want to load & unload on the fly.
+
+This std::function's signature provides you with the `ContentObject *` currently at play; as usual your std::function will be executed once per each object defined inside the "MuseumObject.JSON" file, each call providing a pointer to the `ContentObject` that corresponds.
+
+Ultimately, the goal is to define per object how many textures exist, and at what sizes. [TexturedObject](https://github.com/armadillu/ofxTexturedObject) is designed in a way that each object is assumed to be able to hold N textures (ie, for our MuseumObject example, you can imagine N photographs of the same sculpture as being N possible textures) and a few size representations (or image resolutions) for each of the N images. Each different texture gets an index, and also a size tag. For example, if your app needs to draw a table with a bunch of icons representing `MusemObject`s, you probably only need to load the smallest size texture for each of them. But if your GUI allows the user to focus on a single `MusemObject` and offers a fullscreen image viewer, you probably want to load the largest available texture size for that image. At this stage, we are defining these variables; how many images/textures does my object hold, and at what different sizes do they exist.
+
+Let's see how we would define the Textured Objects for our example:
+
+```c++
+auto setupTexturedObject = [](ContentObject * texuredObject){
+
+	MuseumObject * mo = dynamic_cast<MuseumObject*>(texuredObject); //cast from ContentObject* to our native type
+	int numImgAssets = mo->AssetHolder::getNumAssets();	//retrieve the total # of assets for this object
+      //this will always be 1 for this example, and we know it will be 1 image asset.
+      //Note that the assets are owned by my object's superclass "AssetHolder"
+
+	mo->TexturedObject::setup(numImgAssets, {TEXTURE_ORIGINAL}); //we only use one texture size, so lets choose ORIGINAL
+
+	//this example shows how to tackle certain problems; would not usually be necessary
+	//but we need to check the pixel size of each image for TextureLoader to be able to work;
+	//so we do that here.
+	for(int i = 0; i < numImgAssets; i++){
+		ofxAssets::Descriptor & d = mo->AssetHolder::getAssetDescAtIndex(i);
+
+		switch (d.type) {
+			case ofxAssets::VIDEO: break;
+			case ofxAssets::IMAGE:{
+				auto info = ofxApp::utils::getImageDimensions(d.relativePath);
+				if(info.valid){
+					mo->imgSize = ofVec2f(info.width, info.height);
+				}else{
+					ofLogError("TexturedObject") << "cant get metadata image info at " << d.relativePath;
+				}break;
 			}
+			default: break;
 		}
-	};
-  ```
+	}
+};
+```
 
-  There's a lot going on in this bit of code, and not all of it is essential for our example... Let's look at it line by line.
+There's a lot going on in this bit of code, and not all of it is essential for our example... Let's look at it line by line.
 
-  First we cast the supplied generic `ContentObject *` to our native type `MuseumObject *`.
+First we cast the supplied generic `ContentObject *` to our native type `MuseumObject *`.
 
-  ```c++
-  MuseumObject * mo = dynamic_cast<MuseumObject*>(texuredObject);
-  ```
+```c++
+MuseumObject * mo = dynamic_cast<MuseumObject*>(texuredObject);
+```
 
-  Then we retrieve information about the # of assets from the object itself; because at this stage we already setup the `AssetHolder` superclass, we can retrieve information from it. The goal here is to find out how many textures this object owns. Because we know beforehand that `MuseumObject`s only have image assets, this is good enough. If there were other kinds of assets involves, this would not be enough, and we would need to drill down a bit further into `ofxAssetHolder` to get the real # of image-type assets. At this point we could also use the tag system (see the [example supplied](https://github.com/local-projects/ofxApp/blob/master/example/src/ofxAppParsers.cpp#L207) with ofxApp for more on this), or use the `ofxAssets::Descriptor`s through `AssetHolder::getAssetDescAtIndex()` or similar to query information about the assets.
+Then we retrieve information about the # of assets from the object itself; because at this stage we already setup the `AssetHolder` superclass, we can retrieve information from it. The goal here is to find out how many textures this object owns. Because we know beforehand that `MuseumObject`s only have image assets, this is good enough. If there were other kinds of assets involves, this would not be enough, and we would need to drill down a bit further into `ofxAssetHolder` to get the real # of image-type assets. At this point we could also use the tag system (see the [example supplied](https://github.com/local-projects/ofxApp/blob/master/example/src/ofxAppParsers.cpp#L207) with ofxApp for more on this), or use the `ofxAssets::Descriptor`s through `AssetHolder::getAssetDescAtIndex()` or similar to query information about the assets.
 
-  ```c++
-  int numImgAssets = mo->AssetHolder::getNumAssets();
-  ```
+```c++
+int numImgAssets = mo->AssetHolder::getNumAssets();
+```
 
-  The next line sets up the `TexturedObject` superclass part of our `MuseumObject`. To do so, we need to provide how many texturedObjects this object needs (one in our case), and at what sizes. For this examples, we are assuming our app will only ever draw the images at their original resolution, so we will only be using one representation. We can choose whatever "label" we want to give that size, and it seems appropriate to label them as "original size". `ofxTexturedObject` defines [4 size labels](https://github.com/armadillu/ofxTexturedObject/blob/master/src/TexturedObjectSizes.h#L13-L20) that should cover most cases; It's up to you to decide how to assign a label to a resolution for your case. In most cases you will only need 2-3 texture sizes, one "icon" size (ie 256px) (which as usually label as `TEXTURE_SMALL`), one "medium" (ie 1024px) size which I usually label `TEXTURE_MEDIUM`, and the largest available size which I usually label `TEXTURE_ORIGINAL`. The label itself doesn't mean anything; it's just a mnemonic to be able to request a certain texture size category; for example, if I am rendering a view in which `MusumeObject`s icons are drawn, then most likely I will request loading the `TEXTURE_SMALL` representation of my object's textures. We will see more of this further ahead, but you can get an idea on how you will be requesting textures and releasing them in the [ofxTexturedObject API](https://github.com/armadillu/ofxTexturedObject/blob/master/src/TexturedObject.h#L119-L131).  
+The next line sets up the `TexturedObject` superclass part of our `MuseumObject`. To do so, we need to provide how many texturedObjects this object needs (one in our case), and at what sizes. For this examples, we are assuming our app will only ever draw the images at their original resolution, so we will only be using one representation. We can choose whatever "label" we want to give that size, and it seems appropriate to label them as "original size". `ofxTexturedObject` defines [4 size labels](https://github.com/armadillu/ofxTexturedObject/blob/master/src/TexturedObjectSizes.h#L13-L20) that should cover most cases; It's up to you to decide how to assign a label to a resolution for your case. In most cases you will only need 2-3 texture sizes, one "icon" size (ie 256px) (which as usually label as `TEXTURE_SMALL`), one "medium" (ie 1024px) size which I usually label `TEXTURE_MEDIUM`, and the largest available size which I usually label `TEXTURE_ORIGINAL`. The label itself doesn't mean anything; it's just a mnemonic to be able to request a certain texture size category; for example, if I am rendering a view in which `MusumeObject`s icons are drawn, then most likely I will request loading the `TEXTURE_SMALL` representation of my object's textures. We will see more of this further ahead, but you can get an idea on how you will be requesting textures and releasing them in the [ofxTexturedObject API](https://github.com/armadillu/ofxTexturedObject/blob/master/src/TexturedObject.h#L119-L131).  
 
-  Finally down below we see how to setup the `TexturedObject`, in this case we supply the # of images and an array of all the sizes we will be using (in this case only one size, `TEXTURE_ORIGINAL`).
-
-
-  ```c++
-  mo->TexturedObject::setup(numImgAssets, {TEXTURE_ORIGINAL});
-  ```
-
-  The rest of the `std::function` demonstrates how to iterate through all the assets defined in our object, only focusing on the image types, and how to extract the image dimensions for each of our image assets using one of the _ofxApp_ utility methods. This is relevant because when you implement your `MuseumObject` class, by inheriting from `ContentObject` you will automatically be asked to implement a few methods that `TexturedObject` relies on to be able to load and unload textures. Note how when we setup() the `TexturedObject` we never specified what textures to load, only the # of textures that existed. That is because `TexturedObject` works by enforcing a subclass protocol on your object. To use `TexturedObject`, your object must subclass it, and then implement a [couple of methods](https://github.com/armadillu/ofxTexturedObject/blob/master/src/TexturedObject.h#L94-L97) so that whenever `TexturedObject` needs information about your textures, it can ask you. Those methods are `ofVec2f getTextureDimensions(TexturedObjectSize size, int index);` and `string getLocalTexturePath(TexturedObjectSize size , int index)`. When `TexturedObject` needs to load a texture, it will ask you where to find it by calling getLocalTexturePath() supplying a texture size and an index. Its up to you to point it to the right file. Same applies to image dimensions, although that's more for your own benefit; often in GUI layouts you need to be able to know the size of a texture before you load it; so it will be convenient for you to be able to query the object directly about that texture size (with getTextureDimensions()).
-
-  After this short into to `ofxTextureLoader`, we can justify why ```ofxApp::utils::getImageDimensions(string path)``` is there. What the [function](https://github.com/armadillu/ofxApp/blob/master/src/ofxAppUtils.h#L46) is doing is finding out an image size from the filesystem; it makes sense to do this at this stage because finding dimensions of an image is a fairly expensive operation, so doing it once at the startup of the app (instead of during the app's normal operation) can help keep the framerates stable. Note that `ofxApp::utils::getImageDimensions(string path)` isn't actually loading the full image, it only peeks at the image headers to extract the dimensions, so it's not a terribly slow operation, but still too slow for realtime. Also note how in the code above we store those image dimensions inside the object (in `mo->imgSize`), so that the implementation of `MuseumObject::getTextureDimensions(TexturedObjectSize size, int index);` can just return that value.
-
-  ```
-  auto info = ofxApp::utils::getImageDimensions(d.relativePath);
-  if(info.valid){
-      mo->imgSize = ofVec2f(info.width, info.height);
-  }
-  ```
+Finally down below we see how to setup the `TexturedObject`, in this case we supply the # of images and an array of all the sizes we will be using (in this case only one size, `TEXTURE_ORIGINAL`).
 
 
+```c++
+mo->TexturedObject::setup(numImgAssets, {TEXTURE_ORIGINAL});
+```
 
+The rest of the `std::function` demonstrates how to iterate through all the assets defined in our object, only focusing on the image types, and how to extract the image dimensions for each of our image assets using one of the _ofxApp_ utility methods. This is relevant because when you implement your `MuseumObject` class, by inheriting from `ContentObject` you will automatically be asked to implement a few methods that `TexturedObject` relies on to be able to load and unload textures. Note how when we setup() the `TexturedObject` we never specified what textures to load, only the # of textures that existed. That is because `TexturedObject` works by enforcing a subclass protocol on your object. To use `TexturedObject`, your object must subclass it, and then implement a [couple of methods](https://github.com/armadillu/ofxTexturedObject/blob/master/src/TexturedObject.h#L94-L97) so that whenever `TexturedObject` needs information about your textures, it can ask you. Those methods are `ofVec2f getTextureDimensions(TexturedObjectSize size, int index);` and `string getLocalTexturePath(TexturedObjectSize size , int index)`. When `TexturedObject` needs to load a texture, it will ask you where to find it by calling getLocalTexturePath() supplying a texture size and an index. Its up to you to point it to the right file. Same applies to image dimensions, although that's more for your own benefit; often in GUI layouts you need to be able to know the size of a texture before you load it; so it will be convenient for you to be able to query the object directly about that texture size (with getTextureDimensions()).
+
+After this short into to `ofxTextureLoader`, we can justify why ```ofxApp::utils::getImageDimensions(string path)``` is there. What the [function](https://github.com/armadillu/ofxApp/blob/master/src/ofxAppUtils.h#L46) is doing is finding out an image size from the filesystem; it makes sense to do this at this stage because finding dimensions of an image is a fairly expensive operation, so doing it once at the startup of the app (instead of during the app's normal operation) can help keep the framerates stable. Note that `ofxApp::utils::getImageDimensions(string path)` isn't actually loading the full image, it only peeks at the image headers to extract the dimensions, so it's not a terribly slow operation, but still too slow for realtime. Also note how in the code above we store those image dimensions inside the object (in `mo->imgSize`), so that the implementation of `MuseumObject::getTextureDimensions(TexturedObjectSize size, int index);` can just return that value.
+
+```
+auto info = ofxApp::utils::getImageDimensions(d.relativePath);
+if(info.valid){
+  mo->imgSize = ofVec2f(info.width, info.height);
+}
+```
 
 #### 2.1.5 Content Fail and Recovery
 
