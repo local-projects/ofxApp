@@ -1,3 +1,4 @@
+
 # ofxApp
 [![Build Status](https://travis-ci.org/local-projects/ofxApp.svg?branch=master)](https://travis-ci.org/local-projects/ofxApp)
 [![Build status](https://ci.appveyor.com/api/projects/status/c9uonq86tsf0tlu5/branch/master?svg=true)](https://ci.appveyor.com/project/armadillu/ofxapp/branch/master)
@@ -7,6 +8,46 @@ What is _ofxApp_? Its a basic skeleton for an interactive CMS-driven installatio
 [![ofxApp Startup](ReadMeImages/videoThumb.png)](https://www.youtube.com/watch?v=vQaj6wCZZqs "ofxApp Startup")
 
 There are also some (slightly outdated) [Slides](https://github.com/local-projects/ofxApp/raw/master/introduction.pdf) that might help you understand what _ofxApp_ offers and how it works internally.
+
+---
+# Table of Contents
+
+<!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [ofxApp](#ofxapp)
+- [Table of Contents](#table-of-contents)
+	- [0. Feature List](#0-feature-list)
+	- [1. How To Use](#1-how-to-use)
+		- [1.1 - Setup a project with all the required addons:](#11-setup-a-project-with-all-the-required-addons)
+		- [1.2 - Define Pre-Processor macro with your project name:](#12-define-pre-processor-macro-with-your-project-name)
+		- [1.3 - Create files for your Global Variables & Global Colors:](#13-create-files-for-your-global-variables-global-colors)
+		- [1.4 - Make your ofApp class a subclass of ofxAppDelegate](#14-make-your-ofapp-class-a-subclass-of-ofxappdelegate)
+	- [2. ofxApp Functionality Coverage](#2-ofxapp-functionality-coverage)
+		- [2.1 ofxApp and Content](#21-ofxapp-and-content)
+			- [2.1.1 How does ofxApp Handle Content?](#211-how-does-ofxapp-handle-content)
+			- [2.1.2 The JSON file structure](#212-the-json-file-structure)
+			- [2.1.3 ofxApp Content Abstraction](#213-ofxapp-content-abstraction)
+			- [2.1.4 Content Sources](#214-content-sources)
+			- [2.1.4 Content Ingestion & Texture Loading Setup](#214-content-ingestion-texture-loading-setup)
+			- [2.1.5 Content Fail and Recovery](#215-content-fail-and-recovery)
+	- [2.2 ofxApp Startup & Init stages](#22-ofxapp-startup-init-stages)
+		- [2.3 Static Textures loading Automation](#23-static-textures-loading-automation)
+		- [2.4 Fonts](#24-fonts)
+		- [2.5 Globals](#25-globals)
+		- [2.6 Maintenance Mode](#26-maintenance-mode)
+		- [2.7 Error handling](#27-error-handling)
+		- [2.8 Analytics](#28-analytics)
+		- [2.9 PID file](#29-pid-file)
+		- [2.10 Logging](#210-logging)
+		- [2.11 The Configuration File - "ofxAppSettings.json"](#211-the-configuration-file-ofxappsettingsjson)
+- [Appendix](#appendix)
+	- [ofxApp Keyboard Commands](#ofxapp-keyboard-commands)
+	- [ofxApp MACROS](#ofxapp-macros)
+			- [Knowns Issues / Future Developments](#knowns-issues-future-developments)
+	- [Included Libraries / assets](#included-libraries-assets)
+	- [License](#license)
+
+<!-- /TOC -->
 
 ## 0. Feature List
 
@@ -82,20 +123,7 @@ By doing so, you are guaranteed to get some callbacks when certain things happen
 
 ## 2. ofxApp Functionality Coverage
 
-_ofxApp_ covers a lot of areas, we will break them down in several sections:
-
-
-```
-TODO!
-2.1 Content
-2.2 Startup & Init stages
-2.3 Static Textures loading Automation
-2.4 Maintenance Mode
-2.5 Error Screens
-...
-2.N The Config file `data/configs/ofxAppSettings.json`
-```
-
+_ofxApp_ covers a lot of areas, we will break them down in several sections. See toc.
 
 ### 2.1 ofxApp and Content
 
@@ -135,6 +163,7 @@ _ofxApp_ needs you to answer a few questions to be able to fulfill that content 
 To answer all the above questions, _ofxApp_ offers you a Function Based protocol; you will be asked to define a few functions that will clarify all these questions. We will see those a bit further in.
 
 ---
+
 #### 2.1.2 The JSON file structure
 
  _ofxApp_ assumes your content comes in JSON form. It also assumes you will get one JSON file per content source/type. Let's chose a real world example; imagine your project is an interactive wall that aims to show the collection of a Museum. In such a situation, you will probably have 1 JSON file with a list of all the objects in the collection. But you might also have 1 JSON with the list of all the Artist Bios, and one for all the curators, etc. This content is often arranged in a JSON array, or in a JSON dictionary, as shown below in a fictional ```MuseumObjects``` JSON.
@@ -248,7 +277,7 @@ Each Content Source must have a few fields defined:
 If you suddenly have another content source, just add it in that section with its own unique contentID. _ofxApp_ will ingest the content in that source during the startup phases (more on that later).
 
 ---
-#### 2.1.6 Content Ingestion
+#### 2.1.4 Content Ingestion & Texture Loading Setup
 
 We have seen how a content JSON might look like, and how you specify your content sources, and some of the classes involved in the different functionalities offered for your content objects. Now we will see how the content is actually converted from JSON to C++ objects you can use. We have seen in 2.1.1 that _ofxApp_ needs to ask you a few questions to be able to parse JSON; here we see how you will answer them through code. We will do so for the `MuseumObject` hypothetical example JSON we've been looking at.
 
@@ -620,14 +649,14 @@ As you can see, there's 4 `std::function` objects for you to provide code for, a
 
 
 
-##### 2.1.6.1 ....
-##### 2.1.6.2 Customized Parsing Functions
 
 #### 2.1.5 Content Fail and Recovery
 
 What happens if _ofxApp_ starts but the API endpoint is down? What happens if the JSON is malformed and can't be parsed? .... TODO!
 
-## 2.2 ofxApp Startup Stages
+---
+
+## 2.2 ofxApp Startup & Init stages
 
 So far we have only focused on the JSON content aspect of _ofxApp_, but it loads lots more during startup. In summary, _ofxApp_ does all this at startup, in the following order:
 
@@ -732,6 +761,8 @@ This diagram shows the most relevant callbacks will receive over time:
 
 <img src="ReadMeImages/callbacks.png" width="740">
 
+---
+
 ### 2.3 Static Textures loading Automation
 
 _ofxApp_ has a module named ofxAppStaticTextures that aims to simplify access to everyday textures; usually those textures that you need available all the time, and you never dynamically load & unload them; this includes things like icons and such.
@@ -782,8 +813,17 @@ __Things to note about the texture naming:__
 * The upper level dirname ("images" in the example above) is removed from the texture name
 * Requesting a missing texture will not crash, but you will get a 16x16 garbage texture + an error log entry
 
+---
 
-### 2.4 Maintenance Mode
+### 2.4 Fonts
+
+---
+
+### 2.5 Globals
+
+---
+
+### 2.6 Maintenance Mode
 
 Sometimes you just need to keep an installation off because of extraordinary reasons (ie some hardware is missing, CMS is down, etc). _ofxApp_ makes it easy to set a placeholder message on screen when the installation needs maintenance. Inside the config file ```bin/data/ofxAppSettings.json``` there is a section named "MaintenanceMode" (in ```App/MaintenanceMode``` ).
 
@@ -821,11 +861,15 @@ This config would give you a screen like this:
 
 <img src="ReadMeImages/maintenance.PNG" width="560">
 
-### 2.5 Error handling
+---
+
+### 2.7 Error handling
 
 _ofxApp_ has two ways of handling runtime errors
 
-### 2.6 Analytics
+---
+
+### 2.8 Analytics
 
 Analytics in _ofxApp_ are handled by [ofxGoogleAnalytics](https://github.com/armadillu/ofxGoogleAnalytics), but its configuration is handled through the `ofxAppSettings.json` configuration file found at `data/configs/ofxAppSettings.json`. It contains a section named `GoogleAnalytics` with all the necessary configuration options.
 
@@ -833,11 +877,15 @@ _ofxApp_ will send automatic analytics events when the app starts running, and w
 
 You can access the `ofxGoogleAnalytics` object to send your custom event from anywhere by requesting it to _ofxApp_ with the macro `OFXAPP_ANALYTICS()` or by calling `ofxApp::get().analytics()`. Refer to the examples and documentation in [ofxGoogleAnalytics](https://github.com/armadillu/ofxGoogleAnalytics) for help on how to setup & report analytics on your app.
 
-### 2.7 PID file
+---
+
+### 2.9 PID file
 
 _ofxApp_ tries to keeps track its last launch by creating a file named `ofxApp.pid` in the `data` directory as soon as it launches, and it will delete the file when the app exits cleanly. If the app launches and it finds the `ofxApp.pid` file, it means the last time it was launched, it didn't quit nicely (because a crash, a power cut, etc). You can also check on previous session logs for reports on this, as it will be registered in the app's logs as `The App did not exit cleanly when it was last run.`
 
-### 2.8 Logging
+---
+
+### 2.10 Logging
 
 _ofxApp_ handles logging for you by offering several log channels. The _ofxApp_ configuration file `ofxAppSettings.json` contains a section about logging named `"Logging"`. In there you can configure where do you want your log lines to go (to console AND/OR to file AND/OR to screen), your log rotation strategy, and others.
 
@@ -862,7 +910,27 @@ There is an extra log created on every app launch regarding content; it's named 
 
 The config file also offers an option to synchronize logging across threads; if the `Logging/syncronizedLogging` section is set to true, all the logging commands will be mutexed avoiding the dreaded garbled logs when multiple threads are logging at the same time. This can be useful during development, but for production this option should be set to `false` to avoid performance bottlenecks.
 
-### 2.9 The Configuration File - "ofxAppSettings.json"
+_ofxApp_ also offers some convenient macros for logging within class methods that don't require you to type in the module name, they just extract it from the context. Those are:
+
+* __```LOGV```__ : ofLogVerbose(this* typeID);   
+* __```LOGN```__ : ofLogNotice(this* typeID)
+* __```LOGW```__ : ofLogWarning(this* typeID)
+* __```LOGE```__ : ofLogError(this* typeID)
+* __```LOGF```__ : ofLogFatal(this* typeID)
+
+But keep in mind they won't work from C or static methods.
+
+You can use them like this:
+
+```c++
+void MyClass::myMethod(){
+    LOGV << "something irrelevant happened";
+}
+```
+
+---
+
+### 2.11 The Configuration File - "ofxAppSettings.json"
 
 ---
 
@@ -897,7 +965,7 @@ The config file also offers an option to synchronize logging across threads; if 
 * __```LOGF```__ : ofLogFatal(this* typeID)
 
 
-#### TODO
+#### Knowns Issues / Future Developments
 
 + Globals + Colors macro file naming gimmick is not ideal
 + unhappy about AppSettings.json sharing "default" options with user-defined-content src options
@@ -910,8 +978,12 @@ The config file also offers an option to synchronize logging across threads; if 
 
 ## Included Libraries / assets
 
-* [stb_image](https://github.com/nothings/stb) by Sean Barrett: Public domain
-* [Ubuntu] (http://font.ubuntu.com) Font Family : [Ubuntu Font License](http://font.ubuntu.com/ufl/ubuntu-font-licence-1.0.txt)
-* [Montserrat](https://www.fontsquirrel.com/fonts/montserrat) Font Family : [SIL Open Font License](https://www.fontsquirrel.com/license/montserrat)
-* [Pacifico](https://www.fontsquirrel.com/fonts/pacifico) Font (used in example): [SIL Open Font License](https://www.fontsquirrel.com/license/pacifico)
-* [Fantasque Sansa Mono](https://fontlibrary.org/en/font/fantasque-sans-mono) Font (used in example): [SIL Open Font License](http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL)
+* [stb_image](https://github.com/nothings/stb) by Sean Barrett: Public domain.
+* [Ubuntu](http://font.ubuntu.com) Font Family : [Ubuntu Font License](http://font.ubuntu.com/ufl/ubuntu-font-licence-1.0.txt).
+* [Montserrat](https://www.fontsquirrel.com/fonts/montserrat) Font Family : [SIL Open Font License](https://www.fontsquirrel.com/license/montserrat).
+* [Pacifico](https://www.fontsquirrel.com/fonts/pacifico) Font (used in example): [SIL Open Font License](https://www.fontsquirrel.com/license/pacifico).
+* [Fantasque Sansa Mono](https://fontlibrary.org/en/font/fantasque-sans-mono) Font (used in example): [SIL Open Font License](http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL).
+
+## License
+
+* [ofxApp](https://github.com/local-projects/ofxApp) is distributed under the [MIT license](License.md).
