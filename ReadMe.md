@@ -180,9 +180,10 @@ Let's continue with our example; to hold the information about each object in yo
 ```c++
 class MuseumObject : public ContentObject{
 public:
-    string title;
-	string imageURL;
-	string imageSHA1;
+    string title; //data defined in JSON
+	string imageURL; //data defined in JSON
+	string imageSHA1; //data defined in JSON
+    string imageLocalPath; //where will the image be stored when downloaded by ofxApp?
 }
 ```
 
@@ -449,11 +450,58 @@ As you can see, there's 4 `std::function` objects for you to provide code for, a
 
   ---
 
-* **`std::function<void (ofxApp::CatalogAssetsData &)> defineObjectAssets;`**  
+* **`std::function<void (ofxApp::CatalogAssetsData & data)> defineObjectAssets;`**  
 
   ---
 
-  This too  
+  In this std::function, _ofxApp_ is asking you to define the assets that each object owns. An asset is any sort of file that you will need to load during the app's life - a JPG, an MP4, a text file, etc.
+
+  The `std::function` signature provides you with a CatalogAssetsData & structure, which looks like this:
+
+  ```c++
+  struct CatalogAssetsData{ //data sent to the user for him/her to report object assets
+      ContentObject * object;
+      string assetsLocation;      
+      ofxAssets::DownloadPolicy assetDownloadPolicy;
+      ofxAssets::UsagePolicy assetUsagePolicy;
+      ofxJSONElement * userData;
+  };
+  ```
+
+  The structure provides you with the object in question (`ContentObject * object`), a string giving you the location in which the assets for this ContentSource should be stored (defined in the config file `ofxAppSettings.json`), some policy objects, and the previously seen userData object.
+
+  The `ContentObject * object` is the `MuseumObject *` you just allocated in the previously defined `std::function`. The object is provided so that you can setup its `AssetHolder` part. In the section `2.1.3 ofxApp Content Abstraction` we saw the class hierarchy of a ContentObject included `ParsedObject` (which we have already used for parsing), `AssetHolder` (which we will interact with in this section) and `TexturedObject` which we will look at later on. The `AssetHolder` part of yor object is used to define all the assets that that particular `MuseumObject` contains. _ofxApp_ can't just guess what assets does an object include, so you must define those first. And this is what we will do in this `std::function`. Note that you will have to cast it again to your object type to interact with it (more on this in a second).
+
+  The `assetsLocation` string will be the path specified in `ofxAppSettings.json`, precisely at `Content/JsonSources/MuseumObjects/assetsLocation` for our example. It represents where in the filesystem those assets will be downloaded/copied to.  
+
+  The Policy objects `ofxAssets::DownloadPolicy` and `ofxAssets::UsagePolicy` are objects that define a set of rules to help decide if 1: an asset needs to be re-downloaded and 2: the asset should be used or not. We will see more about policies later on.
+
+  The `ofxJSONElement * userData` is just an object provided for you to be able to get access to any sort of information you might need within those std::functions. You can initialize this object before you start the parsing process and provide it to _ofxApp_, and it will be given back to you for each of the std::function executions. Becasue of abstracted nature of the parsing process (you just define object-level std::functions), it might be hard to get access to external data otherwise.
+
+  You are in charge of defining all the assets for the provided object. In our example, each `MuseumObject` has a single asset (an image), for which we have an URL and an expected file checksum (sha1). Let's see how we can setup the `AssetHolder` side of our object:
+
+  ```c++
+  MuseumObject * mo = dynamic_cast<MuseumObject*>(data.object);
+  string assetsPath = data.assetsLocation + "/" + mo->getObjectUUID();
+  mo->AssetHolder::setup(assetsPath, data.assetUsagePolicy, data.assetDownloadPolicy);
+  if(mo->imgURL.size()){
+      mo->imageLocalPath = mo->AssetHolder::addRemoteAsset(mo->imgURL, mo->imgSha1);
+  }
+  ```
+
+  And let's analyze this line by line:
+  First we cast the provided generic `ContentObject` to our native `MuseumObject` object type:
+
+  ```c++
+  MuseumObject * mo = dynamic_cast<MuseumObject*>(data.object);
+  ```
+
+  Then we construct a full filesystem path to define where all the assets for this particular object will be stored. Note that we do so by compounding the provided `data.assetsLocation` with the provided `objectID` (by querying the provided object itself)
+
+  ```c++
+  string assetsPath = data.assetsLocation + "/" + mo->getObjectUUID();
+  ```
+
 
 
   ---
