@@ -93,7 +93,7 @@ TODO!
 2.4 Maintenance Mode
 2.5 Error Screens
 ...
-2.N The Config file `data/configs/ofxAppSettings.json` 
+2.N The Config file `data/configs/ofxAppSettings.json`
 ```
 
 
@@ -160,10 +160,14 @@ To answer all the above questions, _ofxApp_ offers you a Function Based protocol
 ///Objects in JSON dictionary;
 { "MuseumObjects" : {
 	"objID1" : {
+            "ID" : "objID1",
+            "title" : "Magical Chair",
 			"imageURL" : "http://museum.com/image1.jpg",
 			"imageSha1" : "8d25fa0135fe0a3771dfa09f1331e3ea7c8b888f"
 		},
 	"objID2" : {
+            "ID" : "objID2",
+            "title" : "Man standing looking at birds",
 			"imageURL" : "http://museum.com/image2.jpg",
 			"imageSha1" : "c376992f8a141c388faf6227b9e72749f6065650"
 		}
@@ -171,11 +175,12 @@ To answer all the above questions, _ofxApp_ offers you a Function Based protocol
 }
 ```
 
-Let's continue with our example; to hold the information about each object in your JSON you will create your own C++ object, let's call it ```MuseumObject```. It will look like similar to this:
+Let's continue with our example; to hold the information about each object in your JSON you will create your own C++ object, let's call it `MuseumObject`. It will look like similar to this:
 
 ```c++
 class MuseumObject : public ContentObject{
 public:
+    string title;
 	string imageURL;
 	string imageSHA1;
 }
@@ -207,18 +212,18 @@ data/configs/ofxAppSettings.json
 {
 ...
 	"Content":{
-		"JsonSources":{ 
-			"CooperHewitt" : { //content ID - this is whatever you want to name that content source.
-				"url" : "http://uri.cat/LP/ch_small.json", //API endpoint or local JSON file
-				"jsonDownloadDir": "CH_JsonDownloads", //where to store the downloaded JSON
-				"assetsLocation": "CH_assets",  //where the assets for each obj in the JSON will be stored
+		"JsonSources":{
+			"MuseumObjects" : { //content ID - this is whatever you want to name that content source.
+				"url" : "http://uri.cat/LP/MuseumObjects.json", //API endpoint or local JSON file
+				"jsonDownloadDir": "MuseumObject_JsonDownloads", //where to store the downloaded JSON
+				"assetsLocation": "MuseumObject_assets",  //where the assets for each obj in the JSON will be stored
 				"shouldSkipObjectPolicyTests" : false  //set this to true to avoid the object cleanup according to the policies
 			},
-			"CWRU" : { //another content source's contentID
-				"url" : "file://testJson/cwru.json",
-				"jsonDownloadDir": "CWRU_JsonDownloads",
-				"assetsLocation": "CWRU_assets",  
-				"shouldSkipObjectPolicyTests" : false 
+			"Artists" : { //another content source's contentID
+				"url" : "file://testJson/Artists.json",
+				"jsonDownloadDir": "Artists_JsonDownloads",
+				"assetsLocation": "Artists_assets",  
+				"shouldSkipObjectPolicyTests" : false
 			}
 		}
 	}
@@ -226,7 +231,7 @@ data/configs/ofxAppSettings.json
 }
 ```
 
-As you can see in the JSON config bit above, each Content Source is identified with a contentID of your choosing; in the example above we have two content sources : "CooperHewitt" and "CWRU". 
+As you can see in the JSON config bit above, each Content Source is identified with a contentID of your choosing; in the example above we have two content sources : "MuseumObjects" and "Artists".
 
 Each Content Source must have a few fields defined:
 
@@ -239,9 +244,9 @@ If you suddenly have another content source, just add it in that section with it
 
 #### 2.1.6 Content Ingestion
 
-We have seen how a content JSON might look like, and how you specify your content sources, and some of the classes involved in the different functionalities offered for your content objects. Now we will see how the content is actually converted from JSON to C++ objects. We have seen in 2.1.1 that _ofxApp_ needs to ask you a few questions to be able to parse JSON; here we see how you will answer them through code.
+We have seen how a content JSON might look like, and how you specify your content sources, and some of the classes involved in the different functionalities offered for your content objects. Now we will see how the content is actually converted from JSON to C++ objects you can use. We have seen in 2.1.1 that _ofxApp_ needs to ask you a few questions to be able to parse JSON; here we see how you will answer them through code. We will do so for the `MuseumObject` hypothetical example JSON we've been looking at.
 
-For every content source you want to use, you will have to provide a set of lambda functions to give _ofxApp_ directions on how to parse it. These std::functions are packaged into a struct named `ParseFunctions`.
+For every content source you want to use, you will have to provide a set of lambda functions to give _ofxApp_ directions on how to parse it. These std::functions are packaged into a struct named [`ParseFunctions`](https://github.com/local-projects/ofxApp/blob/master/src/ofxAppStructs.h#L28).
 
 ```c++
 struct ParseFunctions{
@@ -253,35 +258,37 @@ struct ParseFunctions{
 };
 ```
 
-As you can see, there's 4 `std::function` objects you must provide, let's analyse them one by one.
+As you can see, there's 4 `std::function` objects for you to provide code for, and one ofxJSON object for you to place any data you might need. Let's analyze them one by one:
 
-* `std::function<void (ofxMtJsonParserThread::JsonStructureData &)> pointToObjects;`
+* _**`std::function<void (ofxMtJsonParserThread::JsonStructureData &)> pointToObjects;`**_  
 
   The goal here is to simply point _ofxApp_ to the content within the JSON content source. For example, in a JSON like this:
-  
+
   ```c++
-  {
-  	"data":
-  		[
-  			{
-	  			"objectID" : "af74rfssg",
-  				"img" : "http://uri.cat/img.jpg"
-  			},
-  			{
-				"objectID" : "af74rfssg",
-  				"img" : "http://uri.cat/img.jpg"
-  			}
-  		]
-  	}
+  { "MuseumObjects" : [
+  		{
+  			"ID" : "objID1",
+            "title" : "Magical Chair",
+  			"imageURL" : "http://museum.com/image1.jpg",
+  			"imageSha1" : "8d25fa0135fe0a3771dfa09f1331e3ea7c8b888f"
+  		},
+  		{
+  			"ID" : "objID2",
+            "title" : "Man standing looking at birds",
+  			"imageURL" : "http://museum.com/image2.jpg",
+  			"imageSha1" : "c376992f8a141c388faf6227b9e72749f6065650"
+  		}
+  	]
+  }
   ```
-  
-  where the content is in an array under JSON["data"], you want to do something like:
-  
+
+  where the content is in an array under JSON["MuseumObjects"], you want to write something like:
+
 	```c++
-	std::function ofxApp::ParseFunctions::pointToObjects(JsonStructureData & inOutData){
+	auto pointToObjects = [](ofxMtJsonParserThread::JsonStructureData & inOutData){
 		ofxJSONElement & jsonRef = *(inOutData.fullJson);
-		if(jsonRef["data"].isArray()){
-			inOutData.objectArray = (ofxJSONElement*) &(jsonRef["data"]);
+		if(jsonRef["MuseumObjects"].isArray()){
+			inOutData.objectArray = (ofxJSONElement*) &(jsonRef["MuseumObjects"]);
 		}else{
 			ofLogError("ofApp") << "JSON has unexpected format!";
 			//if the json is not what we exepcted it to be,
@@ -290,51 +297,109 @@ As you can see, there's 4 `std::function` objects you must provide, let's analys
 		}
 	}
 	```
-  
-  Let's see what's going on here: the std::function signature provides you with an argument `JsonStructureData & inOutData`. This is passed to you by reference, so you can write on that object (and you are expected to). If see look at the definition of `JsonStructureData`, we see it contains:
-  
+
+  Let's see what's going on here; the `std::function` signature provides you with an argument `ofxMtJsonParserThread::JsonStructureData & inOutData`. This structure is defined in one of the dependencies of _ofxApp_, [`ofxMtJsonParser`](https://github.com/armadillu/ofxMTJsonParser), which is used to handle most of the JSON parsing. The structure is passed to you by reference intentionally, so that you can write back on that object (you are expected to), which is a bit unusual. If see look at the definition of [`JsonStructureData`](https://github.com/local-projects/ofxMTJsonParser/blob/master/src/ofxMtJsonParserThread.h#L30), we see it contains:
+
   ```c++
-  	struct JsonStructureData{
-		ofxJSONElement * fullJson;		//this will provide you the full json data (aka the whole json)
-		ofxJSONElement * objectArray; 	//you are supposed to send back a ptr to the json structure that has the object array OR dictionary you want to parse
-	};
+  struct JsonStructureData{
+		ofxJSONElement * fullJson; //this will provide you the full json data (aka the whole json)
+		ofxJSONElement * objectArray; //you are supposed to send back a ptr to the json structure that has the object array OR dictionary you want to parse
+  };
   ```
-  
-  so the function signature is providing with the whole JSON (as an ofxJSONElement *) but also another pointer named objectArray for you to "fill in". The provided `JsonStructureData` is being used as a two-way communication tool between _ofxApp_ and you; _ofxApp_ provides a full JSON, and expects you to give it back a pointer to where the content is within that JSON.
-  
-  If we look at the implementation proposed above, you can see we first cast the ofxJSONElement* of the whole JSON doc to a reference (for nicer syntax):
-  
+
+  So the function signature is providing with the whole JSON (as an `ofxJSONElement *`) but also another pointer named `objectArray` for you to "fill in". The provided `JsonStructureData` is being used as a two-way communication tool between _ofxApp_ and you; _ofxApp_ provides a full JSON, and expects you to give it back a pointer to where the content is within that JSON.
+
+  If we look at the implementation proposed above, line by line, you can see that we first cast the `ofxJSONElement *` of the whole JSON doc to a reference (for nicer syntax):
+
   ```c++
   ofxJSONElement & jsonRef = *(inOutData.fullJson);
   ```
-  
-  And then I check if "data" exists in the JSON and if it is an array (as we expect)...
-  
+
+  And then we check if "MuseumObjects" exists in the JSON, and if it is an array (as we expect, because we know beforehand how the JSON is structured)...
+
   ```c++
-  if(jsonRef["data"].isArray()){
+  if(jsonRef["MuseumObjects"].isArray()){
   ```
-  
-  And if the "data" looks correct, we point _ofxApp_ to it by "filling in" the inOutData.objectArray pointer:
-  
+
+  If the "MuseumObjects looks correct, we point _ofxApp_ to it by "filling in" the inOutData.objectArray pointer:
+
   ```c++
-  inOutData.objectArray = (ofxJSONElement*) &(jsonRef["data"]);
+  inOutData.objectArray = (ofxJSONElement*) &(jsonRef["MuseumObjects]);
   ```
-  
-  and if the data in the JSON did not match our expectation, we give back a nullptr to _ofxApp_
-  
+
+  If the data in the JSON did not match our expectation, we give back a `_nullptr` to _ofxApp_
+
   ```c++
   inOutData.objectArray = nullptr;
   ```
-    
+  And by doing this, _ofxApp_ now knows where to start parsing from.
+
+  ---
+
+* **`std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> parseOneObject;`**  
+  This function will be called once for each object inside JSON["MuseumObjects"]. This is where you allocate and fill in the data for each of your `MuseumObjects*`. _ofxApp_ (with the help of [`ofxMtJsonParser`](https://github.com/armadillu/ofxMTJsonParser)) will take care of splitting the JSON into different smaller JSON bits, so from your point of view, you are parsing a single JSON object. One thing to be aware is that this `std::function` will be called concurrently from different threads; this is done to speed up the parsing (which can get quite slow for large JSON content sets). This should be ok for most cases, but depending on what you do you should be aware of this; a mutex object is provided in case you may need it.
+
+  Let's look at the function signature, and more specifically, what do we get as an argument. _ofxApp_ provides us with a structure named [`SingleObjectParseData`](https://github.com/local-projects/ofxMTJsonParser/blob/master/src/ofxMtJsonParserThread.h#L41).
+
+  ```c++
+  struct SingleObjectParseData{
+	string objectID; //user is responsible of providing one if the JSON is an Array (instead of a Dictionary)
+	ofxJSONElement * jsonObj; //json data for this object		
+	ParsedObject * object; //its the user's job to allocate a new ParsedObject,
+    int threadID;
+    ofMutex * printMutex; //mutex for your convenience
+	ofxJSONElement * userData; //custom user data you might need from inside the thread;
+    //be extra careful NOT TO WRITE into it from the thread! READ ONLY!
+  }
+  ```
+
+  The structure holds quite a bit of fields, some of them are not relevant most of the time but may sometimes be needed. Let's start with the important ones:
+
+  * `string objectID`: _ofxApp_ needs a uniqueID for each object in a content source. If the JSON data comes in the form of a  dictionary, the key for each object will be used as a UUID. But if the JSON data comes in Array form, then _ofxApp_ has no way of knowing what the object's UUID is, so you will need to provide it.
+  * `ofxJSONElement * jsonObj`: This is a pointer to the JSON data for that object. For our ongoing Museum example, for the first object call would give us this JSON:
+  ```
+    {
+	    "ID" : "objID1",
+        "title" : "Magical Chair",
+	    "imageURL" : "http://museum.com/image1.jpg",
+	    "imageSha1" : "8d25fa0135fe0a3771dfa09f1331e3ea7c8b888f"
+	}
+  ```
+
+  * `ParsedObject * object`: This is the pointer to final object that will hold all the information you will extract from the JSON. It is your responsibility to allocate the object and assign it to `object*`. The argument will come initialized as `nullptr`; if you leave it as `nullptr` _ofxApp_ will interpret that the object is to be dropped, and it will not show in the app.
+
+
+  ```c++
+  auto parseOneObject = [](ofxMtJsonParserThread::SingleObjectParseData & inOutData){
+
+		const ofxJSONElement & jsonRef = *(inOutData.jsonObj);
+		string objID, title, imgURL, imgSha1; //create temp vars to hold the data in JSON
+
+		try{ //do some parsing - catching exceptions
+			objID = jsonRef["ID"].asString();
+            title = jsonRef["title"].asString();
+			imgURL = jsonRef["imageURL"].asString();
+			imgSha1 = jsonRef["imageSha1"].asString();
+		}catch(exception exc){}
+
+		MuseumObject * o = new MuseumObject(); //allocate our MuseumObject
+		o->title = title;
+		o->imgURL = imgURL;
+		o->imgSha1 = imgSha1;
+		inOutData.objectID = objID; //this is how we tell ofxApp the ObjID for this object		
+		inOutData.object = dynamic_cast<ParsedObject*> (o); //this is how we return the fully-parsed object to ofxApp;
+	};
+  ```
   
-* `std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> parseOneObject;`  
-  This too
-  
-* `std::function<void (ofxApp::CatalogAssetsData &)> defineObjectAssets;`  
-  This too
-  
-* `std::function<void (ContentObject*)> setupTexturedObject;`  
-  This too
+
+
+
+* **`std::function<void (ofxApp::CatalogAssetsData &)> defineObjectAssets;`**  
+  This too  
+
+
+* **`std::function<void (ContentObject*)> setupTexturedObject;`**  
+  This too  
 
 
 ##### 2.1.6.1 ....
@@ -396,7 +461,7 @@ class YourApp : public ofBaseApp, public ofxAppDelegate{  };
 ```
 By doing so, you adhere to a protocol that includes quite a few callbacks; some of them are designed to allow you to interact with the startup process.
 
-You can see all those callback definitions in the `ofxAppDelegate.h` file, which defines all the deleagte methods _ofxApp_ will need you to respond to. 
+You can see all those callback definitions in the `ofxAppDelegate.h` file, which defines all the deleagte methods _ofxApp_ will need you to respond to.
 
 There's a callback mechanism that allows _ofxApp_ to wait or proceed to the next Phase, according to your needs. The goal here is for ofxApp to give you a chance to do your custom setup at key moments during startup; maybe you need to pre-process all the content before the app starts, maybe you need to connect to some external hardware before you get the content, etc. _ofxApp_ allows you to do your setup when you need to, but also it makes it easy for you to inform the staff of progress or potential problems during setup by letting you control what's drawn on screen during each phase. The mechanism involves 2 callback methods, with a few more optional methods:
 
@@ -411,15 +476,15 @@ There are more callbacks that you can implement to control the look of the start
 
 ```c++
 //override the loading screen drawing
-void ofxAppDrawPhaseProgress(ofxApp::Phase, const ofRectangle & r); 
+void ofxAppDrawPhaseProgress(ofxApp::Phase, const ofRectangle & r);
 
 //override the progress bar status text
-string ofxAppGetStatusString(ofxApp::Phase){return "";}; 
+string ofxAppGetStatusString(ofxApp::Phase){return "";};
 
 //override the text message above the progress bar (ie for showing script logs)
-string ofxAppGetLogString(ofxApp::Phase){return "";}; 
+string ofxAppGetLogString(ofxApp::Phase){return "";};
 
-//return [0..1] to report progressbar; -1 for 
+//return [0..1] to report progressbar; -1 for
 float ofxAppGetProgressForPhase(ofxApp::Phase){return -1;} indeterminate
 
 ```
@@ -445,7 +510,7 @@ void ofxAppContentIsReady(const string & contentID, vector<ContentObject*> conte
 
 it contains the `contentID` (which is a string that identifies a content type, ie "MuseumObjects") and the vector containing the list of all the objects in the JSON API that passed all the content filters that are setup.
 
-This diagram shows the most relevant callbacks will receive over time: 
+This diagram shows the most relevant callbacks will receive over time:
 
 <img src="ReadMeImages/callbacks.png" width="740">
 
@@ -561,17 +626,11 @@ This config would give you a screen like this:
 * __```OFXAPP_REPORT(alertID,msg,severity)```__ : send an ofxSensu alert (that may trigger email on the CMS)
 * __```OFXAPP_REPORT_FILE(alertID,msg,severity)```__ : send an ofxSensu alert (to the CMS) with a file attachment
 * __```OFXAPP_ANALYTICS()```__ : direct access to ofxGoogleAnalytics*
-* __```LOGV```__ : ofLogVerbose(this* typeID)[^1]
+* __```LOGV```__ : ofLogVerbose(this* typeID);   
 * __```LOGN```__ : ofLogNotice(this* typeID)
 * __```LOGW```__ : ofLogWarning(this* typeID)
 * __```LOGE```__ : ofLogError(this* typeID)
 * __```LOGF```__ : ofLogFatal(this* typeID)
-
-
-[^1]: must be inside an in-class method for it to work; Use like this: ```LOGV << "hello!";```
-
-
-
 
 
 #### TODO
