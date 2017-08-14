@@ -496,13 +496,42 @@ As you can see, there's 4 `std::function` objects for you to provide code for, a
   MuseumObject * mo = dynamic_cast<MuseumObject*>(data.object);
   ```
 
-  Then we construct a full filesystem path to define where all the assets for this particular object will be stored. Note that we do so by compounding the provided `data.assetsLocation` with the provided `objectID` (by querying the provided object itself)
+  Then we construct a full filesystem path to define where all the assets for this particular object will be stored. Note that we do so by compounding the provided `data.assetsLocation` with the provided `objectID` (by querying the provided object itself). By doing this, we will end up with each object owning a directory (named after its `ObjectID`) in which all of its assets will be stored. All those directories will be stored inside the directory defined in `data.assetsLocation`, which it's in turn coming from the `ofxAppSettings.json` config file.
 
   ```c++
   string assetsPath = data.assetsLocation + "/" + mo->getObjectUUID();
   ```
 
+  And now we setup the `AssetHolder` side of our `MuseumObject`. Note how we explicitly call setup on the `AssetHolder` superclass with `AssetHolder::setup()`. Let's look at the signature of the setup() method (in [`ofxAssets`](https://github.com/armadillu/ofxAssets/blob/master/src/AssetHolder.h#L37)); it takes three arguments:
 
+  `string & directoryForAssets`: that is where _ofxApp_ will store all the assets for that particular object. To keep things tidy, we usually use the `objectID` as the name of the directory that will hold the assets;
+
+  `ofxAssets::UsagePolicy & assetOkPolicy`: the set of policies used to dictate if an asset is considered valid
+  `ofxAssets::DownloadPolicy & downloadPolicy`: similarly, a set of policies that will dictate if an asset should be downloaded from the server or not (ie what do we do if the asset is already on disk, but the sha1 checksum doesn't match?)
+
+  So you can see we just feed the assetPath and the provided policies into the AssetHolder::setup() method.
+
+  ```c++
+  mo->AssetHolder::setup(assetsPath, data.assetUsagePolicy, data.assetDownloadPolicy);
+  ```
+
+  And finally, you can see how we define the existance of one asset for our object;by calling the method [addRemoteAsset()](https://github.com/armadillu/ofxAssets/blob/master/src/AssetHolder.h#L48) from the `AssetHolder` superclass. A *Remote Asset* is an asset that is located in a remote server; this is the most common type of asset. To define this remote asset, we choose to supply the remote asset `URL`, and its `sha1` checksum. This is enough for most situations, but in others you might want to provide more information about the asset so that you can retrieve it later. Refer to the documentation in [ofxAssetHolder](https://github.com/armadillu/ofxAssets/blob/master/src/AssetHolder.h#L48) for more detail.
+
+  With this two bits of information, _ofxApp_ can attempt to download the asset from the remote server, and compare the obtained file's sha1 checksum with the expected one, to see if the file integrity checks out. It's important to note that if our `MuseumObject` had more assets, we would just keep doing `ofxAssetHolder::addRemoteAsset()` until all assets were added; and _ofxApp_ would take care of downloading and checking them.
+
+  We are still missing one bit about the upcoming line of code; that is the fact that `AssetHolder::addRemoteAsset()` returns a string. This string will be the relative path to that asset on the filesystem; but more importantly it will be the `key` which you can use to refer to the asset later on. `ofxAsset` has several API methods to [retrieve](https://github.com/armadillu/ofxAssets/blob/master/src/AssetHolder.h#L67-L78) all the defined assets for an object. You can iterate through all the assets within an object by `index` pr by `key` (the relative path returned when addRemoteAsset() is called). Doing so will give you access to infromation about the assets, like their status, mime/type, any tags you might have provided them with, asset file specs, etc.
+
+  ```c++
+  mo->imageLocalPath = mo->AssetHolder::addRemoteAsset(mo->imgURL, mo->imgSha1);
+  ```
+
+  Also worth noting is that you don't have to add a remote asset to an object, in the example above, we only do so if the `imgURL` is actually defined in the JSON. It may or may not be ok for an object to have 0 assets, the asset policies will dictate if the object will still be used or dropped.
+
+  ```c++
+  if(mo->imgURL.size()){
+      //AssetHolder::addRemoteAsset();
+  }
+  ```
 
   ---
 
