@@ -85,8 +85,7 @@ A quick summary of the features offered by _ofxApp_:
 
 ### 1.1 Setup a project with all the required addons
 
-ofxOSC, ofxXmlSettings, ofxOpenCV, ofxNetwork, ofxPoco,  [ofxFontStash](https://github.com/armadillu/ofxFontStash), [ofxFontStash2](https://github.com/armadillu/ofxFontStash2), [ofxTuio](https://github.com/local-projects/ofxTuio), [ofxJSON](https://github.com/local-projects/ofxJSON), [ofxSuperLog](https://github.com/armadillu/ofxSuperLog), [ofxAutoTexture](https://github.com/armadillu/ofxAutoTexture), [ofxMTJsonParser](https://github.com/armadillu/ofxMTJsonParser), [ofxSimpleHttp](https://github.com/armadillu/ofxSimpleHttp), [ofxTagSystem](https://github.com/armadillu/ofxTagSystem), [ofxStateMachine](https://github.com/armadillu/ofxStateMachine), [ofxAssets](https://github.com/armadillu/ofxAssets), [ofxThreadSafeLog](https://github.com/armadillu/ofxThreadSafeLog), [ofxProgressiveTextureLoad](https://github.com/armadillu/ofxProgressiveTextureLoad), [ofxTexturedObject](https://github.com/armadillu/ofxTexturedObject), [ofxMullion](https://github.com/armadillu/ofxMullion), [ofxSensu](https://github.com/local-projects/ofxSensu),  [ofxGoogleAnalytics](https://github.com/armadillu/ofxGoogleAnalytics), [ofxJsonSettings](https://github.com/loca-projects/ofxJsonSettings), [ofxTimeMeasurements](https://github.com/armadillu/ofxTimeMeasurements), [ofxRemoteUI](https://github.com/armadillu/ofxRemoteUI), [ofxHistoryPlot](https://github.com/armadillu/ofxHistoryPlot), [ofxScreenSetup](https://github.com/armadillu/ofxScreenSetup),
-[ofxInterface](http://github.com/local-projects/ofxInterface), [ofxApp*](https://github.com/local-projects/ofxApp).
+ofxOSC, ofxXmlSettings, ofxOpenCV, ofxNetwork, ofxPoco,  [ofxFontStash](https://github.com/armadillu/ofxFontStash), [ofxFontStash2](https://github.com/armadillu/ofxFontStash2), [ofxTuio](https://github.com/local-projects/ofxTuio), [ofxJSON](https://github.com/local-projects/ofxJSON), [ofxSuperLog](https://github.com/armadillu/ofxSuperLog), [ofxAutoTexture](https://github.com/armadillu/ofxAutoTexture), [ofxMTJsonParser](https://github.com/armadillu/ofxMTJsonParser), [ofxSimpleHttp](https://github.com/armadillu/ofxSimpleHttp), [ofxTagSystem](https://github.com/armadillu/ofxTagSystem), [ofxStateMachine](https://github.com/armadillu/ofxStateMachine), [ofxAssets](https://github.com/armadillu/ofxAssets), [ofxThreadSafeLog](https://github.com/armadillu/ofxThreadSafeLog), [ofxProgressiveTextureLoad](https://github.com/armadillu/ofxProgressiveTextureLoad), [ofxTexturedObject](https://github.com/armadillu/ofxTexturedObject), [ofxMullion](https://github.com/armadillu/ofxMullion), [ofxSensu](https://github.com/local-projects/ofxSensu),  [ofxGoogleAnalytics](https://github.com/armadillu/ofxGoogleAnalytics), [ofxJsonSettings](https://github.com/loca-projects/ofxJsonSettings), [ofxTimeMeasurements](https://github.com/armadillu/ofxTimeMeasurements), [ofxRemoteUI](https://github.com/armadillu/ofxRemoteUI), [ofxHistoryPlot](https://github.com/armadillu/ofxHistoryPlot), [ofxScreenSetup](https://github.com/armadillu/ofxScreenSetup), [ofxInterface](http://github.com/local-projects/ofxInterface), [ofxApp*](https://github.com/local-projects/ofxApp).
 
 To do so, given the high number of addon dependencies, I suggest you use the OpenFrameworks Project Generator. This applies to Windows and OS X platforms.
 
@@ -368,7 +367,7 @@ As you can see in the JSON config bit above, each Content Source is identified w
 
 Each Content Source must have a few fields defined:
 
-* `url` : this is where _ofxApp_ will get the content JSON from; can be an endpoint (http://www.../API) or a local file (file://testJson/testContent.json).
+* `url` : this is where _ofxApp_ will get the content JSON from; can be an [endpoint](https://api.github.com/users/octocat/repos) or a local file (file://testJson/testContent.json).
 * `jsonDownloadDir` : this is the path where the JSON will be stored after downloading it from the source above.
 * `assetsLocation`: this is the path where the assets referenced in every object inside the JSON will be downloaded.
 * `shouldSkipObjectPolicyTests `: this bool allows skipping the policy tests (more on that later) to accept all the objects in the JSON regardless - usually you want this to be false.
@@ -692,8 +691,8 @@ auto setupTexturedObject = [](ContentObject * texuredObject){
 					mo->imgSize = ofVec2f(info.width, info.height);
 				}else{
 					ofLogError("TexturedObject") << "cant get metadata image info at " << d.relativePath;
-				}break;
-			}
+				}
+			}break;
 			default: break;
 		}
 	}
@@ -730,7 +729,7 @@ After this short into to `ofxTextureLoader`, we can justify why ```ofxApp::utils
 ```
 auto info = ofxApp::utils::getImageDimensions(d.relativePath);
 if(info.valid){
-  mo->imgSize = ofVec2f(info.width, info.height);
+	mo->imgSize = ofVec2f(info.width, info.height);
 }
 ```
 
@@ -824,7 +823,6 @@ string ofxAppGetLogString(ofxApp::Phase){return "";};
 
 //return [0..1] to report progressbar; -1 for
 float ofxAppGetProgressForPhase(ofxApp::Phase){return -1;} indeterminate
-
 ```
 
 Those will allow you to control how the startup screen looks like as the phase takes place; This is how the startup screen looks for each phase:
@@ -973,13 +971,11 @@ To define a style, you must choose a unique `styleID` and use it as key. The sty
 	"lineHeightMult" : 1.0,
 	"spacing" : 5.0
 },
-
 ```
 
 Once the config file is filled in, you can just access your fonts from code like this:
 
 ```c++
-
 //ofxFontStash Fonts
 ofxFontStash & myFont = G_FONT("myFontID");
 
@@ -990,7 +986,6 @@ ofxFontStash2::Fonts & myFontStash2 = G_FS2(); //get the ofxFontStash2 which hol
 ofxFontStash2::Style & myStyle = G_FSTYLE("myStyleID"); //get a particular style
 
 myFontStash2.draw("My Text Test", myStyle, x, y);
-
 ```
 
 To learn how to render text and paragraphs, you are better off looking at the examples of [ofxFontStash](http://github.com/armadillu/ofxFontStash) and [ofxFontStash2](http://github.com/armadillu/ofxFontStash2) for more details.
