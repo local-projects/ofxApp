@@ -1189,7 +1189,7 @@ The `ofxAppSettings.json` config file contains a section named "ErrorReporting" 
 ```
 
 
-Sensu works by keeping status levels (OK, Error, Critical) on `alertID`s; so when you recover from an error, (ie the error is gone) you should also report an error, with status OK. The `alertID`s can be any string you want, but should be descriptive (ie alertID = "kinectStatus"). By keeping tabs on the status level for every `alertID`, Sensu can keep put these all together in a simple dashboard that shows the stats of your app.
+Sensu works by keeping status levels (OK, Error, Critical) on `alertID`s; so when you recover from an error, (ie the error is gone) you should also report an error, with status OK. The `alertID`s can be any string you want, but should be descriptive (ie alertID = "kinectStatus"). By keeping tabs on the status level for every `alertID`, Sensu can keep put these all together in a simple dashboard that shows the stats of your app.
 
 <img src="ReadMeImages/sensu.png" width="600">
 
