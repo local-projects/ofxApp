@@ -157,6 +157,7 @@ protected:
 	void setupTuio();
 	void setupApp();
 	void setupTextureLoader();
+	void setupGlobalParameters();
 	void setupRuiWatches();
 	void startLoadingStaticAssets();
 	void setMouseEvents(bool enabled);

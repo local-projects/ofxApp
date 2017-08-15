@@ -11,16 +11,15 @@ There are also some (slightly outdated) [Slides](https://github.com/local-projec
 
 ---
 # Table of Contents
-
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
 - [ofxApp](#ofxapp)
 - [Table of Contents](#table-of-contents)
 	- [0. Feature List](#0-feature-list)
 	- [1. How To Use](#1-how-to-use)
-		- [1.1 - Setup a project with all the required addons:](#11-setup-a-project-with-all-the-required-addons)
-		- [1.2 - Define Pre-Processor macro with your project name:](#12-define-pre-processor-macro-with-your-project-name)
-		- [1.3 - Create files for your Global Variables & Global Colors:](#13-create-files-for-your-global-variables-global-colors)
+		- [1.1 - Setup a project with all the required addons](#11-setup-a-project-with-all-the-required-addons)
+		- [1.2 - Define Pre-Processor macro with your project name](#12-define-pre-processor-macro-with-your-project-name)
+		- [1.3 - Create files for your Global Variables & Global Colors](#13-create-files-for-your-global-variables-global-colors)
 		- [1.4 - Make your ofApp class a subclass of ofxAppDelegate](#14-make-your-ofapp-class-a-subclass-of-ofxappdelegate)
 	- [2. ofxApp Functionality Coverage](#2-ofxapp-functionality-coverage)
 		- [2.1 The Configuration File - "ofxAppSettings.json"](#21-the-configuration-file-ofxappsettingsjson)
@@ -40,6 +39,9 @@ There are also some (slightly outdated) [Slides](https://github.com/local-projec
 		- [2.4 Static Textures loading Automation](#24-static-textures-loading-automation)
 		- [2.5 Fonts](#25-fonts)
 		- [2.6 Globals and Parameter Tweaking](#26-globals-and-parameter-tweaking)
+			- [2.6.1 Globals File](#261-globals-file)
+			- [2.6.2 Global Colors File](#262-global-colors-file)
+			- [2.6.3 Tweaking parameters with ofxRemoteUI](#263-tweaking-parameters-with-ofxremoteui)
 		- [2.7 Dynamic Texture Loading](#27-dynamic-texture-loading)
 		- [2.8 Maintenance Mode](#28-maintenance-mode)
 		- [2.9 Error Handling](#29-error-handling)
@@ -51,6 +53,7 @@ There are also some (slightly outdated) [Slides](https://github.com/local-projec
 		- [2.13 Logging](#213-logging)
 		- [2.14 TUIO - Multitouch Events](#214-tuio-multitouch-events)
 		- [2.15 Http Downloads](#215-http-downloads)
+		- [2.16 Time Profiling](#216-time-profiling)
 - [Appendix](#appendix)
 		- [ofxApp Keyboard Commands](#ofxapp-keyboard-commands)
 		- [ofxApp MACROS](#ofxapp-macros)
@@ -59,7 +62,6 @@ There are also some (slightly outdated) [Slides](https://github.com/local-projec
 		- [License](#license)
 
 <!-- /TOC -->
-
 ## 0. Feature List
 
 A quick summary of the features offered by _ofxApp_:
@@ -81,7 +83,7 @@ A quick summary of the features offered by _ofxApp_:
 
 ## 1. How To Use
 
-### 1.1 - Setup a project with all the required addons:
+### 1.1 - Setup a project with all the required addons
 
 ofxOSC, ofxXmlSettings, ofxOpenCV, ofxNetwork, ofxPoco,  [ofxFontStash](https://github.com/armadillu/ofxFontStash), [ofxFontStash2](https://github.com/armadillu/ofxFontStash2), [ofxTuio](https://github.com/local-projects/ofxTuio), [ofxJSON](https://github.com/local-projects/ofxJSON), [ofxSuperLog](https://github.com/armadillu/ofxSuperLog), [ofxAutoTexture](https://github.com/armadillu/ofxAutoTexture), [ofxMTJsonParser](https://github.com/armadillu/ofxMTJsonParser), [ofxSimpleHttp](https://github.com/armadillu/ofxSimpleHttp), [ofxTagSystem](https://github.com/armadillu/ofxTagSystem), [ofxStateMachine](https://github.com/armadillu/ofxStateMachine), [ofxAssets](https://github.com/armadillu/ofxAssets), [ofxThreadSafeLog](https://github.com/armadillu/ofxThreadSafeLog), [ofxProgressiveTextureLoad](https://github.com/armadillu/ofxProgressiveTextureLoad), [ofxTexturedObject](https://github.com/armadillu/ofxTexturedObject), [ofxMullion](https://github.com/armadillu/ofxMullion), [ofxSensu](https://github.com/local-projects/ofxSensu),  [ofxGoogleAnalytics](https://github.com/armadillu/ofxGoogleAnalytics), [ofxJsonSettings](https://github.com/loca-projects/ofxJsonSettings), [ofxTimeMeasurements](https://github.com/armadillu/ofxTimeMeasurements), [ofxRemoteUI](https://github.com/armadillu/ofxRemoteUI), [ofxHistoryPlot](https://github.com/armadillu/ofxHistoryPlot), [ofxScreenSetup](https://github.com/armadillu/ofxScreenSetup),
 [ofxInterface](http://github.com/local-projects/ofxInterface), [ofxApp*](https://github.com/local-projects/ofxApp).
@@ -100,14 +102,14 @@ To do so, given the high number of addon dependencies, I suggest you use the Ope
 
 ![project generator](https://farm5.staticflickr.com/4430/36424424406_bbd6020214_o_d.png)
 
-### 1.2 - Define Pre-Processor macro with your project name:
+### 1.2 - Define Pre-Processor macro with your project name
 
 ```
 OFX_APP_NAME=MyApp
 ```
 This is used to automatically handle your custom Global Variables & Global Colors files. This is so that your Global Vars and Colors classes are automatically included in the _ofxApp_ instance. The whole point of this is to avoid dynamic casting all over the place just to acces your globals; this allows your globals object (`MyAppGlobals`) to be stored inside _ofxApp_ in their native Class, so they can be totally overridden by you and still be included in _ofxApp_ at compile time.
 
-### 1.3 - Create files for your Global Variables & Global Colors:
+### 1.3 - Create files for your Global Variables & Global Colors
 
 These Files must follow this naming convention; and it's where you will place global variables/colors that you might need to access from anywhere. These files are only required if you defined ```OFX_APP_NAME``` in the previous step
 
@@ -733,6 +735,8 @@ if(info.valid){
 
 #### 2.2.4.5 Content Use Policies
 
+TODO!
+
 ---
 
 
@@ -851,7 +855,7 @@ This diagram shows the most relevant callbacks will receive over time:
 
 ### 2.4 Static Textures loading Automation
 
-_ofxApp_ has a module named ofxAppStaticTextures that aims to simplify access to everyday textures; usually those textures that you need available all the time, and you never dynamically load & unload them; this includes things like icons and such.
+_ofxApp_ has a module named ofxAppStaticTextures that aims to simplify access to everyday textures; usually those textures that you need available all the time, and you never dynamically load & unload them; this #s things like icons and such.
 
 As the project evolves, you often find yourself having to add extra images to have ready as ofTextures. Instead of instantiating and hardcoding the path to the texture within code, ofxAppStaticTextures allows a different approach. It will just load any image file sitting in ```data/images/``` recursively at startup, across multiple threads to speed up the process. It will also display them all as they load, so you can keep an eye on textures you might not need loaded anymore and can keep your images dir clean.
 
@@ -903,15 +907,189 @@ __Things to note about the texture naming:__
 
 ### 2.5 Fonts
 
-_ofxApp_
+_ofxApp_ internally uses [ofxFontStash](http://github.com/armadillu/ofxFontStash) and [ofxFontStash2](http://github.com/armadillu/ofxFontStash2) for font rendering. ofxFontStash is faster at rendering, but it doesn't snap to pixel and it only supports OpenGL 2.1, it won't work on OpenGL ES or OpenGL >=3.0. ofxFontStash2 is built on top of [NanoVG](https://github.com/memononen/nanovg) and it adds many more features over ofxFontStash2, like formatted text, global styles, and more control over layout, but it's generally slower at rendering, and because it relies on shaders, it's harder to mix font rendering with geometry rendering.
+
+_ofxApp_ will handle the font loading for you; you only need to define which fonts you want to load from the config file (`ofxAppSettings.json`), and they will be available for you. Let's see how the config file looks like:
+
+```c++
+"Fonts":{
+	"ofxFontStash":{ //ofxFontStash fonts
+		"pacifico":{ //font ID
+			"fontFile" : "fonts/Pacifico.ttf",
+			"atlasSize" : 512,
+			"lineHeight" : 1.3,
+			"mipmaps" : false,
+			"mipmapPadding" : 0,
+			"uiScale" : 1.0
+		}
+	},
+	"ofxFontStash2":{ //ofxFontStash2 fonts
+		"fonts":{
+			"fantasque" : "fonts/FantasqueSansMono-Regular.ttf",
+			"pacifico" : "fonts/Pacifico.ttf"
+		},
+		"pixelDensity" : 2.0,
+		"styles":{ //ofxFontStash2 style definitions
+			"MyStyle1":{ //all avaialble options for a font style listed here
+				"fontID" : "fantasque",
+				"fontSize" : 30.0,
+				"color" : "#ffff00",
+				"blur" : 0.0,
+				"alignV" : "NVG_ALIGN_BASELINE",
+				"lineHeightMult" : 1.0,
+				"spacing" : 5.0
+			},
+			"MyStyle2":{ //omitted fields take sensible defaults
+				"fontID" : "pacifico",
+				"fontSize" : 30.0,
+				"color" : "#00FF55",
+				"blur" : 2.0
+			}
+		}
+	}
+},
+```
+
+There's a `Fonts` section, and inside there's one section for `ofxFontStash` and another one for `ofxFontStash2`.
+
+For `ofxFontStash`, each font gets its own section, using the section name as the `FontID`. In the example above, the `fontID` is "pacifico", `fontFile` tells _ofxApp_ where to load the font from (with a relative file path), and then other ofxFontStash parameters follow. To add more fonts, just add more sections.
+
+For the `ofxFontStash2` section, you can see there's a "fonts" section with a simple `fontID`:`Font File Path` structure. For the example aboce, there are two font defined with the `fontID`s "fantasque" and "pacifico".
+
+Then there's a `pixelDensity` field that allows upscaling the size of the glyph textures (for retina screens or similar), but usually it should be set to "1.0".
+
+And lastly there's a `styles` field, where `ofxFontStash2` styles can be defined. `ofxFontStash2` allows styles definitions, so that it's easier to keep the font rendering consistent across the whole app. For example, You define the style for a header once, and at render time, just specify you are rendering a header. This also allows to tweak the fonts very easily later on, as you can live-tweak the styles and the rendering just adapts to it realtime, so you can compare fonts across the whole app.
+
+To define a style, you must choose a unique `styleID` and use it as key. The style itself will refernce a `fontID`, which must match a fontID that has been previously defined in the `Fonts/ofxFontStash2/fonts` section. In the example below, `MyStyle1` is the `fontID`, and the style uses the font "fantasque". Then color, font size and other properties are defined too.
+
+```c++
+"MyStyle1":{ //all avaialble options for a font style listed here
+	"fontID" : "fantasque",
+	"fontSize" : 30.0,
+	"color" : "#ffff00",
+	"blur" : 0.0,
+	"alignV" : "NVG_ALIGN_BASELINE",
+	"lineHeightMult" : 1.0,
+	"spacing" : 5.0
+},
+
+```
+
+Once the config file is filled in, you can just access your fonts from code like this:
+
+```c++
+
+//ofxFontStash Fonts
+ofxFontStash & myFont = G_FONT("myFontID");
+
+myFont.draw("My text", 12, x, y);
+
+//ofxFontStash2 Fonts
+ofxFontStash2::Fonts & myFontStash2 = G_FS2(); //get the ofxFontStash2 which holds all the fonts
+ofxFontStash2::Style & myStyle = G_FSTYLE("myStyleID"); //get a particular style
+
+myFontStash2.draw("My Text Test", myStyle, x, y);
+
+```
+
+To learn how to render text and paragraphs, you are better off looking at the examples of [ofxFontStash](http://github.com/armadillu/ofxFontStash) and [ofxFontStash2](http://github.com/armadillu/ofxFontStash2) for more details.
+
 
 ---
 
 ### 2.6 Globals and Parameter Tweaking
 
+_ofxApp_ is as a platform to develop interactive applications, and its often very useful during the development of those to have ways of parametrizing their behavior. Adding parameters to your app gets you a more direct access, and speeds up the development cycle by requiring less recompiles. Given the nature of the projects we build, we often end up using quite a few global variables to be able to tweak global behaviors through a handful of parameters; it is often unreasonable to share those "academically" across all objects. For those reasons, _ofxApp_ offers sort of a container for you to put your global variables in.
+
+#### 2.6.1 Globals File
+
+To make your globals play nice with _ofxApp_, you are expected to create your own globals header file and class, and make it a subclass of `ofxAppGlobalsBasic`. You can a skeleton of this class below:
+
+```c++
+class MyAppGlobals : public ofxAppGlobalsBasic{
+public:
+	void setupRemoteUIParams(){ //this is where my parameters are setup
+	};
+};
+```
+There's quite a few things to be aware when doing this; as mentioned in [1.2 - Define Pre-Processor macro with your project name](#12-define-pre-processor-macro-with-your-project-name), you should choose a name for your _ofxApp_ project. If your name is for example "MyMuseumWall", you will define your Pre Processor Macro like this ```OFX_APP_NAME=MyMuseumWall```. Following the same example, your Globals file should be named ```MyMuseumWallGlobals.h```, and so would your class definition. You should still inherit from `ofxAppGlobalsBasic`.
+
+Note how `ofxAppGlobalsBasic` has a pure virtual method named `setupRemoteUIParams()`; this is your entry point to initialize / share / setup your global variables. We will see why is that useful later on.
+
+Let's see how to add one global variable; we will add one that will control the speed of some imaginary tiles in your app. We will name the new global variable `tileSpeed`. We will initialize it to 0.5:
+
+```c++
+/// MyMuseumWallGlobals.h ///
+
+class MyMuseumWallGlobals : public ofxAppGlobalsBasic{
+public:
+	void setupRemoteUIParams(){};
+
+	//your globals defined here
+	float tileSpeed = 0.5; //create a global float named tileSpeed, give it an initial value of 0.5
+}
+```
+
+By adding this file to your project, _ofxApp_ will automatically include it into the _ofxApp_ instance, allowing you to retrieve your globals directly by doing:
+
+```c++
+float mySpeed = GLOB.tileSpeed;
+```
+
+_ofxApp_ will also call the method `setupRemoteUIParams()` on your globals class once the app is starting, so you get a chance to initialize or prepare your globals.
+
+#### 2.6.2 Global Colors File
+
+In a very similar fashion to the Globals file, _ofxApp_ expects you to create a file for Global Colors. It will follow the same pattern:
+
+```c++
+///  MyAppColors.h ///
+
+class MyMuseumWall : public ofxAppColorsBasic{
+public:
+	void setupRemoteUIParams(){};
+
+	//your global colors defined here
+	ofColor myTileColor;
+};
+```
+
+To retrieve these colors from anywhere within your app, use the macro:
+
+```c++
+ofColor myColor = G_COLOR.myTileColor;
+```
+
+As for the globals above, _ofxApp_ will call the method `setupRemoteUIParams()` on your global colors class once the app is starting, so you get a chance to initialize or prepare your globals.
+
+#### 2.6.3 Tweaking parameters with ofxRemoteUI
+
+Now that we have seen how to define and access global variables, let's see how can we tweak them in realtime as the app runs. To do so, _ofxApp_ provides [ofxRemoteUI](http://github.com/armadillu/ofxRemoteUI), but you could use any other means if you are so inclined.
+
+Let's follow up on the example we left off at [2.6.1 Globals File](#261-globals-file); let's see how to make the `tileSpeed` global variable tweakable with `ofxRemoteUI`. The only thing we need to do to accomplish that, is add one line of code to the `setupRemoteUIParams()` method:
+
+```c++
+void setupRemoteUIParams(){
+	RUI_SHARE_PARAM(tileSpeed, 0, 1); //share the `tileSpeed` float with ofxRemoteUI, give it a valid range of [0..1]
+}
+```
+By doing so, we are exposing `tileSpeed` to `ofxRemoteUI` by using the RUI_SHARE_PARAM() macro. Once a variable has been exposed to ofxRemoteUI, you can change its value from ofxRemoteUI. [ofxRemoteUI](http://github.com/armadillu/ofxRemoteUI) offers several ways to do so, the most direct way is to use the built in client. You can get into it by pressing the `TAB` key:
+
+<img src = "ReadMeImages/RemoteUI_BuiltIn.PNG">
+
+From there, you can use arrow keys to edit the values, and press the `TAB` key to hide it again.
+You can also use the native OSX client, which is the preferred option.
+
+<img src = "ReadMeImages/ruiOsxClient.PNG">
+
+Find more about how to use [ofxRemoteUI](http://github.com/armadillu/ofxRemoteUI) in its readme.
+
+
 ---
 
 ### 2.7 Dynamic Texture Loading
+
+TODO! - see [ofxTexturedObject](https://github.com/armadillu/ofxTexturedObject).
 
 ---
 
@@ -951,7 +1129,7 @@ The config file should be pretty self-explanatory; just set "enabled" to true to
 
 This config would give you a screen like this:
 
-<img src="ReadMeImages/maintenance.PNG" width="560">
+<img src="ReadMeImages/maintenance.PNG" width="500">
 
 ---
 
@@ -968,7 +1146,7 @@ ofxApp::get().enterErrorState("Camera Not Found!", "Please make sure the camera 
 ```
 This will get ofxApp to an error state, it will hijack the drawing entirely by drawing something like this:
 
-<img src="ReadMeImages/errorScreen.PNG" width="460">
+<img src="ReadMeImages/errorScreen.PNG" >
 
 The layout of the error screen can be tweaked in the `ofxAppSettings.json` file, very similarly to how [2.8 Maintenance Mode](#28-maintenance-mode) handles it.
 
@@ -1128,12 +1306,36 @@ void MyClass::myMethod(){
 
 ### 2.14 TUIO - Multitouch Events
 
----
+Your _ofxApp_ app will automatically get TUIO events by subclassing `ofxAppDelegate`. The `ofxAppDelegate` implementation has 3 methods that handle touch events:
 
+```c++
+virtual void tuioAdded(ofxTuioCursor & tuioCursor){};
+virtual void tuioRemoved(ofxTuioCursor & tuioCursor){};
+virtual void tuioUpdated(ofxTuioCursor & tuioCursor){};
+```
+
+Feel free to override those and feed the event to [`ofxInterface`](https://github.com/galsasson/ofxInterface) or whatever scene graph you want to use. _ofxApp_ will start a tuio server at the port you specify at the config file; you can also disable the TUIO server from the config file:
+
+```c++
+"TUIO":{
+	"enabled" : true,
+	"port" : 3333
+}
+```
+---
 
 ### 2.15 Http Downloads
 
+TODO! - see [ofxSimpleHttp](https://github.com/armadillu/ofxSimpleHttp)
+
 ---
+
+### 2.16 Time Profiling
+
+_ofxApp_ provides profiling through [ofxTimeMeasurements](https://github.com/armadillu/ofxTimeMeasurements), read more about how to use it in its documentation.
+
+---
+
 
 # Appendix
 ### ofxApp Keyboard Commands
@@ -1153,7 +1355,7 @@ void MyClass::myMethod(){
 * __```G_FONT("fontID")```__ : direct acces to the ofxFontStash*
 * __```G_FONT_MONO```__ : direct acces to a monospaced ofxFontStash*
 * __```G_FONT_MONO_BOLD```__ : direct acces to a bold monospaced ofxFontStash*
-* __```G_FS2```__ : direct acces to ofxFontStash2 font manager
+* __```G_FS2()```__ : direct acces to ofxFontStash2 font manager
 * __```G_FSTYLE("styleID")```__ : get access to a specific ofxFontstash2::Style (styles defined in cfg file)
 * __```OFXAPP_REPORT(alertID,msg,severity)```__ : send an ofxSensu alert (that may trigger email on the CMS)
 * __```OFXAPP_REPORT_FILE(alertID,msg,severity)```__ : send an ofxSensu alert (to the CMS) with a file attachment

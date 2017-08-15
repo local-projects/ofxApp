@@ -41,12 +41,14 @@ const string FILE_ACCES_ICON = "💾";
 #define GLOB											ofxApp::get().globals()
 #define G_COL											ofxApp::get().colors()
 #define G_COLOR											ofxApp::get().colors()
+
 #define G_TEX(name)										ofxApp::get().textures().getTexture(name)
+
 #define G_FONT(name)									ofxApp::get().fonts().getFont(name)
 #define G_FONT_MONO										ofxApp::get().fonts().getMonoFont()
 #define G_FONT_MONO_BOLD								ofxApp::get().fonts().getMonoBoldFont()
 
-#define G_FS2											ofxApp::get().fonts().getFontStash2()
+#define G_FS2()											ofxApp::get().fonts().getFontStash2()
 #define G_FSTYLE(S)										ofxApp::get().fonts().getFontStyle(S)
 
 

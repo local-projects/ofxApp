@@ -13,14 +13,10 @@ class MyAppGlobals : public ofxAppGlobalsBasic{
 
 public:
 	
-	void setupRemoteUIParams(){
-		ofxAppGlobalsBasic::setupRemoteUIParams();
-		RUI_NEW_GROUP("APP PARAMS");
-		RUI_SHARE_PARAM(myParam, 0, 1);
+	void setupRemoteUIParams(){		
+		RUI_SHARE_PARAM(tileSpeed, 0, 1);
 	};
 
-public:
-
-	float myParam = 0.5;
+	float tileSpeed = 0.5;
 };
 

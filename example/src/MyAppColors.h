@@ -14,7 +14,6 @@ class MyAppColors : public ofxAppColorsBasic{
 public:
 	
 	void setupRemoteUIParams(){
-		ofxAppColorsBasic::setupRemoteUIParams();
 		RUI_SHARE_COLOR_PARAM(myColor);
 	};
 

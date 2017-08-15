@@ -75,8 +75,7 @@ void App::setup(const map<string,ofxApp::ParseFunctions> & cfgs, ofxAppDelegate 
 		setupStateMachine();
 		appState.setState(State::SETUP_OFXAPP_INTERNALS);
 		setupListeners();
-		globals().setupRemoteUIParams();
-		colors().setupRemoteUIParams();
+		setupGlobalParameters();
 		textures().setup();
 		setupTuio();
 
@@ -341,6 +340,16 @@ void App::setupTextureLoader(){
 	q->setScanlinesPerLoop( scanLinesPerLoop );
 	q->setMaximumRequestsPerFrame( maxReq );
 
+}
+
+
+void App::setupGlobalParameters(){
+	globals().ofxAppGlobalsBasic::setupRemoteUIParams();
+	RUI_NEW_GROUP(string(OFX_APP_STR(OFX_APP_NAME)) + string(" Globals"));
+	globals().setupRemoteUIParams();
+	RUI_NEW_GROUP(string(OFX_APP_STR(OFX_APP_NAME)) + string(" Colors"));
+	colors().ofxAppColorsBasic::setupRemoteUIParams();
+	colors().setupRemoteUIParams();
 }
 
 
@@ -729,7 +738,7 @@ void App::drawMaintenanceScreen(){
 	string bodyFont = getString("App/" + settName + "/body/fontID");
 	ofColor bodyColor = getColor("App/" + settName + "/body/color");
 
-	if(!G_FS2.isFontLoaded(headerFont)){
+	if(!G_FS2().isFontLoaded(headerFont)){
 		if(ofGetFrameNum()%120 == 1) ofLogError("ofxApp") << "Maintenance Mode Font not found! " << headerFont;
 		headerFont = "mono";
 	}
@@ -746,12 +755,12 @@ void App::drawMaintenanceScreen(){
 	ofRotateDeg(rotation, 0, 0, 1);
 	ofxFontStash2::Style headerStyle = ofxFontStash2::Style(headerFont, fontSize * headerScaleup, headerColor);
 	headerStyle.spacing = headerSpacing;
-	int lineH = G_FS2.getTextBounds("Mp", headerStyle, 0, 0).height;
-	ofRectangle headerRect = G_FS2.drawColumn(header, headerStyle, -colWidth/2, 0, colWidth , OF_ALIGN_HORZ_CENTER);
+	int lineH = G_FS2().getTextBounds("Mp", headerStyle, 0, 0).height;
+	ofRectangle headerRect = G_FS2().drawColumn(header, headerStyle, -colWidth/2, 0, colWidth , OF_ALIGN_HORZ_CENTER);
 
 	ofxFontStash2::Style bodyStyle = ofxFontStash2::Style(bodyFont, fontSize * bodyScaleup, bodyColor);
 	bodyStyle.spacing = bodySpacing;
-	ofRectangle bodyRect = G_FS2.drawColumn(body, bodyStyle, -colWidth/2, headerRect.getBottom() + 1.5 * lineH, colWidth, OF_ALIGN_HORZ_CENTER);
+	ofRectangle bodyRect = G_FS2().drawColumn(body, bodyStyle, -colWidth/2, headerRect.getBottom() + 1.5 * lineH, colWidth, OF_ALIGN_HORZ_CENTER);
 	ofPopMatrix();
 }
 
@@ -780,7 +789,7 @@ void App::drawErrorScreen(){
 	string bodyFont = getString("App/" + settName + "/body/fontID");
 	ofColor bodyColor = getColor("App/" + settName + "/body/color");
 
-	if(!G_FS2.isFontLoaded(headerFont)){
+	if(!G_FS2().isFontLoaded(headerFont)){
 		if(ofGetFrameNum()%120 == 1) ofLogError("ofxApp") << "Maintenance Mode Font not found! " << headerFont;
 		headerFont = "mono";
 	}
@@ -797,12 +806,12 @@ void App::drawErrorScreen(){
 	ofRotateDeg(rotation, 0, 0, 1);
 		ofxFontStash2::Style headerStyle = ofxFontStash2::Style(headerFont, fontSize * headerScaleup, headerColor);
 		headerStyle.spacing = headerSpacing;
-		int lineH = G_FS2.getTextBounds("Mp", headerStyle, 0, 0).height;
-		ofRectangle headerRect = G_FS2.drawColumn(errorStateHeader, headerStyle, -colWidth/2, 0, colWidth, OF_ALIGN_HORZ_CENTER);
+		int lineH = G_FS2().getTextBounds("Mp", headerStyle, 0, 0).height;
+		ofRectangle headerRect = G_FS2().drawColumn(errorStateHeader, headerStyle, -colWidth/2, 0, colWidth, OF_ALIGN_HORZ_CENTER);
 
 		ofxFontStash2::Style bodyStyle = ofxFontStash2::Style(bodyFont, fontSize * bodyScaleup, bodyColor);
 		bodyStyle.spacing = bodySpacing;
-		ofRectangle bodyRect = G_FS2.drawColumn(errorStateBody, bodyStyle, -colWidth/2, headerRect.getBottom() + 1.5 * lineH, colWidth, OF_ALIGN_HORZ_CENTER);
+		ofRectangle bodyRect = G_FS2().drawColumn(errorStateBody, bodyStyle, -colWidth/2, headerRect.getBottom() + 1.5 * lineH, colWidth, OF_ALIGN_HORZ_CENTER);
 	ofPopMatrix();
 }
 

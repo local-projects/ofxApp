@@ -23,7 +23,6 @@ public:
 	
 	virtual void setupRemoteUIParams(){
 		ofLogNotice("ofxAppColors") << "setupRemoteUIParams()";
-		RUI_NEW_GROUP("APP COLORS");
 		RUI_SHARE_COLOR_PARAM(bgColor);
 	};
 
