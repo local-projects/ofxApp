@@ -1189,7 +1189,7 @@ The `ofxAppSettings.json` config file contains a section named "ErrorReporting" 
 ```
 
 
-Sensu works by keeping status levels (OK, Error, Critical) on `alertID`s; so when you recover from an error, (ie the error is gone) you should also report an error, with status OK. The `alertID`s can be any string you want, but should be descriptive (ie alertID = "kinectStatus"). By keeping tabs on the status level for every `alertID`, Sensu can keep put these all together in a simple dashboard that shows the stats of your app.
+Sensu works by keeping status levels (OK, Error, Critical) on `alertID`s; so when you recover from an error, (ie the error is gone) you should also report an error, with status OK. The `alertID`s can be any string you want, but should be descriptive (ie alertID = "kinectStatus"). By keeping tabs on the status level for every `alertID`, Sensu can keep put these all together in a simple dashboard that shows the stats of your app.
 
 <img src="ReadMeImages/sensu.png" width="600">
 
@@ -1242,7 +1242,7 @@ You can optionally get the reports to check the state of the Git Repository the 
 
 ### 2.11 Analytics
 
-Analytics in _ofxApp_ are handled by [ofxGoogleAnalytics](https://github.com/armadillu/ofxGoogleAnalytics), but its configuration is handled through the `ofxAppSettings.json` configuration file found at `data/configs/ofxAppSettings.json`. It contains a section named `GoogleAnalytics` with all the necessary configuration options.
+Analytics in _ofxApp_ are handled by [ofxGoogleAnalytics](https://github.com/armadillu/ofxGoogleAnalytics), but its configuration is handled through the `ofxAppSettings.json` configuration file found at `data/configs/ofxAppSettings.json`. It contains a section named `GoogleAnalytics` with all the necessary configuration options.
 
 _ofxApp_ will send automatic analytics events when the app starts running, and when the app exits.
 
@@ -1271,7 +1271,7 @@ Logging follows the standard OpenFrameworks logging protocols, so each log line 
 ```c++
 ofLogWarning("moduleName") << "something worth logging happened."
 ```
-There are 5 log levels, `ofLogVerbose()`, `ofLogNotice()`, `ofLogWarning()`, `ofLogError()` and `ofLogFatalError()`. You can set the log threshold in the config file to ignore certain log commands, specified in `Logging/logLevel`.
+There are 5 log levels, `ofLogVerbose()`, `ofLogNotice()`, `ofLogWarning()`, `ofLogError()` and `ofLogFatalError()`. You can set the log threshold in the config file to ignore certain log commands, specified in `Logging/logLevel`.
 
 Note how all the log outputs (file, console and screen) indent the output according to the longest module name width, so that all log lines start at the same indentation level. The screen log will individually colorize module names so that's it's easier to visually cluster who did output what.
 
