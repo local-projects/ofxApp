@@ -23,27 +23,32 @@ There are also some (slightly outdated) [Slides](https://github.com/local-projec
 		- [1.3 - Create files for your Global Variables & Global Colors:](#13-create-files-for-your-global-variables-global-colors)
 		- [1.4 - Make your ofApp class a subclass of ofxAppDelegate](#14-make-your-ofapp-class-a-subclass-of-ofxappdelegate)
 	- [2. ofxApp Functionality Coverage](#2-ofxapp-functionality-coverage)
-		- [2.1 ofxApp and Content](#21-ofxapp-and-content)
-			- [2.1.1 How does ofxApp Handle Content?](#211-how-does-ofxapp-handle-content)
-			- [2.1.2 The JSON file structure](#212-the-json-file-structure)
-			- [2.1.3 ofxApp Content Abstraction](#213-ofxapp-content-abstraction)
+		- [2.1 The Configuration File - "ofxAppSettings.json"](#21-the-configuration-file-ofxappsettingsjson)
+		- [2.2 ofxApp and Content](#22-ofxapp-and-content)
+			- [2.2.1 How does ofxApp Handle Content?](#221-how-does-ofxapp-handle-content)
+			- [2.2.2 The Content JSON file structure](#222-the-content-json-file-structure)
+			- [2.2.3 ofxApp Content Abstraction](#223-ofxapp-content-abstraction)
 			- [2.1.4 Content Sources](#214-content-sources)
-			- [2.1.4 Content Ingestion & Texture Loading Setup](#214-content-ingestion-texture-loading-setup)
-			- [2.1.4.1 std::function<void (ofxMtJsonParserThread::JsonStructureData &)> pointToObjects;](#2141-stdfunctionvoid-ofxmtjsonparserthreadjsonstructuredata-pointtoobjects)
-			- [2.1.4.2 std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> parseOneObject;](#2142-stdfunctionvoid-ofxmtjsonparserthreadsingleobjectparsedata-parseoneobject)
-			- [2.1.4.3 std::function<void (ofxApp::CatalogAssetsData & data)> defineObjectAssets;](#2143-stdfunctionvoid-ofxappcatalogassetsdata-data-defineobjectassets)
-			- [2.1.4.4 std::function<void (ContentObject*)> setupTexturedObject;](#2144-stdfunctionvoid-contentobject-setuptexturedobject)
-			- [2.1.5 Content Fail and Recovery](#215-content-fail-and-recovery)
-	- [2.2 ofxApp Startup & Init stages](#22-ofxapp-startup-init-stages)
-		- [2.3 Static Textures loading Automation](#23-static-textures-loading-automation)
-		- [2.4 Fonts](#24-fonts)
-		- [2.5 Globals](#25-globals)
-		- [2.6 Maintenance Mode](#26-maintenance-mode)
-		- [2.7 Error handling](#27-error-handling)
-		- [2.8 Analytics](#28-analytics)
-		- [2.9 PID file](#29-pid-file)
-		- [2.10 Logging](#210-logging)
-		- [2.11 The Configuration File - "ofxAppSettings.json"](#211-the-configuration-file-ofxappsettingsjson)
+			- [2.2.4 Content Ingestion & Texture Loading Setup](#224-content-ingestion-texture-loading-setup)
+			- [2.2.4.1 std::function<void (ofxMtJsonParserThread::JsonStructureData &)> pointToObjects;](#2241-stdfunctionvoid-ofxmtjsonparserthreadjsonstructuredata-pointtoobjects)
+			- [2.2.4.2 std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> parseOneObject;](#2242-stdfunctionvoid-ofxmtjsonparserthreadsingleobjectparsedata-parseoneobject)
+			- [2.2.4.3 std::function<void (ofxApp::CatalogAssetsData & data)> defineObjectAssets;](#2243-stdfunctionvoid-ofxappcatalogassetsdata-data-defineobjectassets)
+			- [2.2.4.4 std::function<void (ContentObject*)> setupTexturedObject;](#2244-stdfunctionvoid-contentobject-setuptexturedobject)
+			- [2.2.4.5 Content Use Policies](#2245-content-use-policies)
+			- [2.2.5 Content Fail and Recovery](#225-content-fail-and-recovery)
+		- [2.3 ofxApp Startup & Init stages](#23-ofxapp-startup-init-stages)
+		- [2.4 Static Textures loading Automation](#24-static-textures-loading-automation)
+		- [2.5 Fonts](#25-fonts)
+		- [2.6 Globals and Parameter Tweaking](#26-globals-and-parameter-tweaking)
+		- [2.7 Dynamic Texture Loading](#27-dynamic-texture-loading)
+		- [2.8 Maintenance Mode](#28-maintenance-mode)
+		- [2.9 Error Handling](#29-error-handling)
+		- [2.10 CMS Error Reporting](#210-cms-error-reporting)
+		- [2.11 Analytics](#211-analytics)
+		- [2.12 PID file](#212-pid-file)
+		- [2.13 Logging](#213-logging)
+		- [2.14 TUIO - Multitouch Events](#214-tuio-multitouch-events)
+		- [2.15 Http Downloads](#215-http-downloads)
 - [Appendix](#appendix)
 	- [ofxApp Keyboard Commands](#ofxapp-keyboard-commands)
 	- [ofxApp MACROS](#ofxapp-macros)
@@ -125,15 +130,101 @@ class YourApp : public ofBaseApp, public ofxAppDelegate{
 
 By doing so, you are guaranteed to get some callbacks when certain things happen during the app launch.
 
+---
+
 ## 2. ofxApp Functionality Coverage
 
-_ofxApp_ covers a lot of areas, we will break them down in several sections. See toc.
+_ofxApp_ covers a lot of areas, we will break them down in several sections. See table of contents.
 
-### 2.1 ofxApp and Content
+### 2.1 The Configuration File - "ofxAppSettings.json"
+
+_ofxApp_ contains lots of modules whose behaviors can be tweaked and configured. All those configurations are found in a single place, a JSON configuration file in `data/configs/ofxAppSettings.json`. This file is loaded when _ofxApp_ starts. There are a few main section within the config file:
+
+* `App`
+    * `framerate`: int - the framerate at which _ofxApp_ (and your app) will operate
+	* `numAASamples`: int [0..8] - the number of MultiSampling samples the window will be created with
+	* `showMouse`: bool - if mouse cursor should be visible
+	* `enableMouse`: bool - if mouse events should be enabled (useful to disable when TUIO is on to avoid double clicks)
+	* `maxThreads`: int - the max number of CPU threads modules should spawn (should be <= the # of cores in your CPU)
+    * `window`
+        * `windowMode`: int - [0 .. 11] specifying a [window mode](https://github.com/armadillu/ofxScreenSetup) for the window to start at. Some common values: [windowed=8, fullOneMonitor=1, fullAllMonitors=0]
+        * `customWidth` : int - window width (applies when windowMode is 8 (windowed))
+        * `customHeight` : int - window height (applies when windowMode is 8 (windowed))
+        * `customWindowPosition` : bool - if true, the default window position will be overriden with the fields below
+        * `customPositionX` : int - the x coord of the window position if `customWindowPosition` is true
+        * `customPositionY` : int - the y coord of the window position if `customWindowPosition` is true
+    * `startupScreenViewport`: 4 floats ["x", "y", "w", "h"] - normalized coords of where to constrain the startup loading screen within the window, will be { "x":0.0, "y":0.0, "w":1.0, "h":1.0 } in most cases.
+    * `renderSize`: float {"width", "height"} - a target render size value for your convenience. Retrieve it from _ofxApp_ with `ofxApp::get().getRenderSize();`. It doesn't do anything internally, just for your convenience.
+    * `mullions`: { "numX", "numY", "visibleAtStartup"} - define a bezels layout for your videowall. This is useful during development to overlay the bezels on your project, so you can design around them. Press 'M' to toggle them.
+    * `MaintenanceMode`: read more about this in [2.8 Maintenance Mode](#28-maintenance-mode)
+    * `ErrorScreen` : read more about this in [2.9 Error Handling](#29-error-handling).
+    * `TimeSampleOfxApp`: bool - internal profiler for _ofxApp_ performance - usually set to false.
+
+* `StateMachine`: this section holds configs for the State Machine that controls the startup phases
+    * `onErrorRetryCount`: int - if an error ensues (ie can't download JSON), how many times do we retry before failing?
+    * `onErrorWaitTimeSec`: int - if an error ensues, how long do we hold the error message on screen before we retry?
+
+* `Fonts`: font loading - see section [2.5 Fonts] for more info on this.
+* `StaticAssets`:
+    * `textures`: string - the location of your static textures (ie icons) - see section [2.4 Static Textures loading Automation](#24-static-textures-loading-automation)
+* `RemoteUI`: various configurations for [ofxRemoteUI](https://github.com/armadillu/ofxRemoteUI.git).
+* `TimeMeasurements`: various configurations for [ofxTimeMeasurements](https://github.com/armadillu/ofxTimeMeasurements).
+* `TextureLoader`: Params that control texture loading performance. Read more about these in [2.7 Dynamic Texture Loading](#27-dynamic-texture-loading).
+* `Logging`: configs for logging; read more about those in [2.13 Logging](#213-logging).
+* `ErrorReporting`: setup CMS error reports, read more in [2.10 CMS Error Reporting](#210-cms-error-reporting).
+* `GoogleAnalytics`: configure the GoogleAnalytics client. Readm more in [2.11 Analytics](#211-analytics).
+* `TUIO`: configure the TUIO server. If you have a touch overlay in your project, enable it and set the port to make _ofxApp_ forward multitouch events. Read more in [2.14 TUIO - Multitouch Events](#214-tuio-multitouch-events).
+* `Downloads`: This section configures the http client used throughout _ofxApp_, to download assets and content JSON, to send analytics, etc. Read more about the options in [2.15 Http Downloads](#215-http-downloads).
+* `Content`: All configs related to the content used in your _ofxApp_ project.
+    * `JsonSources`: This section holds the Content Sources your app will fetch every time its launched.
+    * `AssetDownloadPolicy`: policies regarding when to download assets. Read more in [2.2.4.5 Content Use Policies](#2245-content-use-policies).
+    * `AssetUsagePolicy`: policies regarding when to use assets. Read more in [2.2.4.5 Content Use Policies](#2245-content-use-policies).
+    * `ObjectUsagePolicy`: policies regarding when to use or reject a content object. Read more in [2.2.4.5 Content Use Policies](#2245-content-use-policies).
+
+
+Those are the fields that MUST be present in your `data/configs/ofxAppSettings.json` file for ofxApp to operate. You will notice that _ofxApp_ will automatically terminate if any of those are missing or the JSON is malformed. It will show an error on the logs (and on screen) pointing at the field that is missing, or the line in which there's an error in the JSON syntax. You can always go look at the config files supplied with the examples if you can't figure out how to write yours, the most important lines are documented within the JSON.
+
+This file is meant to be used to simplify your project's settings too. _ofxApp_ relies on two pillars to handle project settings; the most immutable settings (things like window size, fonts to load, logging, etc) usually end up going into this file, as it's mostly read at startup and the values it holds usually not change during the app's execution. Other settings that are more prone to being tweaked as _ofxApp_ runs (like debug booleans, runtime stats, and your own project's parameters) are better off being defined as globals using [ofxRemoteUI](https://github.com/armadillu/ofxRemoteUI), as that allows you to easily change their values as the app runs, save and load presets for them, and their state can be saved across launches. Read More about Globals and ofxRemoteUI in [2.6 Globals and Parameter Tweaking](#26-globals-and-parameter-tweaking).
+
+You can (and should) add any sections you need to this file to hold your settings, and then query the values you need using the following methods
+
+To get a Boolean:
+```c++
+bool myVal = ofxApp::get().getBool("mySection/mySubSection/myBoolValue");
+```
+
+To get an Integer:
+```c++
+int myVal = ofxApp::get().getInt("mySection/mySubSection/myIntValue");
+```
+
+To get an Integer:
+```c++
+float myVal = ofxApp::get().getFloat("mySection/mySubSection/myFloatValue");
+```
+
+To get a string:
+```c++
+string myVal = ofxApp::get().getString("mySection/mySubSection/myStringValue");
+```
+
+To get an ofColor:
+```c++
+ofColor myVal = ofxApp::get().getColor("mySection/mySubSection/myStringValue");
+```
+
+To check if a value is defined in the JSON:
+```c++
+bool exists = ofxApp::get().settingExists("mySection/mySubSection/mySetting");
+```
+
+Also be aware that you can live-edit this file and re-load it while _ofxApp_ is running by pressing `R` on the keyboard.
+
+### 2.2 ofxApp and Content
 
 One of the goals of _ofxApp_ is to abstract content ingestion and sync with a remote CMS for you.
 
-#### 2.1.1 How does ofxApp Handle Content?
+#### 2.2.1 How does ofxApp Handle Content?
 
 _ofxApp_ allows you to go from a JSON sitting on an API endpoint, to a filtered ```vector<YourContentObject*>``` with all the assets listed in the JSON guaranteed to be on disk at the specified paths and ready to go.
 
@@ -168,7 +259,7 @@ To answer all the above questions, _ofxApp_ offers you a Function Based protocol
 
 ---
 
-#### 2.1.2 The JSON file structure
+#### 2.2.2 The Content JSON file structure
 
  _ofxApp_ assumes your content comes in JSON form. It also assumes you will get one JSON file per content source/type. Let's chose a real world example; imagine your project is an interactive wall that aims to show the collection of a Museum. In such a situation, you will probably have 1 JSON file with a list of all the objects in the collection. But you might also have 1 JSON with the list of all the Artist Bios, and one for all the curators, etc. This content is often arranged in a JSON array, or in a JSON dictionary, as shown below in a fictional ```MuseumObjects``` JSON.
 
@@ -228,7 +319,7 @@ Note how your ```MuseumObject``` inherits from ```ContentObject```; by doing so 
 Also, note how there's one variable to hold each JSON field. The idea here is to mirror the JSON structure pretty closely. In fact, using the name variable names as the JSON field can really help code understanding later on.
 
 ---
-#### 2.1.3 ofxApp Content Abstraction
+#### 2.2.3 ofxApp Content Abstraction
 
 _ofxApp_ abstracts content fetching, parsing, checking and loading through several means. To do so, it defines a class hierarchy for the minimum content unit you will deal with, the ```ContentObject``` class. A ```ContentObject``` is basic unit of content; for example a collection object in a Museum. All your ```MuseumObject``` objects will inherit from ```ContentObject``` to gain its functionality. The ```ContentObject``` also inherits from three other classes, that handle different behaviors:
 
@@ -281,7 +372,7 @@ Each Content Source must have a few fields defined:
 If you suddenly have another content source, just add it in that section with its own unique contentID. _ofxApp_ will ingest the content in that source during the startup phases (more on that later).
 
 ---
-#### 2.1.4 Content Ingestion & Texture Loading Setup
+#### 2.2.4 Content Ingestion & Texture Loading Setup
 
 We have seen how a content JSON might look like, and how you specify your content sources, and some of the classes involved in the different functionalities offered for your content objects. Now we will see how the content is actually converted from JSON to C++ objects you can use. We have seen in 2.1.1 that _ofxApp_ needs to ask you a few questions to be able to parse JSON; here we see how you will answer them through code. We will do so for the `MuseumObject` hypothetical example JSON we've been looking at.
 
@@ -300,7 +391,7 @@ struct ParseFunctions{
 As you can see, there's 4 `std::function` objects for you to provide code for, and one ofxJSON object for you to place any data you might need. Let's analyze them one by one:
 
 
-#### 2.1.4.1 std::function<void (ofxMtJsonParserThread::JsonStructureData &)> pointToObjects;
+#### 2.2.4.1 std::function<void (ofxMtJsonParserThread::JsonStructureData &)> pointToObjects;
 
 The goal here is to simply point _ofxApp_ to the content within the JSON content source. For example, in a JSON like this:
 
@@ -376,7 +467,7 @@ And by doing this, _ofxApp_ now knows where to start parsing from.
 
 
 
-#### 2.1.4.2 std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> parseOneObject;
+#### 2.2.4.2 std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> parseOneObject;
 
 This function will be called once for each object inside JSON["MuseumObjects"]. This is where you allocate and fill in the data for each of your `MuseumObjects*`. _ofxApp_ (with the help of [`ofxMtJsonParser`](https://github.com/armadillu/ofxMTJsonParser)) will take care of splitting the JSON into different smaller JSON bits, so from your point of view, you are parsing a single JSON object.
 
@@ -479,7 +570,7 @@ inOutData.object = dynamic_cast<ParsedObject*> (o);
 It's important to note that your `MuseumObject` is here "downcasted" to a `ParsedObject` using **`dynamic_cast<ParsedObject*>()`**. This is extremely important as otherwise some of the object contents might be lost when _ofxApp_ copies data across different pointer types.
 
 
-#### 2.1.4.3 std::function<void (ofxApp::CatalogAssetsData & data)> defineObjectAssets;
+#### 2.2.4.3 std::function<void (ofxApp::CatalogAssetsData & data)> defineObjectAssets;
 
 In this std::function, _ofxApp_ is asking you to define the assets that each object owns. An asset is any sort of file that you will need to load during the app's life - a JPG, an MP4, a text file, etc.
 
@@ -562,7 +653,7 @@ if(mo->imgURL.size()){
 }
 ```
 
-#### 2.1.4.4 std::function<void (ContentObject*)> setupTexturedObject;
+#### 2.2.4.4 std::function<void (ContentObject*)> setupTexturedObject;
 
 This is the last `std::function` you will have to define; and you might not need to define it at all. This is where you setup your Textured Objects; which only really makes sense if your object contains image assets that you want to dynamically load and unload. Within the scope of our `MuseumObject` example, it makes sense to define our TexturedObjects as each MuseumObject holds one image that we will want to load & unload on the fly.
 
@@ -638,13 +729,18 @@ if(info.valid){
 }
 ```
 
-#### 2.1.5 Content Fail and Recovery
+#### 2.2.4.5 Content Use Policies
+
+---
+
+
+#### 2.2.5 Content Fail and Recovery
 
 What happens if _ofxApp_ starts but the API endpoint is down? What happens if the JSON is malformed and can't be parsed? .... TODO!
 
 ---
 
-## 2.2 ofxApp Startup & Init stages
+### 2.3 ofxApp Startup & Init stages
 
 So far we have only focused on the JSON content aspect of _ofxApp_, but it loads lots more during startup. In summary, _ofxApp_ does all this at startup, in the following order:
 
@@ -751,7 +847,7 @@ This diagram shows the most relevant callbacks will receive over time:
 
 ---
 
-### 2.3 Static Textures loading Automation
+### 2.4 Static Textures loading Automation
 
 _ofxApp_ has a module named ofxAppStaticTextures that aims to simplify access to everyday textures; usually those textures that you need available all the time, and you never dynamically load & unload them; this includes things like icons and such.
 
@@ -803,15 +899,21 @@ __Things to note about the texture naming:__
 
 ---
 
-### 2.4 Fonts
+### 2.5 Fonts
+
+_ofxApp_
 
 ---
 
-### 2.5 Globals
+### 2.6 Globals and Parameter Tweaking
 
 ---
 
-### 2.6 Maintenance Mode
+### 2.7 Dynamic Texture Loading
+
+---
+
+### 2.8 Maintenance Mode
 
 Sometimes you just need to keep an installation off because of extraordinary reasons (ie some hardware is missing, CMS is down, etc). _ofxApp_ makes it easy to set a placeholder message on screen when the installation needs maintenance. Inside the config file ```bin/data/ofxAppSettings.json``` there is a section named "MaintenanceMode" (in ```App/MaintenanceMode``` ).
 
@@ -851,13 +953,17 @@ This config would give you a screen like this:
 
 ---
 
-### 2.7 Error handling
+### 2.9 Error Handling
 
 _ofxApp_ has two ways of handling runtime errors
 
 ---
 
-### 2.8 Analytics
+### 2.10 CMS Error Reporting
+
+---
+
+### 2.11 Analytics
 
 Analytics in _ofxApp_ are handled by [ofxGoogleAnalytics](https://github.com/armadillu/ofxGoogleAnalytics), but its configuration is handled through the `ofxAppSettings.json` configuration file found at `data/configs/ofxAppSettings.json`. It contains a section named `GoogleAnalytics` with all the necessary configuration options.
 
@@ -867,13 +973,13 @@ You can access the `ofxGoogleAnalytics` object to send your custom event from an
 
 ---
 
-### 2.9 PID file
+### 2.12 PID file
 
 _ofxApp_ tries to keeps track its last launch by creating a file named `ofxApp.pid` in the `data` directory as soon as it launches, and it will delete the file when the app exits cleanly. If the app launches and it finds the `ofxApp.pid` file, it means the last time it was launched, it didn't quit nicely (because a crash, a power cut, etc). You can also check on previous session logs for reports on this, as it will be registered in the app's logs as `The App did not exit cleanly when it was last run.`
 
 ---
 
-### 2.10 Logging
+### 2.13 Logging
 
 _ofxApp_ handles logging for you by offering several log channels. The _ofxApp_ configuration file `ofxAppSettings.json` contains a section about logging named `"Logging"`. In there you can configure where do you want your log lines to go (to console AND/OR to file AND/OR to screen), your log rotation strategy, and others.
 
@@ -918,10 +1024,14 @@ void MyClass::myMethod(){
 
 ---
 
-### 2.11 The Configuration File - "ofxAppSettings.json"
+### 2.14 TUIO - Multitouch Events
 
 ---
 
+
+### 2.15 Http Downloads
+
+---
 
 # Appendix
 ## ofxApp Keyboard Commands
@@ -929,7 +1039,7 @@ void MyClass::myMethod(){
 * __'W'__ : cycle through different window modes (see ofxScreenSetup for mode list)
 * __'L'__ : toggle on screen log (mouse & TUIO interactive)
 * __'M'__ : toggle mullions	(for microtile/videowall grid preview)
-* __'R'__ : reload _ofxApp_ settings file (data/configs/ofxAppSettings.json) for live changes
+* __'R'__ : reload _ofxApp_ settings file (`data/configs/ofxAppSettings.json`) for live changes
 * __'D'__ : toggle debug mode (changes state of the global var "debug");
 
 
