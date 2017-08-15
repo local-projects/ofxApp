@@ -1033,6 +1033,14 @@ OFXAPP_REPORT_FILE("AssetsMissing",">50% of the content assets are missing", 2, 
 OFXAPP_REPORT_FILE("WebserverNotUp", "cant connect to webserver", 2, {"data/logs/last.log", "/var/log/httpd.log"});
 ```
 
+Those calls will send the error report in a background thread to make sure the app isn't blocked if the server is down; sometimes you want to send the report just before the app quits, or during an exception. If that's the case, you can force the error report to be sent synchronously by using this call:
+
+```c++
+ofxApp::get().errorReporter().sendBlocking("myAlert", "my message", 2, {"MyFile.txt", "MyFile2.txt"});
+```
+
+This method will not return until the error has been reported (blocking the main thread).
+
 _ofxApp_ will automatically add some extra information to the error description to give more context to the error reports; things like the target Platform (win, osx, etc), the hostname, the host IP address, or the executable name are automatically gathered and included.
 
 Report emails will look like this:
