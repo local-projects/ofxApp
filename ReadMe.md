@@ -17,24 +17,24 @@ There are also some (slightly outdated) [Slides](https://github.com/local-projec
 - [Table of Contents](#table-of-contents)
 	- [0. Feature List](#0-feature-list)
 	- [1. How To Use](#1-how-to-use)
-		- [1.1 - Setup a project with all the required addons](#11-setup-a-project-with-all-the-required-addons)
-		- [1.2 - Define Pre-Processor macro with your project name](#12-define-pre-processor-macro-with-your-project-name)
-		- [1.3 - Create files for your Global Variables & Global Colors](#13-create-files-for-your-global-variables-global-colors)
-		- [1.4 - Make your ofApp class a subclass of ofxAppDelegate](#14-make-your-ofapp-class-a-subclass-of-ofxappdelegate)
+		- [1.1 Setup a project with all the required addons](#11-setup-a-project-with-all-the-required-addons)
+		- [1.2 Define Pre-Processor macro with your project name](#12-define-pre-processor-macro-with-your-project-name)
+		- [1.3 Create files for your Global Variables & Global Colors](#13-create-files-for-your-global-variables-global-colors)
+		- [1.4 Make your ofApp class a subclass of ofxAppDelegate](#14-make-your-ofapp-class-a-subclass-of-ofxappdelegate)
 	- [2. ofxApp Functionality Coverage](#2-ofxapp-functionality-coverage)
 		- [2.1 The Configuration File - "ofxAppSettings.json"](#21-the-configuration-file-ofxappsettingsjson)
 		- [2.2 ofxApp and Content](#22-ofxapp-and-content)
 			- [2.2.1 How does ofxApp Handle Content?](#221-how-does-ofxapp-handle-content)
 			- [2.2.2 The Content JSON file structure](#222-the-content-json-file-structure)
 			- [2.2.3 ofxApp Content Abstraction](#223-ofxapp-content-abstraction)
-			- [2.1.4 Content Sources](#214-content-sources)
-			- [2.2.4 Content Ingestion & Texture Loading Setup](#224-content-ingestion-texture-loading-setup)
-			- [2.2.4.1 std::function<void (ofxMtJsonParserThread::JsonStructureData &)> pointToObjects;](#2241-stdfunctionvoid-ofxmtjsonparserthreadjsonstructuredata-pointtoobjects)
-			- [2.2.4.2 std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> parseOneObject;](#2242-stdfunctionvoid-ofxmtjsonparserthreadsingleobjectparsedata-parseoneobject)
-			- [2.2.4.3 std::function<void (ofxApp::CatalogAssetsData & data)> defineObjectAssets;](#2243-stdfunctionvoid-ofxappcatalogassetsdata-data-defineobjectassets)
-			- [2.2.4.4 std::function<void (ContentObject*)> setupTexturedObject;](#2244-stdfunctionvoid-contentobject-setuptexturedobject)
-			- [2.2.4.5 Content Use Policies](#2245-content-use-policies)
-			- [2.2.5 Content Fail and Recovery](#225-content-fail-and-recovery)
+			- [2.2.4 Content Sources](#224-content-sources)
+			- [2.2.5 Content Ingestion and Texture Loading Setup](#225-content-ingestion-and-texture-loading-setup)
+			- [2.2.5.1 std::function<void (ofxMtJsonParserThread::JsonStructureData &)> pointToObjects;](#2251-stdfunctionvoid-ofxmtjsonparserthreadjsonstructuredata-pointtoobjects)
+			- [2.2.5.2 std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> parseOneObject;](#2252-stdfunctionvoid-ofxmtjsonparserthreadsingleobjectparsedata-parseoneobject)
+			- [2.2.5.3 std::function<void (ofxApp::CatalogAssetsData & data)> defineObjectAssets;](#2253-stdfunctionvoid-ofxappcatalogassetsdata-data-defineobjectassets)
+			- [2.2.5.4 std::function<void (ContentObject*)> setupTexturedObject;](#2254-stdfunctionvoid-contentobject-setuptexturedobject)
+			- [2.2.5.5 Content Use Policies](#2255-content-use-policies)
+			- [2.2.6 Content Fail and Recovery](#226-content-fail-and-recovery)
 		- [2.3 ofxApp Startup & Init stages](#23-ofxapp-startup-init-stages)
 		- [2.4 Static Textures loading Automation](#24-static-textures-loading-automation)
 		- [2.5 Fonts](#25-fonts)
@@ -83,7 +83,7 @@ A quick summary of the features offered by _ofxApp_:
 
 ## 1. How To Use
 
-### 1.1 - Setup a project with all the required addons
+### 1.1 Setup a project with all the required addons
 
 ofxOSC, ofxXmlSettings, ofxOpenCV, ofxNetwork, ofxPoco,  [ofxFontStash](https://github.com/armadillu/ofxFontStash), [ofxFontStash2](https://github.com/armadillu/ofxFontStash2), [ofxTuio](https://github.com/local-projects/ofxTuio), [ofxJSON](https://github.com/local-projects/ofxJSON), [ofxSuperLog](https://github.com/armadillu/ofxSuperLog), [ofxAutoTexture](https://github.com/armadillu/ofxAutoTexture), [ofxMTJsonParser](https://github.com/armadillu/ofxMTJsonParser), [ofxSimpleHttp](https://github.com/armadillu/ofxSimpleHttp), [ofxTagSystem](https://github.com/armadillu/ofxTagSystem), [ofxStateMachine](https://github.com/armadillu/ofxStateMachine), [ofxAssets](https://github.com/armadillu/ofxAssets), [ofxThreadSafeLog](https://github.com/armadillu/ofxThreadSafeLog), [ofxProgressiveTextureLoad](https://github.com/armadillu/ofxProgressiveTextureLoad), [ofxTexturedObject](https://github.com/armadillu/ofxTexturedObject), [ofxMullion](https://github.com/armadillu/ofxMullion), [ofxSensu](https://github.com/local-projects/ofxSensu),  [ofxGoogleAnalytics](https://github.com/armadillu/ofxGoogleAnalytics), [ofxJsonSettings](https://github.com/loca-projects/ofxJsonSettings), [ofxTimeMeasurements](https://github.com/armadillu/ofxTimeMeasurements), [ofxRemoteUI](https://github.com/armadillu/ofxRemoteUI), [ofxHistoryPlot](https://github.com/armadillu/ofxHistoryPlot), [ofxScreenSetup](https://github.com/armadillu/ofxScreenSetup),
 [ofxInterface](http://github.com/local-projects/ofxInterface), [ofxApp*](https://github.com/local-projects/ofxApp).
@@ -102,14 +102,14 @@ To do so, given the high number of addon dependencies, I suggest you use the Ope
 
 ![project generator](https://farm5.staticflickr.com/4430/36424424406_bbd6020214_o_d.png)
 
-### 1.2 - Define Pre-Processor macro with your project name
+### 1.2 Define Pre-Processor macro with your project name
 
 ```
 OFX_APP_NAME=MyApp
 ```
 This is used to automatically handle your custom Global Variables & Global Colors files. This is so that your Global Vars and Colors classes are automatically included in the _ofxApp_ instance. The whole point of this is to avoid dynamic casting all over the place just to acces your globals; this allows your globals object (`MyAppGlobals`) to be stored inside _ofxApp_ in their native Class, so they can be totally overridden by you and still be included in _ofxApp_ at compile time.
 
-### 1.3 - Create files for your Global Variables & Global Colors
+### 1.3 Create files for your Global Variables & Global Colors
 
 These Files must follow this naming convention; and it's where you will place global variables/colors that you might need to access from anywhere. These files are only required if you defined ```OFX_APP_NAME``` in the previous step
 
@@ -123,7 +123,7 @@ Those two files should be classes that inherit from a basic set of globals that 
 
 Look at the example to see how they look like.
 
-### 1.4 - Make your ofApp class a subclass of ofxAppDelegate
+### 1.4 Make your ofApp class a subclass of ofxAppDelegate
 
 This usually means your ofApp (a subclass of ofBaseApp, the basic OpenFrameworks app) should also subclass ofxAppDelegate, as shown here:
 
@@ -336,7 +336,7 @@ _ofxApp_ abstracts content fetching, parsing, checking and loading through sever
 * __TexturedObject__: A TexturedObject is an object that owns textures (images) at different resolutions that you might want to draw. This allows your object to dynamically load and unload ofTextures on the fly, without halting your app to do so. It does so by progressively loading them, so you first request a texture you need, and you will get notified when its ready (usually a few frames after the request has been placed). When you don't need the texture (because your object is not on screen anymore), you can release it and it will be unloaded for you. This allows your app to hold a lot of image content (ie an entire museum collection - that would be too much to completely pre-load) and keeping interactive framerates when showing it.
 
 ---
-#### 2.1.4 Content Sources
+#### 2.2.4 Content Sources
 
 For _ofxApp_ to know what content you want in your app, you must tell it what that is. _ofxApp_ expects you to supply a config file in your `data/configs/ofxAppSettings.json` (see section 2.7). In there, there's a whole section about Content Sources named `Content/JsonSources`.
 
@@ -376,7 +376,8 @@ Each Content Source must have a few fields defined:
 If you suddenly have another content source, just add it in that section with its own unique contentID. _ofxApp_ will ingest the content in that source during the startup phases (more on that later).
 
 ---
-#### 2.2.4 Content Ingestion & Texture Loading Setup
+
+#### 2.2.5 Content Ingestion and Texture Loading Setup
 
 We have seen how a content JSON might look like, and how you specify your content sources, and some of the classes involved in the different functionalities offered for your content objects. Now we will see how the content is actually converted from JSON to C++ objects you can use. We have seen in 2.1.1 that _ofxApp_ needs to ask you a few questions to be able to parse JSON; here we see how you will answer them through code. We will do so for the `MuseumObject` hypothetical example JSON we've been looking at.
 
@@ -395,7 +396,7 @@ struct ParseFunctions{
 As you can see, there's 4 `std::function` objects for you to provide code for, and one ofxJSON object for you to place any data you might need. Let's analyze them one by one:
 
 
-#### 2.2.4.1 std::function<void (ofxMtJsonParserThread::JsonStructureData &)> pointToObjects;
+#### 2.2.5.1 std::function<void (ofxMtJsonParserThread::JsonStructureData &)> pointToObjects;
 
 The goal here is to simply point _ofxApp_ to the content within the JSON content source. For example, in a JSON like this:
 
@@ -471,7 +472,7 @@ And by doing this, _ofxApp_ now knows where to start parsing from.
 
 
 
-#### 2.2.4.2 std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> parseOneObject;
+#### 2.2.5.2 std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> parseOneObject;
 
 This function will be called once for each object inside JSON["MuseumObjects"]. This is where you allocate and fill in the data for each of your `MuseumObjects*`. _ofxApp_ (with the help of [`ofxMtJsonParser`](https://github.com/armadillu/ofxMTJsonParser)) will take care of splitting the JSON into different smaller JSON bits, so from your point of view, you are parsing a single JSON object.
 
@@ -574,7 +575,7 @@ inOutData.object = dynamic_cast<ParsedObject*> (o);
 It's important to note that your `MuseumObject` is here "downcasted" to a `ParsedObject` using **`dynamic_cast<ParsedObject*>()`**. This is extremely important as otherwise some of the object contents might be lost when _ofxApp_ copies data across different pointer types.
 
 
-#### 2.2.4.3 std::function<void (ofxApp::CatalogAssetsData & data)> defineObjectAssets;
+#### 2.2.5.3 std::function<void (ofxApp::CatalogAssetsData & data)> defineObjectAssets;
 
 In this std::function, _ofxApp_ is asking you to define the assets that each object owns. An asset is any sort of file that you will need to load during the app's life - a JPG, an MP4, a text file, etc.
 
@@ -657,7 +658,7 @@ if(mo->imgURL.size()){
 }
 ```
 
-#### 2.2.4.4 std::function<void (ContentObject*)> setupTexturedObject;
+#### 2.2.5.4 std::function<void (ContentObject*)> setupTexturedObject;
 
 This is the last `std::function` you will have to define; and you might not need to define it at all. This is where you setup your Textured Objects; which only really makes sense if your object contains image assets that you want to dynamically load and unload. Within the scope of our `MuseumObject` example, it makes sense to define our TexturedObjects as each MuseumObject holds one image that we will want to load & unload on the fly.
 
@@ -733,14 +734,14 @@ if(info.valid){
 }
 ```
 
-#### 2.2.4.5 Content Use Policies
+#### 2.2.5.5 Content Use Policies
 
 TODO!
 
 ---
 
 
-#### 2.2.5 Content Fail and Recovery
+#### 2.2.6 Content Fail and Recovery
 
 What happens if _ofxApp_ starts but the API endpoint is down? What happens if the JSON is malformed and can't be parsed? .... TODO!
 
