@@ -43,6 +43,8 @@ There are also some (slightly outdated) [Slides](https://github.com/local-projec
 		- [2.7 Dynamic Texture Loading](#27-dynamic-texture-loading)
 		- [2.8 Maintenance Mode](#28-maintenance-mode)
 		- [2.9 Error Handling](#29-error-handling)
+			- [2.9.1 On Screen Error](#291-on-screen-error)
+			- [2.9.1 Terminate with Error](#291-terminate-with-error)
 		- [2.10 CMS Error Reporting](#210-cms-error-reporting)
 		- [2.11 Analytics](#211-analytics)
 		- [2.12 PID file](#212-pid-file)
@@ -50,11 +52,11 @@ There are also some (slightly outdated) [Slides](https://github.com/local-projec
 		- [2.14 TUIO - Multitouch Events](#214-tuio-multitouch-events)
 		- [2.15 Http Downloads](#215-http-downloads)
 - [Appendix](#appendix)
-	- [ofxApp Keyboard Commands](#ofxapp-keyboard-commands)
-	- [ofxApp MACROS](#ofxapp-macros)
-			- [Knowns Issues / Future Developments](#knowns-issues-future-developments)
-	- [Included Libraries / assets](#included-libraries-assets)
-	- [License](#license)
+		- [ofxApp Keyboard Commands](#ofxapp-keyboard-commands)
+		- [ofxApp MACROS](#ofxapp-macros)
+		- [Knowns Issues / Future Developments](#knowns-issues-future-developments)
+		- [Included Libraries / assets](#included-libraries-assets)
+		- [License](#license)
 
 <!-- /TOC -->
 
@@ -955,11 +957,37 @@ This config would give you a screen like this:
 
 ### 2.9 Error Handling
 
-_ofxApp_ has two ways of handling runtime errors
+_ofxApp_ has two ways of handling runtime errors; the first one is for errors in which the developer wants to leave the error screen visible, to try to get the attention of the staff (ie the photo camera is disconnected). The second one is used for more irrecoverable states, and should generally be avoided, its a last resort sort of measure. It will show an error for N seconds, and then terminate the app (with hopes that the watchdog will restart it and by doing so solve the issue).
+
+#### 2.9.1 On Screen Error
+
+One of them allows the developer to bring up an error screen and it's meant for the kind of errors that are detectable but large enough that won't let the installation work as expected (ie a missing camera, no touch frame, etc.) For those cases, when you detect them, you can easily bring up an error screen by calling
+
+```c++
+ofxApp::get().enterErrorState("Camera Not Found!", "Please make sure the camera is connected an powered on.\n...");
+```
+This will get ofxApp to an error state, it will hijack the drawing entirely by drawing something like this:
+
+<img src="ReadMeImages/errorScreen.PNG" width="460">
+
+The layout of the error screen can be tweaked in the `ofxAppSettings.json` file, very similarly to how [2.8 Maintenance Mode](#28-maintenance-mode) handles it.
+
+If your app manages to recover from the error, you can return to normal operation by calling
+
+```c++
+ofxApp::get().exitErrorState();
+```
+
+
+#### 2.9.1 Terminate with Error
+
+The second method to handle errors in _ofxApp_ allows you to
 
 ---
 
 ### 2.10 CMS Error Reporting
+
+
 
 ---
 
@@ -996,9 +1024,9 @@ ofLogWarning("moduleName") << "something worth logging happened."
 ```
 There are 5 log levels, `ofLogVerbose()`, `ofLogNotice()`, `ofLogWarning()`, `ofLogError()` and `ofLogFatalError()`. You can set the log threshold in the config file to ignore certain log commands, specified in `Logging/logLevel`.
 
-Note how all the log outputs (file, console and screen) indent the output according to the longest module name width.
+Note how all the log outputs (file, console and screen) indent the output according to the longest module name width, so that all log lines start at the same indentation level. The screen log will individually colorize module names so that's it's easier to visually cluster who did output what.
 
-Log output on the command line interface (on Win >=10 & OSX) will be colored by logLevel (verbose: gray, notice: green, warning: yellow, error: red, fatalError: purple), and so will be on the screen log.
+Log output on the command line interface (terminal) will be colored (on Win >=10 & OSX) by logLevel (verbose: gray, notice: green, warning: yellow, error: red, fatalError: purple), and the same applies to the screen log.
 
 There is an extra log created on every app launch regarding content; it's named `assetStatus.log` and it's re-created on every app launch. It contains a list of all the assets requested by _ofxApp_, and the checksum/download state for it. This can be useful when debugging content.
 
@@ -1012,7 +1040,7 @@ _ofxApp_ also offers some convenient macros for logging within class methods tha
 * __```LOGE```__ : ofLogError(this* typeID)
 * __```LOGF```__ : ofLogFatal(this* typeID)
 
-But keep in mind they won't work from C or static methods.
+But keep in mind they won't work from C or static methods, as they rely on the current this pointer to infer the Class that's logging.
 
 You can use them like this:
 
@@ -1034,7 +1062,7 @@ void MyClass::myMethod(){
 ---
 
 # Appendix
-## ofxApp Keyboard Commands
+### ofxApp Keyboard Commands
 
 * __'W'__ : cycle through different window modes (see ofxScreenSetup for mode list)
 * __'L'__ : toggle on screen log (mouse & TUIO interactive)
@@ -1043,7 +1071,7 @@ void MyClass::myMethod(){
 * __'D'__ : toggle debug mode (changes state of the global var "debug");
 
 
-## ofxApp MACROS
+### ofxApp MACROS
 
 * __```GLOB```__ : direct access to MyAppGlobals
 * __```G_COL | G_COLOR```__ : direct access to MyAppColors
@@ -1063,7 +1091,7 @@ void MyClass::myMethod(){
 * __```LOGF```__ : ofLogFatal(this* typeID)
 
 
-#### Knowns Issues / Future Developments
+### Knowns Issues / Future Developments
 
 + Globals + Colors macro file naming gimmick is not ideal
 + unhappy about AppSettings.json sharing "default" options with user-defined-content src options
@@ -1074,7 +1102,7 @@ void MyClass::myMethod(){
 + unused asset cleanup!
 
 
-## Included Libraries / assets
+### Included Libraries / assets
 
 * [stb_image](https://github.com/nothings/stb) by Sean Barrett: Public domain.
 * [Ubuntu](http://font.ubuntu.com) Font Family : [Ubuntu Font License](http://font.ubuntu.com/ufl/ubuntu-font-licence-1.0.txt).
@@ -1082,6 +1110,6 @@ void MyClass::myMethod(){
 * [Pacifico](https://www.fontsquirrel.com/fonts/pacifico) Font (used in example): [SIL Open Font License](https://www.fontsquirrel.com/license/pacifico).
 * [Fantasque Sansa Mono](https://fontlibrary.org/en/font/fantasque-sans-mono) Font (used in example): [SIL Open Font License](http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL).
 
-## License
+### License
 
 * [ofxApp](https://github.com/local-projects/ofxApp) is distributed under the [MIT license](License.md).
