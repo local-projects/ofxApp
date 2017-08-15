@@ -981,13 +981,79 @@ ofxApp::get().exitErrorState();
 
 #### 2.9.1 Terminate with Error
 
-The second method to handle errors in _ofxApp_ allows you to
+The second method to handle errors in _ofxApp_ allows you to terminate the app in place, but still show a message on screen for a few seconds showing the reasons of why is being terminated. This is useful during development, or during deployment tests. It can also be useful when you know there's a chance the error will be fixed by restarting the app; the CMS is usually setup with a watchdog that runs on the same machine as the _ofxApp_ app, and it will relaunch the _ofxApp_ app.
+
+To terminate the app by showing an error, you can do
+
+```c++
+string moduleResponsibleForTermination = "MyApp::ImageViewer";
+string reasonForTermination = "can't find a required asset!";
+float secondToKeepErrorOnScreen = 15;
+
+ofxApp::utils::terminateApp(moduleResponsibleForTermination, reasonForTermination, secondToKeepErrorOnScreen);
+```
+
+Once you call this method, there's no going back; the app will terminate in the X seconds you specified. The method hijacks OpenFrameworks entirely, and the `update()` and `draw()` calls will no longer happen; This is done to avoid crashing the app and at least exit cleanly; this means you should be able to use this call within a catched exception.
 
 ---
 
 ### 2.10 CMS Error Reporting
 
+_ofxApp_ has built in support to report errors through a [Sensu](https://sensuapp.org) server. _ofxApp_ uses [ofxSensu](https://github.com/local-projects/ofxSensu) to interact with the [Sensu](https://sensuapp.org) server that is deployed with our CMS.
 
+The `ofxAppSettings.json` config file contains a section named "ErrorReporting" that holds all the relevant information about the Sensu configuration; and a global toggle so you can disable error reporting entirely. Error reports can be configured to send emails when an error or critical status is reached; you can provide the list of emails which should be notified when these happen in the config file too:
+
+```c++
+"ErrorReporting":{
+	"enabled" : true,
+	"host" : "192.168.42.119",
+	"port" : 3030,
+	"emails" : ["monkey@localprojects.com", "banana@localprojects.com"],
+	"reportGitStatus" : false
+}
+```
+
+
+Sensu works by keeping status levels (OK, Error, Critical) on `alertID`s; so when you recover from an error, (ie the error is gone) you should also report an error, with status OK. The `alertID`s can be any string you want, but should be descriptive (ie alertID = "kinectStatus"). By keeping tabs on the status level for every `alertID`, Sensu can keep put these all together in a simple dashboard that shows the stats of your app.
+
+<img src="ReadMeImages/sensu.png" width="600">
+
+The error reports require an `alertID`, a description `message`, and a `severity` level (0 for OK, 1 for warning, 2 for critical error). They can optionally attach files to the reports (which you will get by email) by specifying a path to the file to attach.
+
+To actually trigger the error reports, you have two macros:
+
+```c++
+//will update sensu's status for this alertID and will email report to the emails specified in the config file.
+OFXAPP_REPORT("KinectStatus","Camera Not Found on USB bus", 2);
+
+//same as above, but will also attach a file
+OFXAPP_REPORT_FILE("AssetsMissing",">50% of the content assets are missing", 2, "data/logs/assetStatus.log");
+
+//if you want to attach more than one file
+OFXAPP_REPORT_FILE("WebserverNotUp", "cant connect to webserver", 2, {"data/logs/last.log", "/var/log/httpd.log"});
+```
+
+_ofxApp_ will automatically add some extra information to the error description to give more context to the error reports; things like the target Platform (win, osx, etc), the hostname, the host IP address, or the executable name are automatically gathered and included.
+
+Report emails will look like this:
+
+```c++
+Cant connect to PowerMate!
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
++ Platform: osx
++ HostName: oriolLPmacbook.local
++ Host IP: 192.168.202.55
++ BinaryName: BaseAppDebug
++ Git Revision: e9e53974b760dc4cc75f1bbd2ba5a9ef85ad5522
++ Git Status:
++ AppUptime: 9.17 minutes
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+```
+
+You can optionally get the reports to check the state of the Git Repository the app is running from, this can be useful to detect modified config files or extraneous files on the filesystem. To do so, set the key `ErrorReporting/reportGitStatus` to *true* in the _ofxApp_ config file.
 
 ---
 
