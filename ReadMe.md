@@ -144,7 +144,7 @@ _ofxApp_ covers a lot of areas, we will break them down in several sections. See
 
 _ofxApp_ contains lots of modules whose behaviors can be tweaked and configured. All those configurations are found in a single place, a JSON configuration file in `data/configs/ofxAppSettings.json`. This file is loaded when _ofxApp_ starts. There are a few main section within the config file:
 
-* `App`
+* `App`: all configs related to the app
     * `framerate`: int - the framerate at which _ofxApp_ (and your app) will operate
 	* `numAASamples`: int [0..8] - the number of MultiSampling samples the window will be created with
 	* `showMouse`: bool - if mouse cursor should be visible
@@ -152,7 +152,7 @@ _ofxApp_ contains lots of modules whose behaviors can be tweaked and configured.
 	* `maxThreads`: int - the max number of CPU threads modules should spawn (should be <= the # of cores in your CPU)
     * `window`
         * `windowMode`: int - [0 .. 11] specifying a [window mode](https://github.com/armadillu/ofxScreenSetup) for the window to start at. Some common values: [windowed=8, fullOneMonitor=1, fullAllMonitors=0]
-        * `customWidth` : int - window width (applies when windowMode is 8 (windowed))
+        * `customWidth` : int - window width (applies when windowMode is 8 (windowed))
         * `customHeight` : int - window height (applies when windowMode is 8 (windowed))
         * `customWindowPosition` : bool - if true, the default window position will be overriden with the fields below
         * `customPositionX` : int - the x coord of the window position if `customWindowPosition` is true
@@ -174,7 +174,7 @@ _ofxApp_ contains lots of modules whose behaviors can be tweaked and configured.
 * `RemoteUI`: various configurations for [ofxRemoteUI](https://github.com/armadillu/ofxRemoteUI.git).
 * `TimeMeasurements`: various configurations for [ofxTimeMeasurements](https://github.com/armadillu/ofxTimeMeasurements).
 * `TextureLoader`: Params that control texture loading performance. Read more about these in [2.7 Dynamic Texture Loading](#27-dynamic-texture-loading).
-* `Logging`: configs for logging; read more about those in [2.13 Logging](#213-logging).
+* `Logging`: configs for logging; read more about those in [2.13 Logging](#213-logging).
 * `ErrorReporting`: setup CMS error reports, read more in [2.10 CMS Error Reporting](#210-cms-error-reporting).
 * `GoogleAnalytics`: configure the GoogleAnalytics client. Readm more in [2.11 Analytics](#211-analytics).
 * `TUIO`: configure the TUIO server. If you have a touch overlay in your project, enable it and set the port to make _ofxApp_ forward multitouch events. Read more in [2.14 TUIO - Multitouch Events](#214-tuio-multitouch-events).
