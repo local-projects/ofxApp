@@ -226,7 +226,7 @@ Also be aware that you can live-edit this file and re-load it while _ofxApp_ is 
 
 ### 2.2 ofxApp and Content
 
-One of the goals of _ofxApp_ is to abstract content ingestion and sync with a remote CMS for you.
+One of the goals of _ofxApp_ is to abstract content ingestion and sync with a remote CMS for you, lets see how it handles it.
 
 #### 2.2.1 How does ofxApp Handle Content?
 
@@ -290,16 +290,16 @@ To answer all the above questions, _ofxApp_ offers you a Function Based protocol
 	"objID1" : {
             "ID" : "objID1",
             "title" : "Magical Chair",
-			"imageURL" : "http://museum.com/image1.jpg",
-			"imageSha1" : "8d25fa0135fe0a3771dfa09f1331e3ea7c8b888f"
-		},
+            "imageURL" : "http://museum.com/image1.jpg",
+            "imageSha1" : "8d25fa0135fe0a3771dfa09f1331e3ea7c8b888f"
+        },
 	"objID2" : {
             "ID" : "objID2",
             "title" : "Man standing looking at birds",
-			"imageURL" : "http://museum.com/image2.jpg",
-			"imageSha1" : "c376992f8a141c388faf6227b9e72749f6065650"
-		}
-	}
+            "imageURL" : "http://museum.com/image2.jpg",
+            "imageSha1" : "c376992f8a141c388faf6227b9e72749f6065650"
+        }
+    }
 }
 ```
 
@@ -1050,7 +1050,7 @@ public:
 	void setupRemoteUIParams(){};
 
 	//your global colors defined here
-	ofColor myTileColor;
+	ofColor myTileColor = ofColor::red;
 };
 ```
 
@@ -1070,15 +1070,15 @@ Let's follow up on the example we left off at [2.6.1 Globals File](#261-globals-
 
 ```c++
 void setupRemoteUIParams(){
-	RUI_SHARE_PARAM(tileSpeed, 0, 1); //share the `tileSpeed` float with ofxRemoteUI, give it a valid range of [0..1]
+	RUI_SHARE_PARAM(tileSpeed, 0, 1); //share `tileSpeed` with ofxRemoteUI, give it a range of [0..1]
 }
 ```
-By doing so, we are exposing `tileSpeed` to `ofxRemoteUI` by using the RUI_SHARE_PARAM() macro. Once a variable has been exposed to ofxRemoteUI, you can change its value from ofxRemoteUI. [ofxRemoteUI](http://github.com/armadillu/ofxRemoteUI) offers several ways to do so, the most direct way is to use the built in client. You can get into it by pressing the `TAB` key:
+By doing so, we are exposing `tileSpeed` to `ofxRemoteUI` by using the `RUI_SHARE_PARAM()` macro. Once a variable has been exposed to ofxRemoteUI, you can change easily edit its value. [ofxRemoteUI](http://github.com/armadillu/ofxRemoteUI) offers several ways to do so, the most direct way is to use the built in client. This is a client that runs within your app; you can get into it by pressing the `TAB` key and the screen is taken over by `ofxRemoteUI`:
 
 <img src = "ReadMeImages/RemoteUI_BuiltIn.PNG">
 
 From there, you can use arrow keys to edit the values, and press the `TAB` key to hide it again.
-You can also use the native OSX client, which is the preferred option.
+You can also use the native OSX client to connect to ofxRemoteUI remotely (from a remote computer, or from the computer you are running the _ofxApp_ from), which is the preferred option.
 
 <img src = "ReadMeImages/ruiOsxClient.PNG">
 
@@ -1131,6 +1131,8 @@ This config would give you a screen like this:
 
 <img src="ReadMeImages/maintenance.PNG" width="500">
 
+When tweaking the looks of this screen, remember that you can edit the config file while the _ofxApp_ is running and force a config file re-load periodically (by pressing the `R` key) to see the changes in realtime.
+
 ---
 
 ### 2.9 Error Handling
@@ -1167,7 +1169,6 @@ To terminate the app by showing an error, you can do
 string moduleResponsibleForTermination = "MyApp::ImageViewer";
 string reasonForTermination = "can't find a required asset!";
 float secondToKeepErrorOnScreen = 15;
-
 ofxApp::utils::terminateApp(moduleResponsibleForTermination, reasonForTermination, secondToKeepErrorOnScreen);
 ```
 
