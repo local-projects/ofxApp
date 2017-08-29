@@ -32,3 +32,4 @@ ofxXmlSettings
 ../../ExternalAddons/ofxSensu
 ../../ExternalAddons/ofxGoogleAnalytics
 ../../ExternalAddons/ofxInterface
+../../ExternalAddons/ofxLibwebsockets
