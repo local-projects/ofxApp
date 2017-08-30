@@ -97,6 +97,7 @@ To do so, given the high number of addon dependencies, I suggest you use the Ope
 * Go to ```Your_Repo/ExternalAddons/ofxApp/``` (or ```/addons/ofxApp``` if you use vanilla OF) and copy the file ```addon_config.make``` to your new project folder; and rename it to ```addons.make```.
 * Back to Project Generator, click on the "Project Path" text field once to make the app refresh - the addons list should update. Click on "Update" to re-create your project files. At this point, all the addons dependencies for _ofxApp_ should be covered.
 * Add these __PreProcessor Macros__ to your project: ```USE_OFX_FONTSTASH```, ```USE_OFX_FONTSTASH2```, ```USE_OFX_HISTORYPLOT```, ```NANOVG_GL2_IMPLEMENTATION``` (\*or NANOVG_GL3_IMPLEMENTATION) and ```OFX_APP_NAME=xxxx``` (where xxxx is your "Project Name" - see 1.2).
+* Remove `local_addons/ofxLibwebsockets/libs/jsoncpp` from your project, as jsonCPP is already included in ofxJSON. If you don't, you will end up with the compiler complining about duplicate symobols.
 * Your project should compile cleanly now.
 
 ![project generator](https://farm5.staticflickr.com/4430/36424424406_bbd6020214_o_d.png)

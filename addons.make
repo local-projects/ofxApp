@@ -1,7 +1,3 @@
-# this will work for LocalProjects-style project filesystem organization
-# copy this file into your project dir for ProjectGenerator to find your addons
-# this will not work for in a standard OF addon locations (remove "../../ExternalAddons/" for it to work)
-
 ofxNetwork
 ofxOpenCv
 ofxOsc

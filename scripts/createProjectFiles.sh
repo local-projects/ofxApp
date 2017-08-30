@@ -7,7 +7,7 @@
 
 echo "This Script will generate Project Files for an ofxApp based project"
 echo "Path to OpenFrameworks: \"$1\""
-#export PG_OF_PATH="$1"
+export PG_OF_PATH="$1"
 
 pgBin="/Volumes/LP/LP/REPOS/lp-internal.OF_Project_template/projectGenerator.app/Contents/Resources/app/app/projectGenerator"
 
@@ -17,12 +17,12 @@ pgBin="/Volumes/LP/LP/REPOS/lp-internal.OF_Project_template/projectGenerator.app
 echo "\n"
 
 addonList=`awk '{print $1}' < ExternalAddons/ofxApp/addons.make | paste -s -d, -`
-echo "AddonList: |$addonList|"
+echo "AddonList: | $addonList |"
 
 echo "\n"
 
 
-eval $pgBin  --verbose --platforms"osx,vs" -addons"$addonList" --ofPath"$1" "$2"
+eval $pgBin -p"osx,vs" -a"$addonList" --ofPath"$1" "$2"
 
 
 #popd > /dev/null
