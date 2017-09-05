@@ -872,14 +872,14 @@ images/
 you can access the ofTexture from code in this way:
 
 ```c++
-ofxApp::get().textures().getTexture("image.png"); //returns ofTexture*
-ofxApp::get().textures().getTexture("icons/icon1.png");
+ofxApp::get().textures().getTexture("image"); //returns ofTexture*
+ofxApp::get().textures().getTexture("icons/icon1");
 ```
 
 to make things a bit shorter, the following macro is defined in ```ofxAppMacros.h```:
 
 ```c++
-G_TEX("icons/icon1.png")->draw(0,0); //access global texture
+G_TEX("icons/icon1")->draw(0,0); //access global texture
 ```
 
 Often you need fine grain control over how these textures are loaded; maybe some of them need to be ```GL_TEXTURE_2D``` because you want your tex coordinates normalized, maybe you want some to have mipmaps created and some not. To allow this fine level of detail, ofxAppStaticTextures allows you to embed how you need the texture loaded in the filename.
