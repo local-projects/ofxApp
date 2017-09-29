@@ -209,6 +209,8 @@ void ofxAppContent::setState(ContentState s){
 
 		case ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS:{
 
+			int numObjectB4Filter = parsedObjects.size();
+
 			if(!shouldSkipObjectTests){
 				objectsWithBadAssets.clear();
 
@@ -270,6 +272,7 @@ void ofxAppContent::setState(ContentState s){
 					}
 				}
 
+
 				for(int i = badObjects.size() - 1; i >= 0; i--){
 					ofLogError("ofxAppContent") << "Dropping object \"" << parsedObjects[i]->getObjectUUID() << "\"";
 					delete parsedObjects[badObjects[i]];
@@ -279,12 +282,19 @@ void ofxAppContent::setState(ContentState s){
 				numIgnoredObjects += badObjects.size();
 
 				objectsWithBadAssets = "\nRemoved " + ofToString(badObjects.size()) + " \"" + ID + "\" objects:\n\n" + objectsWithBadAssets;
+
+				ofLogWarning("ofxApp") << "Removed a total of " << numIgnoredObjects << " objects for content type \"" << ID << "\" due to various rasons. Check 'logs/assetStatus.log' for more info.";
+				float pct;
+				if(numObjectB4Filter > 0){
+					pct = 100.0f * numIgnoredObjects / float(numObjectB4Filter);
+				}else{
+					pct = 0.0f;
+				}
+				ofLogWarning("ofxApp") << "Ignored " << ofToString(pct,2) << "% of the objects defined in the \"" << ID << "\" JSON.";
+
 			}else{
 				ofLogWarning("ofxAppContent") << "skipping Object Drop Policy Tests!! \"" << ID << "\"";
 			}
-			ofLogWarning("ofxApp") << "Removed a total of " << numIgnoredObjects << " objects for content type \"" << ID << "\" due to various rasons. Check 'logs/assetStatus.log' for more info.";
-			float pct = 100.0f * numIgnoredObjects / float(parsedObjects.size());
-			ofLogWarning("ofxApp") << "Ignored " << ofToString(pct,2) << "% of the objects defined in the \"" << ID << "\" JSON.";
 
 		}break;
 
