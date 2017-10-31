@@ -85,7 +85,7 @@ public:
 	ofxAppGlobalsBasic & 			globals(){return *globalsStorage;}
 	#else
 	OFX_APP_CLASS_NAME(Colors) & 	colors(){return colorsStorage;}
-	OFX_APP_CLASS_NAME(Globals) & 	globals(){return *globalsStorage;}
+	ofxAppGlobalsBasic * 			globals(){return globalsStorage;}
 	#endif
 	
 	ofxAppFonts &					fonts(){return *fontStorage;}
@@ -207,7 +207,7 @@ protected:
 	#else
 		//crazy macro magic - beware! read a few lines above to see what's going on
 		OFX_APP_CLASS_NAME(Colors)			colorsStorage;
-		OFX_APP_CLASS_NAME(Globals)			* globalsStorage = nullptr;
+		ofxAppGlobalsBasic					* globalsStorage = nullptr;
 	#endif
 
 	ofxAppFonts *							fontStorage = nullptr; //keeps all loaded fonts

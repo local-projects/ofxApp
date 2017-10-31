@@ -38,7 +38,7 @@ const string FILE_ACCES_ICON = "💾";
 #endif
 
 
-#define GLOB											ofxApp::get().globals()
+#define GLOB											((OFX_APP_CLASS_NAME(Globals)&)(*ofxApp::get().globals()))
 #define G_COL											ofxApp::get().colors()
 #define G_COLOR											ofxApp::get().colors()
 
