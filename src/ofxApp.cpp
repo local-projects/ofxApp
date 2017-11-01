@@ -75,12 +75,7 @@ void App::setup(const map<string,ofxApp::ParseFunctions> & cfgs, ofxAppDelegate 
 		setupStateMachine();
 		appState.setState(State::SETUP_OFXAPP_INTERNALS);
 		setupListeners();
-<<<<<<< Updated upstream
 		setupGlobalParameters();
-=======
-		globals()->setupRemoteUIParams();
-		colors().setupRemoteUIParams();
->>>>>>> Stashed changes
 		textures().setup();
 		setupTuio();
 
