@@ -344,9 +344,9 @@ void App::setupTextureLoader(){
 
 
 void App::setupGlobalParameters(){
-	globals().ofxAppGlobalsBasic::setupRemoteUIParams();
+	globals()->ofxAppGlobalsBasic::setupRemoteUIParams();
 	RUI_NEW_GROUP(string(OFX_APP_STR(OFX_APP_NAME)) + string(" Globals"));
-	globals().setupRemoteUIParams();
+	globals()->setupRemoteUIParams();
 	RUI_NEW_GROUP(string(OFX_APP_STR(OFX_APP_NAME)) + string(" Colors"));
 	colors().ofxAppColorsBasic::setupRemoteUIParams();
 	colors().setupRemoteUIParams();
