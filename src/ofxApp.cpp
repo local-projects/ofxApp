@@ -339,7 +339,6 @@ void App::setupTextureLoader(){
 	q->setTargetTimePerFrame( maxMsPerFrame );	//spend at most 'x' milis loading textures per frame
 	q->setScanlinesPerLoop( scanLinesPerLoop );
 	q->setMaximumRequestsPerFrame( maxReq );
-
 }
 
 
@@ -1133,7 +1132,7 @@ void App::onKeyPressed(ofKeyEventArgs & a){
 				break;
 			}
 		}
-		case 'R': loadSettings(); RUI_LOG("[ofxApp : keyPress 'R'] Loaded Settings from \"ofxAppSettings.json\""); break;
+		case 'R': loadSettings(); setupTextureLoader(); RUI_LOG("[ofxApp : keyPress 'R'] Loaded Settings from \"ofxAppSettings.json\""); break;
 		case 'M': mullions.toggle(); RUI_LOG("[ofxApp : keyPress 'M'] Toggled Mullions"); break;
 		case 'D': globalsStorage->debug ^= true; didPress = true; break;
 	}

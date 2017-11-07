@@ -13,9 +13,7 @@ class MyAppGlobals : public ofxAppGlobalsBasic{
 
 public:
 	
-	void setupRemoteUIParams(){
-		RUI_SHARE_PARAM(myParam, 0, 1);
-	};
+	void setupRemoteUIParams();
 
 public:
 

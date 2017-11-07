@@ -91,6 +91,7 @@ void ofApp::update(){
 	float dt = 1./60.;
 
 	//upate TextureObject:: for all our objects (to handle load & unload textures)
+	TSGL_START("TEX_");
 	float time = ofGetElapsedTimef();
 	TS_START("update CH objects");
 	for(auto chObj : chObjects){
@@ -110,6 +111,7 @@ void ofApp::update(){
 		scene->updateSubtree(dt);
 		TS_STOP("update scene");
 	}
+	TSGL_STOP("TEX_");
 }
 
 
@@ -117,6 +119,7 @@ void ofApp::draw(){
 
 	if(ofxApp::get().getState() == ofxApp::State::RUNNING){
 
+		TSGL_START("GL_D");
 		TS_START("Scene Node D");
 		scene->render();
 		if(GLOB.debug){
@@ -146,6 +149,7 @@ void ofApp::draw(){
 
 			G_FONT_MONO_BOLD.drawMultiLine(info, 16, 20, 682);
 		}
+		TSGL_STOP("GL_D");
 	}
 }
 
@@ -166,7 +170,7 @@ void ofApp::setupScrollViews(){
 
 	//scrollview config
 	TexturedObjectScrollView::ScrollViewConfig config;
-	config.numRows = 3;
+	config.numRows = 6;
 	config.drawLoadingRects = true;
 	config.customTileDraw = true; //calls onDrawTile() for each on-sreen tile
 	config.imgFadeInDuration = 0.1;
@@ -174,7 +178,7 @@ void ofApp::setupScrollViews(){
 	config.sizeToLoad = TEXTURE_ORIGINAL;
 	config.mipmaps = true;
 	config.maxScrollHandleW = 200;
-	config.scrollFriction = 0.99;
+	config.scrollFriction = 0.995;
 	config.snapToImage = false;
 	config.marginPadding = padding;
 	config.bgColor = ofColor(22);
@@ -182,8 +186,8 @@ void ofApp::setupScrollViews(){
 	config.scrollHandleVertPostion = 4;
 	config.scrollviewEdgeGradientWidth = 30;
 	config.numFboSamples = 4;
-	config.canvasLookAheadDist = ofGetWidth() ; // load offscreen images that are 200 far from screen
-	config.unloadDelay = 5.0; //only unload images once they have been N seconds offscreen
+	config.canvasLookAheadDist = 128 ; // load offscreen images that are 200 far from screen
+	config.unloadDelay = 1.0; //only unload images once they have been N seconds offscreen
 
 	scrollView = new TexturedObjectScrollView();
 	scrollView->setName("scrollView");

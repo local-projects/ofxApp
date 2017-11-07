@@ -31,12 +31,7 @@
 
 //Check if the user created the required macro to include his custom sub-classes for Colors, Globals and Fonts.
 #ifndef OFX_APP_NAME
-	//#error you must define a PREPROCESSOR MACRO with the name of your app, as in OFX_APP_NAME=MyApp
-	#define OFX_APP_NONAME
-	//#warning You should define an app Name for your app in the preprocessor macros; ie OFX_APP_NAME=MyApp
-	//#define OFX_APP_NAME MyApp /*you define your App's name in your PREPROCESSOR MACROS*/
-	#include "ofxAppColorsBasic.h"
-	#include "ofxAppGlobalsBasic.h"
+	#error you must define a PREPROCESSOR MACRO with the name of your app, as in OFX_APP_NAME=MyApp
 #else
 	//some macro magic to include the user defined subclasses of ofxAppColorsBasic, ofxAppFonts, ofxAppGlobalsBasic
 	//it takes the user defined macro (ie OFX_APP_NAME=MyApp) and creates an #include "MyAppColors.h"
@@ -48,7 +43,7 @@ namespace ofxApp{
 class App{
 
 public:
-
+	
 	const string settingsFile = "configs/ofxAppSettings.json";
 	const string LogsDir = "logs";
 	const string configsDir = "configs";
@@ -76,17 +71,9 @@ public:
 	// Crazy Macro magic here!! Beware!!
 	// this compounds some classnames to match whatever you decided to name your app;
 	// so "OFX_APP_CLASS_NAME(Colors)" becomes "MyAppColors"
-	// "MyApp" is a macro you MUST define in your pre-processor macros:
-	// OFX_APP_NAME=MyApp
-	// alternativelly, only the default Globals & colors will be defined (ofxAppColorsBasic & ofxAppGlobalsBasic)
-	//so you would have to cast the globals to get access to your projec's globals
-	#ifdef OFX_APP_NONAME
-	ofxAppColorsBasic & 			colors(){return colorsStorage;}
-	ofxAppGlobalsBasic & 			globals(){return *globalsStorage;}
-	#else
+	// "MyApp" is a macro you MUST define in your pre-processor macros:  "OFX_APP_NAME=MyApp"
 	OFX_APP_CLASS_NAME(Colors) & 	colors(){return colorsStorage;}
 	OFX_APP_CLASS_NAME(Globals) & 	globals(){return *globalsStorage;}
-	#endif
 	
 	ofxAppFonts &					fonts(){return *fontStorage;}
 	ofxJsonSettings & 				settings(){return ofxJsonSettings::get();}
@@ -201,14 +188,9 @@ protected:
 
 	// ofxApp various user contents ///////////////////////////////////
 
-	#ifdef OFX_APP_NONAME //if the dev didnt define an app name, use default global vars & colors
-		ofxAppColorsBasic					colorsStorage;
-		ofxAppGlobalsBasic					* globalsStorage = nullptr;
-	#else
-		//crazy macro magic - beware! read a few lines above to see what's going on
-		OFX_APP_CLASS_NAME(Colors)			colorsStorage;
-		OFX_APP_CLASS_NAME(Globals)			* globalsStorage = nullptr;
-	#endif
+	//crazy macro magic - beware! read a few lines above to see what's going on
+	OFX_APP_CLASS_NAME(Colors)			colorsStorage;
+	OFX_APP_CLASS_NAME(Globals)			* globalsStorage = nullptr;
 
 	ofxAppFonts *							fontStorage = nullptr; //keeps all loaded fonts
 
