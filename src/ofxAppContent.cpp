@@ -25,7 +25,8 @@ void ofxAppContent::setup(	string ID,
 							const ofxAssets::DownloadPolicy assetDownloadPolicy,
 						  	const ofxAssets::UsagePolicy assetUsagePolicy,
 							const ofxAssets::ObjectUsagePolicy & objectUsagePolicy,
-							const string & assetsLocationPath){
+							const string & assetsLocationPath,
+						  	bool skipSha1Tests){
 
 	state = ContentState::IDLE;
 	parsedObjects.clear();
@@ -39,6 +40,10 @@ void ofxAppContent::setup(	string ID,
 	this->numThreads = numThreads_;
 	this->shouldSkipObjectTests = shouldSkipObjectTests;
 	this->assetsLocationPath = assetsLocationPath;
+	this->shouldSkipSha1Tests = skipSha1Tests;
+	if(skipSha1Tests){
+		ofLogWarning("ofxAppContent") << "Running with skipSha1Tests == TRUE! Never run in this mode in production!";
+	}
 
 	//config the http downloader if you need to (proxy, etc)
 	dlc.setMaxConcurrentDownloads(numConcurrentDownloads);
@@ -102,7 +107,11 @@ void ofxAppContent::update(float dt){
 
 		case ContentState::CATALOG_ASSETS:
 			if(!isThreadRunning()){
-				setState(ContentState::CHECKING_ASSET_STATUS);
+				if(shouldSkipSha1Tests){
+					setState(ContentState::SETUP_TEXTURED_OBJECTS);
+				}else{
+					setState(ContentState::CHECKING_ASSET_STATUS);
+				}
 			}
 			break;
 		case ContentState::DOWNLOADING_ASSETS:
@@ -144,6 +153,8 @@ void ofxAppContent::threadedFunction(){
 	#else
 	pthread_setname_np("ofxAppContent");
 	#endif
+
+	//state == CATALOG_ASSETS
 
 	ofxApp::CatalogAssetsData d;
 	d.userData = &contentCfg.userData;
@@ -326,6 +337,7 @@ void ofxAppContent::setState(ContentState s){
 	}
 
 	string info = "\"" + ID + "\" > " + getNameForState(state);
+	if (shouldSkipSha1Tests) info += " - SKIPPING SHA1 TESTS!";
 	ofNotifyEvent(eventStateChanged, info);
 }
 
@@ -349,7 +361,7 @@ string ofxAppContent::getStatus(){
 		case ContentState::JSON_PARSE_FAILED: r = errorMessage; break;
 		case ContentState::DOWNLOADING_ASSETS: r = dlc.getDrawableInfo(true, false); break;
 		case ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS: r = objectsWithBadAssets; break;
-		case ContentState::SETUP_TEXTURED_OBJECTS:  break;
+		case ContentState::SETUP_TEXTURED_OBJECTS: break;
 		case ContentState::JSON_CONTENT_READY: r = "READY"; break;
 		default: break;
 	}

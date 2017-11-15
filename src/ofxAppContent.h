@@ -70,7 +70,8 @@ public:
 			   const ofxAssets::DownloadPolicy assetDownloadPolicy,
 			   const ofxAssets::UsagePolicy assetUsagePolicy,
 			   const ofxAssets::ObjectUsagePolicy & objectUsagePolicy,
-			   const string & assetsLocationPath
+			   const string & assetsLocationPath,
+			   bool skipSha1Tests
 			   );
 
 	bool isReadyToFetchContent();
@@ -151,5 +152,7 @@ protected:
 
 	string oldJsonSha1;
 	string newJsonSha1;
+
+	bool shouldSkipSha1Tests = false;
 };
 

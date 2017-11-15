@@ -985,6 +985,13 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 					float idleTimeAfterDl = getFloat("Downloads/idleTimeAfterEachDownloadSec");
 					string assetDownloadLocation = getString("Content/JsonSources/" + currentContentID + "/assetsLocation");
 
+					bool skipSha1 = false;
+					if(settings().exists("Content/skipSha1Tests")){
+						skipSha1 = getBool("Content/skipSha1Tests");
+						logBanner("Running with \"Content/skipSha1Tests\" : TRUE! -NEVER DO THIS IN PRODUCTION - This will create trouble if your content is not perfect.");
+						RUI_LOG("ofxApp running with \"Content/skipSha1Tests\" : TRUE!");
+						RUI_LOG("Skipping all SHA1 tests.");
+					}
 					contentStorage[currentContentID]->setup(currentContentID,
 															jsonURL,
 															jsonDir,
@@ -1000,7 +1007,8 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 															assetDownloadPolicy,
 															assetUsagePolicy,
 															objectUsagePolicy,
-															assetDownloadLocation
+															assetDownloadLocation,
+															skipSha1
 													  );
 					
 					contentStorage[currentContentID]->fetchContent(); //this starts the ofxAppContent process!
