@@ -988,8 +988,8 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 					string assetDownloadLocation = getString("Content/JsonSources/" + currentContentID + "/assetsLocation");
 
 					bool skipSha1 = false;
-					if(settings().exists("Content/skipSha1Tests")){
-						skipSha1 = getBool("Content/skipSha1Tests");
+					if(settings().exists("Content/skipSha1Tests")) skipSha1 = getBool("Content/skipSha1Tests");
+					if(skipSha1){
 						logBanner("Running with \"Content/skipSha1Tests\" : TRUE! -NEVER DO THIS IN PRODUCTION!!\nThis will create trouble if the content in the JSON is not in sync with the media in your filesystem.");
 						RUI_LOG("ofxApp running with \"Content/skipSha1Tests\" : TRUE!");
 						RUI_LOG("Skipping all SHA1 Tests! Beware!");
