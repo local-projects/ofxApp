@@ -990,9 +990,9 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 					bool skipSha1 = false;
 					if(settings().exists("Content/skipSha1Tests")){
 						skipSha1 = getBool("Content/skipSha1Tests");
-						logBanner("Running with \"Content/skipSha1Tests\" : TRUE! -NEVER DO THIS IN PRODUCTION - This will create trouble if your content is not perfect.");
+						logBanner("Running with \"Content/skipSha1Tests\" : TRUE! -NEVER DO THIS IN PRODUCTION!!\nThis will create trouble if the content in the JSON is not in sync with the media in your filesystem.");
 						RUI_LOG("ofxApp running with \"Content/skipSha1Tests\" : TRUE!");
-						RUI_LOG("Skipping all SHA1 tests.");
+						RUI_LOG("Skipping all SHA1 Tests! Beware!");
 					}
 					contentStorage[currentContentID]->setup(currentContentID,
 															jsonURL,
