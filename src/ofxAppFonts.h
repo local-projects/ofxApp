@@ -30,6 +30,8 @@ public:
 	ofxFontStash& getMonoBoldFont(){return monospacedBold;}
 	ofxFontStash* getFont(const string& name);
 
+	void reloadFontStash2Styles();
+
 	ofxFontStash2::Fonts & getFontStash2(){return fonts2;}
 	const ofxFontStash2::Style& getFontStyle(const string & styleID);
 

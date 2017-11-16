@@ -188,7 +188,7 @@ void TexturedObjectScrollView::loadContent(vector<TexturedObjectTexture>& textur
 	objectToLayout.clear();
 
 	//height of each item
-	float hh = ((canvas.height - (config.numRows - 1) * config.padding - config.marginPadding * 2  ) / config.numRows);
+	float hh = ((canvas.height - (config.numRows - 1) * config.padding - config.marginPadding * 2 ) / config.numRows) - config.bottomPadding;
 
 //	if(objects.size() == 1){
 //		ofVec2f dim = objects[0].texObj->getTextureDimensions(config.sizeToLoad, objects[0].texIndex);

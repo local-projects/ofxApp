@@ -150,6 +150,11 @@ NVGalign ofxAppFonts::getAlignmentFromString(const string & str){
 	return (NVGalign)(NVG_ALIGN_BASELINE);
 }
 
+
+void ofxAppFonts::reloadFontStash2Styles(){
+	loadFontStash2Styles();
+}
+
 void ofxAppFonts::loadFontStash2Styles(){
 
 	ofxJsonSettings & settings = ofxJsonSettings::get();

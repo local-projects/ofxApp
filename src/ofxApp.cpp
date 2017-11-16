@@ -367,6 +367,8 @@ void App::loadSettings(){
 	startupScreenViewport.y = getFloat("App/startupScreenViewport/y", 0);
 	startupScreenViewport.width = getFloat("App/startupScreenViewport/w", 0);
 	startupScreenViewport.height = getFloat("App/startupScreenViewport/h", 0);
+
+	fonts().reloadFontStash2Styles();
 }
 
 

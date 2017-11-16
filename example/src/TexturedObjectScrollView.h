@@ -30,6 +30,8 @@ public:
 		int numRows = 1;
 		float padding = 10; //between images
 		float marginPadding = 0; //from edges
+		float bottomPadding = 0; //apart from global padding (marginPadding) extra pad at bottom
+		float topPadding = 0; //apart from global padding (marginPadding) extra pad at bottom
 
 		//unloaded images
 		bool drawLoadingRects = false;
