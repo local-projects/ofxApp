@@ -485,25 +485,29 @@ void TexturedObjectScrollView::updateFbo(){
 			if(onView){
 				//layout[i].texObject->getTexture(sizeToLoad, 0)->draw(rWithOffset);
 				int texIndex = layout[i].texObjTex.texIndex;
+
+				DrawTileInfo dti;
+				if(config.customTileDraw){
+					dti.area = rWithOffset;
+					dti.who = this;
+					dti.alpha = 0.0;
+					dti.layoutID = i;
+					dti.objTex = layout[i].texObjTex;
+				}
+
 				if(layout[i].texObjTex.texObj->isReadyToDraw(config.sizeToLoad, texIndex)){
 					float a = layout[i].fade.val();
 					ofSetColor(255, 255 * a);
 					layout[i].texObjTex.texObj->getRealTexture(config.sizeToLoad, texIndex)->draw(rWithOffset);
-
-					if(config.customTileDraw){
-						DrawTileInfo dti;
-						dti.area = rWithOffset;
-						dti.who = this;
-						dti.alpha = a;
-						dti.layoutID = i;
-						dti.objTex = layout[i].texObjTex;
-						ofNotifyEvent(eventTileDraw, dti, this);
-					}
+					dti.alpha = a;
 				}else{
 					if(config.drawLoadingRects){
 						ofSetColor(config.loadingRectColors);
 						ofDrawRectangle(rWithOffset);
 					}
+				}
+				if(config.customTileDraw){
+					ofNotifyEvent(eventTileDraw, dti, this);
 				}
 			}
 		}
