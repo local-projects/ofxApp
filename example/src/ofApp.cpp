@@ -117,6 +117,8 @@ void ofApp::draw(){
 
 	if(ofxApp::get().getState() == ofxApp::State::RUNNING){
 
+		glm::vec3 p = glm::vec3(0,1,1);
+		
 		TS_START("Scene Node D");
 		scene->render();
 		if(GLOB.debug){
@@ -144,7 +146,7 @@ void ofApp::draw(){
 				"\nImg Size: " + ofToString(cwruO->getTextureDimensions(TEXTURE_ORIGINAL,0));
 			}
 
-			G_FONT_MONO_BOLD.drawMultiLine(info, 16, 20, 682);
+			G_FONT_MONO_BOLD().drawMultiLine(info, 16, 20, 682);
 		}
 	}
 }
@@ -256,7 +258,7 @@ void ofApp::onDrawTile(TexturedObjectScrollView::DrawTileInfo & d){
 	int h = 20;
 	ofDrawRectangle(d.area.x, d.area.y + d.area.height - h, d.area.width, h);
 	ofSetColor(255);
-	G_FONT_MONO.draw(co->getObjectUUID(), 16, d.area.x + 3, d.area.y + d.area.height - 5);
+	G_FONT_MONO().draw(co->getObjectUUID(), 16, d.area.x + 3, d.area.y + d.area.height - 5);
 
 	if(to == selectedObject){
 		ofNoFill();
