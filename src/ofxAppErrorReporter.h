@@ -58,7 +58,7 @@ public:
 			logSend(alertName, msg, level02, false);
 			sensu.send(alertName, msg2, ofxSensu::Status(level02), emails, filePath, false);
 		}else{
-			ofLogNotice("ofxAppErrorReporter") << "Skipping Send Error Report '" << alertName<< "' : '" << msg << "' bc Err Reports are disabled";
+			if(level02 != 0) ofLogNotice("ofxAppErrorReporter") << "Skipping Send Error Report '" << alertName<< "' : '" << msg << "' bc Err Reports are disabled";
 		}
 	}
 
@@ -68,7 +68,7 @@ public:
 			string msg2 = addContext(msg);
 			sensu.send(alertName, msg2, ofxSensu::Status(level02), emails, filePaths, false);
 		}else{
-			ofLogNotice("ofxAppErrorReporter") << "Skipping Send Error Report '" << alertName<< "' : '" << msg << "' bc Err Reports are disabled";
+			if(level02 != 0) ofLogNotice("ofxAppErrorReporter") << "Skipping Send Error Report '" << alertName<< "' : '" << msg << "' bc Err Reports are disabled";
 		}
 	}
 	
@@ -81,7 +81,7 @@ public:
 			string msg2 = addContext(msg);
 			sensu.send(alertName, msg2, ofxSensu::Status(level02), emails, filePath, true);
 		}else{
-			ofLogNotice("ofxAppErrorReporter") << "Skipping Send Error Report '" << alertName<< "' : '" << msg << "' bc Err Reports are disabled";
+			if(level02 != 0) ofLogNotice("ofxAppErrorReporter") << "Skipping Send Error Report '" << alertName<< "' : '" << msg << "' bc Err Reports are disabled";
 		}
 	}
 
@@ -91,7 +91,7 @@ public:
 			string msg2 = addContext(msg);
 			sensu.send(alertName, msg2, ofxSensu::Status(level02), emails, filePaths, true);
 		}else{
-			ofLogNotice("ofxAppErrorReporter") << "Skipping Send Error Report '" << alertName<< "' : '" << msg << "' bc Err Reports are disabled";
+			if(level02 != 0) ofLogNotice("ofxAppErrorReporter") << "Skipping Send Error Report '" << alertName<< "' : '" << msg << "' bc Err Reports are disabled";
 		}
 	}
 	
