@@ -1,5 +1,5 @@
 //
-//  HasRuiParams.h
+//  ofxAppUtils.cpp
 //  BaseApp
 //
 //  Created by Oriol Ferrer Mesià on 4/8/16.
@@ -23,7 +23,7 @@ namespace utils{
 			ofLogFatalError("ofxApp") << msg;
 			ofxApp::utils::terminateApp("ofxApp", msg);
 		}else{
-			//ofLogNotice("ofxApp") << "Confirmed asset is present: '" << path << "'";
+			//ofLogVerbose("ofxApp") << "Confirmed asset is present: '" << path << "'";
 		}
 	}
 
@@ -230,6 +230,22 @@ namespace utils{
 			}
 		}
 	}
+
+
+	void logBanner(const string & log) {
+		ofLogNotice("ofxApp") << "";
+		#ifdef TARGET_WIN32
+		ofLogNotice("ofxApp") << "///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////";
+		ofLogNotice("ofxApp") << "// " << log;
+		ofLogNotice("ofxApp") << "///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////";
+		#else
+		ofLogNotice("ofxApp") << "███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████";
+		ofLogNotice("ofxApp") << "██ " << log;
+		ofLogNotice("ofxApp") << "███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████";
+		#endif
+		ofLogNotice("ofxApp") << "";
+	}
+
 
 	ImageInfo getImageDimensions(const string & filePath){
 		string path = ofToDataPath(filePath, true);

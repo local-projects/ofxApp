@@ -125,12 +125,12 @@ void App::setupOF(){
 }
 
 void App::printOpenGlInfo(){
-	logBanner("GL Info");
+	ofxApp::utils::logBanner("GL Info");
 	ofxApp::utils::logParagraph("ofxApp", OF_LOG_NOTICE, ofxApp::utils::getGlInfo());
 
 	auto exts = ofGLSupportedExtensions();
 	if(exts.size()){
-		logBanner("Available GL Extensions");
+		ofxApp::utils::logBanner("Available GL Extensions");
 		for(auto & ext: exts){
 			ofLogNotice("ofxApp") << ext;
 		}
@@ -376,7 +376,7 @@ void App::printSettingsFile(){
 
 	ofBuffer jsonFile = ofBufferFromFile(settingsFile, false);
 
-	logBanner("Loaded ofxApp Settings - JSON Contents follow :");
+	ofxApp::utils::logBanner("Loaded ofxApp Settings - JSON Contents follow :");
 	vector<string> jsonLines = ofSplitString(jsonFile.getText(), "\n");
 	#ifdef TARGET_WIN32
 	ofLogNotice("ofxApp") << " %%%%%% AppSettings.json %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
@@ -398,7 +398,7 @@ void App::saveSettings(){
 	ofLogNotice("ofxApp") << "saveSettings() to " << settingsFile;
 	settings().save(ofToDataPath(settingsFile, true));
 	string settingsString = settings().getAsJsonString();
-	logBanner("Saved Settings: \n" + settingsString + "\n");
+	ofxApp::utils::logBanner("Saved Settings: \n" + settingsString + "\n");
 }
 
 
@@ -879,7 +879,7 @@ void App::updateStateMachine(float dt){
 				}else{
 					
 					if(contentStorage[currentContentID]->isContentReady()){ //see if we are done
-						logBanner("JSON content \"" + currentContentID + "\" loaded! " + ofToString(contentStorage[currentContentID]->getNumParsedObjects()) + " objects.");
+						ofxApp::utils::logBanner("JSON content \"" + currentContentID + "\" loaded! " + ofToString(contentStorage[currentContentID]->getNumParsedObjects()) + " objects.");
 						loadedContent.push_back(currentContentID);
 						if(timeSampleOfxApp) TS_STOP_NIF("ofxApp LoadContent " + currentContentID);
 
@@ -971,7 +971,7 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 		case State::LOAD_JSON_CONTENT:{
 			if(change.oldState != State::LOAD_JSON_CONTENT_FAILED){
 				if(timeSampleOfxApp) TS_START_NIF("ofxApp LoadContent " + currentContentID);
-				logBanner("Start Loading Content  \"" + currentContentID + "\"");
+				ofxApp::utils::logBanner("Start Loading Content  \"" + currentContentID + "\"");
 				
 				bool keyExists = settings().exists("Content/JsonSources/" + currentContentID);
 				
@@ -990,7 +990,7 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 					bool skipSha1 = false;
 					if(settings().exists("Content/skipSha1Tests")) skipSha1 = getBool("Content/skipSha1Tests");
 					if(skipSha1){
-						logBanner("Running with \"Content/skipSha1Tests\" : TRUE! -NEVER DO THIS IN PRODUCTION!!\nThis will create trouble if the content in the JSON is not in sync with the media in your filesystem.");
+						ofxApp::utils::logBanner("Running with \"Content/skipSha1Tests\" : TRUE! -NEVER DO THIS IN PRODUCTION!!\nThis will create trouble if the content in the JSON is not in sync with the media in your filesystem.");
 						RUI_LOG("ofxApp running with \"Content/skipSha1Tests\" : TRUE!");
 						RUI_LOG("Skipping all SHA1 Tests! Beware!");
 					}
@@ -1052,7 +1052,7 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 				if(timeSampleOfxApp){
 					ts = TS_STOP_NIF("ofxApp Setup");
 				}
-				logBanner(" ofxApp Setup Complete! " + ofToString(ofGetElapsedTimef(), 2) + "sec." );
+				ofxApp::utils::logBanner(" ofxApp Setup Complete! " + ofToString(ofGetElapsedTimef(), 2) + "sec." );
 			}
 			}
 			break;
@@ -1171,19 +1171,7 @@ ofRectangle App::getRenderRect() {
 }
 
 
-void App::logBanner(const string & log){
-	ofLogNotice("ofxApp") << "";
-	#ifdef TARGET_WIN32
-	ofLogNotice("ofxApp") << "///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////";
-	ofLogNotice("ofxApp") << "// " << log;
-	ofLogNotice("ofxApp") << "///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////";
-	#else
-	ofLogNotice("ofxApp") << "███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████";
-	ofLogNotice("ofxApp") << "██ " << log;
-	ofLogNotice("ofxApp") << "███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████";
-	#endif
-	ofLogNotice("ofxApp") << "";
-}
+
 
 ofRectangle App::drawMsgInBox(string msg, int x, int y, int fontSize, ofColor fontColor, ofColor bgColor, float edgeGrow) {
 

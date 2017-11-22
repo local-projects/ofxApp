@@ -41,6 +41,7 @@ namespace ofxApp{
 
 		bool isValidEmail(const string email);
 
+		void logBanner(const string & log); //to make prettier log headers
 		void logParagraph(const string & moduleName, ofLogLevel lev, const string & text);
 
 		ImageInfo getImageDimensions(const string & filePath);

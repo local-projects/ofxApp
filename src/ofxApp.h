@@ -165,7 +165,6 @@ protected:
 	void setupGoogleAnalytics();
 
 	//utils
-	void logBanner(const string & log); //to make prettier log headers
 	void printSettingsFile(); //print JSON settings file to stdout (and logs)
 	void drawStats();
 	void drawMaintenanceScreen();
