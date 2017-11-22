@@ -25,7 +25,7 @@
 			"visibleAtStartup" : false
 		},
 		"MaintenanceMode":{
-			"enabled" : true,
+			"enabled" : false,
 			"layout" : {
 				"x" : 0.5, //this is the normalized X location on screen (0.5 = middle of screen)
 				"y" : 0.46, //this is the normalized Y location on screen (0.5 = middle of screen)
