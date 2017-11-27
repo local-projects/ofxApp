@@ -161,7 +161,8 @@
 		"textureLodBias" : -0.3,
 		"maxTimeSpentLoadingPerFrameMs" : 4.0,//ms
 		"scanlinesPerLoop" : 128,
-		"maxLoadRequestsPerFrame" : 64
+		"maxLoadRequestsPerFrame" : 64,
+		"defaultUnloadDelay" : 10.0 //seconds
 	},
 
 	"Logging":{

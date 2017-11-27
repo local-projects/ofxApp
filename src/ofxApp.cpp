@@ -10,6 +10,7 @@
 #include "ofxThreadSafeLog.h"
 #include "TexturedObjectStats.h"
 #include "ofxAppUtils.h"
+#include "TexturedObjectConfig.h"
 
 //how to get the app from the ofxApp namespace
 namespace ofxApp{
@@ -331,15 +332,16 @@ void App::setupTextureLoader(){
 	float maxMsPerFrame = getFloat("TextureLoader/maxTimeSpentLoadingPerFrameMs");
 	int scanLinesPerLoop = getInt("TextureLoader/scanlinesPerLoop");
 	int maxReq = getInt("TextureLoader/maxLoadRequestsPerFrame");
+	float defaultUnloadDelay = getFloat("TextureLoader/defaultUnloadDelay");
 	ofLogNotice("ofxApp") << "setupTextureLoader() [maxThreads:" << maxThreads << " maxMsPerFrame:" << maxMsPerFrame <<
-	" nScanLinesPerLoop:" << scanLinesPerLoop << " mipmapBias:" << mipmapBias << " maxReqPerFrame:" << maxReq << "]";
+	" nScanLinesPerLoop:" << scanLinesPerLoop << " mipmapBias:" << mipmapBias << " maxReqPerFrame:" << maxReq << " defaultUnloadDelay:" << defaultUnloadDelay << "]";
 	ProgressiveTextureLoadQueue * q = ProgressiveTextureLoadQueue::instance();
 	q->setMaxThreads( maxThreads ); //N threads loading images in the bg
 	q->setTexLodBias( mipmapBias ); //MipMap sharpness
 	q->setTargetTimePerFrame( maxMsPerFrame );	//spend at most 'x' milis loading textures per frame
 	q->setScanlinesPerLoop( scanLinesPerLoop );
 	q->setMaximumRequestsPerFrame( maxReq );
-
+	TexturedObjectConfig::one().setDefaultTextureUnloadDelay(defaultUnloadDelay);
 }
 
 
@@ -369,6 +371,8 @@ void App::loadSettings(){
 	startupScreenViewport.height = getFloat("App/startupScreenViewport/h", 0);
 
 	fonts().reloadFontStash2Styles();
+	
+	setupTextureLoader();
 }
 
 
