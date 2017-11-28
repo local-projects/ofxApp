@@ -372,7 +372,7 @@ void App::loadSettings(){
 
 	fonts().reloadFontStash2Styles();
 	
-	setupTextureLoader();
+	//setupTextureLoader();
 }
 
 
