@@ -10,7 +10,6 @@
 #pragma once
 #include "ofMain.h"
 #include "ofxAppMacros.h"
-#include "ofxThreadSafeLog.h"
 
 namespace ofxApp{
 	

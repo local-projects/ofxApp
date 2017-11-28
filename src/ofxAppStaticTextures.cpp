@@ -8,9 +8,23 @@
 
 #include "ofxAppStaticTextures.h"
 #include "ofxApp.h"
+#include "ofxAppErrorReporter.h"
+#include "ofxAutoTexture.h"
 
 string ofxAppStaticTextures::filenameHintTex2D = "_t2d";
 string ofxAppStaticTextures::filenameHintMipMap = "_mip";
+
+void ofxAppStaticTextures::ThreadedLoader::threadedFunction() {
+
+	#ifdef TARGET_WIN32
+	#elif defined(TARGET_LINUX)
+	pthread_setname_np(pthread_self(), "ofxAppStaticTextures");
+	#else
+	pthread_setname_np("ofxAppStaticTextures");
+	#endif
+	data.tex->preloadPixelsFromFile(data.filePath);
+	preloaded = true;
+}
 
 
 ofxAppStaticTextures::ofxAppStaticTextures(){

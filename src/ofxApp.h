@@ -19,7 +19,6 @@
 #include "ofxAppStaticTextures.h"
 #include "ofxAppMacros.h"
 #include "ofxJsonSettings.h"
-#include "ofxMullion.h"
 #include "ofxTuio.h"
 #include "ofxSuperLog.h"
 #include "ofxScreenSetup.h"
@@ -27,7 +26,6 @@
 #include "ofxTimeMeasurements.h"
 #include "ofxDrawableStateMachine.h"
 #include "ofxAppErrorReporter.h"
-#include "ofxGoogleAnalytics.h"
 
 //Check if the user created the required macro to include his custom sub-classes for Colors, Globals and Fonts.
 #ifndef OFX_APP_NAME
@@ -43,6 +41,10 @@
 	#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_COLORS_FILENAME) 	//include MyAppColors.h
 	#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_GLOBALS_FILENAME) //include MyAppGlobals.h
 #endif
+
+class ofxGoogleAnalytics;
+class ofxMullion;
+
 namespace ofxApp{
 
 class App{
@@ -108,6 +110,7 @@ public:
 	bool		settingExists(const string & key);
 
 	void		loadSettings(); //load JSON settings (data/configs/ofxAppSettings.json)
+	void		loadDynamicSettings(); //load and update values that can be changed while the app runs (call this with 'R' key);
 	void		saveSettings();//not really used / tested! TODO!
 
 	ofxApp::State getState(){return appState.getState();}
@@ -184,7 +187,7 @@ protected:
 
 	ofxTuioClient							tuioClient;
 	ofxAppStaticTextures					texStorage;
-	ofxMullion								mullions;
+	ofxMullion *							mullions;
 
 	// Settings Values Bundles ///////////////////////////////////////
 

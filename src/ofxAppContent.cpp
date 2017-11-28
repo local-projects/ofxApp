@@ -9,6 +9,7 @@
 #include "ofxAppUtils.h"
 #include "ofxApp.h"
 #include "ofxChecksum.h"
+#include "ofxAppErrorReporter.h"
 
 void ofxAppContent::setup(	string ID,
 							string jsonSrc,

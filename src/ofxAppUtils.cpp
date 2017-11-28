@@ -9,7 +9,9 @@
 #include "ofxAppUtils.h"
 #include "ofxApp.h"
 #include <regex>
-
+#include "ofxAppErrorReporter.h"
+#include "ofxThreadSafeLog.h"
+#include "ofxSimpleHttp.h"
 
 //#define STB_IMAGE_IMPLEMENTATION //note this is not required bc stb_image impl is already included in ofxFontStash2 (nvg)
 #include "../lib/stb/stb_image.h"

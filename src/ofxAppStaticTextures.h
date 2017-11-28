@@ -8,7 +8,6 @@
 
 #pragma once
 #include "ofMain.h"
-#include "ofxAutoTexture.h"
 #include <thread>
 
 /*
@@ -58,7 +57,7 @@
 
  */
 
-
+class ofxAutoTexture;
 class ofxAppStaticTextures{
 
 public:
@@ -111,18 +110,7 @@ protected:
 		PreLoadData data;
 		bool threadStarted = false;
 		bool preloaded = false;
-		void threadedFunction(){
-
-			#ifdef TARGET_WIN32
-			#elif defined(TARGET_LINUX)
-			pthread_setname_np(pthread_self(), "ofxAppStaticTextures");
-			#else
-			pthread_setname_np("ofxAppStaticTextures");
-			#endif
-
-			data.tex->preloadPixelsFromFile(data.filePath);
-			preloaded = true;
-		}
+		void threadedFunction();
 	};
 	
 	void onUpdate(ofEventArgs & );

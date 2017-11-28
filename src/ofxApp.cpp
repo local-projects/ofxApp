@@ -11,6 +11,10 @@
 #include "TexturedObjectStats.h"
 #include "ofxAppUtils.h"
 #include "TexturedObjectConfig.h"
+#include "ofxGoogleAnalytics.h"
+#include "ofxMullion.h"
+#include "ofxAutoTexture.h"
+#include "ofxAppErrorReporter.h"
 
 //how to get the app from the ofxApp namespace
 namespace ofxApp{
@@ -208,11 +212,12 @@ void App::setupWindow(){
 		ofSetWindowPosition(customX, customY);
 	}
 
+	mullions = new ofxMullion();
 	//setup mullions user settings
 	bool mullionsVisible = getBool("App/mullions/visibleAtStartup");
-	mullions.setup(getInt("App/mullions/numX"), getInt("App/mullions/numY"));
-	if(mullionsVisible) mullions.enable();
-	else mullions.disable();
+	mullions->setup(getInt("App/mullions/numX"), getInt("App/mullions/numY"));
+	if(mullionsVisible) mullions->enable();
+	else mullions->disable();
 	
 	//trying to get the window to "show up" in the 1st frame - to show terminateApp() in the 1st frame
 	GLFWwindow* glfwWindow = (GLFWwindow*)ofGetWindowPtr()->getWindowContext();
@@ -354,6 +359,17 @@ void App::setupGlobalParameters(){
 	colors().setupRemoteUIParams();
 }
 
+void App::loadDynamicSettings() {
+	
+	startupScreenViewport.x = getFloat("App/startupScreenViewport/x", 0);
+	startupScreenViewport.y = getFloat("App/startupScreenViewport/y", 0);
+	startupScreenViewport.width = getFloat("App/startupScreenViewport/w", 0);
+	startupScreenViewport.height = getFloat("App/startupScreenViewport/h", 0);
+
+	fonts().reloadFontStash2Styles();
+	setupTextureLoader();
+}
+
 
 void App::loadSettings(){
 
@@ -365,14 +381,12 @@ void App::loadSettings(){
 	if(!ok){
 		ofxApp::utils::terminateApp("ofxApp", "Could not load settings from \"" + ofToDataPath(settingsFile, true) + "\"");
 	}
+
 	startupScreenViewport.x = getFloat("App/startupScreenViewport/x", 0);
 	startupScreenViewport.y = getFloat("App/startupScreenViewport/y", 0);
 	startupScreenViewport.width = getFloat("App/startupScreenViewport/w", 0);
 	startupScreenViewport.height = getFloat("App/startupScreenViewport/h", 0);
 
-	fonts().reloadFontStash2Styles();
-	
-	//setupTextureLoader();
 }
 
 
@@ -674,7 +688,7 @@ void App::draw(ofEventArgs &){
 
 	}
 
-	ofSetColor(0); mullions.draw(); ofSetColor(255);
+	ofSetColor(0); mullions->draw(); ofSetColor(255);
 
 }
 
@@ -1150,8 +1164,8 @@ void App::onKeyPressed(ofKeyEventArgs & a){
 				break;
 			}
 		}
-		case 'R': loadSettings(); RUI_LOG("[ofxApp : keyPress 'R'] Loaded Settings from \"ofxAppSettings.json\""); break;
-		case 'M': mullions.toggle(); RUI_LOG("[ofxApp : keyPress 'M'] Toggled Mullions"); break;
+		case 'R': loadDynamicSettings(); RUI_LOG("[ofxApp : keyPress 'R'] Loaded Settings from \"ofxAppSettings.json\""); break;
+		case 'M': mullions->toggle(); RUI_LOG("[ofxApp : keyPress 'M'] Toggled Mullions"); break;
 		case 'D': globalsStorage->debug ^= true; didPress = true; break;
 	}
 	if(didPress){
