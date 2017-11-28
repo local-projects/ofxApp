@@ -17,33 +17,33 @@ class ofxAppErrorReporter{
 
 public:
 	
-	const string indent = " + ";
+	const std::string indent = " + ";
 
-	void setup(string host, int port, string email, bool shouldReportErrors,
-		string hostName, string hostIP, string binaryName, bool attachGitStatus);
+	void setup(std::string host, int port, std::string email, bool shouldReportErrors,
+		std::string hostName, std::string hostIP, std::string binaryName, bool attachGitStatus);
 	
-	void setup(string host, int port, const vector<string>& emails, bool shouldReportErrors,
-		string hostName, string hostIP, string binaryName, bool attachGitStatus);
+	void setup(std::string host, int port, const vector<std::string>& emails, bool shouldReportErrors,
+		std::string hostName, std::string hostIP, std::string binaryName, bool attachGitStatus);
 	
-	void send(string alertName, string msg, int level02, string filePath = "");
-	void send(string alertName, string msg, int level02, vector<string> filePaths);
+	void send(std::string alertName, std::string msg, int level02, std::string filePath = "");
+	void send(std::string alertName, std::string msg, int level02, vector<std::string> filePaths);
 	
 	
 	
-	void sendBlocking(string alertName, string msg, int level02, string filePath = "");
-	void sendBlocking(string alertName, string msg, int level02, vector<string> filePaths);
+	void sendBlocking(std::string alertName, std::string msg, int level02, std::string filePath = "");
+	void sendBlocking(std::string alertName, std::string msg, int level02, vector<std::string> filePaths);
 	
 
 protected:
 	
-	void logSend(const string & alertName, const string & msg, int level02, bool blocking);
-	string addContext(const string& msg);
+	void logSend(const std::string & alertName, const std::string & msg, int level02, bool blocking);
+	std::string addContext(const std::string& msg);
 
-	vector<string> emails;
+	vector<std::string> emails;
 	ofxSensu * sensu = nullptr;
 	bool enabled;
-	string hostInfo;
-	string gitRev;
-	string gitStatus;
+	std::string hostInfo;
+	std::string gitRev;
+	std::string gitStatus;
 };
 

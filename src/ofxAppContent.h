@@ -25,7 +25,7 @@ class ContentObject : public ParsedObject, public AssetHolder, public TexturedOb
 
 		// Imposed by TexturedObject //
 		virtual ofVec2f getTextureDimensions(TexturedObjectSize, int){ return ofVec2f(0,0);}
-		virtual string getLocalTexturePath(TexturedObjectSize, int){ return "";}
+		virtual std::string getLocalTexturePath(TexturedObjectSize, int){ return "";}
 
 		//this is effectively the destructor of the object - bc of texturedObject loading assets
  		//in secondary threads, we can't use an in-place destructor as you could destruct the object
@@ -55,38 +55,38 @@ public:
 
 	~ofxAppContent();
 
-	void setup(string ID,
-			   string jsonSrc,
-			   string jsonDestinationDir_,
+	void setup(std::string ID,
+			   std::string jsonSrc,
+			   std::string jsonDestinationDir_,
 			   int numThreads,
 			   int numConcurrentDownloads,
 			   int speedLimitKBs,
 			   int timeout,
 			   bool shouldSkipObjectTests,
 			   float idleTimeAfterEachDownload,
-			   const std::pair<string,string> & credentials,
+			   const std::pair<std::string,std::string> & credentials,
 			   const ofxSimpleHttp::ProxyConfig & proxyConfig,
 			   const ofxApp::ParseFunctions & contentCfg,
 			   const ofxAssets::DownloadPolicy assetDownloadPolicy,
 			   const ofxAssets::UsagePolicy assetUsagePolicy,
 			   const ofxAssets::ObjectUsagePolicy & objectUsagePolicy,
-			   const string & assetsLocationPath,
+			   const std::string & assetsLocationPath,
 			   bool skipSha1Tests
 			   );
 
 	bool isReadyToFetchContent();
 	void fetchContent(); //start the process here
 	
-	void setJsonDownloadURL(string jsonURL);
-	string getJsonDownloadURL(){ return jsonURL;};
+	void setJsonDownloadURL(std::string jsonURL);
+	std::string getJsonDownloadURL(){ return jsonURL;};
 
 	void update(float dt);
 
 	bool foundError();
 	bool isContentReady();
 
-	string getStatus();
-	string getErrorMsg(){return errorMessage;}
+	std::string getStatus();
+	std::string getErrorMsg(){return errorMessage;}
 	float getPercentDone();
 
 	void stopAllDownloads();
@@ -98,7 +98,7 @@ public:
 
 	void onDrawStateMachineStatus(ofRectangle & drawableArea);
 	
-	string getLastKnownGoodJsonPath();
+	std::string getLastKnownGoodJsonPath();
 
 	// ofxMtJsonParser CALLBACKS ///////////////////////////////////////////////////////////////////
 
@@ -109,14 +109,14 @@ public:
 	void jsonContentReady(vector<ParsedObject*> &parsedObjects);
 	void assetCheckFinished();
 
-	string getNameForState(ofxAppContent::ContentState state);
+	std::string getNameForState(ofxAppContent::ContentState state);
 
-	string getFreshJsonSha1(){return newJsonSha1;}
-	string getOldJsonSha1(){return oldJsonSha1;}
+	std::string getFreshJsonSha1(){return newJsonSha1;}
+	std::string getOldJsonSha1(){return oldJsonSha1;}
 
 	// EVENTS //////////////////////////////////////////////////////////////////////////////////////
 
-	ofEvent<string> eventStateChanged; //its your responsability to trigger this on every state change
+	ofEvent<std::string> eventStateChanged; //its your responsability to trigger this on every state change
 
 protected:
 
@@ -139,19 +139,19 @@ protected:
 	AssetChecker assetChecker;
 	ofxDownloadCentral dlc;
 
-	string jsonURL;
-	string jsonDestinationDir; //where the json will be downloaded to
-	string errorMessage;
+	std::string jsonURL;
+	std::string jsonDestinationDir; //where the json will be downloaded to
+	std::string errorMessage;
 	int numThreads = 4;
-	string objectsWithBadAssets;
+	std::string objectsWithBadAssets;
 	bool shouldSkipObjectTests;
-	string assetsLocationPath;
-	string ID;
+	std::string assetsLocationPath;
+	std::string ID;
 	int numIgnoredObjects = 0; //total # of obj that are in json but are not used for one reason or another
 	int numSetupTexuredObjects = 0;
 
-	string oldJsonSha1;
-	string newJsonSha1;
+	std::string oldJsonSha1;
+	std::string newJsonSha1;
 
 	bool shouldSkipSha1Tests = false;
 };

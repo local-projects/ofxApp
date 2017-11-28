@@ -32,9 +32,9 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef TARGET_WIN32
-const string FILE_ACCES_ICON = "[!]";
+const std::string FILE_ACCES_ICON = "[!]";
 #else
-const string FILE_ACCES_ICON = "💾";
+const std::string FILE_ACCES_ICON = "💾";
 #endif
 
 

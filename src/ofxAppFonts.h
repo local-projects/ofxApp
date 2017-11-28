@@ -14,26 +14,26 @@ class ofxAppFonts{
 
 public:
 
-	const string monoID = "mono";
-	const string monoBoldID = "monoBold";
-	const string regularID = "regular";
-	const string boldID = "bold";
+	const std::string monoID = "mono";
+	const std::string monoBoldID = "monoBold";
+	const std::string regularID = "regular";
+	const std::string boldID = "bold";
 
 	void setup();
 
-	static string getMonoFontPath(){return "ofxAppAssets/fonts/UbuntuMono-R.ttf";}
-	static string getMonoBoldFontPath(){return "ofxAppAssets/fonts/UbuntuMono-B.ttf";}
-	static string getRegularFontPath(){return "ofxAppAssets/fonts/Montserrat-Regular.ttf";}
-	static string getBoldFontPath(){return "ofxAppAssets/fonts/Montserrat-Bold.ttf";}
+	static std::string getMonoFontPath(){return "ofxAppAssets/fonts/UbuntuMono-R.ttf";}
+	static std::string getMonoBoldFontPath(){return "ofxAppAssets/fonts/UbuntuMono-B.ttf";}
+	static std::string getRegularFontPath(){return "ofxAppAssets/fonts/Montserrat-Regular.ttf";}
+	static std::string getBoldFontPath(){return "ofxAppAssets/fonts/Montserrat-Bold.ttf";}
 
 	ofxFontStash& getMonoFont(){return monospaced;}
 	ofxFontStash& getMonoBoldFont(){return monospacedBold;}
-	ofxFontStash* getFont(const string& name);
+	ofxFontStash* getFont(const std::string& name);
 
 	void reloadFontStash2Styles();
 
 	ofxFontStash2::Fonts & getFontStash2(){return fonts2;}
-	const ofxFontStash2::Style& getFontStyle(const string & styleID);
+	const ofxFontStash2::Style& getFontStyle(const std::string & styleID);
 
 protected:
 
@@ -42,17 +42,17 @@ protected:
 	void loadFontStash2Fonts();
 	void loadFontStash2Styles();
 
-	void loadOfxAppFont(const string & file, ofxFontStash & font);
+	void loadOfxAppFont(const std::string & file, ofxFontStash & font);
 
 	// ofxFontStash
 	ofxFontStash monospaced;
 	ofxFontStash monospacedBold;
-	std::map<string, ofxFontStash*> userFS_Fonts;
+	std::map<std::string, ofxFontStash*> userFS_Fonts;
 
 	// ofxFontStash2
 	ofxFontStash2::Fonts fonts2;
-	map<string, ofxFontStash2::Style> fs2Styles;
+	map<std::string, ofxFontStash2::Style> fs2Styles;
 
-	NVGalign getAlignmentFromString(const string & str);
+	NVGalign getAlignmentFromString(const std::string & str);
 
 };

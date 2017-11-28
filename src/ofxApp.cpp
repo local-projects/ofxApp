@@ -36,12 +36,12 @@ App::App() {
 }
 
 void App::setup(ofxAppDelegate * delegate){
-	map<string,ofxApp::ParseFunctions> emptyLambas;
+	map<std::string,ofxApp::ParseFunctions> emptyLambas;
 	setup(emptyLambas, delegate);
 }
 
 
-void App::setup(const map<string,ofxApp::ParseFunctions> & cfgs, ofxAppDelegate * delegate){
+void App::setup(const map<std::string,ofxApp::ParseFunctions> & cfgs, ofxAppDelegate * delegate){
 
 	ofLogNotice("ofxApp") << "setup()";
 
@@ -169,20 +169,20 @@ void App::setupErrorReporting(){
 	
 	reportErrors = getBool("ErrorReporting/enabled");
 	int port = getInt("ErrorReporting/port");
-	string host = getString("ErrorReporting/host");
+	std::string host = getString("ErrorReporting/host");
 	
-	vector<string> emails;
+	vector<std::string> emails;
 	
 	if(settings().exists("ErrorReporting/emails")){ //see if its a list of emails
 		ofxJSON emailsJson = settings().getJson("ErrorReporting/emails");
 		if(emailsJson.isArray()){
 			for( Json::ValueIterator itr = emailsJson.begin() ; itr != emailsJson.end() ; itr++ ) {
-				string email = (*itr).asString();
+				std::string email = (*itr).asString();
 				emails.push_back(email);
 			}
 		}
 	}else{ //otherwise its a single email
-		string email = getString("ErrorReporting/email");
+		std::string email = getString("ErrorReporting/email");
 		emails.push_back(email);
 	}
 
@@ -258,11 +258,11 @@ void App::setupGoogleAnalytics(){
 	
 	ofLogNotice("ofxApp") << "setupGoogleAnalytics()";
 	bool enabled = getBool("GoogleAnalytics/enabled");
-	string googleID = getString("GoogleAnalytics/googleID");
-	string appName = getString("GoogleAnalytics/appName");
-	string appVersion = getString("GoogleAnalytics/appVersion");
-	string appID = getString("GoogleAnalytics/appID");
-	string appInstallerID = getString("GoogleAnalytics/appInstallerID");
+	std::string googleID = getString("GoogleAnalytics/googleID");
+	std::string appName = getString("GoogleAnalytics/appName");
+	std::string appVersion = getString("GoogleAnalytics/appVersion");
+	std::string appID = getString("GoogleAnalytics/appID");
+	std::string appInstallerID = getString("GoogleAnalytics/appInstallerID");
 	bool verbose = getBool("GoogleAnalytics/verbose");
 	bool doBench = getBool("GoogleAnalytics/sendBenchmark");
 	bool randUUID = getBool("GoogleAnalytics/randomizedUUID");
@@ -294,13 +294,13 @@ void App::setupStateMachine(){
 	ofAddListener(appState.eventStateError, this, &App::onStateError);
 	ofAddListener(appState.eventDraw, this, &App::onDrawLoadingScreenStatus);
 
-	string boldFontPath = ofxAppFonts::getMonoBoldFontPath();
+	std::string boldFontPath = ofxAppFonts::getMonoBoldFontPath();
 	ofxApp::utils::assertFileExists(boldFontPath);
 	appState.setup(boldFontPath, "", ofColor(0,0,0,0), ofColor::white);
 	float dark = 0.25;
 
 	//TODO some color consitency here please? or at least uniformity
-	//this creates strings for each of the ENUM states
+	//this creates std::strings for each of the ENUM states
 	appState.setNameAndBarColorForState(State::SETUP_OFXAPP_INTERNALS, toString(State::SETUP_OFXAPP_INTERNALS), ofColor(0,0,255), ofColor(0,0,128));
 	appState.setNameAndBarColorForState(State::SETUP_DELEGATE_B4_CONTENT_LOAD, toString(Phase::WILL_LOAD_CONTENT), ofColor::magenta, ofColor::magenta * dark);
 	appState.setNameAndBarColorForState(State::LOAD_STATIC_TEXTURES, toString(State::LOAD_STATIC_TEXTURES), ofColor::darkorange, ofColor::darkorange * dark);
@@ -316,7 +316,7 @@ void App::setupStateMachine(){
 
 void App::startLoadingStaticAssets(){
 	ofLogNotice("ofxApp") << "startLoadingStaticAssets()";
-	string texturesPath = getString("StaticAssets/textures");
+	std::string texturesPath = getString("StaticAssets/textures");
 	if(texturesPath.size()){
 		ofxApp::utils::assertFileExists(texturesPath);
 		if(settingExists("StaticAssets/forceMipMaps")){
@@ -352,9 +352,9 @@ void App::setupTextureLoader(){
 
 void App::setupGlobalParameters(){
 	globals().ofxAppGlobalsBasic::setupRemoteUIParams();
-	RUI_NEW_GROUP(string(OFX_APP_STR(OFX_APP_NAME)) + string(" Globals"));
+	RUI_NEW_GROUP(std::string(OFX_APP_STR(OFX_APP_NAME)) + std::string(" Globals"));
 	globals().setupRemoteUIParams();
-	RUI_NEW_GROUP(string(OFX_APP_STR(OFX_APP_NAME)) + string(" Colors"));
+	RUI_NEW_GROUP(std::string(OFX_APP_STR(OFX_APP_NAME)) + std::string(" Colors"));
 	colors().ofxAppColorsBasic::setupRemoteUIParams();
 	colors().setupRemoteUIParams();
 }
@@ -368,6 +368,7 @@ void App::loadDynamicSettings() {
 
 	fonts().reloadFontStash2Styles();
 	setupTextureLoader();
+	setupLogLevelModuleOverrides();
 }
 
 
@@ -395,7 +396,7 @@ void App::printSettingsFile(){
 	ofBuffer jsonFile = ofBufferFromFile(settingsFile, false);
 
 	ofxApp::utils::logBanner("Loaded ofxApp Settings - JSON Contents follow :");
-	vector<string> jsonLines = ofSplitString(jsonFile.getText(), "\n");
+	vector<std::string> jsonLines = ofSplitString(jsonFile.getText(), "\n");
 	#ifdef TARGET_WIN32
 	ofLogNotice("ofxApp") << " %%%%%% AppSettings.json %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
 	for (auto & l : jsonLines) {
@@ -415,7 +416,7 @@ void App::printSettingsFile(){
 void App::saveSettings(){
 	ofLogNotice("ofxApp") << "saveSettings() to " << settingsFile;
 	settings().save(ofToDataPath(settingsFile, true));
-	string settingsString = settings().getAsJsonString();
+	std::string settingsString = settings().getAsJsonString();
 	ofxApp::utils::logBanner("Saved Settings: \n" + settingsString + "\n");
 }
 
@@ -432,6 +433,22 @@ void App::setupApp(){
 	//RUI_LOAD_FROM_XML();
 	setMouseEvents(enableMouse);
 	ofBackground(colorsStorage.bgColor);
+}
+
+
+void App::setupLogLevelModuleOverrides(){
+
+	if(settingExists("Logging/logLevelOverrides")){
+		ofxJSON logModuleLevels = settings().getJson("Logging/logLevelOverrides");
+		if(logModuleLevels.size()){
+			for(auto itr = logModuleLevels.begin(); itr != logModuleLevels.end(); itr++){
+				std::string moduleName = itr.key().asString();
+				ofLogLevel logLevel = ofLogLevel((*itr).asInt());
+				ofSetLogLevel(moduleName, logLevel);
+				ofLogNotice("ofxApp") << "Setting ofLogLevel( " << ofxApp::utils::toString(logLevel) << " ) for module \"" << moduleName << "\"";
+			}
+		}
+	}
 }
 
 
@@ -463,6 +480,9 @@ void App::setupLogging(){
 	//asset manager uses this separate logger to create an "asset report"  file after every launch
  	//stating status of every downloaded asset (ie missing sha1, sha1 missmatch, etc)
 	ofxThreadSafeLog::one()->setPrintToConsole(getBool("Logging/ThreadSafeLog/alsoPrintToConsole"));
+	
+	//allow user to silence / change log levels from ofxAppSettings.json file
+	setupLogLevelModuleOverrides();
 }
 
 
@@ -474,7 +494,7 @@ void App::setupRemoteUI(){
 	RUI_GET_INSTANCE()->setBuiltInUiScale(getFloat("RemoteUI/uiScale", 1.0));
 	bool useFontStash = getBool("RemoteUI/useFontStash");
 	if(useFontStash){
-		string fontFile = getString("RemoteUI/fontFile");
+		std::string fontFile = getString("RemoteUI/fontFile");
 		ofxApp::utils::assertFileExists(fontFile);
 		if(!ofIsGLProgrammableRenderer()){
 			ofLogWarning("ofxApp") << "Using ofxFontStash2 for RemoteUI as we are using GL2!";
@@ -515,7 +535,7 @@ void App::setupRemoteUI(){
 
 void App::loadModulesSettings(){
 
-	std::pair<string,string> credentials;
+	std::pair<std::string,std::string> credentials;
 	credentials.first = getString("Downloads/credentials/username");
 	credentials.second = getString("Downloads/credentials/password");
 
@@ -554,7 +574,7 @@ void App::setupRuiWatches(){
 	ofxJSON paramWatches = settings().getJson("RemoteUI/paramWatches");
 	if(paramWatches.size()){
 		for( auto itr = paramWatches.begin(); itr!=paramWatches.end() ; itr++){
-			string paramName = itr.key().asString();
+			std::string paramName = itr.key().asString();
 			bool shouldWatch = (*itr).asBool();
 			if (shouldWatch){
 				ofLogNotice("ofxApp") << "Adding RemoteUI Param Watch for '" << paramName << "'";
@@ -579,7 +599,7 @@ void App::setupTimeMeasurements(){
 	TIME_SAMPLE_GET_INSTANCE()->setUiScale(getFloat("TimeMeasurements/uiScale", 1.0));
 	bool useFontStash = getBool("TimeMeasurements/useFontStash");
 	if(useFontStash){
-		string fontFile = getString("TimeMeasurements/fontFile");
+		std::string fontFile = getString("TimeMeasurements/fontFile");
 		ofxApp::utils::assertFileExists(fontFile);
 		if( !ofIsGLProgrammableRenderer()){
 			ofLogWarning("ofxApp") << "Using ofxFontStash for TimeMeasurements as we are using GL2!";
@@ -728,7 +748,7 @@ void App::drawStats(){
 		y += r.height + fabs(r.y - y) + pad;
 	}
 
-	const string glErr = ofxApp::utils::getGlError();
+	const std::string glErr = ofxApp::utils::getGlError();
 	if(glErr.size()){
 		ofRectangle r = drawMsgInBox("OpenGL Error: " + glErr, x, y, fontSize, ofColor::red);
 		y += r.height + fabs(r.y - y) + pad;
@@ -737,7 +757,7 @@ void App::drawStats(){
 
 void App::drawMaintenanceScreen(){
 
-	string settName = "MaintenanceMode";
+	std::string settName = "MaintenanceMode";
 	ofColor bgcolor = getColor("App/" + settName + "/bgColor");
 
 	//read layout settings
@@ -748,17 +768,17 @@ void App::drawMaintenanceScreen(){
 	float scale = getFloat("App/" + settName + "/layout/scale");
 
 	//read header settings
-	string header = getString("App/" + settName + "/header/text");
+	std::string header = getString("App/" + settName + "/header/text");
 	float headerSpacing = getFloat("App/" + settName + "/header/spacing");
 	float headerScaleup = getFloat("App/" + settName + "/header/fontScaleup");
-	string headerFont = getString("App/" + settName + "/header/fontID");
+	std::string headerFont = getString("App/" + settName + "/header/fontID");
 	ofColor headerColor = getColor("App/" + settName + "/header/color");
 
 	//read body settings
-	string body = getString("App/" + settName + "/body/text");
+	std::string body = getString("App/" + settName + "/body/text");
 	float bodySpacing = getFloat("App/" + settName + "/body/spacing");
 	float bodyScaleup = getFloat("App/" + settName + "/body/fontScaleup");
-	string bodyFont = getString("App/" + settName + "/body/fontID");
+	std::string bodyFont = getString("App/" + settName + "/body/fontID");
 	ofColor bodyColor = getColor("App/" + settName + "/body/color");
 
 	if(!G_FS2().isFontLoaded(headerFont)){
@@ -790,7 +810,7 @@ void App::drawMaintenanceScreen(){
 
 void App::drawErrorScreen(){
 
-	string settName = "ErrorScreen";
+	std::string settName = "ErrorScreen";
 	ofColor bgcolor = getColor("App/" + settName + "/bgColor");
 
 	//read layout settings
@@ -803,13 +823,13 @@ void App::drawErrorScreen(){
 	//read header settings
 	float headerSpacing = getFloat("App/" + settName + "/title/spacing");
 	float headerScaleup = getFloat("App/" + settName + "/title/fontScaleup");
-	string headerFont = getString("App/" + settName + "/title/fontID");
+	std::string headerFont = getString("App/" + settName + "/title/fontID");
 	ofColor headerColor = getColor("App/" + settName + "/title/color");
 
 	//read body settings
 	float bodySpacing = getFloat("App/" + settName + "/body/spacing");
 	float bodyScaleup = getFloat("App/" + settName + "/body/fontScaleup");
-	string bodyFont = getString("App/" + settName + "/body/fontID");
+	std::string bodyFont = getString("App/" + settName + "/body/fontID");
 	ofColor bodyColor = getColor("App/" + settName + "/body/color");
 
 	if(!G_FS2().isFontLoaded(headerFont)){
@@ -846,7 +866,7 @@ void App::onDrawLoadingScreenStatus(ofRectangle & area){
 		case State::LOAD_STATIC_TEXTURES:{
 			textures().drawAll(area);
 			float progress = textures().getNumLoadedTextures() / float(textures().getNumTextures());
-			string msg = ofToString(textures().getTotalMemUsed(), 1) + " Mb used";
+			std::string msg = ofToString(textures().getTotalMemUsed(), 1) + " Mb used";
 			appState.updateState(progress, msg);
 		}break;
 
@@ -930,7 +950,7 @@ void App::updateStateMachine(float dt){
 
 		case State::LOAD_JSON_CONTENT_FAILED:{
 			if(contentStorage[currentContentID]->isReadyToFetchContent()){
-				string knownGoodJSON = "file://" + contentStorage[currentContentID]->getLastKnownGoodJsonPath();
+				std::string knownGoodJSON = "file://" + contentStorage[currentContentID]->getLastKnownGoodJsonPath();
 				contentStorage[currentContentID]->setJsonDownloadURL(knownGoodJSON); //lets try from a known good json
 				appState.setState(State::LOAD_JSON_CONTENT, false);
 			}else{
@@ -997,8 +1017,8 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 				bool keyExists = settings().exists("Content/JsonSources/" + currentContentID);
 				
 				if(keyExists){
-					string jsonURL = getString("Content/JsonSources/" + currentContentID + "/url");
-					string jsonDir = getString("Content/JsonSources/" + currentContentID + "/jsonDownloadDir");
+					std::string jsonURL = getString("Content/JsonSources/" + currentContentID + "/url");
+					std::string jsonDir = getString("Content/JsonSources/" + currentContentID + "/jsonDownloadDir");
 					bool skipPolicyTests = getBool("Content/JsonSources/" + currentContentID + "/shouldSkipObjectPolicyTests");
 					
 					int numConcurrentDownloads = getInt("Downloads/maxConcurrentDownloads");
@@ -1006,7 +1026,7 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 					int timeOutSecs = getInt("Downloads/timeOutSec");
 					int speedLimitKBs = getInt("Downloads/speedLimitKb");
 					float idleTimeAfterDl = getFloat("Downloads/idleTimeAfterEachDownloadSec");
-					string assetDownloadLocation = getString("Content/JsonSources/" + currentContentID + "/assetsLocation");
+					std::string assetDownloadLocation = getString("Content/JsonSources/" + currentContentID + "/assetsLocation");
 
 					bool skipSha1 = false;
 					if(settings().exists("Content/skipSha1Tests")) skipSha1 = getBool("Content/skipSha1Tests");
@@ -1088,12 +1108,12 @@ void App::onStateError(ofxStateMachine<State>::ErrorStateEventArgs& error){
 }
 
 
-void App::onContentManagerStateChanged(string& s){
+void App::onContentManagerStateChanged(std::string& s){
 	appState.setProgressBarExtraInfo(": " + s); // add our sub-state name to the loading screen
 }
 
 
-bool App::enterErrorState(string errorHeader, string errorBody){
+bool App::enterErrorState(std::string errorHeader, std::string errorBody){
 
 	if(appState.getState() == State::RUNNING || appState.getState() == State::DEVELOPER_REQUESTED_ERROR_SCREEN){
 		errorStateHeader = errorHeader;
@@ -1194,7 +1214,7 @@ ofRectangle App::getRenderRect() {
 
 
 
-ofRectangle App::drawMsgInBox(string msg, int x, int y, int fontSize, ofColor fontColor, ofColor bgColor, float edgeGrow) {
+ofRectangle App::drawMsgInBox(std::string msg, int x, int y, int fontSize, ofColor fontColor, ofColor bgColor, float edgeGrow) {
 
 	ofRectangle bbox;
 	if(!ofIsGLProgrammableRenderer()){ //use ofxFontStash
@@ -1224,7 +1244,7 @@ ofRectangle App::drawMsgInBox(string msg, int x, int y, int fontSize, ofColor fo
 }
 
 
-bool App::isJsonContentDifferentFromLastLaunch(string contentID, string & freshJsonSha1, string & oldJsonSha1){
+bool App::isJsonContentDifferentFromLastLaunch(std::string contentID, std::string & freshJsonSha1, std::string & oldJsonSha1){
 
 	if(contentStorage.find(contentID) == contentStorage.end()){
 		ofLogError("ofxApp") << "cant find content matching this contentID \"" << contentID << "\"";
@@ -1240,13 +1260,13 @@ bool App::isJsonContentDifferentFromLastLaunch(string contentID, string & freshJ
 ///////////////////// SETTINGS //////////////////////////////////////////////////////////////////////
 #pragma mark Settings
 
-bool& App::getBool(const string & key, bool defaultVal){
+bool& App::getBool(const std::string & key, bool defaultVal){
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a BOOL setting but Settings have not been loaded! '" << key<< "'";
 	if(settings().exists(key) && hasLoadedSettings){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " Getting Bool Value for \"" << key << "\" : " << settings().getBool(key);
 		return settings().getBool(key);
 	}else{
-		string msg = "Requesting a BOOL setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
+		std::string msg = "Requesting a BOOL setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
 		ofLogFatalError("ofxApp") << msg;
 		if(QUIT_ON_MISSING_SETTING) ofxApp::utils::terminateApp("ofxApp", msg);
 		static auto def = defaultVal;
@@ -1255,13 +1275,13 @@ bool& App::getBool(const string & key, bool defaultVal){
 }
 
 
-int& App::getInt(const string & key, int defaultVal){
+int& App::getInt(const std::string & key, int defaultVal){
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a INT setting but Settings have not been loaded! '" << key<< "'";
 	if(settings().exists(key) && hasLoadedSettings){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " Getting Int Value for \"" << key << "\" : " << settings().getInt(key);
 		return settings().getInt(key);
 	}else{
-		string msg = "Requesting an INT setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
+		std::string msg = "Requesting an INT setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
 		ofLogFatalError("ofxApp") << msg;
 		if(QUIT_ON_MISSING_SETTING) ofxApp::utils::terminateApp("ofxApp", msg);
 		static auto def = defaultVal;
@@ -1269,13 +1289,13 @@ int& App::getInt(const string & key, int defaultVal){
 	}
 }
 
-float& App::getFloat(const string & key, float defaultVal){
+float& App::getFloat(const std::string & key, float defaultVal){
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a FLOAT setting but Settings have not been loaded! '" << key<< "'";
 	if(settings().exists(key) && hasLoadedSettings){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " Getting Float Value for \"" << key << "\" : " << settings().getFloat(key);
 		return settings().getFloat(key);
 	}else{
-		string msg = "Requesting a FLOAT setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
+		std::string msg = "Requesting a FLOAT setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
 		ofLogFatalError("ofxApp") << msg;
 		if(QUIT_ON_MISSING_SETTING) ofxApp::utils::terminateApp("ofxApp", msg);
 		static auto def = defaultVal;
@@ -1283,13 +1303,13 @@ float& App::getFloat(const string & key, float defaultVal){
 	}
 }
 
-string& App::getString(const string & key, const string & defaultVal){
+std::string& App::getString(const std::string & key, const std::string & defaultVal){
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a STRING setting but Settings have not been loaded! '" << key<< "'";
 	if(settings().exists(key) && hasLoadedSettings){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " Getting String Value for \"" << key << "\" : " << settings().getString(key);
 		return settings().getString(key);
 	}else{
-		string msg = "Requesting a STRING setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
+		std::string msg = "Requesting a STRING setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
 		ofLogFatalError("ofxApp") << msg;
 		if(QUIT_ON_MISSING_SETTING) ofxApp::utils::terminateApp("ofxApp", msg);
 		static auto def = defaultVal;
@@ -1297,13 +1317,13 @@ string& App::getString(const string & key, const string & defaultVal){
 	}
 }
 
-ofColor& App::getColor(const string & key, ofColor defaultVal){
+ofColor& App::getColor(const std::string & key, ofColor defaultVal){
 	if(!hasLoadedSettings) ofLogError("ofxApp") << "Trying to get a COLOR setting but Settings have not been loaded! '" << key<< "'";
 	if(settings().exists(key) && hasLoadedSettings){
 		if(VERBOSE_SETTINGS_ACCESS) ofLogNotice("ofxApp") << FILE_ACCES_ICON << " Getting Color Value for \"" << key << "\" : " << settings().getColor(key);
 		return settings().getColor(key);
 	}else{
-		string msg = "Requesting a COLOR setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
+		std::string msg = "Requesting a COLOR setting that does not exist! \"" + key + "\" in '" + settingsFile + "'";
 		ofLogFatalError("ofxApp") << msg;
 		if(QUIT_ON_MISSING_SETTING) ofxApp::utils::terminateApp("ofxApp", msg);
 		static auto def = defaultVal;
@@ -1311,7 +1331,7 @@ ofColor& App::getColor(const string & key, ofColor defaultVal){
 	}
 }
 
-bool App::settingExists(const string & key){
+bool App::settingExists(const std::string & key){
 	if(!hasLoadedSettings){
 		ofLogError("ofxApp") << "Trying to get a COLOR setting but Settings have not been loaded! '" << key<< "'";
 		return false;

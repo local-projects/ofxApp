@@ -22,28 +22,30 @@ namespace ofxApp{
 			int nChannels;
 		};
 
-		void assertFileExists(const string & path);
-		void terminateApp(const string & module, const string & reason, float secondsOnScreen = 15);
+		void assertFileExists(const std::string & path);
+		void terminateApp(const std::string & module, const std::string & reason, float secondsOnScreen = 15);
 				
 		ofColor createHsbColor(float h, float sat, float brightness); //[0..255.0f]
 	
-		string secondsToHumanReadable(float secs, int decimalPrecision);
-		string bytesToHumanReadable(long long bytes, int decimalPrecision);
+		std::string secondsToHumanReadable(float secs, int decimalPrecision);
+		std::string bytesToHumanReadable(long long bytes, int decimalPrecision);
 		
-		string getNewUUID();
-		string getFileSystemSafeString(const string & input);
+		std::string getNewUUID();
+		std::string getFileSystemSafeString(const std::string & input);
 
-		string getGlInfo();
-		string getGlError();
+		std::string getGlInfo();
+		std::string getGlError();
 
-		bool loadTexture(ofTexture & tex, const string & path, bool mipmap, float bias, int anisotropy);
+		bool loadTexture(ofTexture & tex, const std::string & path, bool mipmap, float bias, int anisotropy);
 
-		bool isValidEmail(const string email);
+		bool isValidEmail(const std::string email);
 
-		void logBanner(const string & log); //to make prettier log headers
-		void logParagraph(const string & moduleName, ofLogLevel lev, const string & text);
+		void logBanner(const std::string & log); //to make prettier log headers
+		void logParagraph(const std::string & moduleName, ofLogLevel lev, const std::string & text);
 
-		ImageInfo getImageDimensions(const string & filePath);
+		ImageInfo getImageDimensions(const std::string & filePath);
+		
+		std::string toString(ofLogLevel l);
 
 	} //utils
 }; //ofxApp

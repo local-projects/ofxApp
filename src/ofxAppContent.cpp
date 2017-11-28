@@ -11,22 +11,22 @@
 #include "ofxChecksum.h"
 #include "ofxAppErrorReporter.h"
 
-void ofxAppContent::setup(	string ID,
-							string jsonSrc,
-							string jsonDestinationDir_,
+void ofxAppContent::setup(	std::string ID,
+							std::string jsonSrc,
+							std::string jsonDestinationDir_,
 							int numThreads_,
 							int numConcurrentDownloads,
 							int speedLimitKBs,
 							int timeout,
 							bool shouldSkipObjectTests,
 							float idleTimeAfterEachDownload,
-							const std::pair<string,string> & credentials,
+							const std::pair<std::string,std::string> & credentials,
 							const ofxSimpleHttp::ProxyConfig & proxyConfig,
 							const ofxApp::ParseFunctions & contentCfg,
 							const ofxAssets::DownloadPolicy assetDownloadPolicy,
 						  	const ofxAssets::UsagePolicy assetUsagePolicy,
 							const ofxAssets::ObjectUsagePolicy & objectUsagePolicy,
-							const string & assetsLocationPath,
+							const std::string & assetsLocationPath,
 						  	bool skipSha1Tests){
 
 	state = ContentState::IDLE;
@@ -75,7 +75,7 @@ ofxAppContent::~ofxAppContent(){
 }
 
 
-void ofxAppContent::setJsonDownloadURL(string jsonURL){
+void ofxAppContent::setJsonDownloadURL(std::string jsonURL){
 	ofLogNotice("ofxAppContent") << "updating the JSON Content URL of " << ID << " to '" << jsonURL << "'";
 	this->jsonURL = jsonURL;
 };
@@ -227,7 +227,7 @@ void ofxAppContent::setState(ContentState s){
 				objectsWithBadAssets.clear();
 
 				vector<int> badObjects;
-				vector<string> badObjectsIds;
+				vector<std::string> badObjectsIds;
 
 				for(int i = 0; i < parsedObjects.size(); i++){
 
@@ -239,7 +239,7 @@ void ofxAppContent::setState(ContentState s){
 					int numAudioAssets = parsedObjects[i]->getAssetDescriptorsForType(ofxAssets::AUDIO).size();
 
 					bool rejectObject = false;
-					string rejectionReason;
+					std::string rejectionReason;
 
 					//apply all policy rules to decide if object is rejected or not
 					if(needsAllAssetsToBeOk){
@@ -318,10 +318,10 @@ void ofxAppContent::setState(ContentState s){
 			//keep the json as a good one
 			ofFile jsonFile;
 			jsonFile.open(jsonParser.getJsonLocalPath());
-			string jsonPath = jsonParser.getJsonLocalPath();
-			string dir = ofFilePath::getEnclosingDirectory(jsonPath);
+			std::string jsonPath = jsonParser.getJsonLocalPath();
+			std::string dir = ofFilePath::getEnclosingDirectory(jsonPath);
 			ofFilePath::createEnclosingDirectory(dir + "knownGood");
-			string oldJsonPath = dir + "/knownGood/" + ID + ".json";
+			std::string oldJsonPath = dir + "/knownGood/" + ID + ".json";
 
 			//calc sha1 for the last konwn json, and the fresh one
 			newJsonSha1 = ofxChecksum::calcSha1(jsonParser.getJsonLocalPath());
@@ -337,21 +337,21 @@ void ofxAppContent::setState(ContentState s){
 		default: break;
 	}
 
-	string info = "\"" + ID + "\" > " + getNameForState(state);
+	std::string info = "\"" + ID + "\" > " + getNameForState(state);
 	if (shouldSkipSha1Tests) info += " - SKIPPING SHA1 TESTS!";
 	ofNotifyEvent(eventStateChanged, info);
 }
 
 
-string ofxAppContent::getLastKnownGoodJsonPath(){
-	string dir = ofFilePath::getEnclosingDirectory(jsonParser.getJsonLocalPath());
+std::string ofxAppContent::getLastKnownGoodJsonPath(){
+	std::string dir = ofFilePath::getEnclosingDirectory(jsonParser.getJsonLocalPath());
 	return dir + "knownGood/" + ID + ".json";
 }
 
 
-string ofxAppContent::getStatus(){
+std::string ofxAppContent::getStatus(){
 
-	string r;
+	std::string r;
 	switch (state) {
 		case ContentState::DOWNLOADING_JSON: r = jsonParser.getHttp().drawableString(); break;
 		case ContentState::JSON_DOWNLOAD_FAILED: r = errorMessage; break;
@@ -461,7 +461,7 @@ void ofxAppContent::assetCheckFinished(){
 }
 
 
-string ofxAppContent::getNameForState(ofxAppContent::ContentState state){
+std::string ofxAppContent::getNameForState(ofxAppContent::ContentState state){
 
 	switch (state) {
 		case ContentState::IDLE: return "IDLE";
