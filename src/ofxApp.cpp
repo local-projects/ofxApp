@@ -581,6 +581,9 @@ void App::setupTimeMeasurements(){
 	TIME_SAMPLE_GET_INSTANCE()->setRemoveExpiredTimings(getBool("TimeMeasurements/removeExpiredTimings", false));
 	TIME_SAMPLE_GET_INSTANCE()->setDrawPercentageAsGraph(getBool("TimeMeasurements/percentageAsGraph", true));
 	TIME_SAMPLE_GET_INSTANCE()->setPlotHeight(getFloat("TimeMeasurements/plotH", 60));
+	if (settingExists("TimeMeasurements/groupPlots")) {
+		TIME_SAMPLE_GET_INSTANCE()->setDrawAllPlotsOnTopOfEachOther(getBool("TimeMeasurements/groupPlots"));
+	}
 }
 
 
