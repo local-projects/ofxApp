@@ -112,7 +112,7 @@ public:
 	void		loadSettings(); //load JSON settings (data/configs/ofxAppSettings.json)
 	void		loadDynamicSettings(); //load and update values that can be changed while the app runs (call this with 'R' key);
 	void		saveSettings();//not really used / tested! TODO!
-	void		setupLogLevelModuleOverrides();
+	void		setupLogLevelModuleOverrides(bool dynamicLoad);
 
 	ofxApp::State getState(){return appState.getState();}
 

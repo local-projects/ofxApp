@@ -361,6 +361,12 @@ void App::setupGlobalParameters(){
 
 void App::loadDynamicSettings() {
 	
+	bool ok = settings().load(ofToDataPath(settingsFile, true));
+	hasLoadedSettings = true;
+	if(!ok){
+		ofxApp::utils::terminateApp("ofxApp", "Could not load settings from \"" + ofToDataPath(settingsFile, true) + "\"");
+	}
+
 	startupScreenViewport.x = getFloat("App/startupScreenViewport/x", 0);
 	startupScreenViewport.y = getFloat("App/startupScreenViewport/y", 0);
 	startupScreenViewport.width = getFloat("App/startupScreenViewport/w", 0);
@@ -368,7 +374,7 @@ void App::loadDynamicSettings() {
 
 	fonts().reloadFontStash2Styles();
 	setupTextureLoader();
-	setupLogLevelModuleOverrides();
+	setupLogLevelModuleOverrides(true);
 }
 
 
@@ -387,7 +393,6 @@ void App::loadSettings(){
 	startupScreenViewport.y = getFloat("App/startupScreenViewport/y", 0);
 	startupScreenViewport.width = getFloat("App/startupScreenViewport/w", 0);
 	startupScreenViewport.height = getFloat("App/startupScreenViewport/h", 0);
-
 }
 
 
@@ -436,7 +441,7 @@ void App::setupApp(){
 }
 
 
-void App::setupLogLevelModuleOverrides(){
+void App::setupLogLevelModuleOverrides(bool dynamicLoad){
 
 	if(settingExists("Logging/logLevelOverrides")){
 		ofxJSON logModuleLevels = settings().getJson("Logging/logLevelOverrides");
@@ -445,7 +450,9 @@ void App::setupLogLevelModuleOverrides(){
 				std::string moduleName = itr.key().asString();
 				ofLogLevel logLevel = ofLogLevel((*itr).asInt());
 				ofSetLogLevel(moduleName, logLevel);
-				ofLogNotice("ofxApp") << "Setting ofLogLevel( " << ofxApp::utils::toString(logLevel) << " ) for module \"" << moduleName << "\"";
+				string msg = "Setting ofLogLevel( " + ofxApp::utils::toString(logLevel) + " ) for module \"" + moduleName + "\"";
+				ofLogNotice("ofxApp") << msg;
+				if(dynamicLoad) RUI_LOG(msg);
 			}
 		}
 	}
@@ -482,7 +489,7 @@ void App::setupLogging(){
 	ofxThreadSafeLog::one()->setPrintToConsole(getBool("Logging/ThreadSafeLog/alsoPrintToConsole"));
 	
 	//allow user to silence / change log levels from ofxAppSettings.json file
-	setupLogLevelModuleOverrides();
+	setupLogLevelModuleOverrides(false);
 }
 
 
