@@ -51,7 +51,8 @@ namespace ofxApp{
 	enum class Phase : int{
 		WILL_LOAD_CONTENT = (int)State::SETUP_DELEGATE_B4_CONTENT_LOAD,
 		DID_DELIVER_CONTENT = (int)State::DELIVER_CONTENT_LOAD_RESULTS,
-		WILL_BEGIN_RUNNING = (int)State::SETUP_DELEGATE_B4_RUNNING
+		WILL_BEGIN_RUNNING = (int)State::SETUP_DELEGATE_B4_RUNNING,
+		UNKNOWN_PHASE = (int)1024
 	};
 
 	//convenience methods to be able to print state names

@@ -1146,6 +1146,17 @@ bool App::exitErrorState(){
 	return false;
 }
 
+ofxApp::Phase App::getPhase(){
+	auto state = appState.getState();
+	if (state == ofxApp::State::SETUP_DELEGATE_B4_CONTENT_LOAD ||
+		state == ofxApp::State::DELIVER_CONTENT_LOAD_RESULTS ||
+		state == ofxApp::State::SETUP_DELEGATE_B4_RUNNING
+		){
+		return ofxApp::Phase(int(state));
+	}else{
+		return ofxApp::Phase::UNKNOWN_PHASE;
+	}
+}
 
 void App::onStaticTexturesLoaded(){
 	ofLogNotice("ofxApp")<< "All Static Textures Loaded!";

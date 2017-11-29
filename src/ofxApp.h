@@ -114,7 +114,10 @@ public:
 	void		saveSettings();//not really used / tested! TODO!
 	void		setupLogLevelModuleOverrides(bool dynamicLoad);
 
-	ofxApp::State getState(){return appState.getState();}
+	//State Machine
+	ofxApp::Phase getPhase();//this is the end user state types, you most likely want this
+	ofxApp::State getState(){return appState.getState();} //most likely you dont want this
+	bool isAppReadyToRun(){return appState.getState() == ofxApp::State::RUNNING;}
 
 	// ERROR STATES / MSGs ///////////////////////////////////////////////////////////////////
 
