@@ -68,7 +68,11 @@ void App::setup(const map<std::string,ofxApp::ParseFunctions> & cfgs, ofxAppDele
 		printSettingsFile();
 		fonts().setup();
 		if(getBool("Logging/useFontStash")){ //set a nice font for the on screen logger if using fontstash
-			ofxSuperLog::getLogger()->setFont(&(fonts().getMonoBoldFont()), getInt("Logging/fontSize"));
+			float uiScale = 1.0;
+			if(settingExists("Logging/fontSize")){
+				uiScale = getFloat("Logging/uiScale");
+			}
+			ofxSuperLog::getLogger()->setFont(&(fonts().getMonoBoldFont()), getInt("Logging/fontSize") * uiScale);
 		}
 		loadModulesSettings();
 		if(timeSampleOfxApp) TS_START_NIF("ofxApp Setup");
@@ -634,11 +638,30 @@ void App::setupTuio(){
 		int port = getInt("TUIO/port");
 		ofLogNotice("ofxApp") << "Listening for TUIO events at port " << port;
 		tuioClient.start(port); //TODO - make sure we do it only once!
-		ofAddListener(tuioClient.cursorAdded, delegate, &ofxAppDelegate::tuioAdded);
-		ofAddListener(tuioClient.cursorRemoved, delegate, &ofxAppDelegate::tuioRemoved);
-		ofAddListener(tuioClient.cursorUpdated, delegate, &ofxAppDelegate::tuioUpdated);
+		ofAddListener(tuioClient.cursorAdded, this, &App::tuioAdded);
+		ofAddListener(tuioClient.cursorRemoved, this, &App::tuioRemoved);
+		ofAddListener(tuioClient.cursorUpdated, this, &App::tuioUpdated);
 	}
 }
+
+void App::tuioAdded(ofxTuioCursor & t){
+	ofMouseEventArgs a = ofMouseEventArgs(ofMouseEventArgs::Pressed, t.getX() * ofGetWidth(), t.getY() * ofGetHeight(), OF_MOUSE_BUTTON_LEFT);
+	ofxSuperLog::getLogger()->getDisplayLogger().mousePressed(a);
+	delegate->tuioAdded(t);
+};
+
+void App::tuioUpdated(ofxTuioCursor & t){
+	ofMouseEventArgs a = ofMouseEventArgs(ofMouseEventArgs::Moved, t.getX() * ofGetWidth(), t.getY() * ofGetHeight(), OF_MOUSE_BUTTON_LEFT);
+	ofxSuperLog::getLogger()->getDisplayLogger().mouseDragged(a);
+	delegate->tuioUpdated(t);
+};
+
+void App::tuioRemoved(ofxTuioCursor & t){
+	ofMouseEventArgs a = ofMouseEventArgs(ofMouseEventArgs::Released, t.getX() * ofGetWidth(), t.getY() * ofGetHeight(), OF_MOUSE_BUTTON_LEFT);
+	ofxSuperLog::getLogger()->getDisplayLogger().mouseReleased(a);
+	delegate->tuioRemoved(t);
+};
+
 
 #pragma mark - draw
 

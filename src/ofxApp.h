@@ -149,6 +149,10 @@ public:
 	//to draw debug msgs
 	ofRectangle		drawMsgInBox(std::string msg, int x, int y, int fontSize, ofColor fontColor, ofColor bgColor = ofColor::black, float edgeGrow = 5);
 
+	void tuioAdded(ofxTuioCursor & tuioCursor);
+	void tuioRemoved(ofxTuioCursor & tuioCursor);
+	void tuioUpdated(ofxTuioCursor & tuioCursor);
+
 protected:
 
 	void setupListeners();
