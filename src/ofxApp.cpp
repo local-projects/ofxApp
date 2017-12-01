@@ -379,6 +379,7 @@ void App::loadDynamicSettings() {
 	fonts().reloadFontStash2Styles();
 	setupTextureLoader();
 	setupLogLevelModuleOverrides(true);
+	setupRuiWatches();
 }
 
 
@@ -582,6 +583,7 @@ void App::loadModulesSettings(){
 
 void App::setupRuiWatches(){
 
+	RUI_GET_INSTANCE()->removeAllParamWatches();
 	ofxJSON paramWatches = settings().getJson("RemoteUI/paramWatches");
 	if(paramWatches.size()){
 		for( auto itr = paramWatches.begin(); itr!=paramWatches.end() ; itr++){
