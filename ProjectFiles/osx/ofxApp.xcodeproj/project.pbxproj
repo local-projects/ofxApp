@@ -486,7 +486,7 @@
 		BB7B24021FC3E6A400CDD710 /* tinyxmlparser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlparser.cpp; sourceTree = "<group>"; };
 		BB7B24031FC3E6A400CDD710 /* tinyxmlerror.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlerror.cpp; sourceTree = "<group>"; };
 		BB7B24041FC3E6A400CDD710 /* tinyxml.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxml.cpp; sourceTree = "<group>"; };
-		BB8554691FD3510600EFB438 /* ofxAppIncludes.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = ofxAppIncludes.xcconfig; sourceTree = "<group>"; };
+		BB8554691FD3510600EFB438 /* ofxAppProject.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = ofxAppProject.xcconfig; sourceTree = "<group>"; };
 		BB9991881FD3349F003E9F81 /* ofxAppErrorReporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxAppErrorReporter.cpp; sourceTree = "<group>"; };
 		BBA270F71FC4A52A00D461BD /* ofxApp.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = ofxApp.xcconfig; sourceTree = "<group>"; };
 		BBA773451FC3E78000DD5B69 /* ofxFontStash.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxFontStash.h; sourceTree = "<group>"; };
@@ -676,7 +676,7 @@
 			isa = PBXGroup;
 			children = (
 				BBA270F71FC4A52A00D461BD /* ofxApp.xcconfig */,
-				BB8554691FD3510600EFB438 /* ofxAppIncludes.xcconfig */,
+				BB8554691FD3510600EFB438 /* ofxAppProject.xcconfig */,
 				BBA7745E1FC3E82000DD5B69 /* LocalAddons */,
 				BB7B1AC81FC3DDC400CDD710 /* Addons */,
 				BB7B1AC01FC3DDA200CDD710 /* openFrameworksLib.xcodeproj */,
@@ -2525,7 +2525,6 @@
 			baseConfigurationReference = BBA270F71FC4A52A00D461BD /* ofxApp.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = NO;
-				DEAD_CODE_STRIPPING = YES;
 				EXECUTABLE_PREFIX = "";
 				LINK_WITH_STANDARD_LIBRARIES = NO;
 				ONLY_ACTIVE_ARCH = YES;
@@ -2537,7 +2536,6 @@
 			baseConfigurationReference = BBA270F71FC4A52A00D461BD /* ofxApp.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = NO;
-				DEAD_CODE_STRIPPING = YES;
 				EXECUTABLE_PREFIX = "";
 				LINK_WITH_STANDARD_LIBRARIES = NO;
 				ONLY_ACTIVE_ARCH = YES;
