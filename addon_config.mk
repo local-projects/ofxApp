@@ -24,7 +24,7 @@ meta:
 common:
 	# dependencies with other addons, a list of them separated by spaces 
 	# or use += in several lines
-	ADDON_DEPENDENCIES = ofxNetwork ofxOpenCv ofxOsc ofxPoco ofxXmlSettings ofxFontStash ofxFontStash2 ofxTuio ofxJSON ofxSuperLog ofxAutoTexture ofxApp ofxMTJsonParser ofxSimpleHttp ofxTagSystem ofxStateMachine ofxAssets ofxThreadSafeLog ofxProgressiveTextureLoad ofxTexturedObject ofxMullion ofxJsonSettings ofxTimeMeasurements ofxRemoteUI ofxHistoryPlot ofxAnimatable ofxScreenSetup ofxSensu ofxGoogleAnalytics ofxLibwebsockets
+	ADDON_DEPENDENCIES = ofxNetwork ofxOpenCv ofxOsc ofxPoco ofxXmlSettings ofxFontStash ofxFontStash2 ofxTuio ofxJSON ofxSuperLog ofxAutoTexture ofxApp ofxMTJsonParser ofxSimpleHttp ofxTagSystem ofxStateMachine ofxAssets ofxThreadSafeLog ofxProgressiveTextureLoad ofxTexturedObject ofxMullion ofxJsonSettings ofxTimeMeasurements ofxRemoteUI ofxHistoryPlot ofxAnimatable ofxScreenSetup ofxSensu ofxGoogleAnalytics
 	
 	# include search paths, this will be usually parsed from the file system
 	# but if the addon or addon libraries need special search paths they can be
