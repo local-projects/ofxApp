@@ -485,7 +485,12 @@ void App::setupLogging(){
 	(*loggerStorage)->setUseScreenColors(true);
 	(*loggerStorage)->setSyncronizedLogging(getBool("Logging/syncronizedLogging"));
 	(*loggerStorage)->getDisplayLogger().setDisplayLogTimes(getBool("Logging/displayLogTimes"));
-	
+
+	if(settings().exists("Logging/consoleShouldShowTimestamps")){
+		(*loggerStorage)->setConsoleShouldShowTimestamps(getBool("Logging/consoleShouldShowTimestamps"));
+	}
+
+
 	float panelW = getFloat("Logging/screenLogPanelWidth");
 	ofxSuperLog::getLogger()->setDisplayWidth(panelW);
 
