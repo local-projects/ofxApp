@@ -47,6 +47,7 @@ public:
 		PARSING_JSON,
 		CATALOG_ASSETS,
 		CHECKING_ASSET_STATUS,
+		REMOVING_EXPIRED_ASSETS,
 		DOWNLOADING_ASSETS,
 		FILTER_OBJECTS_WITH_BAD_ASSETS,
 		SETUP_TEXTURED_OBJECTS,
@@ -123,6 +124,8 @@ protected:
 	void threadedFunction();
 
 	void setState(ContentState s);
+
+	void removeExpiredAssets();
 
 	ContentState state = ContentState::IDLE;
 	float timeInState = 0;
