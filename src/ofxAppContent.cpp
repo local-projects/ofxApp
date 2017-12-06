@@ -180,6 +180,9 @@ void ofxAppContent::threadedFunction(){
 			removeExpiredAssets();
 		}break;
 	}
+	ofSleepMillis(45); //this is a shameful workaround to overcome the bug where too-short-lived threads cause expcetions on windows.
+						//https://github.com/openframeworks/openFrameworks/issues/5262
+						//content with no asset will create this condition. We need to transition out of ofThread asap.
 }
 
 void ofxAppContent::removeExpiredAssets(){
