@@ -17,6 +17,9 @@
 #include "ofxAppErrorReporter.h"
 
 //how to get the app from the ofxApp namespace
+
+ofxApp::App * global_ofxApp = nullptr;
+
 namespace ofxApp{
 	App& get(){
 		return App::one();
@@ -44,6 +47,8 @@ void App::setup(ofxAppDelegate * delegate){
 void App::setup(const map<std::string,ofxApp::ParseFunctions> & cfgs, ofxAppDelegate * delegate){
 
 	ofLogNotice("ofxApp") << "setup()";
+
+	global_ofxApp = &get(); //share ofxApp intance globally for easier debugging
 
 	//create pid file
 	bool pidFileFound = ofFile::doesFileExist(pidFileName);
@@ -361,6 +366,12 @@ void App::setupGlobalParameters(){
 	RUI_NEW_GROUP(std::string(OFX_APP_STR(OFX_APP_NAME)) + std::string(" Colors"));
 	colors().ofxAppColorsBasic::setupRemoteUIParams();
 	colors().setupRemoteUIParams();
+
+	//get all params as a string / paragrpah, print out so there's values printed in the logs.
+	string params = ofxRemoteUIServer::instance()->getValuesAsString();
+	ofStringReplace(params, "%5F", "_"); //fix up weird unicode chars
+	ofxApp::utils::logBanner("ofxRemoteUI Params & Their Values");
+	ofxApp::utils::logParagraph(OFX_APP_INCLUDE(OFX_APP_NAME,_Globals), OF_LOG_NOTICE, params);
 }
 
 void App::loadDynamicSettings() {

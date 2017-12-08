@@ -262,3 +262,5 @@ private:
 	App& get(); //how to get the app from the ofxApp namespace
 
 } //namespace ofxApp
+
+extern ofxApp::App * global_ofxApp;
