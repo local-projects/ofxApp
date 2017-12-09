@@ -49,6 +49,12 @@ namespace ofxApp{
 
 class App{
 
+	#ifdef TARGET_WIN32
+	const std::string FILE_ACCES_ICON = "[!]";
+	#else
+	const std::string FILE_ACCES_ICON = "💾";
+	#endif
+
 public:
 
 	const std::string settingsFile = "configs/ofxAppSettings.json";
