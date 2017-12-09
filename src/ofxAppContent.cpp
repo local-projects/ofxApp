@@ -202,29 +202,31 @@ void ofxAppContent::removeExpiredAssets(){
 	vector<string> allFilesOnAssetFolder; //store all files existing on assets dir
 	vector<string> allEmptyDirs; //store all dirs with 0 files inside for deletion
 	assetsDir.listDir(assetsLocationPath);
-	for(int i = 0; i < assetsDir.numFiles(); i++){
-		if(assetsDir.getFile(i).isDirectory()){
-			ofDirectory objDir;
-			objDir.listDir(assetsDir.getPath(i));
-			if(objDir.numFiles() == 0){
-				allEmptyDirs.push_back(ofToDataPath(assetsDir.getPath(i), true));
-			}else{
-				for(int j = 0; j < objDir.numFiles(); j++){
-					allFilesOnAssetFolder.push_back(ofToDataPath(objDir.getPath(j), true));
+	if (ofDirectory::doesDirectoryExist(assetsLocationPath)){
+		for(int i = 0; i < assetsDir.numFiles(); i++){
+			if(assetsDir.getFile(i).isDirectory()){
+				ofDirectory objDir;
+				objDir.listDir(assetsDir.getPath(i));
+				if(objDir.numFiles() == 0){
+					allEmptyDirs.push_back(ofToDataPath(assetsDir.getPath(i), true));
+				}else{
+					for(int j = 0; j < objDir.numFiles(); j++){
+						allFilesOnAssetFolder.push_back(ofToDataPath(objDir.getPath(j), true));
+					}
 				}
 			}
 		}
-	}
 
-	for(auto & dir : allEmptyDirs){
-		ofLogWarning("ofxAppContent : " + ID) << "removing empty directory at \"" << ofToDataPath(dir) << "\"";
-		ofDirectory::removeDirectory(dir, true, false);
-	}
-	for(auto & file : allFilesOnAssetFolder){
-		auto it = std::find(allExpectedAssets.begin(), allExpectedAssets.end(), file);
-		if (it == allExpectedAssets.end()){ //this file on disk is not in the expected asset file list, delete!
-			ofLogWarning("ofxAppContent : " + ID) << "removing expired asset at \"" << ofToDataPath(file) << "\"";
-			ofFile::removeFile(file, false);
+		for(auto & dir : allEmptyDirs){
+			ofLogWarning("ofxAppContent : " + ID) << "removing empty directory at \"" << ofToDataPath(dir) << "\"";
+			ofDirectory::removeDirectory(dir, true, false);
+		}
+		for(auto & file : allFilesOnAssetFolder){
+			auto it = std::find(allExpectedAssets.begin(), allExpectedAssets.end(), file);
+			if (it == allExpectedAssets.end()){ //this file on disk is not in the expected asset file list, delete!
+				ofLogWarning("ofxAppContent : " + ID) << "removing expired asset at \"" << ofToDataPath(file) << "\"";
+				ofFile::removeFile(file, false);
+			}
 		}
 	}
 }
@@ -271,7 +273,7 @@ void ofxAppContent::setState(ContentState s){
 		}break;
 
 		case ContentState::REMOVING_EXPIRED_ASSETS:
-			ofLogWarning("ofxAppContent : " + ID) << "Start expired asset removal phase.";
+			ofLogNotice("ofxAppContent : " + ID) << "Start expired asset removal phase.";
 			startThread();
 			break;
 
