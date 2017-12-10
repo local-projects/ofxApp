@@ -972,6 +972,10 @@ void App::updateStateMachine(float dt){
 						loadedContent.push_back(currentContentID);
 						if(timeSampleOfxApp) TS_STOP_NIF("ofxApp LoadContent " + currentContentID);
 
+						if(gAnalytics && gAnalytics->isEnabled()){
+							gAnalytics->sendCustomTimeMeasurement("ofxApp", "Load Content " + currentContentID, appState.getElapsedTimeInCurrentState() * 1000.0f);
+						}
+
 						if(loadedContent.size() == contentStorage.size()){ //done loading ALL the JSON contents!
 							appState.setState(State::DELIVER_CONTENT_LOAD_RESULTS);
 						}else{ //load the next json
@@ -1059,6 +1063,11 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 
 		case State::LOAD_JSON_CONTENT:{
 			if(change.oldState != State::LOAD_JSON_CONTENT_FAILED){
+
+				if(gAnalytics && gAnalytics->isEnabled() && change.oldState == State::LOAD_STATIC_TEXTURES){
+					gAnalytics->sendCustomTimeMeasurement("ofxApp", "Load Static Images", change.timeInPrevState * 1000.0f);
+				}
+
 				if(timeSampleOfxApp) TS_START_NIF("ofxApp LoadContent " + currentContentID);
 				ofxApp::utils::logBanner("Start Loading Content  \"" + currentContentID + "\"");
 				
@@ -1131,7 +1140,9 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 			setupRuiWatches();
 			setupApp();
 			ofLogNotice("ofxApp") << "Start SETUP_DELEGATE_B4_RUNNING...";
-			if(gAnalytics) gAnalytics->sendEvent("ofxApp", "startApp", 0, "", false);
+			if(gAnalytics && gAnalytics->isEnabled()){
+				gAnalytics->sendEvent("ofxApp", "startApp", 0, "", false);
+			}
 			delegate->ofxAppPhaseWillBegin(Phase(State::SETUP_DELEGATE_B4_RUNNING)); //user custom code runs here
 			break;
 
@@ -1142,6 +1153,9 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 					ts = TS_STOP_NIF("ofxApp Setup");
 				}
 				ofxApp::utils::logBanner(" ofxApp Setup Complete! " + ofToString(ofGetElapsedTimef(), 2) + "sec." );
+				if(gAnalytics && gAnalytics->isEnabled()){
+					gAnalytics->sendCustomTimeMeasurement("ofxApp", "Full Setup", ofGetElapsedTimef() * 1000.0f);
+				}
 			}
 			}
 			break;
