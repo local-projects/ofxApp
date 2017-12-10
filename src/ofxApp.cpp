@@ -2,7 +2,7 @@
 //  ofxApp.cpp
 //  BaseApp
 //
-//  Created by Oriol Ferrer Mesi√† on 3/8/16.
+//  Created by Oriol Ferrer Mesià on 3/8/16.
 //
 //
 
