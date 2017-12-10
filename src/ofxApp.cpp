@@ -16,10 +16,10 @@
 #include "ofxAutoTexture.h"
 #include "ofxAppErrorReporter.h"
 
-//how to get the app from the ofxApp namespace
-
+//global var pointing to ofxApp::App so you can reach it from the debugger
 ofxApp::App * global_ofxApp = nullptr;
 
+//how to get the app from the ofxApp namespace
 namespace ofxApp{
 	App& get(){
 		return App::one();
@@ -37,6 +37,12 @@ App::App() {
 	globalsStorage = new OFX_APP_CLASS_NAME(Globals);
 	#endif
 }
+
+
+App::~App(){
+	ofLogWarning("ofxApp")<< "~ofxApp()";
+}
+
 
 void App::setup(ofxAppDelegate * delegate){
 	map<std::string,ofxApp::ParseFunctions> emptyLambas;
@@ -104,12 +110,6 @@ void App::setup(const map<std::string,ofxApp::ParseFunctions> & cfgs, ofxAppDele
 	}else{
 		ofxApp::utils::terminateApp("ofxApp", "Trying to setup() ofxApp a second time!");
 	}
-}
-
-
-App::~App(){
-	//cout << (*loggerStorage).use_count() << endl;
-	ofLogNotice("ofxApp")<< "~ofxApp()";
 }
 
 
@@ -697,7 +697,8 @@ void App::update(ofEventArgs &){
 void App::exit(ofEventArgs &){
 
 	ofLogWarning("ofxApp") << "OF is exitting!";
-	if(gAnalytics) gAnalytics->sendEvent("ofxApp", "exitApp", 0, "", false);
+	ofLogWarning("ofxApp") << "Terminate Google Analytics...";
+	if(gAnalytics && gAnalytics->isEnabled()) gAnalytics->sendEvent("ofxApp", "exitApp", 0, "", false);
 	if (gAnalytics) delete gAnalytics;
 
 	//if we are in the download stage, we would crash unless we stop the download threads
@@ -709,6 +710,7 @@ void App::exit(ofEventArgs &){
 
 	ofLogWarning("ofxApp") << "Destroying ofxSimpleHttp SSL context...";
 	ofxSimpleHttp::destroySslContext();
+
 	ofLogWarning("ofxApp") << "Closing ThreadSafeLog(s)...";
 	ofxThreadSafeLog::one()->close();
 
