@@ -247,6 +247,14 @@ namespace utils{
 		#endif
 		ofLogNotice("ofxApp") << "";
 	}
+	
+	string getAsciiHeader(const string & title, char headerChar, int numCharsB4, int totalLen){
+		string line = std::string(numCharsB4, headerChar);
+		line +=  " " + title + " ";
+		int missingChars = MAX(totalLen - numCharsB4 - 2 - title.size(), numCharsB4);
+		line += std::string(missingChars, headerChar);
+		return line;
+	}
 
 
 	ImageInfo getImageDimensions(const std::string & filePath){

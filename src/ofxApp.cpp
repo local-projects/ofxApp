@@ -367,11 +367,20 @@ void App::setupGlobalParameters(){
 	colors().ofxAppColorsBasic::setupRemoteUIParams();
 	colors().setupRemoteUIParams();
 
+	
 	//get all params as a string / paragrpah, print out so there's values printed in the logs.
-	string params = ofxRemoteUIServer::instance()->getValuesAsString();
-	ofStringReplace(params, "%5F", "_"); //fix up weird unicode chars
+	//string params = ofxRemoteUIServer::instance()->getValuesAsString();
 	ofxApp::utils::logBanner("ofxRemoteUI Params & Their Values");
-	ofxApp::utils::logParagraph(OFX_APP_INCLUDE(OFX_APP_NAME,_Globals), OF_LOG_NOTICE, params);
+	auto rui = RUI_GET_INSTANCE();
+	auto names = rui->getAllParamNamesList();
+	for(auto & n : names){
+		auto & param = rui->getParamRefForName(n);
+		if(param.type == REMOTEUI_PARAM_SPACER){
+			ofLogNotice(OFX_APP_INCLUDE(OFX_APP_NAME,_Globals)) << ofxApp::utils::getAsciiHeader(n, '#', 4, 80);
+		}else{
+			ofLogNotice(OFX_APP_INCLUDE(OFX_APP_NAME,_Globals)) << "     " + n + " : " + param.getInfoAsString();
+		}
+	}
 }
 
 void App::loadDynamicSettings() {

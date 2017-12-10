@@ -131,7 +131,7 @@ void ofxAppFonts::loadFontStash2Fonts(){
 				}
 			}
 
-			ofLogNotice("ofxAppFonts") << "#### ofxFontStash2 available fonts #######################################################";
+			ofLogNotice("ofxAppFonts") << ofxApp::utils::getAsciiHeader("ofxFontStash2 available fonts", '#', 4, 140);
 			auto ids = fonts2.getFontIDs();
 			for(auto id: ids){
 				ofLogNotice("ofxAppFonts") << "# \"" << id << "\"";
@@ -195,12 +195,12 @@ void ofxAppFonts::loadFontStash2Styles(){
 				}
 			}
 
-			ofLogNotice("ofxAppFonts") << "#### ofxFontStash2 available Styles ######################################################";
+			ofLogNotice("ofxAppFonts") << ofxApp::utils::getAsciiHeader("ofxFontStash2 available Styles", '#', 4, 140);
 			auto styles = fonts2.getStyles();
 			for(auto st : styles){
 				ofLogNotice("ofxAppFonts") << "# \"" << st.first << "\": \"" << st.second.toString() << "\"";
 			}
-			ofLogNotice("ofxAppFonts") << "########################################################################################";
+			ofLogNotice("ofxAppFonts") << string(140,'#');
 		}else{
 			ofxApp::utils::terminateApp("ofxAppFonts", "User ofxFontStash2 styles (\"Fonts/ofxFontStash2/styles\")is not a Json Object! Check your \"ofxAppSettings.json\" file!");
 		}
