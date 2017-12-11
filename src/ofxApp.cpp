@@ -233,7 +233,7 @@ void App::setupWindow(){
 void App::setupListeners(){
 
 	ofLogNotice("ofxApp") << "setupListeners()";
-	ofAddListener(ofEvents().update, this, &App::update);
+	ofAddListener(ofEvents().update, this, &App::update, OF_EVENT_ORDER_BEFORE_APP);
 	ofAddListener(ofEvents().exit, this, &App::exit, OF_EVENT_ORDER_AFTER_APP + 100); //last thing hopefully!
 	//listen to content manager state changes
 	for(auto c : contentStorage){
