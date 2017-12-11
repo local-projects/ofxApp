@@ -116,8 +116,6 @@ void ofApp::update(){
 void ofApp::draw(){
 
 	if(ofxApp::get().getState() == ofxApp::State::RUNNING){
-
-		glm::vec3 p = glm::vec3(0,1,1);
 		
 		TS_START("Scene Node D");
 		scene->render();

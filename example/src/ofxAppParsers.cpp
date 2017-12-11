@@ -159,7 +159,7 @@ ofxAppParsers::ofxAppParsers(){
 
 				Json::Value & jsonImage = (Json::Value &)*itr;
 
-				const string imgSize = "z"; //"x", "z", "b" and so on
+				const string imgSize = "z"; //"x", "z", "b", "k" and so on
 
 				if(jsonImage[imgSize].isObject()){
 					CH_Object::CH_Image img;

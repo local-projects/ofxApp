@@ -19,7 +19,6 @@
 #include "ofxAppStaticTextures.h"
 #include "ofxAppMacros.h"
 #include "ofxJsonSettings.h"
-#include "ofxMullion.h"
 #include "ofxTuio.h"
 #include "ofxSuperLog.h"
 #include "ofxScreenSetup.h"
@@ -27,7 +26,6 @@
 #include "ofxTimeMeasurements.h"
 #include "ofxDrawableStateMachine.h"
 #include "ofxAppErrorReporter.h"
-#include "ofxGoogleAnalytics.h"
 
 //Check if the user created the required macro to include his custom sub-classes for Colors, Globals and Fonts.
 #ifndef OFX_APP_NAME
@@ -43,16 +41,26 @@
 	#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_COLORS_FILENAME) 	//include MyAppColors.h
 	#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_GLOBALS_FILENAME) //include MyAppGlobals.h
 #endif
+
+class ofxGoogleAnalytics;
+class ofxMullion;
+
 namespace ofxApp{
 
 class App{
 
+	#ifdef TARGET_WIN32
+	const std::string FILE_ACCES_ICON = "[!]";
+	#else
+	const std::string FILE_ACCES_ICON = "💾";
+	#endif
+
 public:
 
-	const string settingsFile = "configs/ofxAppSettings.json";
-	const string LogsDir = "logs";
-	const string configsDir = "configs";
-	const string pidFileName = "ofxApp.pid";
+	const std::string settingsFile = "configs/ofxAppSettings.json";
+	const std::string LogsDir = "logs";
+	const std::string configsDir = "configs";
+	const std::string pidFileName = "ofxApp.pid";
 
 	static App& one(){ //this holds the app instance
 		static App instance;
@@ -66,7 +74,7 @@ public:
 
 	//static App * get(){return theApp;}
 	
-	void setup(const map<string,ofxApp::ParseFunctions> & cfgs, ofxAppDelegate * delegate);
+	void setup(const map<std::string,ofxApp::ParseFunctions> & cfgs, ofxAppDelegate * delegate);
 	void setup(ofxAppDelegate * delegate); //if your app has no content ; no lambdas needed
 
 	void update(ofEventArgs &);
@@ -100,21 +108,26 @@ public:
 	// SETTINGS /////////////////////////////////////////////////////////////////////////////
 	// Convenience methods to easily get values from "data/configs/ofxAppSettings.json"
 
-	bool&		getBool(const string & key, bool defaultVal = true);
-	int&		getInt(const string & key, int defaultVal = 0);
-	float&		getFloat(const string & key, float defaultVal = 0.0);
-	string&		getString(const string & key, const string & defaultVal = "uninited!");
-	ofColor&	getColor(const string & key, ofColor defaultVal = ofColor::red);
-	bool		settingExists(const string & key);
+	bool&		getBool(const std::string & key, bool defaultVal = true);
+	int&		getInt(const std::string & key, int defaultVal = 0);
+	float&		getFloat(const std::string & key, float defaultVal = 0.0);
+	std::string&		getString(const std::string & key, const std::string & defaultVal = "uninited!");
+	ofColor&	getColor(const std::string & key, ofColor defaultVal = ofColor::red);
+	bool		settingExists(const std::string & key);
 
 	void		loadSettings(); //load JSON settings (data/configs/ofxAppSettings.json)
+	void		loadDynamicSettings(); //load and update values that can be changed while the app runs (call this with 'R' key);
 	void		saveSettings();//not really used / tested! TODO!
+	void		setupLogLevelModuleOverrides(bool dynamicLoad);
 
-	ofxApp::State getState(){return appState.getState();}
+	//State Machine
+	ofxApp::Phase getPhase();//this is the end user state types, you most likely want this
+	ofxApp::State getState(){return appState.getState();} //most likely you dont want this
+	bool isAppReadyToRun(){return appState.getState() == ofxApp::State::RUNNING;}
 
 	// ERROR STATES / MSGs ///////////////////////////////////////////////////////////////////
 
-	bool enterErrorState(string errorHeader, string errorBody); //app shows error screen
+	bool enterErrorState(std::string errorHeader, std::string errorBody); //app shows error screen
 	bool exitErrorState(); //goes back to RUNNING
 	bool isInDevInducedErrorState(){return appState.getState() == State::DEVELOPER_REQUESTED_ERROR_SCREEN;}
 
@@ -137,10 +150,14 @@ public:
 	ofRectangle 	getStartupScreenViewport(){return startupScreenViewport;} //loading screen rect area
 	ofVec2f			getRenderSize(){return renderSize;}
 	bool			isWindowSetup(){return windowIsSetup;}
-	bool 			isJsonContentDifferentFromLastLaunch(string contentID, string & freshJsonSha1, string & oldJsonSha1);
+	bool 			isJsonContentDifferentFromLastLaunch(std::string contentID, std::string & freshJsonSha1, std::string & oldJsonSha1);
 
 	//to draw debug msgs
-	ofRectangle		drawMsgInBox(string msg, int x, int y, int fontSize, ofColor fontColor, ofColor bgColor = ofColor::black, float edgeGrow = 5);
+	ofRectangle		drawMsgInBox(std::string msg, int x, int y, int fontSize, ofColor fontColor, ofColor bgColor = ofColor::black, float edgeGrow = 5);
+
+	void tuioAdded(ofxTuioCursor & tuioCursor);
+	void tuioRemoved(ofxTuioCursor & tuioCursor);
+	void tuioUpdated(ofxTuioCursor & tuioCursor);
 
 protected:
 
@@ -167,9 +184,11 @@ protected:
 	//utils
 	void printSettingsFile(); //print JSON settings file to stdout (and logs)
 	void drawStats();
+	void drawAnimatable();
 	void drawMaintenanceScreen();
 	void drawErrorScreen();
 
+	void updateAnimatable(float dt);
 
 	// STATE MACHINE ///////////////////////////////////////////////////////////////////////////////
 
@@ -178,19 +197,19 @@ protected:
 
 	virtual void onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& change);
 	virtual void onStateError(ofxStateMachine<ofxApp::State>::ErrorStateEventArgs& error);
-	virtual void onContentManagerStateChanged(string&);
+	virtual void onContentManagerStateChanged(std::string&);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
 	ofxTuioClient							tuioClient;
 	ofxAppStaticTextures					texStorage;
-	ofxMullion								mullions;
+	ofxMullion *							mullions;
 
 	// Settings Values Bundles ///////////////////////////////////////
 
 	//used by ofxSimpleHttp
 	ofxSimpleHttp::ProxyConfig				proxyCfg;
-	std::pair<string,string>				credentials;
+	std::pair<std::string,std::string>				credentials;
 
 	//used by ofxAssets
 	ofxAssets::DownloadPolicy				assetDownloadPolicy;
@@ -211,14 +230,14 @@ protected:
 
 	ofxAppFonts *							fontStorage = nullptr; //keeps all loaded fonts
 
-	map<string, ofxAppContent*>				contentStorage; //App contents parser - indexed by contentID
-	map<string, ofxApp::ParseFunctions>		contentCfgs; //user supplied custom parsing code - indexed by contentID
+	map<std::string, ofxAppContent*>				contentStorage; //App contents parser - indexed by contentID
+	map<std::string, ofxApp::ParseFunctions>		contentCfgs; //user supplied custom parsing code - indexed by contentID
 
 	ofPtr<ofxSuperLog> *					loggerStorage; //note its a * to an ofPtr - TODO!
 
 	ofxDrawableStateMachine<ofxApp::State>	appState; //ofxApp State Machine to handle all loading stages
-	string									errorStateHeader; //holds current error msg header (only applies when state == DEVELOPER_REQUESTED_ERROR_SCREEN)
-	string									errorStateBody; //holds current error msg body (only applies when state == DEVELOPER_REQUESTED_ERROR_SCREEN)
+	std::string									errorStateHeader; //holds current error msg header (only applies when state == DEVELOPER_REQUESTED_ERROR_SCREEN)
+	std::string									errorStateBody; //holds current error msg body (only applies when state == DEVELOPER_REQUESTED_ERROR_SCREEN)
 	
 	ofxAppErrorReporter						errorReporterObj; //send live error reports to our CMS over sensu
 	ofxGoogleAnalytics *					gAnalytics = nullptr;
@@ -231,9 +250,9 @@ protected:
 	bool									showMouse;
 	bool									reportErrors;
 
-	string									currentContentID; //keep track of which content are we getting
-	vector<string>							requestedContent; //complete list of user supplied contentID's
-	vector<string>							loadedContent; //user supplied contentID's loaded so far
+	std::string									currentContentID; //keep track of which content are we getting
+	vector<std::string>							requestedContent; //complete list of user supplied contentID's
+	vector<std::string>							loadedContent; //user supplied contentID's loaded so far
 
 	ofxAppDelegate *						delegate = nullptr; //this will be the "user"'s app, likely an ofBaseApp subclass
 	
@@ -251,3 +270,5 @@ private:
 	App& get(); //how to get the app from the ofxApp namespace
 
 } //namespace ofxApp
+
+extern ofxApp::App * global_ofxApp;

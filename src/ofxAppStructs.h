@@ -19,7 +19,7 @@ namespace ofxApp{
 	struct CatalogAssetsData{ //data sent to the user for him/her to report object assets
 		ContentObject * object;
 		ofxJSONElement * userData;
-		string assetsLocation;
+		std::string assetsLocation;
 		ofxAssets::DownloadPolicy assetDownloadPolicy;
 		ofxAssets::UsagePolicy assetUsagePolicy;
 	};
@@ -51,11 +51,12 @@ namespace ofxApp{
 	enum class Phase : int{
 		WILL_LOAD_CONTENT = (int)State::SETUP_DELEGATE_B4_CONTENT_LOAD,
 		DID_DELIVER_CONTENT = (int)State::DELIVER_CONTENT_LOAD_RESULTS,
-		WILL_BEGIN_RUNNING = (int)State::SETUP_DELEGATE_B4_RUNNING
+		WILL_BEGIN_RUNNING = (int)State::SETUP_DELEGATE_B4_RUNNING,
+		UNKNOWN_PHASE = (int)1024
 	};
 
 	//convenience methods to be able to print state names
-	inline string toString(const State & s){
+	inline std::string toString(const State & s){
 		switch(s){
 			case State::SETUP_OFXAPP_INTERNALS: return "SETUP_OFXAPP_INTERNALS";
 			case State::SETUP_DELEGATE_B4_CONTENT_LOAD: return "SETUP_DELEGATE_B4_CONTENT_LOAD";
@@ -73,7 +74,7 @@ namespace ofxApp{
 		return "unknown ofxApp State";
 	}
 
-	inline string toString(const Phase& s){
+	inline std::string toString(const Phase& s){
 		switch (s) {
 			case Phase::WILL_LOAD_CONTENT: return "WILL_LOAD_CONTENT";
 			case Phase::DID_DELIVER_CONTENT: return "DID_DELIVER_CONTENT";

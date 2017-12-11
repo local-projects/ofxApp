@@ -181,6 +181,11 @@
 		"displayLogTimes" : true,
 		"ThreadSafeLog" : {
 			"alsoPrintToConsole" : true
+		},
+		"logLevelOverrides":{	//override of log level for certain modules
+								//Valid Levels are: [0:Vebose, 1:Notice, 2:Warning, 3:Error, 4:FatalError, 5:Silence]
+			"myModule" : 5,		//ie silence (5) "myModule" logging;
+			"myOtherModule" : 2
 		}
 	},
 	

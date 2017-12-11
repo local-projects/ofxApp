@@ -30,19 +30,19 @@ void ofxAppFonts::setup(){
 	loadFontStash2Styles();
 }
 
-ofxFontStash* ofxAppFonts::getFont(const string& name){
+ofxFontStash* ofxAppFonts::getFont(const std::string& name){
 
 	auto search = userFS_Fonts.find(name);
 	if (search != userFS_Fonts.end()){
 		return search->second;
 	}else{
-		string msg = "Can't find a font with that name! (" + name + ")";
+		std::string msg = "Can't find a font with that name! (" + name + ")";
 		ofxApp::utils::terminateApp("ofxAppFonts", msg);
 		return nullptr;
 	}
 }
 
-const ofxFontStash2::Style& ofxAppFonts::getFontStyle(const string & styleID){
+const ofxFontStash2::Style& ofxAppFonts::getFontStyle(const std::string & styleID){
 
 	auto it = fs2Styles.find(styleID);
 	if(it != fs2Styles.end()){
@@ -65,8 +65,8 @@ void ofxAppFonts::loadFontStashFonts(){
 		if(json.isObject()){
 
 			for( auto itr = json.begin(); itr != json.end(); itr++ ) { //walk all user fonts
-				string fontName = itr.key().asString();
-				string fontFile = (*itr)["fontFile"].asString();
+				std::string fontName = itr.key().asString();
+				std::string fontFile = (*itr)["fontFile"].asString();
 				int atlasSize = (*itr)["atlasSize"].asInt();
 				float lineH = (*itr)["lineHeight"].asFloat();
 				bool mipmaps = (*itr)["mipmaps"].asBool();
@@ -122,8 +122,8 @@ void ofxAppFonts::loadFontStash2Fonts(){
 
 		if(json.isObject()){
 			for( auto itr = json.begin(); itr != json.end(); itr++ ) { //walk all user fonts
-				string fontName = itr.key().asString();
-				string fontFile = (*itr).asString();
+				std::string fontName = itr.key().asString();
+				std::string fontFile = (*itr).asString();
 				ofxApp::utils::assertFileExists(fontFile);
 				bool ok = fonts2.addFont(fontName, fontFile);
 				if(!ok){
@@ -131,7 +131,7 @@ void ofxAppFonts::loadFontStash2Fonts(){
 				}
 			}
 
-			ofLogNotice("ofxAppFonts") << "#### ofxFontStash2 available fonts #######################################################";
+			ofLogNotice("ofxAppFonts") << ofxApp::utils::getAsciiHeader("ofxFontStash2 available fonts", '#', 4, 140);
 			auto ids = fonts2.getFontIDs();
 			for(auto id: ids){
 				ofLogNotice("ofxAppFonts") << "# \"" << id << "\"";
@@ -142,7 +142,7 @@ void ofxAppFonts::loadFontStash2Fonts(){
 	}
 }
 
-NVGalign ofxAppFonts::getAlignmentFromString(const string & str){
+NVGalign ofxAppFonts::getAlignmentFromString(const std::string & str){
 	if(str == "NVG_ALIGN_TOP") return NVG_ALIGN_TOP;
 	if(str == "NVG_ALIGN_MIDDLE") return NVG_ALIGN_MIDDLE;
 	if(str == "NVG_ALIGN_BOTTOM") return NVG_ALIGN_BOTTOM;
@@ -167,7 +167,7 @@ void ofxAppFonts::loadFontStash2Styles(){
 
 			for( auto itr = json.begin(); itr != json.end(); itr++ ) { //walk all user styles
 
-				string styleName = itr.key().asString();
+				std::string styleName = itr.key().asString();
 				ofxJSON styleObj = (*itr);
 				ofxFontStash2::Style style;
 				bool ok = true;
@@ -195,12 +195,12 @@ void ofxAppFonts::loadFontStash2Styles(){
 				}
 			}
 
-			ofLogNotice("ofxAppFonts") << "#### ofxFontStash2 available Styles ######################################################";
+			ofLogNotice("ofxAppFonts") << ofxApp::utils::getAsciiHeader("ofxFontStash2 available Styles", '#', 4, 140);
 			auto styles = fonts2.getStyles();
 			for(auto st : styles){
 				ofLogNotice("ofxAppFonts") << "# \"" << st.first << "\": \"" << st.second.toString() << "\"";
 			}
-			ofLogNotice("ofxAppFonts") << "########################################################################################";
+			ofLogNotice("ofxAppFonts") << string(140,'#');
 		}else{
 			ofxApp::utils::terminateApp("ofxAppFonts", "User ofxFontStash2 styles (\"Fonts/ofxFontStash2/styles\")is not a Json Object! Check your \"ofxAppSettings.json\" file!");
 		}
@@ -208,9 +208,9 @@ void ofxAppFonts::loadFontStash2Styles(){
 }
 
 
-void ofxAppFonts::loadOfxAppFont(const string & file, ofxFontStash & font){
+void ofxAppFonts::loadOfxAppFont(const std::string & file, ofxFontStash & font){
 
-	string fontFile = file;
+	std::string fontFile = file;
 	int atlasSize = 512;
 	float lineH = 1.4;
 	bool mipmaps = false;

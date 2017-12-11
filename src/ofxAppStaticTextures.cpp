@@ -8,9 +8,23 @@
 
 #include "ofxAppStaticTextures.h"
 #include "ofxApp.h"
+#include "ofxAppErrorReporter.h"
+#include "ofxAutoTexture.h"
 
-string ofxAppStaticTextures::filenameHintTex2D = "_t2d";
-string ofxAppStaticTextures::filenameHintMipMap = "_mip";
+std::string ofxAppStaticTextures::filenameHintTex2D = "_t2d";
+std::string ofxAppStaticTextures::filenameHintMipMap = "_mip";
+
+void ofxAppStaticTextures::ThreadedLoader::threadedFunction() {
+
+	#ifdef TARGET_WIN32
+	#elif defined(TARGET_LINUX)
+	pthread_setname_np(pthread_self(), "ofxAppStaticTextures");
+	#else
+	pthread_setname_np("ofxAppStaticTextures");
+	#endif
+	data.tex->preloadPixelsFromFile(data.filePath);
+	preloaded = true;
+}
 
 
 ofxAppStaticTextures::ofxAppStaticTextures(){
@@ -25,13 +39,13 @@ void ofxAppStaticTextures::setup(){
 	}
 }
 
-void ofxAppStaticTextures::loadTexturesInDir(const string& imgDirPath, int maxThreads){
+void ofxAppStaticTextures::loadTexturesInDir(const std::string& imgDirPath, int maxThreads){
 	if(!isLoading){
 		//TS_START_NIF("load Textures");
 		startLoadTime = ofGetElapsedTimef();
 		this->maxThreads = maxThreads;
-		ofLogWarning("ofxAppStaticTextures") << "#### START Loading all Textures in directory \"" <<
-		imgDirPath << "\" across " << maxThreads << " ############################################";
+		string msg = "START Loading all Textures in directory \"" + imgDirPath + "\" across " + ofToString(maxThreads);
+		ofLogNotice("ofxAppStaticTextures") << ofxApp::utils::getAsciiHeader(msg, '#', 4, 120);
 		isLoading = true;
 		dirPath = ofFilePath::addTrailingSlash(imgDirPath);
 		#ifdef TARGET_WIN32 //lets make windows path prettier
@@ -53,7 +67,7 @@ void ofxAppStaticTextures::loadTexturesInDir(const string& imgDirPath, int maxTh
 }
 
 
-void ofxAppStaticTextures::loadTexturesInDirectory(const string& path, bool recursive){
+void ofxAppStaticTextures::loadTexturesInDirectory(const std::string& path, bool recursive){
 
 	ofDirectory dir(path);
 	dir.listDir();
@@ -66,9 +80,9 @@ void ofxAppStaticTextures::loadTexturesInDirectory(const string& path, bool recu
 			loadTexturesInDirectory(path + "/" + file.getFileName(), recursive);
 			continue;
 		}
-		string ext = ofToLower(file.getExtension());
+		std::string ext = ofToLower(file.getExtension());
 		if (ext == "png" || ext == "jpg" || ext == "jpeg" || ext == "gif" || ext == "tga" || ext == "tiff" || ext == "tif" || ext == "psd") {
-			string filepath = path + "/" + file.getBaseName() + "." + file.getExtension();
+			std::string filepath = path + "/" + file.getBaseName() + "." + file.getExtension();
 			
 			PreLoadData texData;
 			texData.tex = createTexObjForPath(filepath, texData.texName, texData.createMipmap, texData.useTex2D);
@@ -112,24 +126,24 @@ ofxAutoTexture* ofxAppStaticTextures::loadTexture(PreLoadData data){
 			data.tex->setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 		}
 
-		string memUsedStr = ofxApp::utils::bytesToHumanReadable(memUsedForThisOne * 1024 * 1024, 2);
+		std::string memUsedStr = ofxApp::utils::bytesToHumanReadable(memUsedForThisOne * 1024 * 1024, 2);
 
-		ofLogNotice("ofxAppStaticTextures") 	<< "#### Loaded \"" << data.filePath << "\" ######################################################";
+		ofLogNotice("ofxAppStaticTextures") << ofxApp::utils::getAsciiHeader("Loaded \"" + data.filePath +"\"", '#', 4, 120);
 		ofLogNotice("ofxAppStaticTextures")	<< "     Name:\"" << data.texName << "\"  " << "[" << data.tex->getWidth() << "x" << data.tex->getHeight() << "]" <<
 		"  Mipmap:" << data.createMipmap << "  Format:" << ofGetGlInternalFormatName(data.tex->getTextureData().glInternalFormat) << "  Mem: " << memUsedStr ;
 		return data.tex;
 	}else{
 		delete data.tex;
-		string msg = "FAILED to load tex from \"" + data.filePath + "\"" ;
+		std::string msg = "FAILED to load tex from \"" + data.filePath + "\"" ;
 		OFXAPP_REPORT("ofxAppStaticTexturesFailLoad", msg, 1);
 		ofLogError("ofxAppStaticTextures") << msg;
 		return NULL;
 	}
 }
 
-ofxAutoTexture* ofxAppStaticTextures::createTexObjForPath(string filePath, string & texName, bool & createMipMap, bool & useTex2D) {
+ofxAutoTexture* ofxAppStaticTextures::createTexObjForPath(std::string filePath, std::string & texName, bool & createMipMap, bool & useTex2D) {
 
-	string lowercaseFilePath = ofToLower(filePath);
+	std::string lowercaseFilePath = ofToLower(filePath);
 	useTex2D = ofIsStringInString(lowercaseFilePath, filenameHintTex2D);
 	createMipMap = ofIsStringInString(lowercaseFilePath, filenameHintMipMap);
 
@@ -235,7 +249,7 @@ float ofxAppStaticTextures::memUse(ofTexture * tex){
 }
 
 
-ofTexture* ofxAppStaticTextures::getTexture(string fullPath){
+ofTexture* ofxAppStaticTextures::getTexture(std::string fullPath){
 
 	//remove "/" from beginnig as it makes no sense
 	if(fullPath.size() && fullPath[0] == '/'){

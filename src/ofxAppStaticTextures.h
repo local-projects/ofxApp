@@ -8,7 +8,6 @@
 
 #pragma once
 #include "ofMain.h"
-#include "ofxAutoTexture.h"
 #include <thread>
 
 /*
@@ -58,20 +57,20 @@
 
  */
 
-
+class ofxAutoTexture;
 class ofxAppStaticTextures{
 
 public:
 
-	static string filenameHintTex2D;
-	static string filenameHintMipMap;
+	static std::string filenameHintTex2D;
+	static std::string filenameHintMipMap;
 
 	void setup();
 
 	ofxAppStaticTextures();
 
-	void loadTexturesInDir(const string& imgDirPath, int maxThreads = 8);
-	ofTexture* getTexture(string textureName);
+	void loadTexturesInDir(const std::string& imgDirPath, int maxThreads = 8);
+	ofTexture* getTexture(std::string textureName);
 
 	static float memUse(ofTexture * tex); //in MBytes
 	void setForceMipmaps(bool f){forceMipmapsOnAll = f;}
@@ -79,7 +78,7 @@ public:
 	int getNumTextures(){ return textures.size();}
 	int getNumLoadedTextures(){ return loaded.size();}
 
-	vector<string> getTextureNames(){return texNameOrder;};
+	vector<std::string> getTextureNames(){return texNameOrder;};
 
 	float getTotalMemUsed(){ return memUsed;} //in MBytes
 
@@ -98,8 +97,8 @@ protected:
 	struct PreLoadData {
 	public:
 		ofxAutoTexture* tex;
-		string texName;
-		string filePath;
+		std::string texName;
+		std::string filePath;
 		bool useTex2D;
 		bool createMipmap;
 		ThreadedLoader * loader = NULL;
@@ -111,34 +110,23 @@ protected:
 		PreLoadData data;
 		bool threadStarted = false;
 		bool preloaded = false;
-		void threadedFunction(){
-
-			#ifdef TARGET_WIN32
-			#elif defined(TARGET_LINUX)
-			pthread_setname_np(pthread_self(), "ofxAppStaticTextures");
-			#else
-			pthread_setname_np("ofxAppStaticTextures");
-			#endif
-
-			data.tex->preloadPixelsFromFile(data.filePath);
-			preloaded = true;
-		}
+		void threadedFunction();
 	};
 	
 	void onUpdate(ofEventArgs & );
 
 	ofxAutoTexture* loadTexture(PreLoadData data);
-	void loadTexturesInDirectory(const string& path, bool recursive);
+	void loadTexturesInDirectory(const std::string& path, bool recursive);
 
-	string dirPath; //path to where the textures are
+	std::string dirPath; //path to where the textures are
 	
 	vector<PreLoadData> pendingToPreLoad;
 	vector<PreLoadData> loaded;
 	
-	vector<string> texNameOrder;
-	unordered_map<string, ofxAutoTexture*> textures;
+	vector<std::string> texNameOrder;
+	unordered_map<std::string, ofxAutoTexture*> textures;
 	
-	ofxAutoTexture* createTexObjForPath(string filePath, string & texName, bool & createMipMap, bool & useTex2D);
+	ofxAutoTexture* createTexObjForPath(std::string filePath, std::string & texName, bool & createMipMap, bool & useTex2D);
 
 	float memUsed = 0; //MBytes
 	bool isLoading = false;

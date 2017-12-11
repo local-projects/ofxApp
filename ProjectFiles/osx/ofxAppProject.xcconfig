@@ -1,0 +1,48 @@
+
+//path shortcuts
+ADDONS_PATH = $(OF_PATH)/addons
+EXT_ADDONS_PATH = $(OF_PATH)/../ExternalAddons
+
+//OF official addons
+H_OFX_OSC = $(ADDONS_PATH)/ofxOsc/libs/oscpack/src $(ADDONS_PATH)/ofxOsc/libs/oscpack/src/osc $(ADDONS_PATH)/ofxOsc/src $(ADDONS_PATH)/ofxOsc/libs/oscpack/src/ip
+H_OFX_OPENCV = $(ADDONS_PATH)/ofxOpenCv/libs/opencv/include $(ADDONS_PATH)/ofxOpenCv/src $(ADDONS_PATH)/ofxOpenCv/libs/opencv/include/opencv
+H_OFX_POCO = $(ADDONS_PATH)/ofxPoco/libs/poco/include $(ADDONS_PATH)/ofxPoco/libs/openssl/include $(ADDONS_PATH)/ofxPoco/src
+H_OFX_XMLSETTINGS = $(ADDONS_PATH)/ofxXmlSettings/libs $(ADDONS_PATH)/ofxXmlSettings/src
+H_OFX_NETWORK = $(ADDONS_PATH)/ofxNetwork/src
+
+//ofxApp external dependency addons
+H_OFX_JSON = $(EXT_ADDONS_PATH)/ofxJSON/libs/jsoncpp/include $(EXT_ADDONS_PATH)/ofxJSON/src
+H_OFX_APP = $(EXT_ADDONS_PATH)/ofxApp/src $(EXT_ADDONS_PATH)/ofxApp/lib/stb
+H_OFX_MT_JSON_PARSER = $(EXT_ADDONS_PATH)/ofxMTJsonParser/src
+H_OFX_SIMPLE_HTTP = $(EXT_ADDONS_PATH)/ofxSimpleHttp/src
+H_OFX_ASSETS = $(EXT_ADDONS_PATH)/ofxAssets/src
+H_OFX_TAG_SYSTEM = $(EXT_ADDONS_PATH)/ofxTagSystem/src
+H_OFX_REMOTE_UI = $(EXT_ADDONS_PATH)/ofxRemoteUI/src
+H_OFX_TUIO = $(EXT_ADDONS_PATH)/ofxTuio/src
+H_OFX_STATE_M = $(EXT_ADDONS_PATH)/ofxStateMachine/src
+H_OFX_THREAD_SAFE_LOG = $(EXT_ADDONS_PATH)/ofxThreadSafeLog/src
+H_OFX_PROG_TEXT_LOAD = $(EXT_ADDONS_PATH)/ofxProgressiveTextureLoad/src
+H_OFX_TEXTURE_OBJ = $(EXT_ADDONS_PATH)/ofxTexturedObject/src
+H_OFX_MULLION = $(EXT_ADDONS_PATH)/ofxMullion/src
+H_OFX_JSON_SETT = $(EXT_ADDONS_PATH)/ofxJsonSettings/src
+H_OFX_TIME_MEASURE = $(EXT_ADDONS_PATH)/ofxTimeMeasurements/src
+H_OFX_HISTORY_PLOT = $(EXT_ADDONS_PATH)/ofxHistoryPlot/src
+H_OFX_ANIMATABLE = $(EXT_ADDONS_PATH)/ofxAnimatable/src
+H_OFX_SCREEN_SETUP = $(EXT_ADDONS_PATH)/ofxScreenSetup/src
+H_OFX_SENSU = $(EXT_ADDONS_PATH)/ofxSensu/src
+H_OFX_GOOGLE_ANALYTICS = $(EXT_ADDONS_PATH)/ofxGoogleAnalytics/src
+H_OFX_FONTSTASH = $(EXT_ADDONS_PATH)/ofxFontStash/src $(EXT_ADDONS_PATH)/ofxFontStash/libs/fontstash/src
+H_OFX_FONTSTASH2 = $(EXT_ADDONS_PATH)/ofxFontStash2/src $(EXT_ADDONS_PATH)/ofxFontStash2/libs/nanoVG/src $(EXT_ADDONS_PATH)/ofxFontStash2/pugixml/src
+H_OFX_AUTO_TEXTURE = $(EXT_ADDONS_PATH)/ofxAutoTexture/src
+H_OFX_SUPERLOG = $(EXT_ADDONS_PATH)/ofxSuperLog/src
+
+//accum all headers used by ofxApp in one var
+OFX_APP_HEADERS = $(H_OFX_OSC) $(H_OFX_OPENCV) $(H_OFX_POCO) $(H_OFX_XMLSETTINGS) $(H_OFX_NETWORK) $(H_OFX_JSON) $(H_OFX_APP) $(H_OFX_MT_JSON_PARSER) $(H_OFX_SIMPLE_HTTP) $(H_OFX_ASSETS) $(H_OFX_TAG_SYSTEM) $(H_OFX_REMOTE_UI) $(H_OFX_TUIO) $(H_OFX_STATE_M) $(H_OFX_THREAD_SAFE_LOG) $(H_OFX_PROG_TEXT_LOAD) $(H_OFX_TEXTURE_OBJ) $(H_OFX_MULLION) $(H_OFX_JSON_SETT) $(H_OFX_TIME_MEASURE) $(H_OFX_HISTORY_PLOT) $(H_OFX_ANIMATABLE) $(H_OFX_SCREEN_SETUP) $(H_OFX_SENSU) $(H_OFX_GOOGLE_ANALYTICS) $(H_OFX_FONTSTASH) $(H_OFX_FONTSTASH2) $(H_OFX_AUTO_TEXTURE) $(H_OFX_SUPERLOG)
+
+//finaly set header search paths for the ofxApp project file
+HEADER_SEARCH_PATHS = $(OF_CORE_HEADERS) $(OFX_APP_HEADERS)
+
+//Set libs and macros for project
+OTHER_CFLAGS =
+OTHER_LDFLAGS = $(OF_CORE_LIBS) $(OF_CORE_FRAMEWORKS)
+GCC_PREPROCESSOR_DEFINITIONS = $(OFX_APP_MACROS)

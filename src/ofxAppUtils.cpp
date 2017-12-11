@@ -9,7 +9,9 @@
 #include "ofxAppUtils.h"
 #include "ofxApp.h"
 #include <regex>
-
+#include "ofxAppErrorReporter.h"
+#include "ofxThreadSafeLog.h"
+#include "ofxSimpleHttp.h"
 
 //#define STB_IMAGE_IMPLEMENTATION //note this is not required bc stb_image impl is already included in ofxFontStash2 (nvg)
 #include "../lib/stb/stb_image.h"
@@ -17,9 +19,9 @@
 namespace ofxApp{
 namespace utils{
 
-	void assertFileExists(const string & path){
+	void assertFileExists(const std::string & path){
 		if(!ofFile::doesFileExist(path)){
-			const string msg = "Required asset not present: '" + path + "'";
+			const std::string msg = "Required asset not present: '" + path + "'";
 			ofLogFatalError("ofxApp") << msg;
 			ofxApp::utils::terminateApp("ofxApp", msg);
 		}else{
@@ -27,7 +29,7 @@ namespace utils{
 		}
 	}
 
-	void terminateApp(const string & module, const string & reason, float secondsOnScreen){
+	void terminateApp(const std::string & module, const std::string & reason, float secondsOnScreen){
 		
 		ofLogFatalError("ofxApp") << "terminateApp()!";
 		ofxSimpleHttp::destroySslContext();
@@ -75,8 +77,8 @@ namespace utils{
 		return c;
 	}
 	
-	string secondsToHumanReadable(float secs, int decimalPrecision){
-		string ret;
+	std::string secondsToHumanReadable(float secs, int decimalPrecision){
+		std::string ret;
 		if (secs < 60.0f ){ //if in seconds
 			ret = ofToString(secs, decimalPrecision) + " seconds";
 		}else{
@@ -98,8 +100,8 @@ namespace utils{
 	}
 	
 	
-	string bytesToHumanReadable(long long bytes, int decimalPrecision){
-		string ret;
+	std::string bytesToHumanReadable(long long bytes, int decimalPrecision){
+		std::string ret;
 		if (bytes < 1024 ){ //if in bytes range
 			ret = ofToString(bytes) + " bytes";
 		}else{
@@ -116,9 +118,9 @@ namespace utils{
 		return ret;
 	}
 	
-	string getNewUUID(){
+	std::string getNewUUID(){
 		static char alphabet[16] = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
-		string s;
+		std::string s;
 		for(int i = 0; i < 8; i++) s += ofToString((char)alphabet[(int)floor(ofRandom(16))]);
 		s += "-";
 		for(int i = 0; i < 4; i++) s += ofToString((char)alphabet[(int)floor(ofRandom(16))]);
@@ -132,18 +134,18 @@ namespace utils{
 	}
 	
 	
-	string getFileSystemSafeString(const string & input){
+	std::string getFileSystemSafeString(const std::string & input){
 		static char invalidChars[] = {'?', '\\', '/', '*', '<', '>', '"', ';', ':', '#' };
 		int howMany = sizeof(invalidChars) / sizeof(invalidChars[0]);
 		char replacementChar = '_';
-		string output = input;
+		std::string output = input;
 		for(int i = 0; i < howMany; i++){
 			std::replace( output.begin(), output.end(), invalidChars[i], replacementChar);
 		}
 		return output;
 	}
 
-	string getGlInfo(){
+	std::string getGlInfo(){
 		int i;
 		int ii[2];
 		#define OFX_APP_GL_INFO1(t)		glGetIntegerv(t, &i);\
@@ -151,8 +153,8 @@ namespace utils{
 		#define OFX_APP_GL_INFO2(t)		glGetIntegerv(t, &ii[0]);\
 										ss << #t << ": " << ii[0] << " x " << ii[1] << endl;
 
-		stringstream ss;
-		ss << "GL_RENDERER: " << string((char*)glGetString(GL_RENDERER)) << endl;
+		std::stringstream ss;
+		ss << "GL_RENDERER: " << std::string((char*)glGetString(GL_RENDERER)) << endl;
 		OFX_APP_GL_INFO1(GL_MAX_SAMPLES);
 		OFX_APP_GL_INFO2(GL_MAX_VIEWPORT_DIMS);
 		OFX_APP_GL_INFO1(GL_MAX_TEXTURE_SIZE);
@@ -170,8 +172,8 @@ namespace utils{
 		return ss.str();
 	}
 
-	string getGlError(){
-		string err;
+	std::string getGlError(){
+		std::string err;
 		GLenum glErr = glGetError(); //https://www.opengl.org/wiki/GLAPI/glGetError
 
 		switch (glErr) {
@@ -187,7 +189,7 @@ namespace utils{
 	}
 
 
-	bool loadTexture(ofTexture & tex, const string & path, bool mipmap, float bias, int anisotropy){
+	bool loadTexture(ofTexture & tex, const std::string & path, bool mipmap, float bias, int anisotropy){
 		bool ok = ofLoadImage(tex, path);
 		if (ok){
 			tex.generateMipmap();
@@ -205,7 +207,7 @@ namespace utils{
 	}
 
 
-	bool isValidEmail(const string email){
+	bool isValidEmail(const std::string email){
 		// define a regular expression
 		//http://stackoverflow.com/questions/46155/validate-email-address-in-javascript/46181#46181
 		const std::regex pattern ("[^ ]*@[^ ]*\\.[^ ]*");
@@ -213,13 +215,13 @@ namespace utils{
 		//a more relaxed strict version: // ([0-9A-Za-z\\-_\\.]+)@([0-9a-z]+\\.[a-z]{2,4}(\\.[a-z]{2,4})?)
 
 
-		// try to match the string with the regular expression
+		// try to match the std::string with the regular expression
 		return std::regex_match(email, pattern);
 	}
 
 
-	void logParagraph(const string & moduleName, ofLogLevel lev, const string & text){
-		vector<string> jsonLines = ofSplitString(text, "\n");
+	void logParagraph(const std::string & moduleName, ofLogLevel lev, const std::string & text){
+		vector<std::string> jsonLines = ofSplitString(text, "\n");
 		for (auto & l : jsonLines) {
 			switch(lev){
 				case OF_LOG_VERBOSE: ofLogVerbose(moduleName) << l; break;
@@ -232,7 +234,7 @@ namespace utils{
 	}
 
 
-	void logBanner(const string & log) {
+	void logBanner(const std::string & log) {
 		ofLogNotice("ofxApp") << "";
 		#ifdef TARGET_WIN32
 		ofLogNotice("ofxApp") << "///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////";
@@ -245,10 +247,18 @@ namespace utils{
 		#endif
 		ofLogNotice("ofxApp") << "";
 	}
+	
+	string getAsciiHeader(const string & title, char headerChar, int numCharsB4, int totalLen){
+		string line = std::string(numCharsB4, headerChar);
+		line +=  " " + title + " ";
+		int missingChars = MAX(totalLen - numCharsB4 - 2 - title.size(), numCharsB4);
+		line += std::string(missingChars, headerChar);
+		return line;
+	}
 
 
-	ImageInfo getImageDimensions(const string & filePath){
-		string path = ofToDataPath(filePath, true);
+	ImageInfo getImageDimensions(const std::string & filePath){
+		std::string path = ofToDataPath(filePath, true);
 		ImageInfo info;
 		int ret = stbi_info(path.c_str(), &info.width, &info.height, &info.nChannels);
 		info.valid = (ret != 0);
@@ -258,6 +268,19 @@ namespace utils{
 		return info;
 	}
 
+	
+	std::string toString(ofLogLevel l){
+		switch(l){
+			case OF_LOG_VERBOSE: return "OF_LOG_VERBOSE";
+			case OF_LOG_NOTICE: return "OF_LOG_NOTICE";
+			case OF_LOG_WARNING: return "OF_LOG_WARNING";
+			case OF_LOG_ERROR: return "OF_LOG_ERROR";
+			case OF_LOG_FATAL_ERROR: return "OF_LOG_FATAL_ERROR";
+			case OF_LOG_SILENT: return "OF_LOG_SILENT";
+		}
+		ofLogError() << "Unknown Log Level! '" << (int)l << "'";
+		return "UNKNOWN_OF_LOG_LEVEL";
+	}
 
 //namespaces
 }}

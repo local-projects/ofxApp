@@ -2,7 +2,7 @@
 //  ofxAppMacros.h
 //  BaseApp
 //
-//  Created by Oriol Ferrer Mesi√† on 3/8/16.
+//  Created by Oriol Ferrer Mesià on 3/8/16.
 //
 //
 
@@ -30,13 +30,6 @@
 #define OFX_GLOBALS_FILENAME Globals.h
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-#ifdef TARGET_WIN32
-const string FILE_ACCES_ICON = "[!]";
-#else
-const string FILE_ACCES_ICON = "💾";
-#endif
-
 
 #define GLOB											ofxApp::get().globals()
 #define G_COL											ofxApp::get().colors()
@@ -67,3 +60,14 @@ const string FILE_ACCES_ICON = "💾";
 #define LOGE 										ofLogError(SUPERLOG_TYPE_NAME)
 #define LOGF 										ofLogFatalError(SUPERLOG_TYPE_NAME)
 
+#define LOGFV 										ofLogNotice(SUPERLOG_TYPE_NAME_WITH_FUNC)
+#define LOGFN 										ofLogNotice(SUPERLOG_TYPE_NAME_WITH_FUNC)
+#define LOGFW 										ofLogWarning(SUPERLOG_TYPE_NAME_WITH_FUNC)
+#define LOGFE 										ofLogError(SUPERLOG_TYPE_NAME_WITH_FUNC)
+#define LOGFF 										ofLogFatalError(SUPERLOG_TYPE_NAME_WITH_FUNC)
+
+#define LOGFLV 										ofLogNotice(SUPERLOG_TYPE_NAME_WITH_FUNC_AND_LINE)
+#define LOGFLN 										ofLogNotice(SUPERLOG_TYPE_NAME_WITH_FUNC_AND_LINE)
+#define LOGFLW 										ofLogWarning(SUPERLOG_TYPE_NAME_WITH_FUNC_AND_LINE)
+#define LOGFLE 										ofLogError(SUPERLOG_TYPE_NAME_WITH_FUNC_AND_LINE)
+#define LOGFLF 										ofLogFatalError(SUPERLOG_TYPE_NAME_WITH_FUNC_AND_LINE)

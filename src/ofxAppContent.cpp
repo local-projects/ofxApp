@@ -9,23 +9,24 @@
 #include "ofxAppUtils.h"
 #include "ofxApp.h"
 #include "ofxChecksum.h"
+#include "ofxAppErrorReporter.h"
 
-void ofxAppContent::setup(	string ID,
-							string jsonSrc,
-							string jsonDestinationDir_,
+void ofxAppContent::setup(	std::string ID,
+							std::string jsonSrc,
+							std::string jsonDestinationDir_,
 							int numThreads_,
 							int numConcurrentDownloads,
 							int speedLimitKBs,
 							int timeout,
 							bool shouldSkipObjectTests,
 							float idleTimeAfterEachDownload,
-							const std::pair<string,string> & credentials,
+							const std::pair<std::string,std::string> & credentials,
 							const ofxSimpleHttp::ProxyConfig & proxyConfig,
 							const ofxApp::ParseFunctions & contentCfg,
 							const ofxAssets::DownloadPolicy assetDownloadPolicy,
 						  	const ofxAssets::UsagePolicy assetUsagePolicy,
 							const ofxAssets::ObjectUsagePolicy & objectUsagePolicy,
-							const string & assetsLocationPath,
+							const std::string & assetsLocationPath,
 						  	bool skipSha1Tests){
 
 	state = ContentState::IDLE;
@@ -42,7 +43,7 @@ void ofxAppContent::setup(	string ID,
 	this->assetsLocationPath = assetsLocationPath;
 	this->shouldSkipSha1Tests = skipSha1Tests;
 	if(skipSha1Tests){
-		ofLogWarning("ofxAppContent") << "Running with skipSha1Tests == TRUE! Never run in this mode in production!";
+		ofLogWarning("ofxAppContent-" + ID) << "Running with skipSha1Tests == TRUE! Never run in this mode in production!";
 	}
 
 	//config the http downloader if you need to (proxy, etc)
@@ -70,12 +71,12 @@ void ofxAppContent::setup(	string ID,
 
 
 ofxAppContent::~ofxAppContent(){
-	ofLogNotice("ofxAppContent") << "~ofxAppContent \"" << ID << "\"";
+	ofLogNotice("ofxAppContent-" + ID) << "~ofxAppContent";
 }
 
 
-void ofxAppContent::setJsonDownloadURL(string jsonURL){
-	ofLogNotice("ofxAppContent") << "updating the JSON Content URL of " << ID << " to '" << jsonURL << "'";
+void ofxAppContent::setJsonDownloadURL(std::string jsonURL){
+	ofLogNotice("ofxAppContent-" + ID) << "updating the JSON Content URL of " << ID << " to '" << jsonURL << "'";
 	this->jsonURL = jsonURL;
 };
 
@@ -86,7 +87,7 @@ void ofxAppContent::fetchContent(){
 	   state == ContentState::JSON_DOWNLOAD_FAILED){
 		setState(ContentState::DOWNLOADING_JSON);
 	}else{
-		ofLogError("ofxAppContent") << "Can't fetch content now!";
+		ofLogError("ofxAppContent-" + ID) << "Can't fetch content now!";
 	}
 }
 
@@ -114,9 +115,17 @@ void ofxAppContent::update(float dt){
 				}
 			}
 			break;
+
+		case ContentState::REMOVING_EXPIRED_ASSETS:{
+			if(!isThreadRunning()){
+				ofLogNotice("ofxAppContent-" + ID) << "Finished Removing Expired assets.";
+				setState(ContentState::DOWNLOADING_ASSETS);
+			}
+			}break;
+
 		case ContentState::DOWNLOADING_ASSETS:
 			if(!dlc.isBusy()){ //downloader finished!
-				ofLogNotice("ofxAppContent") << "Finished Asset downloads for \"" << ID << "\"!";
+				ofLogNotice("ofxAppContent-" + ID) << "Finished Asset downloads for \"" << ID << "\"!";
 				setState(ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS);
 			}break;
 
@@ -149,22 +158,78 @@ void ofxAppContent::threadedFunction(){
 
 	#ifdef TARGET_WIN32
 	#elif defined(TARGET_LINUX)
-	pthread_setname_np(pthread_self(), "ofxAppContent");
+	pthread_setname_np(pthread_self(), string("ofxAppContent " + ID).c_str());
 	#else
-	pthread_setname_np("ofxAppContent");
+	pthread_setname_np(string("ofxAppContent " + ID).c_str());
 	#endif
 
-	//state == CATALOG_ASSETS
+	switch (state){
+		case ContentState::CATALOG_ASSETS:{
+			ofxApp::CatalogAssetsData d;
+			d.userData = &contentCfg.userData;
+			d.assetsLocation = assetsLocationPath;
+			d.assetUsagePolicy = assetUsagePolicy;
+			d.assetDownloadPolicy = assetDownloadPolicy;
+			for(auto co : parsedObjects){
+				d.object = co;
+				contentCfg.defineObjectAssets(d);
+			}
+		}break;
 
-	ofxApp::CatalogAssetsData d;
-	d.userData = &contentCfg.userData;
-	d.assetsLocation = assetsLocationPath;
-	d.assetUsagePolicy = assetUsagePolicy;
-	d.assetDownloadPolicy = assetDownloadPolicy;
+		case ContentState::REMOVING_EXPIRED_ASSETS:{
+			removeExpiredAssets();
+		}break;
+	}
+	ofSleepMillis(45); //this is a shameful workaround to overcome the bug where too-short-lived threads cause expcetions on windows.
+						//https://github.com/openframeworks/openFrameworks/issues/5262
+						//content with no asset will create this condition. We need to transition out of ofThread asap.
+}
 
+void ofxAppContent::removeExpiredAssets(){
+
+	//accumulate all assets that should be in the filesystem
+	//note all paths are turned to absolute
+	vector<string> allExpectedAssets;
 	for(auto co : parsedObjects){
-		d.object = co;
-		contentCfg.defineObjectAssets(d);
+		auto assets = co->getAllAssetsInDB();
+		for(auto & ad : assets){
+			allExpectedAssets.push_back(ofToDataPath(ad.relativePath, true));
+		}
+	}
+
+	if (ofDirectory::doesDirectoryExist(assetsLocationPath)){
+
+		//build a list of files that exist in
+		ofDirectory assetsDir;
+		vector<string> allFilesOnAssetFolder; //store all files existing on assets dir
+		vector<string> allEmptyDirs; //store all dirs with 0 files inside for deletion
+
+		assetsDir.listDir(assetsLocationPath);
+		for(int i = 0; i < assetsDir.numFiles(); i++){
+			if(assetsDir.getFile(i).isDirectory()){
+				ofDirectory objDir;
+				objDir.listDir(assetsDir.getPath(i));
+				if(objDir.numFiles() == 0){
+					allEmptyDirs.push_back(ofToDataPath(assetsDir.getPath(i), true));
+				}else{
+					for(int j = 0; j < objDir.numFiles(); j++){
+						allFilesOnAssetFolder.push_back(ofToDataPath(objDir.getPath(j), true));
+					}
+				}
+			}
+		}
+
+		for(auto & dir : allEmptyDirs){
+			ofLogWarning("ofxAppContent-" + ID) << "removing empty directory at \"" << ofToDataPath(dir) << "\"";
+			ofDirectory::removeDirectory(dir, true, false);
+		}
+		for(auto & file : allFilesOnAssetFolder){
+			auto it = std::find(allExpectedAssets.begin(), allExpectedAssets.end(), file);
+			if (it == allExpectedAssets.end()){ //this file on disk is not in the expected asset file list, delete!
+				ofLogWarning("ofxAppContent-" + ID) << "removing expired asset at \"" << ofToDataPath(file) << "\"";
+				ofFile::removeFile(file, false);
+			}
+		}
 	}
 }
 
@@ -203,10 +268,16 @@ void ofxAppContent::setState(ContentState s){
 				ofAddListener(assetChecker.eventFinishedCheckingAllAssets, this, &ofxAppContent::assetCheckFinished);
 				assetChecker.checkAssets(assetObjs, numThreads);
 			} else {
-				setState(ContentState::DOWNLOADING_ASSETS);
+				ofLogWarning("ofxAppContent-" + ID) << "There are ZERO parsed objects!";
+				setState(ContentState::REMOVING_EXPIRED_ASSETS);
 			}
 
 		}break;
+
+		case ContentState::REMOVING_EXPIRED_ASSETS:
+			ofLogNotice("ofxAppContent-" + ID) << "Start expired asset removal phase.";
+			startThread();
+			break;
 
 		case ContentState::DOWNLOADING_ASSETS:
 			//fill in the list
@@ -226,7 +297,7 @@ void ofxAppContent::setState(ContentState s){
 				objectsWithBadAssets.clear();
 
 				vector<int> badObjects;
-				vector<string> badObjectsIds;
+				vector<std::string> badObjectsIds;
 
 				for(int i = 0; i < parsedObjects.size(); i++){
 
@@ -238,7 +309,7 @@ void ofxAppContent::setState(ContentState s){
 					int numAudioAssets = parsedObjects[i]->getAssetDescriptorsForType(ofxAssets::AUDIO).size();
 
 					bool rejectObject = false;
-					string rejectionReason;
+					std::string rejectionReason;
 
 					//apply all policy rules to decide if object is rejected or not
 					if(needsAllAssetsToBeOk){
@@ -253,7 +324,7 @@ void ofxAppContent::setState(ContentState s){
 						rejectObject = true;
 						if(rejectionReason.size()) rejectionReason += " | ";
 						rejectionReason += "Not Enough Images";
-						ofLogError("ofxAppContent") << "Rejecting Object '" << parsedObjects[i]->getObjectUUID()
+						ofLogError("ofxAppContent-" + ID) << "Rejecting Object '" << parsedObjects[i]->getObjectUUID()
 							<< "' because doesnt have the min # of images! (" << numImgAssets << "/"
 							<< objectUsagePolicy.minNumberOfImageAssets << ")" ;
 					}
@@ -262,7 +333,7 @@ void ofxAppContent::setState(ContentState s){
 						rejectObject = true;
 						if(rejectionReason.size()) rejectionReason += " | ";
 						rejectionReason += "Not Enough Videos";
-						ofLogError("ofxAppContent") << "Rejecting Object '" << parsedObjects[i]->getObjectUUID()
+						ofLogError("ofxAppContent-" + ID) << "Rejecting Object '" << parsedObjects[i]->getObjectUUID()
 						<< "' because doesnt have the min # of Videos! (" << numVideoAssets << "/"
 						<< objectUsagePolicy.minNumberOfVideoAssets << ")" ;
 					}
@@ -271,7 +342,7 @@ void ofxAppContent::setState(ContentState s){
 						rejectObject = true;
 						if(rejectionReason.size()) rejectionReason += " | ";
 						rejectionReason += "Not Enough AudioFiles";
-						ofLogError("ofxAppContent") << "Rejecting Object '" << parsedObjects[i]->getObjectUUID()
+						ofLogError("ofxAppContent-" + ID) << "Rejecting Object '" << parsedObjects[i]->getObjectUUID()
 						<< "' because doesnt have the min # of Audio Files! (" << numAudioAssets << "/"
 						<< objectUsagePolicy.minNumberOfAudioAssets << ")" ;
 					}
@@ -285,7 +356,7 @@ void ofxAppContent::setState(ContentState s){
 
 
 				for(int i = badObjects.size() - 1; i >= 0; i--){
-					ofLogError("ofxAppContent") << "Dropping object \"" << parsedObjects[i]->getObjectUUID() << "\"";
+					ofLogError("ofxAppContent-" + ID) << "Dropping object \"" << parsedObjects[i]->getObjectUUID() << "\"";
 					delete parsedObjects[badObjects[i]];
 					parsedObjects.erase(parsedObjects.begin() + badObjects[i]);
 				}
@@ -294,17 +365,17 @@ void ofxAppContent::setState(ContentState s){
 
 				objectsWithBadAssets = "\nRemoved " + ofToString(badObjects.size()) + " \"" + ID + "\" objects:\n\n" + objectsWithBadAssets;
 
-				ofLogWarning("ofxApp") << "Removed a total of " << numIgnoredObjects << " objects for content type \"" << ID << "\" due to various rasons. Check 'logs/assetStatus.log' for more info.";
+				ofLogWarning("ofxAppContent-" + ID) << "Removed a total of " << numIgnoredObjects << " objects for content type \"" << ID << "\" due to various rasons. Check 'logs/assetStatus.log' for more info.";
 				float pct;
 				if(numObjectB4Filter > 0){
 					pct = 100.0f * numIgnoredObjects / float(numObjectB4Filter);
 				}else{
 					pct = 0.0f;
 				}
-				ofLogWarning("ofxApp") << "Ignored " << ofToString(pct,2) << "% of the objects defined in the \"" << ID << "\" JSON.";
+				ofLogWarning("ofxAppContent-" + ID) << "Ignored " << ofToString(pct,2) << "% of the objects defined in the \"" << ID << "\" JSON.";
 
 			}else{
-				ofLogWarning("ofxAppContent") << "skipping Object Drop Policy Tests!! \"" << ID << "\"";
+				ofLogWarning("ofxAppContent-" + ID) << "skipping Object Drop Policy Tests!! \"" << ID << "\"";
 			}
 
 		}break;
@@ -317,10 +388,10 @@ void ofxAppContent::setState(ContentState s){
 			//keep the json as a good one
 			ofFile jsonFile;
 			jsonFile.open(jsonParser.getJsonLocalPath());
-			string jsonPath = jsonParser.getJsonLocalPath();
-			string dir = ofFilePath::getEnclosingDirectory(jsonPath);
+			std::string jsonPath = jsonParser.getJsonLocalPath();
+			std::string dir = ofFilePath::getEnclosingDirectory(jsonPath);
 			ofFilePath::createEnclosingDirectory(dir + "knownGood");
-			string oldJsonPath = dir + "/knownGood/" + ID + ".json";
+			std::string oldJsonPath = dir + "/knownGood/" + ID + ".json";
 
 			//calc sha1 for the last konwn json, and the fresh one
 			newJsonSha1 = ofxChecksum::calcSha1(jsonParser.getJsonLocalPath());
@@ -336,21 +407,21 @@ void ofxAppContent::setState(ContentState s){
 		default: break;
 	}
 
-	string info = "\"" + ID + "\" > " + getNameForState(state);
+	std::string info = "\"" + ID + "\" > " + getNameForState(state);
 	if (shouldSkipSha1Tests) info += " - SKIPPING SHA1 TESTS!";
 	ofNotifyEvent(eventStateChanged, info);
 }
 
 
-string ofxAppContent::getLastKnownGoodJsonPath(){
-	string dir = ofFilePath::getEnclosingDirectory(jsonParser.getJsonLocalPath());
+std::string ofxAppContent::getLastKnownGoodJsonPath(){
+	std::string dir = ofFilePath::getEnclosingDirectory(jsonParser.getJsonLocalPath());
 	return dir + "knownGood/" + ID + ".json";
 }
 
 
-string ofxAppContent::getStatus(){
+std::string ofxAppContent::getStatus(){
 
-	string r;
+	std::string r;
 	switch (state) {
 		case ContentState::DOWNLOADING_JSON: r = jsonParser.getHttp().drawableString(); break;
 		case ContentState::JSON_DOWNLOAD_FAILED: r = errorMessage; break;
@@ -410,14 +481,14 @@ bool ofxAppContent::isContentReady(){
 #pragma mark Callbacks
 
 void ofxAppContent::jsonDownloaded(ofxSimpleHttpResponse & arg){
-	ofLogNotice("ofxAppContent") << "JSON download OK!";
+	ofLogNotice("ofxAppContent-" + ID) << "JSON download OK! \"" << jsonURL << "\"";
 	setState(ContentState::CHECKING_JSON);
 	OFXAPP_REPORT("ofxAppJsonDownloadFailed", "JSON Download OK for '" + ID + "'! \"" + jsonURL + "\"", 0);
 }
 
 
 void ofxAppContent::jsonDownloadFailed(ofxSimpleHttpResponse & arg){
-	ofLogError("ofxAppContent") << "JSON download failed!";
+	ofLogError("ofxAppContent-" + ID) << "JSON download failed! \"" << jsonURL << "\"";
 	errorMessage = arg.reasonForStatus + " (" + arg.url + ")";
 	OFXAPP_REPORT("ofxAppJsonDownloadFailed", "JSON Download Failed for '" + ID + "'! \"" + jsonURL + "\"\nreason: " + arg.reasonForStatus , 2);
 	setState(ContentState::JSON_DOWNLOAD_FAILED);
@@ -425,21 +496,21 @@ void ofxAppContent::jsonDownloadFailed(ofxSimpleHttpResponse & arg){
 
 
 void ofxAppContent::jsonInitialCheckOK(){
-	ofLogNotice("ofxAppContent") << "JSON Initial Check OK!";
+	ofLogNotice("ofxAppContent-" + ID) << "JSON Initial Check OK! \"" << jsonURL << "\"";
 	OFXAPP_REPORT("ofxAppJsonParseFailed", "JSON Parse OK '" + ID + "'! \"" + jsonURL + "\"", 0);
 	setState(ContentState::PARSING_JSON);
 }
 
 
 void ofxAppContent::jsonParseFailed(){
-	ofLogError("ofxAppContent") << "JSON Parse Failed!";
+	ofLogError("ofxAppContent-" + ID) << "JSON Parse Failed! \"" << jsonURL << "\"";
 	OFXAPP_REPORT("ofxAppJsonParseFailed", "JSON Parse Failed for '" + ID + "'! \"" + jsonURL + "\"" , 2);
 	setState(ContentState::JSON_PARSE_FAILED);
 }
 
 
 void ofxAppContent::jsonContentReady(vector<ParsedObject*> &parsedObjects_){
-	ofLogNotice("ofxAppContent") << "JSON Content Ready! " << parsedObjects_.size() << " Objects received.";
+	ofLogNotice("ofxAppContent-" + ID) << "JSON Content Ready! " << parsedObjects_.size() << " Objects received.";
 	numIgnoredObjects += jsonParser.getNumEntriesInJson() - parsedObjects_.size();
 	parsedObjects.reserve(parsedObjects_.size());
 	for(auto o : parsedObjects_){
@@ -455,12 +526,12 @@ void ofxAppContent::jsonContentReady(vector<ParsedObject*> &parsedObjects_){
 
 
 void ofxAppContent::assetCheckFinished(){
-	ofLogNotice("ofxAppContent") << "Asset Check Finished!";
-	setState(ContentState::DOWNLOADING_ASSETS);
+	ofLogNotice("ofxAppContent-" + ID) << "Asset Check Finished!";
+	setState(ContentState::REMOVING_EXPIRED_ASSETS);
 }
 
 
-string ofxAppContent::getNameForState(ofxAppContent::ContentState state){
+std::string ofxAppContent::getNameForState(ofxAppContent::ContentState state){
 
 	switch (state) {
 		case ContentState::IDLE: return "IDLE";
@@ -471,6 +542,7 @@ string ofxAppContent::getNameForState(ofxAppContent::ContentState state){
 		case ContentState::PARSING_JSON: return "PARSING_JSON";
 		case ContentState::CATALOG_ASSETS: return "CATALOG_ASSETS";
 		case ContentState::CHECKING_ASSET_STATUS: return "CHECKING_ASSET_STATUS";
+		case ContentState::REMOVING_EXPIRED_ASSETS: return "REMOVING_EXPIRED_ASSETS";
 		case ContentState::DOWNLOADING_ASSETS: return "DOWNLOADING_ASSETS";
 		case ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS: return "FILTER_OBJECTS_WITH_BAD_ASSETS";
 		case ContentState::SETUP_TEXTURED_OBJECTS: return "SETUP_TEXTURED_OBJECTS";

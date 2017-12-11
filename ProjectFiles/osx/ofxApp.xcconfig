@@ -1,0 +1,20 @@
+//THE PATH TO THE ROOT OF OUR OF PATH RELATIVE TO THIS PROJECT.
+//THIS NEEDS TO BE DEFINED BEFORE CoreOF.xcconfig IS INCLUDED
+OF_PATH = ../../../../OpenFrameworks
+
+//THIS HAS ALL THE HEADER AND LIBS FOR OF CORE
+#include "../../../../OpenFrameworks/libs/openFrameworksCompiled/project/osx/CoreOF.xcconfig"
+
+// OFX APP //////////////////////////////////////////////////////
+
+#include "ofxAppProject.xcconfig"
+
+//finaly set header search paths for the ofxApp project file
+HEADER_SEARCH_PATHS = $(OF_CORE_HEADERS) $(OFX_APP_HEADERS)
+
+//define some macros for addons to use each other withing ofxApp
+OFX_APP_MACROS = USE_OFX_FONTSTASH2 NANOVG_GL2_IMPLEMENTATION USE_OFX_FONTSTASH USE_OFX_HISTORYPLOT USE_OFX_TIME_MEASUREMENTS
+
+CC = $(OF_PATH)/libs/openFrameworksCompiled/project/osx/ccache-clang.sh
+CXX = $(OF_PATH)/libs/openFrameworksCompiled/project/osx/ccache-clang++.sh
+
