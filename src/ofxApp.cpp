@@ -699,6 +699,7 @@ void App::update(ofEventArgs &){
 		c.second->update(dt);
 	}
 	updateStateMachine(dt);
+	updateAnimatable(dt);
 	if(gAnalytics) gAnalytics->update();
 }
 
@@ -756,7 +757,9 @@ void App::draw(ofEventArgs &){
 			}break;
 
 		case State::RUNNING:
-			drawStats(); break;
+			drawStats(); 
+			drawAnimatable();
+			break;
 
 		case State::MAINTENANCE:
 			drawMaintenanceScreen(); drawStats(); break;
@@ -811,6 +814,29 @@ void App::drawStats(){
 	if(glErr.size()){
 		ofRectangle r = drawMsgInBox("OpenGL Error: " + glErr, x, y, fontSize, ofColor::red);
 		y += r.height + fabs(r.y - y) + pad;
+	}
+}
+
+void App::updateAnimatable(float dt) {
+	if (globalsStorage) {
+		ofxAnimatableFloat & a = globalsStorage->tempAnimCurveInstance;
+		a.setCurve(globalsStorage->tempAnimCurve1);
+		a.setQuadraticBezierParams(globalsStorage->TAC_quadBezierA, globalsStorage->TAC_quadBezierB);
+		a.setDoubleExpSigmoidParam(globalsStorage->TAC_expSigmoidSteep);
+		a.setCubicBezierParams(globalsStorage->TAC_cubicBezAx, 
+								globalsStorage->TAC_cubicBezAy, globalsStorage->TAC_cubicBezBx, globalsStorage->TAC_cubicBezBy);
+		a.setElasticParams(globalsStorage->TAC_elasticG, globalsStorage->TAC_elasticFreq, globalsStorage->TAC_elasticDecay);
+		a.setEaseBackOffset(globalsStorage->TAC_easeOutOffset);
+		a.setCustomBounceParams(globalsStorage->TAC_bounceNum, globalsStorage->TAC_bounceElast);
+	}
+}
+void App::drawAnimatable() {
+
+	//App::tempAnimCurveInstance
+	if (globalsStorage && globalsStorage->drawTempAnimCurve1) {
+		ofxAnimatableFloat & a = globalsStorage->tempAnimCurveInstance;
+		float size = 125;
+		a.drawCurve(ofGetWidth() -size * 1.1, size * 0.1 , size, true, ofColor::red);
 	}
 }
 

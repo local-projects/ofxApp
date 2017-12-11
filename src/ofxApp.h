@@ -184,9 +184,11 @@ protected:
 	//utils
 	void printSettingsFile(); //print JSON settings file to stdout (and logs)
 	void drawStats();
+	void drawAnimatable();
 	void drawMaintenanceScreen();
 	void drawErrorScreen();
 
+	void updateAnimatable(float dt);
 
 	// STATE MACHINE ///////////////////////////////////////////////////////////////////////////////
 
