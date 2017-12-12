@@ -164,12 +164,24 @@ ofxAutoTexture* ofxAppStaticTextures::createTexObjForPath(std::string filePath, 
 		}
 	}
 
+	
+	//see if img is treated for transparent pixels
+	const string transparencyOverrideCmd = "_transp";
+	bool transparencyOverride = false;
+	auto it2 = lowercaseFilePath.find(transparencyOverrideCmd);
+	
+	if(it2 != std::string::npos){ //found "_transp"
+		transparencyOverride = true;
+		size_t beginOfRemovalSpot = it2 - transparencyOverrideCmd.size();
+		texName = texName.substr(0,beginOfRemovalSpot);
+	}
+	
 	auto it = textures.find(texName);
 	if (it != textures.end()){
 		ofLogError("ofxAppStaticTextures") << "file name collision! " << filePath << " >> " << texName;
 		ofLogError("ofxAppStaticTextures") << "skipping texture at path: '" << filePath << "'";
 		return NULL;
-		}
+	}
 		
 	ofxAutoTexture * tex = new ofxAutoTexture();
 	return tex;
