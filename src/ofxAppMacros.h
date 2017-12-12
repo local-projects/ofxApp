@@ -54,19 +54,19 @@
 
 // Logging
 //for in-class methods only - will throw compiler error in static methods or classless functions
-#define LOGV 										ofLogNotice(SUPERLOG_TYPE_NAME)
+#define LOGV 										ofLogVerbose(SUPERLOG_TYPE_NAME)
 #define LOGN 										ofLogNotice(SUPERLOG_TYPE_NAME)
 #define LOGW 										ofLogWarning(SUPERLOG_TYPE_NAME)
 #define LOGE 										ofLogError(SUPERLOG_TYPE_NAME)
 #define LOGF 										ofLogFatalError(SUPERLOG_TYPE_NAME)
 
-#define LOGFV 										ofLogNotice(SUPERLOG_TYPE_NAME_WITH_FUNC)
+#define LOGFV 										ofLogVerbose(SUPERLOG_TYPE_NAME_WITH_FUNC)
 #define LOGFN 										ofLogNotice(SUPERLOG_TYPE_NAME_WITH_FUNC)
 #define LOGFW 										ofLogWarning(SUPERLOG_TYPE_NAME_WITH_FUNC)
 #define LOGFE 										ofLogError(SUPERLOG_TYPE_NAME_WITH_FUNC)
 #define LOGFF 										ofLogFatalError(SUPERLOG_TYPE_NAME_WITH_FUNC)
 
-#define LOGFLV 										ofLogNotice(SUPERLOG_TYPE_NAME_WITH_FUNC_AND_LINE)
+#define LOGFLV 										ofVerbose(SUPERLOG_TYPE_NAME_WITH_FUNC_AND_LINE)
 #define LOGFLN 										ofLogNotice(SUPERLOG_TYPE_NAME_WITH_FUNC_AND_LINE)
 #define LOGFLW 										ofLogWarning(SUPERLOG_TYPE_NAME_WITH_FUNC_AND_LINE)
 #define LOGFLE 										ofLogError(SUPERLOG_TYPE_NAME_WITH_FUNC_AND_LINE)
