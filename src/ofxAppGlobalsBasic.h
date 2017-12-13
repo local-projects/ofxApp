@@ -34,6 +34,8 @@ public:
 		RUI_SHARE_PARAM(drawAutoTextureMemStats);
 		RUI_SHARE_PARAM(drawTextureLoaderStats);
 		RUI_SHARE_PARAM(drawTextureLoaderState);
+		RUI_SHARE_PARAM(drawGoogleAnalyticsState);
+		RUI_SHARE_PARAM(drawScreenLogs);
 		
 		RUI_NEW_GROUP("OFXAPP PROTOTYPE VARS");
 		RUI_SHARE_PARAM(tempFloat1, -1, 1);
@@ -91,6 +93,8 @@ public:
 	bool drawTextureLoaderState = false;
 	bool drawStaticTexturesMemStats = false;
 	bool drawAutoTextureMemStats = false;
+	bool drawGoogleAnalyticsState = false;
+	bool drawScreenLogs = true;
 	
 	float tempFloat1 = 0;
 	float tempFloat4k = 0;

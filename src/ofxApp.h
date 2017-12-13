@@ -158,6 +158,14 @@ public:
 	void tuioAdded(ofxTuioCursor & tuioCursor);
 	void tuioRemoved(ofxTuioCursor & tuioCursor);
 	void tuioUpdated(ofxTuioCursor & tuioCursor);
+	
+	//debug log functionality
+	void addToScreenLog(const std::string & str);
+	void clearScreenLog();
+	std::string currentScreenLog; //this log is user controlled, user can add at any time, and clear at any time
+	
+	void addToCurrentFrameLog(const std::string & string);
+	std::string currentFrameLog; //this log is a bit different, its cleared every frame
 
 protected:
 
@@ -272,3 +280,4 @@ private:
 } //namespace ofxApp
 
 extern ofxApp::App * global_ofxApp;
+extern OFX_APP_CLASS_NAME(Globals) * ofxApp_globals;

@@ -31,7 +31,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define GLOB											ofxApp::get().globals()
+#define GLOB											ofxApp::get().globals()/*(*ofxApp_globals)*/
 #define G_COL											ofxApp::get().colors()
 #define G_COLOR											ofxApp::get().colors()
 
@@ -51,6 +51,9 @@
 #define OFXAPP_REPORT_FILE(alertID,msg,severity,fileToSend)		ofxApp::get().errorReporter().send(alertID,msg,severity,fileToSend)
 
 #define OFXAPP_ANALYTICS()										ofxApp::get().analytics()
+
+// ofxApp debug logging
+#define 
 
 // Logging
 //for in-class methods only - will throw compiler error in static methods or classless functions

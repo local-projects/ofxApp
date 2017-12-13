@@ -18,6 +18,7 @@
 
 //global var pointing to ofxApp::App so you can reach it from the debugger
 ofxApp::App * global_ofxApp = nullptr;
+OFX_APP_CLASS_NAME(Globals) * ofxApp_globals = nullptr;
 
 //how to get the app from the ofxApp namespace
 namespace ofxApp{
@@ -34,7 +35,7 @@ App::App() {
 	#ifdef OFX_APP_NONAME
 	globalsStorage = new ofxAppGlobalsBasic;
 	#else
-	globalsStorage = new OFX_APP_CLASS_NAME(Globals);
+	ofxApp_globals = globalsStorage = new OFX_APP_CLASS_NAME(Globals)();
 	#endif
 }
 
@@ -809,12 +810,29 @@ void App::drawStats(){
 		ofRectangle r = drawMsgInBox(ProgressiveTextureLoadQueue::instance()->getStatsAsText(), x, y, fontSize, ofColor::limeGreen);
 		y += r.height + fabs(r.y - y) + pad;
 	}
-
-	const std::string glErr = ofxApp::utils::getGlError();
-	if(glErr.size()){
-		ofRectangle r = drawMsgInBox("OpenGL Error: " + glErr, x, y, fontSize, ofColor::red);
+	
+	if(globalsStorage->drawGoogleAnalyticsState && gAnalytics && gAnalytics->isEnabled()){
+		ofRectangle r = drawMsgInBox(gAnalytics->getStatusInfoString(), x, y, fontSize, ofColor::cornsilk);
 		y += r.height + fabs(r.y - y) + pad;
 	}
+	
+	const std::string glErr = ofxApp::utils::getGlError();
+	if(glErr.size()){
+		ofRectangle r = drawMsgInBox("OpenGL Error: " + glErr, x, y, fontSize, ofColor::seaShell);
+		y += r.height + fabs(r.y - y) + pad;
+	}
+	
+	if(globalsStorage->drawScreenLogs && currentScreenLog.size()){
+		ofRectangle r = drawMsgInBox("### Current Screen Log ###\n" + currentScreenLog, x, y, fontSize, ofColor::orchid);
+		y += r.height + fabs(r.y - y) + pad;
+	}
+	
+	if(globalsStorage->drawScreenLogs && currentFrameLog.size()){
+		ofRectangle r = drawMsgInBox("### Current Frame Log ###\n" + currentFrameLog, x, y, fontSize, ofColor::springGreen);
+		y += r.height + fabs(r.y - y) + pad;
+		currentFrameLog.clear();
+	}
+
 }
 
 void App::updateAnimatable(float dt) {
@@ -963,6 +981,20 @@ void App::onDrawLoadingScreenStatus(ofRectangle & area){
 
 		default: break;
 	}
+}
+
+#pragma mark DEBUG LOG
+
+void App::addToScreenLog(const std::string & str){
+	currentScreenLog += ofxApp::utils::secondsToHumanReadable(ofGetElapsedTimef(), 2) + " - " + str + "\n";
+}
+
+void App::clearScreenLog(){
+	currentScreenLog.clear();
+}
+
+void App::addToCurrentFrameLog(const std::string & str){
+	currentFrameLog += ofxApp::utils::secondsToHumanReadable(ofGetElapsedTimef(), 2) + " - " + str + "\n";
 }
 
 
