@@ -994,7 +994,9 @@ void App::updateStateMachine(float dt){
 				if( appState.hasError() && appState.ranOutOfErrorRetries()){ //give up!
 					ofLogError("ofxApp") << "json failed to load too many times! Giving Up!";
 					appState.setState(State::LOAD_JSON_CONTENT_FAILED);
-					
+					if(gAnalytics && gAnalytics->isEnabled()){
+						gAnalytics->sendException("Content '" + currentContentID + "' give up on fetching JSON", false);
+					}
 					OFXAPP_REPORT(	"ofxAppJsonContentGiveUp", "Giving up on fetching JSON for '" + currentContentID +
 							 		"'!\nJsonSrc: \"" + contentStorage[currentContentID]->getJsonDownloadURL() +
 								 	"\"\nStatus: " + contentStorage[currentContentID]->getStatus() +
@@ -1028,6 +1030,11 @@ void App::updateStateMachine(float dt){
 					int delaySeconds = getInt("StateMachine/onErrorWaitTimeSec", 5);
 					appState.setError("failed to load content for \"" + currentContentID + "\"", delaySeconds /*sec*/, numRetries /*retry max*/); //report an error, retry!
 					ofLogError("ofxApp") << "json failed to load! (" << appState.getNumTimesRetried() << ")";
+					
+					if(gAnalytics && gAnalytics->isEnabled()){
+						gAnalytics->sendException("Content '" + currentContentID + "' failed to get JSON (" + ofToString(numRetries) + ")", false);
+					}
+
 					if(numRetries > 0){ //if no retry allowed, jump to fail state directly
 						appState.setState(State::LOAD_JSON_CONTENT, false); //note "false" << do not clear errors (to keep track of # of retries)
 					}else{

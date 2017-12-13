@@ -10,6 +10,7 @@
 #include "ofxApp.h"
 #include "ofxChecksum.h"
 #include "ofxAppErrorReporter.h"
+#include "ofxGoogleAnalytics.h"
 
 void ofxAppContent::setup(	std::string ID,
 							std::string jsonSrc,
@@ -366,6 +367,12 @@ void ofxAppContent::setState(ContentState s){
 				objectsWithBadAssets = "\nRemoved " + ofToString(badObjects.size()) + " \"" + ID + "\" objects:\n\n" + objectsWithBadAssets;
 
 				ofLogWarning("ofxAppContent-" + ID) << "Removed a total of " << numIgnoredObjects << " objects for content type \"" << ID << "\" due to various rasons. Check 'logs/assetStatus.log' for more info.";
+				if(numIgnoredObjects > 0){
+					auto a = ofxApp::get().analytics();
+					if(a && a->isEnabled()){
+						a->sendException("Content '" + ID + "' - rejected " + ofToString(numIgnoredObjects) + " objects.", false);
+					}
+				}
 				float pct;
 				if(numObjectB4Filter > 0){
 					pct = 100.0f * numIgnoredObjects / float(numObjectB4Filter);
@@ -514,13 +521,10 @@ void ofxAppContent::jsonContentReady(vector<ParsedObject*> &parsedObjects_){
 	numIgnoredObjects += jsonParser.getNumEntriesInJson() - parsedObjects_.size();
 	parsedObjects.reserve(parsedObjects_.size());
 	for(auto o : parsedObjects_){
-		//parsedObjects.push_back((ContentObject*)o);		
 		//ContentObject * co = static_cast<ContentObject*>(o);
 		ContentObject * co = (ContentObject*)(o);
-
 		parsedObjects.push_back(co);
 	}
-	//setState(ContentState::CHECKING_ASSET_STATUS);
 	setState(ContentState::CATALOG_ASSETS);
 }
 
