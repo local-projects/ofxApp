@@ -162,10 +162,8 @@ public:
 	//debug log functionality
 	void addToScreenLog(const std::string & str);
 	void clearScreenLog();
-	std::string currentScreenLog; //this log is user controlled, user can add at any time, and clear at any time
 	
 	void addToCurrentFrameLog(const std::string & string);
-	std::string currentFrameLog; //this log is a bit different, its cleared every frame
 
 protected:
 
@@ -273,6 +271,11 @@ protected:
 private:
 
 	App(); //you cant make more than 1 ofxApp::get()
+	
+	//temp log thingies
+	std::string currentFrameLog; //this log is a bit different, its cleared every frame
+	std::string currentScreenLog; //this log is user controlled, user can add at any time, and clear at any time
+	
 };
 
 	App& get(); //how to get the app from the ofxApp namespace

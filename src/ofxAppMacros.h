@@ -45,15 +45,15 @@
 #define G_FSTYLE(S)										ofxApp::get().fonts().getFontStyle(S)
 
 
-
-
 #define OFXAPP_REPORT(alertID,msg,severity)						ofxApp::get().errorReporter().send(alertID,msg,severity)
 #define OFXAPP_REPORT_FILE(alertID,msg,severity,fileToSend)		ofxApp::get().errorReporter().send(alertID,msg,severity,fileToSend)
 
 #define OFXAPP_ANALYTICS()										ofxApp::get().analytics()
 
 // ofxApp debug logging
-#define 
+#define	OFXAPP_LOG(l)											ofxApp::get().addToScreenLog(l)
+#define	OFXAPP_LOG_CLEAR(l)										ofxApp::get().clearScreenLog()
+#define	OFXAPP_LOG_FRAME(l)										ofxApp::get().addToCurrentFrameLog(l)
 
 // Logging
 //for in-class methods only - will throw compiler error in static methods or classless functions
