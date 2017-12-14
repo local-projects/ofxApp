@@ -560,14 +560,15 @@ void App::setupRemoteUI(){
 	ofLogNotice("ofxApp") << "RemoteUI will save settings on quit: " << ruiSaveOnQuit;
 	RUI_GET_INSTANCE()->setShowUIDuringEdits(getBool("RemoteUI/showUiDuringEdits"));
 
+	bool enabled = getBool("RemoteUI/enabled");
+	if(!enabled){
+		ofLogWarning("ofxApp") << "Disabling ofxRemoteUI as specified in JSON settings (\"RemoteUI/enabled\")!";
+		RUI_GET_INSTANCE()->setEnabled(enabled);
+	}
+
 	ofAddListener(RUI_GET_OF_EVENT(), this, &App::onRemoteUINotification);
 	RUI_SETUP();
 
-	bool enabled = getBool("RemoteUI/enabled");
-	if(!enabled){
-		ofLogWarning("ofxApp") << "Disabling ofxRemoteUI as specified in json settings!";
-		RUI_GET_INSTANCE()->setEnabled(enabled);
-	}
 }
 
 
