@@ -283,4 +283,4 @@ private:
 } //namespace ofxApp
 
 extern ofxApp::App * global_ofxApp;
-extern OFX_APP_CLASS_NAME(Globals) * ofxApp_globals;
+//extern OFX_APP_CLASS_NAME(Globals) * ofxApp_globals;

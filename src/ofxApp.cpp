@@ -18,7 +18,7 @@
 
 //global var pointing to ofxApp::App so you can reach it from the debugger
 ofxApp::App * global_ofxApp = nullptr;
-OFX_APP_CLASS_NAME(Globals) * ofxApp_globals = nullptr;
+//OFX_APP_CLASS_NAME(Globals) * ofxApp_globals = nullptr;
 
 //how to get the app from the ofxApp namespace
 namespace ofxApp{
@@ -35,7 +35,7 @@ App::App() {
 	#ifdef OFX_APP_NONAME
 	globalsStorage = new ofxAppGlobalsBasic;
 	#else
-	ofxApp_globals = globalsStorage = new OFX_APP_CLASS_NAME(Globals)();
+	globalsStorage = new OFX_APP_CLASS_NAME(Globals)();
 	#endif
 }
 
