@@ -44,8 +44,8 @@ void ofxAppStaticTextures::loadTexturesInDir(const std::string& imgDirPath, int 
 		//TS_START_NIF("load Textures");
 		startLoadTime = ofGetElapsedTimef();
 		this->maxThreads = maxThreads;
-		ofLogWarning("ofxAppStaticTextures") << "#### START Loading all Textures in directory \"" <<
-		imgDirPath << "\" across " << maxThreads << " ############################################";
+		string msg = "START Loading all Textures in directory \"" + imgDirPath + "\" across " + ofToString(maxThreads);
+		ofLogNotice("ofxAppStaticTextures") << ofxApp::utils::getAsciiHeader(msg, '#', 4, 120);
 		isLoading = true;
 		dirPath = ofFilePath::addTrailingSlash(imgDirPath);
 		#ifdef TARGET_WIN32 //lets make windows path prettier
@@ -128,7 +128,7 @@ ofxAutoTexture* ofxAppStaticTextures::loadTexture(PreLoadData data){
 
 		std::string memUsedStr = ofxApp::utils::bytesToHumanReadable(memUsedForThisOne * 1024 * 1024, 2);
 
-		ofLogNotice("ofxAppStaticTextures") 	<< "#### Loaded \"" << data.filePath << "\" ######################################################";
+		ofLogNotice("ofxAppStaticTextures") << ofxApp::utils::getAsciiHeader("Loaded \"" + data.filePath +"\"", '#', 4, 120);
 		ofLogNotice("ofxAppStaticTextures")	<< "     Name:\"" << data.texName << "\"  " << "[" << data.tex->getWidth() << "x" << data.tex->getHeight() << "]" <<
 		"  Mipmap:" << data.createMipmap << "  Format:" << ofGetGlInternalFormatName(data.tex->getTextureData().glInternalFormat) << "  Mem: " << memUsedStr ;
 		return data.tex;
@@ -164,12 +164,24 @@ ofxAutoTexture* ofxAppStaticTextures::createTexObjForPath(std::string filePath, 
 		}
 	}
 
+	
+	//see if img is treated for transparent pixels
+	const string transparencyOverrideCmd = "_transp";
+	bool transparencyOverride = false;
+	auto it2 = lowercaseFilePath.find(transparencyOverrideCmd);
+	
+	if(it2 != std::string::npos){ //found "_transp"
+		transparencyOverride = true;
+		size_t beginOfRemovalSpot = it2 - transparencyOverrideCmd.size();
+		texName = texName.substr(0,beginOfRemovalSpot);
+	}
+	
 	auto it = textures.find(texName);
 	if (it != textures.end()){
 		ofLogError("ofxAppStaticTextures") << "file name collision! " << filePath << " >> " << texName;
 		ofLogError("ofxAppStaticTextures") << "skipping texture at path: '" << filePath << "'";
 		return NULL;
-		}
+	}
 		
 	ofxAutoTexture * tex = new ofxAutoTexture();
 	return tex;

@@ -42,6 +42,8 @@ namespace ofxApp{
 
 		void logBanner(const std::string & log); //to make prettier log headers
 		void logParagraph(const std::string & moduleName, ofLogLevel lev, const std::string & text);
+		//construct a header in the style of "### MyTitle ################"
+		string getAsciiHeader(const string & title, char headerChar, int numCharsB4, int totalLen );
 
 		ImageInfo getImageDimensions(const std::string & filePath);
 		

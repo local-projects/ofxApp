@@ -26,18 +26,19 @@ void ofxAppErrorReporter::setup(std::string host, int port, const vector<std::st
 	this->emails = emails;
 	enabled = shouldReportErrors;
 		
-	gitRev = ofSystem("git rev-parse HEAD");
-	ofStringReplace(gitRev, "\n", "");
-	gitStatus = ofSystem("git status");
+	if(attachGitStatus){
+		gitRev = ofSystem("git rev-parse HEAD");
+		ofStringReplace(gitRev, "\n", "");
+		gitStatus = ofSystem("git status");
+	}
 
 	hostInfo = indent + "Platform: " + std::string(ofGetTargetPlatform() == OF_TARGET_OSX ? "osx" : "win") +
 	"\n" + indent + "HostName: " + hostName +
 	"\n" + indent + "Host IP: " + hostIP +
 	"\n" + indent + "BinaryName: " + binaryName + "\n";
-		
-	hostInfo += indent + "Git Revision: " + gitRev + "\"n";
-
+	
 	if(attachGitStatus){
+		hostInfo += indent + "Git Revision: " + gitRev + "\"n";
 		hostInfo += indent + "Git Status: " + gitStatus + "\n";
 	}
 }

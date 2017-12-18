@@ -49,6 +49,12 @@ namespace ofxApp{
 
 class App{
 
+	#ifdef TARGET_WIN32
+	const std::string FILE_ACCES_ICON = "[!]";
+	#else
+	const std::string FILE_ACCES_ICON = "💾";
+	#endif
+
 public:
 
 	const std::string settingsFile = "configs/ofxAppSettings.json";
@@ -152,6 +158,12 @@ public:
 	void tuioAdded(ofxTuioCursor & tuioCursor);
 	void tuioRemoved(ofxTuioCursor & tuioCursor);
 	void tuioUpdated(ofxTuioCursor & tuioCursor);
+	
+	//debug log functionality
+	void addToScreenLog(const std::string & str);
+	void clearScreenLog();
+	
+	void addToCurrentFrameLog(const std::string & string);
 
 protected:
 
@@ -178,9 +190,11 @@ protected:
 	//utils
 	void printSettingsFile(); //print JSON settings file to stdout (and logs)
 	void drawStats();
+	void drawAnimatable();
 	void drawMaintenanceScreen();
 	void drawErrorScreen();
 
+	void updateAnimatable(float dt);
 
 	// STATE MACHINE ///////////////////////////////////////////////////////////////////////////////
 
@@ -257,8 +271,16 @@ protected:
 private:
 
 	App(); //you cant make more than 1 ofxApp::get()
+	
+	//temp log thingies
+	std::string currentFrameLog; //this log is a bit different, its cleared every frame
+	std::string currentScreenLog; //this log is user controlled, user can add at any time, and clear at any time
+	
 };
 
 	App& get(); //how to get the app from the ofxApp namespace
 
 } //namespace ofxApp
+
+extern ofxApp::App * global_ofxApp;
+//extern OFX_APP_CLASS_NAME(Globals) * ofxApp_globals;

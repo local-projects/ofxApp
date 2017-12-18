@@ -2,7 +2,7 @@
 //  ofxApp.cpp
 //  BaseApp
 //
-//  Created by Oriol Ferrer Mesi√† on 3/8/16.
+//  Created by Oriol Ferrer Mesià on 3/8/16.
 //
 //
 
@@ -15,6 +15,10 @@
 #include "ofxMullion.h"
 #include "ofxAutoTexture.h"
 #include "ofxAppErrorReporter.h"
+
+//global var pointing to ofxApp::App so you can reach it from the debugger
+ofxApp::App * global_ofxApp = nullptr;
+//OFX_APP_CLASS_NAME(Globals) * ofxApp_globals = nullptr;
 
 //how to get the app from the ofxApp namespace
 namespace ofxApp{
@@ -31,9 +35,15 @@ App::App() {
 	#ifdef OFX_APP_NONAME
 	globalsStorage = new ofxAppGlobalsBasic;
 	#else
-	globalsStorage = new OFX_APP_CLASS_NAME(Globals);
+	globalsStorage = new OFX_APP_CLASS_NAME(Globals)();
 	#endif
 }
+
+
+App::~App(){
+	ofLogWarning("ofxApp")<< "~ofxApp()";
+}
+
 
 void App::setup(ofxAppDelegate * delegate){
 	map<std::string,ofxApp::ParseFunctions> emptyLambas;
@@ -44,6 +54,8 @@ void App::setup(ofxAppDelegate * delegate){
 void App::setup(const map<std::string,ofxApp::ParseFunctions> & cfgs, ofxAppDelegate * delegate){
 
 	ofLogNotice("ofxApp") << "setup()";
+
+	global_ofxApp = &get(); //share ofxApp intance globally for easier debugging
 
 	//create pid file
 	bool pidFileFound = ofFile::doesFileExist(pidFileName);
@@ -65,6 +77,10 @@ void App::setup(const map<std::string,ofxApp::ParseFunctions> & cfgs, ofxAppDele
 		setupRemoteUI();
 		setupErrorReporting();
 		setupGoogleAnalytics();
+		if(pidFileFound){
+
+			if(gAnalytics && gAnalytics->isEnabled()) gAnalytics->sendException("ofxApp - pidFileFound", false);
+		}
 		printSettingsFile();
 		fonts().setup();
 		if(getBool("Logging/useFontStash")){ //set a nice font for the on screen logger if using fontstash
@@ -99,12 +115,6 @@ void App::setup(const map<std::string,ofxApp::ParseFunctions> & cfgs, ofxAppDele
 	}else{
 		ofxApp::utils::terminateApp("ofxApp", "Trying to setup() ofxApp a second time!");
 	}
-}
-
-
-App::~App(){
-	//cout << (*loggerStorage).use_count() << endl;
-	ofLogNotice("ofxApp")<< "~ofxApp()";
 }
 
 
@@ -242,7 +252,7 @@ void App::setupWindow(){
 void App::setupListeners(){
 
 	ofLogNotice("ofxApp") << "setupListeners()";
-	ofAddListener(ofEvents().update, this, &App::update);
+	ofAddListener(ofEvents().update, this, &App::update, OF_EVENT_ORDER_BEFORE_APP);
 	ofAddListener(ofEvents().exit, this, &App::exit, OF_EVENT_ORDER_AFTER_APP + 100); //last thing hopefully!
 	//listen to content manager state changes
 	for(auto c : contentStorage){
@@ -361,6 +371,21 @@ void App::setupGlobalParameters(){
 	RUI_NEW_GROUP(std::string(OFX_APP_STR(OFX_APP_NAME)) + std::string(" Colors"));
 	colors().ofxAppColorsBasic::setupRemoteUIParams();
 	colors().setupRemoteUIParams();
+
+	
+	//get all params as a string / paragrpah, print out so there's values printed in the logs.
+	//string params = ofxRemoteUIServer::instance()->getValuesAsString();
+	ofxApp::utils::logBanner("ofxRemoteUI Params & Their Values");
+	auto rui = RUI_GET_INSTANCE();
+	auto names = rui->getAllParamNamesList();
+	for(auto & n : names){
+		auto & param = rui->getParamRefForName(n);
+		if(param.type == REMOTEUI_PARAM_SPACER){
+			ofLogNotice(OFX_APP_INCLUDE(OFX_APP_NAME,_Globals)) << ofxApp::utils::getAsciiHeader(n, '#', 4, 80);
+		}else{
+			ofLogNotice(OFX_APP_INCLUDE(OFX_APP_NAME,_Globals)) << "     " + n + " : " + param.getInfoAsString();
+		}
+	}
 }
 
 void App::loadDynamicSettings() {
@@ -485,7 +510,12 @@ void App::setupLogging(){
 	(*loggerStorage)->setUseScreenColors(true);
 	(*loggerStorage)->setSyncronizedLogging(getBool("Logging/syncronizedLogging"));
 	(*loggerStorage)->getDisplayLogger().setDisplayLogTimes(getBool("Logging/displayLogTimes"));
-	
+
+	if(settings().exists("Logging/consoleShouldShowTimestamps")){
+		(*loggerStorage)->setConsoleShouldShowTimestamps(getBool("Logging/consoleShouldShowTimestamps"));
+	}
+
+
 	float panelW = getFloat("Logging/screenLogPanelWidth");
 	ofxSuperLog::getLogger()->setDisplayWidth(panelW);
 
@@ -534,14 +564,15 @@ void App::setupRemoteUI(){
 	ofLogNotice("ofxApp") << "RemoteUI will save settings on quit: " << ruiSaveOnQuit;
 	RUI_GET_INSTANCE()->setShowUIDuringEdits(getBool("RemoteUI/showUiDuringEdits"));
 
+	bool enabled = getBool("RemoteUI/enabled");
+	if(!enabled){
+		ofLogWarning("ofxApp") << "Disabling ofxRemoteUI as specified in JSON settings (\"RemoteUI/enabled\")!";
+		RUI_GET_INSTANCE()->setEnabled(enabled);
+	}
+
 	ofAddListener(RUI_GET_OF_EVENT(), this, &App::onRemoteUINotification);
 	RUI_SETUP();
 
-	bool enabled = getBool("RemoteUI/enabled");
-	if(!enabled){
-		ofLogWarning("ofxApp") << "Disabling ofxRemoteUI as specified in json settings!";
-		RUI_GET_INSTANCE()->setEnabled(enabled);
-	}
 }
 
 
@@ -674,6 +705,7 @@ void App::update(ofEventArgs &){
 		c.second->update(dt);
 	}
 	updateStateMachine(dt);
+	updateAnimatable(dt);
 	if(gAnalytics) gAnalytics->update();
 }
 
@@ -681,7 +713,8 @@ void App::update(ofEventArgs &){
 void App::exit(ofEventArgs &){
 
 	ofLogWarning("ofxApp") << "OF is exitting!";
-	if(gAnalytics) gAnalytics->sendEvent("ofxApp", "exitApp", 0, "", false);
+	ofLogWarning("ofxApp") << "Terminate Google Analytics...";
+	if(gAnalytics && gAnalytics->isEnabled()) gAnalytics->sendEvent("ofxApp", "exitApp", 0, "", false);
 	if (gAnalytics) delete gAnalytics;
 
 	//if we are in the download stage, we would crash unless we stop the download threads
@@ -693,6 +726,7 @@ void App::exit(ofEventArgs &){
 
 	ofLogWarning("ofxApp") << "Destroying ofxSimpleHttp SSL context...";
 	ofxSimpleHttp::destroySslContext();
+
 	ofLogWarning("ofxApp") << "Closing ThreadSafeLog(s)...";
 	ofxThreadSafeLog::one()->close();
 
@@ -729,7 +763,9 @@ void App::draw(ofEventArgs &){
 			}break;
 
 		case State::RUNNING:
-			drawStats(); break;
+			drawStats(); 
+			drawAnimatable();
+			break;
 
 		case State::MAINTENANCE:
 			drawMaintenanceScreen(); drawStats(); break;
@@ -779,11 +815,51 @@ void App::drawStats(){
 		ofRectangle r = drawMsgInBox(ProgressiveTextureLoadQueue::instance()->getStatsAsText(), x, y, fontSize, ofColor::limeGreen);
 		y += r.height + fabs(r.y - y) + pad;
 	}
-
+	
+	if(globalsStorage->drawGoogleAnalyticsState && gAnalytics && gAnalytics->isEnabled()){
+		ofRectangle r = drawMsgInBox(gAnalytics->getStatusInfoString(), x, y, fontSize, ofColor::cornsilk);
+		y += r.height + fabs(r.y - y) + pad;
+	}
+	
 	const std::string glErr = ofxApp::utils::getGlError();
 	if(glErr.size()){
-		ofRectangle r = drawMsgInBox("OpenGL Error: " + glErr, x, y, fontSize, ofColor::red);
+		ofRectangle r = drawMsgInBox("OpenGL Error: " + glErr, x, y, fontSize, ofColor::seaShell);
 		y += r.height + fabs(r.y - y) + pad;
+	}
+	
+	if(globalsStorage->drawScreenLogs && currentScreenLog.size()){
+		ofRectangle r = drawMsgInBox("### Current Screen Log ###\n" + currentScreenLog, x, y, fontSize, ofColor::orchid);
+		y += r.height + fabs(r.y - y) + pad;
+	}
+	
+	if(globalsStorage->drawScreenLogs && currentFrameLog.size()){
+		ofRectangle r = drawMsgInBox("### Current Frame Log ###\n" + currentFrameLog, x, y, fontSize, ofColor::springGreen);
+		y += r.height + fabs(r.y - y) + pad;
+		currentFrameLog.clear();
+	}
+
+}
+
+void App::updateAnimatable(float dt) {
+	if (globalsStorage) {
+		ofxAnimatableFloat & a = globalsStorage->tempAnimCurveInstance;
+		a.setCurve(globalsStorage->tempAnimCurve1);
+		a.setQuadraticBezierParams(globalsStorage->TAC_quadBezierA, globalsStorage->TAC_quadBezierB);
+		a.setDoubleExpSigmoidParam(globalsStorage->TAC_expSigmoidSteep);
+		a.setCubicBezierParams(globalsStorage->TAC_cubicBezAx, 
+								globalsStorage->TAC_cubicBezAy, globalsStorage->TAC_cubicBezBx, globalsStorage->TAC_cubicBezBy);
+		a.setElasticParams(globalsStorage->TAC_elasticG, globalsStorage->TAC_elasticFreq, globalsStorage->TAC_elasticDecay);
+		a.setEaseBackOffset(globalsStorage->TAC_easeOutOffset);
+		a.setCustomBounceParams(globalsStorage->TAC_bounceNum, globalsStorage->TAC_bounceElast);
+	}
+}
+void App::drawAnimatable() {
+
+	//App::tempAnimCurveInstance
+	if (globalsStorage && globalsStorage->drawTempAnimCurve1) {
+		ofxAnimatableFloat & a = globalsStorage->tempAnimCurveInstance;
+		float size = 125;
+		a.drawCurve(ofGetWidth() -size * 1.1, size * 0.1 , size, true, ofColor::red);
 	}
 }
 
@@ -912,6 +988,20 @@ void App::onDrawLoadingScreenStatus(ofRectangle & area){
 	}
 }
 
+#pragma mark DEBUG LOG
+
+void App::addToScreenLog(const std::string & str){
+	currentScreenLog += ofxApp::utils::secondsToHumanReadable(ofGetElapsedTimef(), 2) + " - " + str + "\n";
+}
+
+void App::clearScreenLog(){
+	currentScreenLog.clear();
+}
+
+void App::addToCurrentFrameLog(const std::string & str){
+	currentFrameLog += ofxApp::utils::secondsToHumanReadable(ofGetElapsedTimef(), 2) + " - " + str + "\n";
+}
+
 
 #pragma mark State Machine
 
@@ -941,7 +1031,9 @@ void App::updateStateMachine(float dt){
 				if( appState.hasError() && appState.ranOutOfErrorRetries()){ //give up!
 					ofLogError("ofxApp") << "json failed to load too many times! Giving Up!";
 					appState.setState(State::LOAD_JSON_CONTENT_FAILED);
-					
+					if(gAnalytics && gAnalytics->isEnabled()){
+						gAnalytics->sendException("ofxApp - Content '" + currentContentID + "' give up on fetching JSON", false);
+					}
 					OFXAPP_REPORT(	"ofxAppJsonContentGiveUp", "Giving up on fetching JSON for '" + currentContentID +
 							 		"'!\nJsonSrc: \"" + contentStorage[currentContentID]->getJsonDownloadURL() +
 								 	"\"\nStatus: " + contentStorage[currentContentID]->getStatus() +
@@ -955,6 +1047,10 @@ void App::updateStateMachine(float dt){
 						ofxApp::utils::logBanner("JSON content \"" + currentContentID + "\" loaded! " + ofToString(contentStorage[currentContentID]->getNumParsedObjects()) + " objects.");
 						loadedContent.push_back(currentContentID);
 						if(timeSampleOfxApp) TS_STOP_NIF("ofxApp LoadContent " + currentContentID);
+
+						if(gAnalytics && gAnalytics->isEnabled()){
+							gAnalytics->sendCustomTimeMeasurement("ofxApp", "Load Content " + currentContentID, appState.getElapsedTimeInCurrentState() * 1000.0f);
+						}
 
 						if(loadedContent.size() == contentStorage.size()){ //done loading ALL the JSON contents!
 							appState.setState(State::DELIVER_CONTENT_LOAD_RESULTS);
@@ -971,6 +1067,11 @@ void App::updateStateMachine(float dt){
 					int delaySeconds = getInt("StateMachine/onErrorWaitTimeSec", 5);
 					appState.setError("failed to load content for \"" + currentContentID + "\"", delaySeconds /*sec*/, numRetries /*retry max*/); //report an error, retry!
 					ofLogError("ofxApp") << "json failed to load! (" << appState.getNumTimesRetried() << ")";
+					
+					if(gAnalytics && gAnalytics->isEnabled()){
+						gAnalytics->sendException("ofxApp - Content '" + currentContentID + "' failed to get JSON (" + ofToString(numRetries) + ")", false);
+					}
+
 					if(numRetries > 0){ //if no retry allowed, jump to fail state directly
 						appState.setState(State::LOAD_JSON_CONTENT, false); //note "false" << do not clear errors (to keep track of # of retries)
 					}else{
@@ -1043,6 +1144,11 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 
 		case State::LOAD_JSON_CONTENT:{
 			if(change.oldState != State::LOAD_JSON_CONTENT_FAILED){
+
+				if(gAnalytics && gAnalytics->isEnabled() && change.oldState == State::LOAD_STATIC_TEXTURES){
+					gAnalytics->sendCustomTimeMeasurement("ofxApp", "Load Static Images", change.timeInPrevState * 1000.0f);
+				}
+
 				if(timeSampleOfxApp) TS_START_NIF("ofxApp LoadContent " + currentContentID);
 				ofxApp::utils::logBanner("Start Loading Content  \"" + currentContentID + "\"");
 				
@@ -1105,7 +1211,11 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 
 		case State::DELIVER_CONTENT_LOAD_RESULTS:
 			for(auto c : contentStorage){
-				delegate->ofxAppContentIsReady(c.first, c.second->getParsedObjects());
+				auto content = c.second->getParsedObjects();
+				delegate->ofxAppContentIsReady(c.first, content);
+				if(gAnalytics && gAnalytics->isEnabled()){
+					gAnalytics->sendEvent("ofxApp", "Content Delivered", content.size(), c.first , false);
+				}
 			}
 			ofLogNotice("ofxApp") << "Start Loading Custom User Content...";
 			delegate->ofxAppPhaseWillBegin(Phase(State::DELIVER_CONTENT_LOAD_RESULTS));
@@ -1115,7 +1225,9 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 			setupRuiWatches();
 			setupApp();
 			ofLogNotice("ofxApp") << "Start SETUP_DELEGATE_B4_RUNNING...";
-			if(gAnalytics) gAnalytics->sendEvent("ofxApp", "startApp", 0, "", false);
+			if(gAnalytics && gAnalytics->isEnabled()){
+				gAnalytics->sendEvent("ofxApp", "startApp", 0, "", false);
+			}
 			delegate->ofxAppPhaseWillBegin(Phase(State::SETUP_DELEGATE_B4_RUNNING)); //user custom code runs here
 			break;
 
@@ -1126,6 +1238,9 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 					ts = TS_STOP_NIF("ofxApp Setup");
 				}
 				ofxApp::utils::logBanner(" ofxApp Setup Complete! " + ofToString(ofGetElapsedTimef(), 2) + "sec." );
+				if(gAnalytics && gAnalytics->isEnabled()){
+					gAnalytics->sendCustomTimeMeasurement("ofxApp", "Full Setup", ofGetElapsedTimef() * 1000.0f);
+				}
 			}
 			}
 			break;
