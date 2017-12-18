@@ -77,6 +77,10 @@ void App::setup(const map<std::string,ofxApp::ParseFunctions> & cfgs, ofxAppDele
 		setupRemoteUI();
 		setupErrorReporting();
 		setupGoogleAnalytics();
+		if(pidFileFound){
+
+			if(gAnalytics && gAnalytics->isEnabled()) gAnalytics->sendException("ofxApp - pidFileFound", false);
+		}
 		printSettingsFile();
 		fonts().setup();
 		if(getBool("Logging/useFontStash")){ //set a nice font for the on screen logger if using fontstash
@@ -1028,7 +1032,7 @@ void App::updateStateMachine(float dt){
 					ofLogError("ofxApp") << "json failed to load too many times! Giving Up!";
 					appState.setState(State::LOAD_JSON_CONTENT_FAILED);
 					if(gAnalytics && gAnalytics->isEnabled()){
-						gAnalytics->sendException("Content '" + currentContentID + "' give up on fetching JSON", false);
+						gAnalytics->sendException("ofxApp - Content '" + currentContentID + "' give up on fetching JSON", false);
 					}
 					OFXAPP_REPORT(	"ofxAppJsonContentGiveUp", "Giving up on fetching JSON for '" + currentContentID +
 							 		"'!\nJsonSrc: \"" + contentStorage[currentContentID]->getJsonDownloadURL() +
@@ -1065,7 +1069,7 @@ void App::updateStateMachine(float dt){
 					ofLogError("ofxApp") << "json failed to load! (" << appState.getNumTimesRetried() << ")";
 					
 					if(gAnalytics && gAnalytics->isEnabled()){
-						gAnalytics->sendException("Content '" + currentContentID + "' failed to get JSON (" + ofToString(numRetries) + ")", false);
+						gAnalytics->sendException("ofxApp - Content '" + currentContentID + "' failed to get JSON (" + ofToString(numRetries) + ")", false);
 					}
 
 					if(numRetries > 0){ //if no retry allowed, jump to fail state directly
@@ -1207,7 +1211,11 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 
 		case State::DELIVER_CONTENT_LOAD_RESULTS:
 			for(auto c : contentStorage){
-				delegate->ofxAppContentIsReady(c.first, c.second->getParsedObjects());
+				auto content = c.second->getParsedObjects();
+				delegate->ofxAppContentIsReady(c.first, content);
+				if(gAnalytics && gAnalytics->isEnabled()){
+					gAnalytics->sendEvent("ofxApp", "Content Delivered", content.size(), c.first , false);
+				}
 			}
 			ofLogNotice("ofxApp") << "Start Loading Custom User Content...";
 			delegate->ofxAppPhaseWillBegin(Phase(State::DELIVER_CONTENT_LOAD_RESULTS));

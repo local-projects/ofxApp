@@ -370,7 +370,7 @@ void ofxAppContent::setState(ContentState s){
 				if(numIgnoredObjects > 0){
 					auto a = ofxApp::get().analytics();
 					if(a && a->isEnabled()){
-						a->sendException("Content '" + ID + "' - rejected " + ofToString(numIgnoredObjects) + " objects.", false);
+						a->sendException("ofxApp - Content '" + ID + "' - rejected " + ofToString(numIgnoredObjects) + " objects.", false);
 					}
 				}
 				float pct;
