@@ -677,6 +677,7 @@
 			children = (
 				BBA270F71FC4A52A00D461BD /* ofxApp.xcconfig */,
 				BB8554691FD3510600EFB438 /* ofxAppProject.xcconfig */,
+				BBA7739A1FC3E79C00DD5B69 /* ofxApp */,
 				BBA7745E1FC3E82000DD5B69 /* LocalAddons */,
 				BB7B1AC81FC3DDC400CDD710 /* Addons */,
 				BB7B1AC01FC3DDA200CDD710 /* openFrameworksLib.xcodeproj */,
@@ -2224,7 +2225,6 @@
 				BBA7737F1FC3E78C00DD5B69 /* ofxJSON */,
 				BBA7738D1FC3E79300DD5B69 /* ofxSuperLog */,
 				BBA773951FC3E79800DD5B69 /* ofxAutoTexture */,
-				BBA7739A1FC3E79C00DD5B69 /* ofxApp */,
 				BBA773B41FC3E7A500DD5B69 /* ofxMTJsonParser */,
 				BBA773BF1FC3E7AA00DD5B69 /* ofxSimpleHttp */,
 				BBA773CD1FC3E7AE00DD5B69 /* ofxTagSystem */,
