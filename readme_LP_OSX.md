@@ -77,3 +77,5 @@ Select it, and press `backspace` on your keyboard. This will remove these edits,
 #### 7. your project is ready to use ofxApp.
 
 And more importantly, any new dependencies ofxApp might get in future updates, will be automatically handled when you update ofxApp.
+
+If you need to include more addons, just add them to your project as you normally would.
