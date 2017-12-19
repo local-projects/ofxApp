@@ -15,6 +15,9 @@
 //to use ofxApp, your app must follow this protocol, so make sure your app
 //is a subclass of ofxAppDelegate
 
+class ofxAppGlobalsBasic;
+class ofxAppColorsBasic;
+
 class ofxAppDelegate{
 
 public:
@@ -34,6 +37,9 @@ public:
 	// just return true in ofxAppIsPhaseComplete() when the stage is concluded for ofxApp to proceed
 	// to the next state.
 
+	virtual ofxAppGlobalsBasic* ofxAppAllocateGlobals() = 0;
+	virtual ofxAppColorsBasic* ofxAppAllocateColors() = 0;
+	
 	//this will be your entry point to start loading stuff
 	virtual void ofxAppPhaseWillBegin(ofxApp::Phase) = 0;
 	//after u are asked to start loading content, ofxApp will query every frame to check if you are done

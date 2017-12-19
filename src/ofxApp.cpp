@@ -32,11 +32,6 @@ using namespace ofxApp;
 App::App() {
 	cout << "ofxApp::App()\n";
 	fontStorage = new ofxAppFonts();
-	#ifdef OFX_APP_NONAME
-	globalsStorage = new ofxAppGlobalsBasic;
-	#else
-	globalsStorage = new OFX_APP_CLASS_NAME(Globals)();
-	#endif
 }
 
 
@@ -54,6 +49,9 @@ void App::setup(ofxAppDelegate * delegate){
 void App::setup(const map<std::string,ofxApp::ParseFunctions> & cfgs, ofxAppDelegate * delegate){
 
 	ofLogNotice("ofxApp") << "setup()";
+
+	globalsStorage = delegate->ofxAppAllocateGlobals();
+	colorsStorage = delegate->ofxAppAllocateColors();
 
 	global_ofxApp = &get(); //share ofxApp intance globally for easier debugging
 
@@ -467,7 +465,7 @@ void App::setupApp(){
 	RUI_PUSH_TO_CLIENT();
 	//RUI_LOAD_FROM_XML();
 	setMouseEvents(enableMouse);
-	ofBackground(colorsStorage.bgColor);
+	ofBackground(colorsStorage->bgColor);
 }
 
 
@@ -1322,7 +1320,7 @@ void App::onRemoteUINotification(RemoteUIServerCallBackArg &arg){
 				setMouseEvents(arg.param.boolVal);
 			}
 			if(arg.paramName == "bgColor"){
-				ofBackground(colorsStorage.bgColor);
+				ofBackground(colorsStorage->bgColor);
 				RUI_PUSH_TO_CLIENT();
 			}
 			break;

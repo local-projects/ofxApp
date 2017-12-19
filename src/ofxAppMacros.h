@@ -31,19 +31,21 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define GLOB											ofxApp::get().globals()/*(*ofxApp_globals)*/
-#define G_COL											ofxApp::get().colors()
-#define G_COLOR											ofxApp::get().colors()
+//#define GLOB													ofxApp::get().globals()/*(*ofxApp_globals)*/
+//#define GLOB													((OFX_APP_CLASS_NAME(Globals)&)ofxApp::get().globals())
+#define GLOB													(static_cast<OFX_APP_CLASS_NAME(Globals)&>(ofxApp::get().globals()))
 
-#define G_TEX(name)										ofxApp::get().textures().getTexture(name)
+#define G_COL													(static_cast<OFX_APP_CLASS_NAME(Colors)&>(ofxApp::get().colors()))
+#define G_COLOR													(static_cast<OFX_APP_CLASS_NAME(Colors)&>(ofxApp::get().colors()))
 
-#define G_FONT(name)									ofxApp::get().fonts().getFont(name)
-#define G_FONT_MONO()									ofxApp::get().fonts().getMonoFont()
-#define G_FONT_MONO_BOLD()								ofxApp::get().fonts().getMonoBoldFont()
+#define G_TEX(name)												ofxApp::get().textures().getTexture(name)
 
-#define G_FS2()											ofxApp::get().fonts().getFontStash2()
-#define G_FSTYLE(S)										ofxApp::get().fonts().getFontStyle(S)
+#define G_FONT(name)											ofxApp::get().fonts().getFont(name)
+#define G_FONT_MONO()											ofxApp::get().fonts().getMonoFont()
+#define G_FONT_MONO_BOLD()										ofxApp::get().fonts().getMonoBoldFont()
 
+#define G_FS2()													ofxApp::get().fonts().getFontStash2()
+#define G_FSTYLE(S)												ofxApp::get().fonts().getFontStyle(S)
 
 #define OFXAPP_REPORT(alertID,msg,severity)						ofxApp::get().errorReporter().send(alertID,msg,severity)
 #define OFXAPP_REPORT_FILE(alertID,msg,severity,fileToSend)		ofxApp::get().errorReporter().send(alertID,msg,severity,fileToSend)
@@ -57,20 +59,20 @@
 
 // Logging
 //for in-class methods only - will throw compiler error in static methods or classless functions
-#define LOGV 										ofLogVerbose(SUPERLOG_TYPE_NAME)
-#define LOGN 										ofLogNotice(SUPERLOG_TYPE_NAME)
-#define LOGW 										ofLogWarning(SUPERLOG_TYPE_NAME)
-#define LOGE 										ofLogError(SUPERLOG_TYPE_NAME)
-#define LOGF 										ofLogFatalError(SUPERLOG_TYPE_NAME)
+#define LOGV 													ofLogVerbose(SUPERLOG_TYPE_NAME)
+#define LOGN 													ofLogNotice(SUPERLOG_TYPE_NAME)
+#define LOGW 													ofLogWarning(SUPERLOG_TYPE_NAME)
+#define LOGE 													ofLogError(SUPERLOG_TYPE_NAME)
+#define LOGF 													ofLogFatalError(SUPERLOG_TYPE_NAME)
 
-#define LOGFV 										ofLogVerbose(SUPERLOG_TYPE_NAME_WITH_FUNC)
-#define LOGFN 										ofLogNotice(SUPERLOG_TYPE_NAME_WITH_FUNC)
-#define LOGFW 										ofLogWarning(SUPERLOG_TYPE_NAME_WITH_FUNC)
-#define LOGFE 										ofLogError(SUPERLOG_TYPE_NAME_WITH_FUNC)
-#define LOGFF 										ofLogFatalError(SUPERLOG_TYPE_NAME_WITH_FUNC)
+#define LOGFV 													ofLogVerbose(SUPERLOG_TYPE_NAME_WITH_FUNC)
+#define LOGFN 													ofLogNotice(SUPERLOG_TYPE_NAME_WITH_FUNC)
+#define LOGFW 													ofLogWarning(SUPERLOG_TYPE_NAME_WITH_FUNC)
+#define LOGFE 													ofLogError(SUPERLOG_TYPE_NAME_WITH_FUNC)
+#define LOGFF 													ofLogFatalError(SUPERLOG_TYPE_NAME_WITH_FUNC)
 
-#define LOGFLV 										ofVerbose(SUPERLOG_TYPE_NAME_WITH_FUNC_AND_LINE)
-#define LOGFLN 										ofLogNotice(SUPERLOG_TYPE_NAME_WITH_FUNC_AND_LINE)
-#define LOGFLW 										ofLogWarning(SUPERLOG_TYPE_NAME_WITH_FUNC_AND_LINE)
-#define LOGFLE 										ofLogError(SUPERLOG_TYPE_NAME_WITH_FUNC_AND_LINE)
-#define LOGFLF 										ofLogFatalError(SUPERLOG_TYPE_NAME_WITH_FUNC_AND_LINE)
+#define LOGFLV 													ofVerbose(SUPERLOG_TYPE_NAME_WITH_FUNC_AND_LINE)
+#define LOGFLN 													ofLogNotice(SUPERLOG_TYPE_NAME_WITH_FUNC_AND_LINE)
+#define LOGFLW 													ofLogWarning(SUPERLOG_TYPE_NAME_WITH_FUNC_AND_LINE)
+#define LOGFLE 													ofLogError(SUPERLOG_TYPE_NAME_WITH_FUNC_AND_LINE)
+#define LOGFLF 													ofLogFatalError(SUPERLOG_TYPE_NAME_WITH_FUNC_AND_LINE)

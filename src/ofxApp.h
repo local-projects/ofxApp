@@ -28,19 +28,13 @@
 #include "ofxAppErrorReporter.h"
 
 //Check if the user created the required macro to include his custom sub-classes for Colors, Globals and Fonts.
-#ifndef OFX_APP_NAME
+//#ifndef OFX_APP_NAME
 	//#error you must define a PREPROCESSOR MACRO with the name of your app, as in OFX_APP_NAME=MyApp
-	#define OFX_APP_NONAME
+//	#define OFX_APP_NONAME
 	//#warning You should define an app Name for your app in the preprocessor macros; ie OFX_APP_NAME=MyApp
 	//#define OFX_APP_NAME MyApp /*you define your App's name in your PREPROCESSOR MACROS*/
 	#include "ofxAppColorsBasic.h"
 	#include "ofxAppGlobalsBasic.h"
-#else
-	//some macro magic to include the user defined subclasses of ofxAppColorsBasic, ofxAppFonts, ofxAppGlobalsBasic
-	//it takes the user defined macro (ie OFX_APP_NAME=MyApp) and creates an #include "MyAppColors.h"
-	#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_COLORS_FILENAME) 	//include MyAppColors.h
-	#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_GLOBALS_FILENAME) //include MyAppGlobals.h
-#endif
 
 class ofxGoogleAnalytics;
 class ofxMullion;
@@ -88,14 +82,9 @@ public:
 	// OFX_APP_NAME=MyApp
 	// alternativelly, only the default Globals & colors will be defined (ofxAppColorsBasic & ofxAppGlobalsBasic)
 	//so you would have to cast the globals to get access to your projec's globals
-	#ifdef OFX_APP_NONAME
-	ofxAppColorsBasic & 			colors(){return colorsStorage;}
+	ofxAppColorsBasic & 			colors(){return *colorsStorage;}
 	ofxAppGlobalsBasic & 			globals(){return *globalsStorage;}
-	#else
-	OFX_APP_CLASS_NAME(Colors) & 	colors(){return colorsStorage;}
-	OFX_APP_CLASS_NAME(Globals) & 	globals(){return *globalsStorage;}
-	#endif
-	
+
 	ofxAppFonts &					fonts(){return *fontStorage;}
 	ofxJsonSettings & 				settings(){return ofxJsonSettings::get();}
 	ofxAppStaticTextures & 			textures(){return texStorage;}
@@ -215,7 +204,7 @@ protected:
 
 	//used by ofxSimpleHttp
 	ofxSimpleHttp::ProxyConfig				proxyCfg;
-	std::pair<std::string,std::string>				credentials;
+	std::pair<std::string,std::string>		credentials;
 
 	//used by ofxAssets
 	ofxAssets::DownloadPolicy				assetDownloadPolicy;
@@ -224,17 +213,10 @@ protected:
 
 
 	// ofxApp various user contents ///////////////////////////////////
-
-	#ifdef OFX_APP_NONAME //if the dev didnt define an app name, use default global vars & colors
-		ofxAppColorsBasic					colorsStorage;
-		ofxAppGlobalsBasic					* globalsStorage = nullptr;
-	#else
-		//crazy macro magic - beware! read a few lines above to see what's going on
-		OFX_APP_CLASS_NAME(Colors)			colorsStorage;
-		OFX_APP_CLASS_NAME(Globals)			* globalsStorage = nullptr;
-	#endif
-
+	ofxAppColorsBasic						* colorsStorage = nullptr;
+	ofxAppGlobalsBasic						* globalsStorage = nullptr;
 	ofxAppFonts *							fontStorage = nullptr; //keeps all loaded fonts
+	
 
 	map<std::string, ofxAppContent*>				contentStorage; //App contents parser - indexed by contentID
 	map<std::string, ofxApp::ParseFunctions>		contentCfgs; //user supplied custom parsing code - indexed by contentID
@@ -242,8 +224,8 @@ protected:
 	ofPtr<ofxSuperLog> *					loggerStorage; //note its a * to an ofPtr - TODO!
 
 	ofxDrawableStateMachine<ofxApp::State>	appState; //ofxApp State Machine to handle all loading stages
-	std::string									errorStateHeader; //holds current error msg header (only applies when state == DEVELOPER_REQUESTED_ERROR_SCREEN)
-	std::string									errorStateBody; //holds current error msg body (only applies when state == DEVELOPER_REQUESTED_ERROR_SCREEN)
+	std::string								errorStateHeader; //holds current error msg header (only applies when state == DEVELOPER_REQUESTED_ERROR_SCREEN)
+	std::string								errorStateBody; //holds current error msg body (only applies when state == DEVELOPER_REQUESTED_ERROR_SCREEN)
 	
 	ofxAppErrorReporter						errorReporterObj; //send live error reports to our CMS over sensu
 	ofxGoogleAnalytics *					gAnalytics = nullptr;
@@ -256,9 +238,9 @@ protected:
 	bool									showMouse;
 	bool									reportErrors;
 
-	std::string									currentContentID; //keep track of which content are we getting
-	vector<std::string>							requestedContent; //complete list of user supplied contentID's
-	vector<std::string>							loadedContent; //user supplied contentID's loaded so far
+	std::string								currentContentID; //keep track of which content are we getting
+	vector<std::string>						requestedContent; //complete list of user supplied contentID's
+	vector<std::string>						loadedContent; //user supplied contentID's loaded so far
 
 	ofxAppDelegate *						delegate = nullptr; //this will be the "user"'s app, likely an ofBaseApp subclass
 	
