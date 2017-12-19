@@ -89,6 +89,8 @@ ofxOSC, ofxXmlSettings, ofxOpenCV, ofxNetwork, ofxPoco,  [ofxFontStash](https://
 
 To do so, given the high number of addon dependencies, I suggest you use the OpenFrameworks Project Generator. This applies to Windows and OS X platforms.
 
+**Note: For an LP-styled repository, you can simplify the creation of your Xcode project by following [these instructions](readme_LP_OSX.md) instead.**
+
 * Get OpenFrameworks 0.9.8 or newer, development is done against the OF github master branch.
 * Launch the OF Project Generator for your platform and set it up.
 * Set a "Project Path", where do you want to create your Project.
