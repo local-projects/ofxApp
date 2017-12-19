@@ -26,7 +26,7 @@ You should be able to target ofxApp and build it. But to be able to use ofxApp w
 
 #### 4. include `ofxAppProject.xcconfig` from your `Project.xcconfig`.
 
-Following the same pattern that OF uses, open your `Project.xcconfig` and edit it so that it looks like:
+Following the same pattern that OF uses, open your `Project.xcconfig` and edit it so that it looks like this:
 
 ```c++
 //define the path to OF from within your project
@@ -36,11 +36,16 @@ OF_PATH = ../../OpenFrameworks
 #include "../../OpenFrameworks/libs/openFrameworksCompiled/project/osx/CoreOF.xcconfig"
 #include "../../ExternalAddons/ofxApp/ProjectFiles/osx/ofxAppProject.xcconfig"
 
+//ICONS - NEW IN 0072
+ICON_NAME_DEBUG = icon-debug.icns
+ICON_NAME_RELEASE = icon.icns
+ICON_FILE_PATH = $(OF_PATH)/libs/openFrameworksCompiled/project/osx/
 ```
 
-Remove any references to `OTHER_CFLAGS`, `OTHER_LDFLAGS` or `HEADER_SEARCH_PATHS` overrides in your `Project.xcconfig` file.
-
 ![](ReadMeImages/xcconfig.PNG)
+
+Note that we are including the `ofxApp.xcconfig` from our project's xcconfig, which effectively adds all the `ofxApp` dependency includes to our project's. This is what saves us from having to define all include paths, etc. within our project, bc the `ofxApp` Xcode project already has these defined.
+
 
 #### 5. Add ofxApp as a target dependency of your projects
 
@@ -62,7 +67,7 @@ Then expand the *"Link Binary With Libraries"* section, and click on the "+" but
 
 ![](ReadMeImages/linkWith.PNG)
 
-`ofxAppDebug.a` should then show up listed as a *"Link Binary With Libraries"*, as well as OpenFrameworks. This makes Xcode link your project's source code with ofxApp's static lib.
+`ofxAppDebug.a` should then show up listed as a *"Link Binary With Libraries"*, as well as OpenFrameworks. This makes Xcode link your project's source code with ofxApp's static lib, so that you don't need to include any of the dependencies that `ofxApp` has (ie ofxRemoteUI, etc) inside your project. They are already compiled within the ofxApp Xcode project, and your project will just link against that.
 
 #### 7. Remove "Header Search Path" overrides
 
@@ -73,9 +78,19 @@ Select it, and press `backspace` on your keyboard. This will remove these edits,
 
 ![](ReadMeImages/rmEdits.PNG)
 
+#### 8. include the ofxApp src within your project.
 
-#### 7. your project is ready to use ofxApp.
+Because ofxApp holds globals that are unique per each project, it needs to be compiled together with your project. Because of that, `ofxApp` itself is not included in the ofxApp.xcodeproj; only its dependencies are.
 
-And more importantly, any new dependencies ofxApp might get in future updates, will be automatically handled when you update ofxApp.
+So, to actually use ofxApp in your project, you need to add it into the project navigator inside your project.
+
+This is as easy as creating a new group named `ofxApp` within the addons section in the *"Project Navigator"*, and dragging all the `ofxApp` src files in it.
+
+![](ReadMeImages/ofxAppAddon.PNG)
+
+
+#### 9. your project is ready to use ofxApp.
+
+And more importantly, any new dependencies `ofxApp` might get in future updates, will be automatically handled when you update `ofxApp`, because the `ofxApp` project files are part of the `ofxApp` repo.
 
 If you need to include more addons, just add them to your project as you normally would.

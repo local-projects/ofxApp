@@ -46,7 +46,6 @@
 		BB7B24061FC3E6A400CDD710 /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7B24021FC3E6A400CDD710 /* tinyxmlparser.cpp */; };
 		BB7B24071FC3E6A400CDD710 /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7B24031FC3E6A400CDD710 /* tinyxmlerror.cpp */; };
 		BB7B24081FC3E6A400CDD710 /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7B24041FC3E6A400CDD710 /* tinyxml.cpp */; };
-		BB9991891FD3349F003E9F81 /* ofxAppErrorReporter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB9991881FD3349F003E9F81 /* ofxAppErrorReporter.cpp */; };
 		BBA7734E1FC3E78000DD5B69 /* ofxFontStash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA773461FC3E78000DD5B69 /* ofxFontStash.cpp */; };
 		BBA7734F1FC3E78000DD5B69 /* stb_truetype.c in Sources */ = {isa = PBXBuildFile; fileRef = BBA7734A1FC3E78000DD5B69 /* stb_truetype.c */; };
 		BBA773501FC3E78000DD5B69 /* fontstash.c in Sources */ = {isa = PBXBuildFile; fileRef = BBA7734B1FC3E78000DD5B69 /* fontstash.c */; };
@@ -62,11 +61,6 @@
 		BBA773931FC3E79300DD5B69 /* ofxSuperLogDisplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA773911FC3E79300DD5B69 /* ofxSuperLogDisplay.cpp */; };
 		BBA773941FC3E79300DD5B69 /* ofxSuperLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA773921FC3E79300DD5B69 /* ofxSuperLog.cpp */; };
 		BBA773991FC3E79800DD5B69 /* ofxAutoTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA773971FC3E79800DD5B69 /* ofxAutoTexture.cpp */; };
-		BBA773AF1FC3E79C00DD5B69 /* ofxAppContent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA7739C1FC3E79C00DD5B69 /* ofxAppContent.cpp */; };
-		BBA773B01FC3E79C00DD5B69 /* ofxAppStaticTextures.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA7739E1FC3E79C00DD5B69 /* ofxAppStaticTextures.cpp */; };
-		BBA773B11FC3E79C00DD5B69 /* ofxApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA773A41FC3E79C00DD5B69 /* ofxApp.cpp */; };
-		BBA773B21FC3E79C00DD5B69 /* ofxAppUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA773A61FC3E79C00DD5B69 /* ofxAppUtils.cpp */; };
-		BBA773B31FC3E79C00DD5B69 /* ofxAppFonts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA773A91FC3E79C00DD5B69 /* ofxAppFonts.cpp */; };
 		BBA773BD1FC3E7A500DD5B69 /* ofxMtJsonParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA773B91FC3E7A500DD5B69 /* ofxMtJsonParser.cpp */; };
 		BBA773BE1FC3E7A500DD5B69 /* ofxMtJsonParserThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA773BC1FC3E7A500DD5B69 /* ofxMtJsonParserThread.cpp */; };
 		BBA773C91FC3E7AA00DD5B69 /* ofxDownloadCentral.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA773C21FC3E7AA00DD5B69 /* ofxDownloadCentral.cpp */; };
@@ -487,7 +481,6 @@
 		BB7B24031FC3E6A400CDD710 /* tinyxmlerror.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlerror.cpp; sourceTree = "<group>"; };
 		BB7B24041FC3E6A400CDD710 /* tinyxml.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxml.cpp; sourceTree = "<group>"; };
 		BB8554691FD3510600EFB438 /* ofxAppProject.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = ofxAppProject.xcconfig; sourceTree = "<group>"; };
-		BB9991881FD3349F003E9F81 /* ofxAppErrorReporter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxAppErrorReporter.cpp; sourceTree = "<group>"; };
 		BBA270F71FC4A52A00D461BD /* ofxApp.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = ofxApp.xcconfig; sourceTree = "<group>"; };
 		BBA773451FC3E78000DD5B69 /* ofxFontStash.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxFontStash.h; sourceTree = "<group>"; };
 		BBA773461FC3E78000DD5B69 /* ofxFontStash.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFontStash.cpp; sourceTree = "<group>"; };
@@ -535,23 +528,6 @@
 		BBA773921FC3E79300DD5B69 /* ofxSuperLog.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxSuperLog.cpp; sourceTree = "<group>"; };
 		BBA773971FC3E79800DD5B69 /* ofxAutoTexture.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxAutoTexture.cpp; sourceTree = "<group>"; };
 		BBA773981FC3E79800DD5B69 /* ofxAutoTexture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxAutoTexture.h; sourceTree = "<group>"; };
-		BBA7739C1FC3E79C00DD5B69 /* ofxAppContent.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxAppContent.cpp; sourceTree = "<group>"; };
-		BBA7739D1FC3E79C00DD5B69 /* ofxAppColorsBasic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxAppColorsBasic.h; sourceTree = "<group>"; };
-		BBA7739E1FC3E79C00DD5B69 /* ofxAppStaticTextures.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxAppStaticTextures.cpp; sourceTree = "<group>"; };
-		BBA7739F1FC3E79C00DD5B69 /* ofxAppStructs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxAppStructs.h; sourceTree = "<group>"; };
-		BBA773A01FC3E79C00DD5B69 /* ofxAppGlobalsBasic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxAppGlobalsBasic.h; sourceTree = "<group>"; };
-		BBA773A11FC3E79C00DD5B69 /* ofxAppUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxAppUtils.h; sourceTree = "<group>"; };
-		BBA773A21FC3E79C00DD5B69 /* ofxAppErrorReporter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxAppErrorReporter.h; sourceTree = "<group>"; };
-		BBA773A31FC3E79C00DD5B69 /* ofxAppStaticTextures.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxAppStaticTextures.h; sourceTree = "<group>"; };
-		BBA773A41FC3E79C00DD5B69 /* ofxApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxApp.cpp; sourceTree = "<group>"; };
-		BBA773A51FC3E79C00DD5B69 /* ofxAppContent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxAppContent.h; sourceTree = "<group>"; };
-		BBA773A61FC3E79C00DD5B69 /* ofxAppUtils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxAppUtils.cpp; sourceTree = "<group>"; };
-		BBA773A71FC3E79C00DD5B69 /* ofxApp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxApp.h; sourceTree = "<group>"; };
-		BBA773A81FC3E79C00DD5B69 /* ofxAppFonts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxAppFonts.h; sourceTree = "<group>"; };
-		BBA773A91FC3E79C00DD5B69 /* ofxAppFonts.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxAppFonts.cpp; sourceTree = "<group>"; };
-		BBA773AA1FC3E79C00DD5B69 /* ofxAppMacros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxAppMacros.h; sourceTree = "<group>"; };
-		BBA773AB1FC3E79C00DD5B69 /* ofxAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxAppDelegate.h; sourceTree = "<group>"; };
-		BBA773AE1FC3E79C00DD5B69 /* stb_image.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stb_image.h; sourceTree = "<group>"; };
 		BBA773B61FC3E7A500DD5B69 /* ofxMtJsonParserThread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxMtJsonParserThread.h; sourceTree = "<group>"; };
 		BBA773B71FC3E7A500DD5B69 /* ofxMtJsonParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxMtJsonParser.h; sourceTree = "<group>"; };
 		BBA773B81FC3E7A500DD5B69 /* ofxMtJsonParsedObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxMtJsonParsedObject.h; sourceTree = "<group>"; };
@@ -677,7 +653,6 @@
 			children = (
 				BBA270F71FC4A52A00D461BD /* ofxApp.xcconfig */,
 				BB8554691FD3510600EFB438 /* ofxAppProject.xcconfig */,
-				BBA7739A1FC3E79C00DD5B69 /* ofxApp */,
 				BBA7745E1FC3E82000DD5B69 /* LocalAddons */,
 				BB7B1AC81FC3DDC400CDD710 /* Addons */,
 				BB7B1AC01FC3DDA200CDD710 /* openFrameworksLib.xcodeproj */,
@@ -1788,57 +1763,6 @@
 			path = ../../../../ExternalAddons/ofxAutoTexture/src;
 			sourceTree = "<group>";
 		};
-		BBA7739A1FC3E79C00DD5B69 /* ofxApp */ = {
-			isa = PBXGroup;
-			children = (
-				BBA7739B1FC3E79C00DD5B69 /* src */,
-				BBA773AC1FC3E79C00DD5B69 /* lib */,
-			);
-			name = ofxApp;
-			sourceTree = "<group>";
-		};
-		BBA7739B1FC3E79C00DD5B69 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				BBA7739C1FC3E79C00DD5B69 /* ofxAppContent.cpp */,
-				BBA7739D1FC3E79C00DD5B69 /* ofxAppColorsBasic.h */,
-				BBA7739E1FC3E79C00DD5B69 /* ofxAppStaticTextures.cpp */,
-				BBA7739F1FC3E79C00DD5B69 /* ofxAppStructs.h */,
-				BBA773A01FC3E79C00DD5B69 /* ofxAppGlobalsBasic.h */,
-				BBA773A11FC3E79C00DD5B69 /* ofxAppUtils.h */,
-				BBA773A21FC3E79C00DD5B69 /* ofxAppErrorReporter.h */,
-				BBA773A31FC3E79C00DD5B69 /* ofxAppStaticTextures.h */,
-				BBA773A41FC3E79C00DD5B69 /* ofxApp.cpp */,
-				BB9991881FD3349F003E9F81 /* ofxAppErrorReporter.cpp */,
-				BBA773A51FC3E79C00DD5B69 /* ofxAppContent.h */,
-				BBA773A61FC3E79C00DD5B69 /* ofxAppUtils.cpp */,
-				BBA773A71FC3E79C00DD5B69 /* ofxApp.h */,
-				BBA773A81FC3E79C00DD5B69 /* ofxAppFonts.h */,
-				BBA773A91FC3E79C00DD5B69 /* ofxAppFonts.cpp */,
-				BBA773AA1FC3E79C00DD5B69 /* ofxAppMacros.h */,
-				BBA773AB1FC3E79C00DD5B69 /* ofxAppDelegate.h */,
-			);
-			name = src;
-			path = ../../../../ExternalAddons/ofxApp/src;
-			sourceTree = "<group>";
-		};
-		BBA773AC1FC3E79C00DD5B69 /* lib */ = {
-			isa = PBXGroup;
-			children = (
-				BBA773AD1FC3E79C00DD5B69 /* stb */,
-			);
-			name = lib;
-			path = ../../../../ExternalAddons/ofxApp/lib;
-			sourceTree = "<group>";
-		};
-		BBA773AD1FC3E79C00DD5B69 /* stb */ = {
-			isa = PBXGroup;
-			children = (
-				BBA773AE1FC3E79C00DD5B69 /* stb_image.h */,
-			);
-			path = stb;
-			sourceTree = "<group>";
-		};
 		BBA773B41FC3E7A500DD5B69 /* ofxMTJsonParser */ = {
 			isa = PBXGroup;
 			children = (
@@ -2339,7 +2263,6 @@
 				BB7B209C1FC3E62D00CDD710 /* ofxCvContourFinder.cpp in Sources */,
 				BB7B24071FC3E6A400CDD710 /* tinyxmlerror.cpp in Sources */,
 				BBA7734E1FC3E78000DD5B69 /* ofxFontStash.cpp in Sources */,
-				BBA773B11FC3E79C00DD5B69 /* ofxApp.cpp in Sources */,
 				BBA773DC1FC3E7B600DD5B69 /* ofxStateMachine.cpp in Sources */,
 				BBA774491FC3E7FD00DD5B69 /* ofxAnimatableFloat.cpp in Sources */,
 				BBA7734F1FC3E78000DD5B69 /* stb_truetype.c in Sources */,
@@ -2352,7 +2275,6 @@
 				BB7B1F9C1FC3E30800CDD710 /* OscReceivedElements.cpp in Sources */,
 				BBA7738B1FC3E78C00DD5B69 /* ofxJSON.cpp in Sources */,
 				BBA773BE1FC3E7A500DD5B69 /* ofxMtJsonParserThread.cpp in Sources */,
-				BBA773B01FC3E79C00DD5B69 /* ofxAppStaticTextures.cpp in Sources */,
 				BB7B20A01FC3E62D00CDD710 /* ofxCvGrayscaleImage.cpp in Sources */,
 				BBA773931FC3E79300DD5B69 /* ofxSuperLogDisplay.cpp in Sources */,
 				BBA7742E1FC3E7EF00DD5B69 /* ofxRemoteUIWebServer.cpp in Sources */,
@@ -2380,7 +2302,6 @@
 				BBA7738C1FC3E78C00DD5B69 /* jsoncpp.cpp in Sources */,
 				BB7B20B01FC3E67A00CDD710 /* ofxUDPManager.cpp in Sources */,
 				BBA774031FC3E7D200DD5B69 /* TexturedObject.cpp in Sources */,
-				BB9991891FD3349F003E9F81 /* ofxAppErrorReporter.cpp in Sources */,
 				BBA773711FC3E78300DD5B69 /* ofxFontStash2.cpp in Sources */,
 				BBA773E91FC3E7BA00DD5B69 /* AssetHolder.cpp in Sources */,
 				BBA773E81FC3E7BA00DD5B69 /* AssetChecker.cpp in Sources */,
@@ -2401,11 +2322,8 @@
 				BBA773721FC3E78300DD5B69 /* README.md in Sources */,
 				BBA773701FC3E78300DD5B69 /* ofxFontStashParser.cpp in Sources */,
 				BBA773941FC3E79300DD5B69 /* ofxSuperLog.cpp in Sources */,
-				BBA773B31FC3E79C00DD5B69 /* ofxAppFonts.cpp in Sources */,
 				BBA773741FC3E78300DD5B69 /* obsolete.md in Sources */,
-				BBA773AF1FC3E79C00DD5B69 /* ofxAppContent.cpp in Sources */,
 				BBA774171FC3E7E800DD5B69 /* ofxTimeMeasurements.cpp in Sources */,
-				BBA773B21FC3E79C00DD5B69 /* ofxAppUtils.cpp in Sources */,
 				BBA774501FC3E80300DD5B69 /* ofxScreenSetup.cpp in Sources */,
 				BBA774321FC3E7EF00DD5B69 /* ofxRemoteUI.cpp in Sources */,
 				BB7B1F961FC3E30800CDD710 /* ofxOscMessage.cpp in Sources */,
