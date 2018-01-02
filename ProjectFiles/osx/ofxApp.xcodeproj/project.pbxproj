@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BB2522671FFBEE8300CD7A27 /* ofxNetworkUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB2522661FFBEE8300CD7A27 /* ofxNetworkUtils.cpp */; };
 		BB7B1F951FC3E30800CDD710 /* ofxOscParameterSync.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7B1F6D1FC3E30800CDD710 /* ofxOscParameterSync.cpp */; };
 		BB7B1F961FC3E30800CDD710 /* ofxOscMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7B1F6E1FC3E30800CDD710 /* ofxOscMessage.cpp */; };
 		BB7B1F971FC3E30800CDD710 /* ofxOscBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7B1F701FC3E30800CDD710 /* ofxOscBundle.cpp */; };
@@ -120,6 +121,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		BB2522661FFBEE8300CD7A27 /* ofxNetworkUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxNetworkUtils.cpp; sourceTree = "<group>"; };
 		BB7B1AB91FC3DD9200CDD710 /* ofxAppDebug.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = ofxAppDebug.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB7B1AC01FC3DDA200CDD710 /* openFrameworksLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openFrameworksLib.xcodeproj; path = ../../../../OpenFrameworks/libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj; sourceTree = "<group>"; };
 		BB7B1F6C1FC3E30800CDD710 /* ofxOscParameterSync.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxOscParameterSync.h; sourceTree = "<group>"; };
@@ -1266,6 +1268,7 @@
 				BB7B20A41FC3E67A00CDD710 /* ofxTCPManager.h */,
 				BB7B20A51FC3E67A00CDD710 /* ofxTCPClient.h */,
 				BB7B20A61FC3E67A00CDD710 /* ofxNetwork.h */,
+				BB2522661FFBEE8300CD7A27 /* ofxNetworkUtils.cpp */,
 				BB7B20A71FC3E67A00CDD710 /* ofxUDPManager.cpp */,
 				BB7B20A81FC3E67A00CDD710 /* ofxTCPServer.cpp */,
 				BB7B20A91FC3E67A00CDD710 /* ofxUDPSettings.h */,
@@ -2260,6 +2263,7 @@
 				BBA773BD1FC3E7A500DD5B69 /* ofxMtJsonParser.cpp in Sources */,
 				BBA7745D1FC3E81200DD5B69 /* ofxGoogleAnalytics.cpp in Sources */,
 				BBA7744A1FC3E7FD00DD5B69 /* ofxAnimatableQueue.cpp in Sources */,
+				BB2522671FFBEE8300CD7A27 /* ofxNetworkUtils.cpp in Sources */,
 				BB7B209C1FC3E62D00CDD710 /* ofxCvContourFinder.cpp in Sources */,
 				BB7B24071FC3E6A400CDD710 /* tinyxmlerror.cpp in Sources */,
 				BBA7734E1FC3E78000DD5B69 /* ofxFontStash.cpp in Sources */,

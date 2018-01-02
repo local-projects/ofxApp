@@ -15,6 +15,7 @@
 #include "ofxMullion.h"
 #include "ofxAutoTexture.h"
 #include "ofxAppErrorReporter.h"
+#include "GLFW/glfw3.h"
 
 //global var pointing to ofxApp::App so you can reach it from the debugger
 ofxApp::App * global_ofxApp = nullptr;
