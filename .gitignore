@@ -1,0 +1,53 @@
+
+# Some general ignore patterns
+
+[Bb]uild/
+[Oo]bj/
+*.o
+*.iobj
+*.ipdb
+[Dd]ebug*/
+[Rr]elease*/
+*.mode*
+*.app/
+*.pyc
+.svn/
+*.log
+*.dll
+*.exp
+*.exe
+*.lib
+Thumbs.db
+
+# IDE-specific ignore patterns
+
+#XCode
+*.pbxuser
+*.perspective
+*.perspectivev3
+*.mode1v3
+*.mode2v3
+#XCode 4
+xcuserdata
+*.xcworkspace
+
+#OSX
+.DS_Store
+*.swp
+*~.nib
+# Thumbnails
+._*
+
+#Linux
+.AppleDouble
+
+#Visual Studio
+*.sdf
+*.opensdf
+*.suo
+*.pdb
+*.ilk
+*.aps
+ipch/
+*.VC.db
+*.VC.VC.opendb
