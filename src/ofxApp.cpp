@@ -80,7 +80,7 @@ void App::setup(const map<std::string,ofxApp::ParseFunctions> & cfgs, ofxAppDele
 		setupGoogleAnalytics();
 		if(pidFileFound){
 
-			if(gAnalytics && gAnalytics->isEnabled()) gAnalytics->sendException("ofxApp - pidFileFound", false);
+			if(gAnalytics && gAnalytics->isEnabled()) gAnalytics->sendException("ofxApp - pidFileFound", true);
 		}
 		printSettingsFile();
 		fonts().setup();
