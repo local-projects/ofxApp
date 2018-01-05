@@ -130,6 +130,12 @@ void ofxAppContent::update(float dt){
 				setState(ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS);
 			}break;
 
+		case ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS:
+			if(timeInState > (numIgnoredObjects > 0 ? 4.0 : 0.0)){ //show this on screen for a sec if we are dropping objects
+				setState(ContentState::SETUP_TEXTURED_OBJECTS);
+			}
+			break;
+
 		case ContentState::SETUP_TEXTURED_OBJECTS:{
 			int maxObjectsToSetupInOneFrame = 50; //stagger across frames, to avoid hogging the app
 			int start = numSetupTexuredObjects;
@@ -140,15 +146,15 @@ void ofxAppContent::update(float dt){
 				numSetupTexuredObjects++;
 			}
 			if(numSetupTexuredObjects == parsedObjects.size()){
-				setState(ContentState::JSON_CONTENT_READY);
+				setState(ContentState::FILTER_REJECTED_TEXTURED_OBJECTS);
 			}
 			}break;
 
-		case ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS:
+		case ContentState::FILTER_REJECTED_TEXTURED_OBJECTS:{
 			if(timeInState > (numIgnoredObjects > 0 ? 4.0 : 0.0)){ //show this on screen for a sec if we are dropping objects
-				setState(ContentState::SETUP_TEXTURED_OBJECTS);
+				setState(ContentState::JSON_CONTENT_READY);
 			}
-			break;
+		}
 
 		default: break;
 	}
@@ -317,7 +323,8 @@ void ofxAppContent::setState(ContentState s){
 						if(!allAssetsOK){
 							rejectObject = true;
 							auto brokenAssets = parsedObjects[i]->getBrokenAssets();
-							rejectionReason = ofToString(brokenAssets.size()) + " Broken Asset(s)";
+							if(rejectionReason.size()) rejectionReason += " | ";
+							rejectionReason += ofToString(brokenAssets.size()) + " Broken Asset(s)";
 						}
 					}
 
@@ -355,7 +362,6 @@ void ofxAppContent::setState(ContentState s){
 					}
 				}
 
-
 				for(int i = badObjects.size() - 1; i >= 0; i--){
 					ofLogError("ofxAppContent-" + ID) << "Dropping object \"" << parsedObjects[i]->getObjectUUID() << "\"";
 					delete parsedObjects[badObjects[i]];
@@ -363,23 +369,7 @@ void ofxAppContent::setState(ContentState s){
 				}
 
 				numIgnoredObjects += badObjects.size();
-
-				objectsWithBadAssets = "\nRemoved " + ofToString(badObjects.size()) + " \"" + ID + "\" objects:\n\n" + objectsWithBadAssets;
-
-				ofLogWarning("ofxAppContent-" + ID) << "Removed a total of " << numIgnoredObjects << " objects for content type \"" << ID << "\" due to various rasons. Check 'logs/assetStatus.log' for more info.";
-				if(numIgnoredObjects > 0){
-					auto a = ofxApp::get().analytics();
-					if(a && a->isEnabled()){
-						a->sendException("ofxApp - Content '" + ID + "' - rejected " + ofToString(numIgnoredObjects) + " objects.", false);
-					}
-				}
-				float pct;
-				if(numObjectB4Filter > 0){
-					pct = 100.0f * numIgnoredObjects / float(numObjectB4Filter);
-				}else{
-					pct = 0.0f;
-				}
-				ofLogWarning("ofxAppContent-" + ID) << "Ignored " << ofToString(pct,2) << "% of the objects defined in the \"" << ID << "\" JSON.";
+				objectsWithBadAssets = "\nRemoved " + ofToString(badObjects.size()) + " \"" + ID + "\" objects:\n\n" + objectsWithBadAssets + "\n\n" ;
 
 			}else{
 				ofLogWarning("ofxAppContent-" + ID) << "skipping Object Drop Policy Tests!! \"" << ID << "\"";
@@ -387,9 +377,57 @@ void ofxAppContent::setState(ContentState s){
 
 		}break;
 
+			
 		case ContentState::SETUP_TEXTURED_OBJECTS:{
 			numSetupTexuredObjects = 0;
-			}break;
+		}break;
+
+
+		case ContentState::FILTER_REJECTED_TEXTURED_OBJECTS:{
+			int numObjectB4Filter = parsedObjects.size();
+
+			vector<int> badObjects;
+			vector<std::string> badObjectsIds;
+			string log;
+
+			for(int i = 0; i < numObjectB4Filter; i++){
+
+				bool userRejectedObject = !parsedObjects[i]->isValid;
+
+				if (userRejectedObject){
+					badObjects.push_back(i);
+					badObjectsIds.push_back(parsedObjects[i]->getObjectUUID());
+					log += "Object '" + badObjectsIds.back() + "' : Rejected at Setup Textured Object stage - probably cant load img\n";
+				}
+			}
+
+			for(int i = badObjects.size() - 1; i >= 0; i--){
+				ofLogError("ofxAppContent-" + ID) << "Dropping object at setup Textured Object Stage \"" << parsedObjects[i]->getObjectUUID() << "\"";
+				delete parsedObjects[badObjects[i]];
+				parsedObjects.erase(parsedObjects.begin() + badObjects[i]);
+			}
+
+			numIgnoredObjects += badObjects.size();
+
+			objectsWithBadAssets += "Setup Textured Object Statge\n\nRemoved " + ofToString(badObjects.size()) + " \"" + ID + "\" objects:\n\n" + log;
+
+			ofLogWarning("ofxAppContent-" + ID) << "Removed a total of " << numIgnoredObjects << " objects for content type \"" << ID << "\" due to various rasons. Check 'logs/assetStatus.log' for more info.";
+			if(numIgnoredObjects > 0) ofLogWarning("ofxAppContent-" + ID) << objectsWithBadAssets;
+			if(numIgnoredObjects > 0){
+				auto a = ofxApp::get().analytics();
+				if(a && a->isEnabled()){
+					a->sendException("ofxApp - Content '" + ID + "' - rejected " + ofToString(numIgnoredObjects) + " objects.", false);
+				}
+			}
+			float pct;
+			if(numObjectB4Filter > 0){
+				pct = 100.0f * numIgnoredObjects / float(numObjectB4Filter);
+			}else{
+				pct = 0.0f;
+			}
+			ofLogWarning("ofxAppContent-" + ID) << "Ignored " << ofToString(pct,2) << "% of the objects defined in the \"" << ID << "\" JSON.";
+
+		}break;
 
 		case ContentState::JSON_CONTENT_READY:{
 			//keep the json as a good one
@@ -440,6 +478,7 @@ std::string ofxAppContent::getStatus(){
 		case ContentState::DOWNLOADING_ASSETS: r = dlc.getDrawableInfo(true, false); break;
 		case ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS: r = objectsWithBadAssets; break;
 		case ContentState::SETUP_TEXTURED_OBJECTS: break;
+		case ContentState::FILTER_REJECTED_TEXTURED_OBJECTS: r = objectsWithBadAssets; break;
 		case ContentState::JSON_CONTENT_READY: r = "READY"; break;
 		default: break;
 	}
@@ -550,6 +589,7 @@ std::string ofxAppContent::getNameForState(ofxAppContent::ContentState state){
 		case ContentState::DOWNLOADING_ASSETS: return "DOWNLOADING_ASSETS";
 		case ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS: return "FILTER_OBJECTS_WITH_BAD_ASSETS";
 		case ContentState::SETUP_TEXTURED_OBJECTS: return "SETUP_TEXTURED_OBJECTS";
+		case ContentState::FILTER_REJECTED_TEXTURED_OBJECTS: return "FILTER_REJECTED_TEXTURED_OBJECTS";
 		case ContentState::JSON_CONTENT_READY: return "JSON_CONTENT_READY";
 		default: break;
 	}

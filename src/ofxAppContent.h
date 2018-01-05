@@ -31,6 +31,9 @@ class ContentObject : public ParsedObject, public AssetHolder, public TexturedOb
  		//in secondary threads, we can't use an in-place destructor as you could destruct the object
 		//while a thread is loading it - thus we have this GarbageCollector-like behavior.
 		virtual void deleteWithGC(){}
+
+		bool isValid = true; //you can at any time during any of the ofxApp::ParseFunctions (parseOneObject, defineObjectAssets, setupTexturedObject)
+							//decide you don't want the object by setting isValid to false.
 };
 
 
@@ -51,6 +54,7 @@ public:
 		DOWNLOADING_ASSETS,
 		FILTER_OBJECTS_WITH_BAD_ASSETS,
 		SETUP_TEXTURED_OBJECTS,
+		FILTER_REJECTED_TEXTURED_OBJECTS,
 		JSON_CONTENT_READY,
 	};
 
