@@ -264,6 +264,14 @@ namespace utils{
 		info.valid = (ret != 0);
 		if(!info.valid){
 			ofLogError("ofxApp::utils") << "getImageDimensions() failed for image \"" << filePath << "\"";
+			ofPixels pix;
+			bool loadOK = ofLoadImage(pix, filePath);
+			if(loadOK){
+				info.width = pix.getWidth();
+				info.height = pix.getHeight();
+				info.valid = true;
+				info.nChannels = pix.getNumPlanes();
+			}
 		}
 		return info;
 	}
