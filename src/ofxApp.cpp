@@ -367,13 +367,16 @@ void App::setupTextureLoader(){
 
 void App::setupGlobalParameters(){
 	globals().ofxAppGlobalsBasic::setupRemoteUIParams();
+	#if !defined(OFX_APP_NONAME)
 	RUI_NEW_GROUP(std::string(OFX_APP_STR(OFX_APP_NAME)) + std::string(" Globals"));
 	globals().setupRemoteUIParams();
+	#endif
 	RUI_NEW_GROUP(std::string(OFX_APP_STR(OFX_APP_NAME)) + std::string(" Colors"));
 	colors().ofxAppColorsBasic::setupRemoteUIParams();
+	#if !defined(OFX_APP_NONAME)
 	colors().setupRemoteUIParams();
+	#endif
 
-	
 	//get all params as a string / paragrpah, print out so there's values printed in the logs.
 	//string params = ofxRemoteUIServer::instance()->getValuesAsString();
 	ofxApp::utils::logBanner("ofxRemoteUI Params & Their Values");
