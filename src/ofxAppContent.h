@@ -75,6 +75,7 @@ public:
 				//dl configs for endpoints (JSON)
 			   const std::pair<std::string,std::string> & apiEndPointCredentials,
 			   const ofxSimpleHttp::ProxyConfig & apiEndpointProxyConfig,
+			   const map<std::string, std::string> customHeaders,
 			   const ofxApp::ParseFunctions & contentCfg,
 			   const ofxAssets::DownloadPolicy assetDownloadPolicy,
 			   const ofxAssets::UsagePolicy assetUsagePolicy,

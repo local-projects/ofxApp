@@ -217,6 +217,7 @@ protected:
 	struct HttpDownloadConfig{
 		ofxSimpleHttp::ProxyConfig				proxyCfg;
 		std::pair<std::string,std::string>		credentials;
+		std::map<std::string,std::string>		customHeaders;
 	};
 
 	HttpDownloadConfig 						assetDownloadsHttpCfg; //config for any assets to download

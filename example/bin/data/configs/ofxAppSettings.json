@@ -242,26 +242,34 @@
 		"JsonSources":{ 
 
 			"CH" : {
-				"url" : "file://testJson/ch_small.json",
+				//"url" : "file://testJson/ch_small.json",
+				"url" : "http://127.0.0.1:8000/ch_small.json",
 				//"url" : "http://uri.cat/LP/ch_small.json",
 				"jsonDownloadDir": "CH_JsonDownloads",
 				"assetsLocation": "CH_assets",  //all assets will be in that folder, with a sub-folder (named after the object ID) per each content object
 				"shouldSkipObjectPolicyTests" : false,  //set this to true to avoid the object cleanup according to the policies defined below
-				"credentials":{
-					"username": "",
-					"password": ""
-				},
-				"proxy":{
-					"useProxy" : true,
-					"proxyHost": "",
-					"proxyPort": 8080,
-					"proxyUser" : "",
-					"proxyPassword" : ""
+				"httpConfig":{ //if you need to specify proxy, auth, or custom headers, fill in this data here (per content source)
+					"credentials":{
+						"username": "",
+						"password": ""
+					},
+					"customHeaders":{ 
+						"myTestHeader" : "myHeaderContent",
+						"myTestHeader2" : "myHeaderContent2"
+					},
+					"proxy":{
+						"useProxy" : false,
+						"proxyHost": "127.0.0.1",
+						"proxyPort": 8080,
+						"proxyUser" : "",
+						"proxyPassword" : ""
+					}
 				}
 			},
 
 			"CWRU" : {
 				"url" : "file://testJson/cwru.json",
+				//"url" : "http://127.0.0.1:8000/cwru.json",
 				//"url" : "http://uri.cat/LP/cwru.json",
 				//"url" : "file://testJson/cwru_broken.json",
 				"jsonDownloadDir": "CWRU_JsonDownloads",

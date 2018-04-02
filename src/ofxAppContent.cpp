@@ -25,6 +25,7 @@ void ofxAppContent::setup(	std::string ID,
 						  	const ofxSimpleHttp::ProxyConfig & downloaderProxyConfig,
 							const std::pair<std::string,std::string> & apiEndPointCredentials,
 							const ofxSimpleHttp::ProxyConfig & apiEndpointProxyConfig,
+						  	const map<std::string, std::string> customHeaders,
 							const ofxApp::ParseFunctions & contentCfg,
 							const ofxAssets::DownloadPolicy assetDownloadPolicy,
 						  	const ofxAssets::UsagePolicy assetUsagePolicy,
@@ -62,6 +63,10 @@ void ofxAppContent::setup(	std::string ID,
 	jsonParser.getHttp().setProxyConfiguration(apiEndpointProxyConfig);
 	if(apiEndPointCredentials.first.size() || apiEndPointCredentials.second.size()){
 		jsonParser.getHttp().setCredentials(apiEndPointCredentials.first, apiEndPointCredentials.second);
+	}
+
+	for(auto & h : customHeaders){
+		jsonParser.getHttp().addCustomHttpHeader(h.first, h.second);
 	}
 
 	//subscribe to parsing events

@@ -1161,22 +1161,34 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 					std::string jsonDir = getString("Content/JsonSources/" + currentContentID + "/jsonDownloadDir");
 
 					//get credentials setup
-					if(settingExists("Content/JsonSources/" + currentContentID + "/credentials")){
-						if(settingExists("Content/JsonSources/" + currentContentID + "/credentials/username")){
-							contentHttpConfigs[currentContentID].credentials.first = getString("Content/JsonSources/" + currentContentID + "/credentials/username");
+					if(settingExists("Content/JsonSources/" + currentContentID + "/httpConfig")){
+						if(settingExists("Content/JsonSources/" + currentContentID + "/httpConfig/credentials/username")){
+							contentHttpConfigs[currentContentID].credentials.first = getString("Content/JsonSources/" + currentContentID + "/httpConfig/credentials/username");
 						}
-						if(settingExists("Content/JsonSources/" + currentContentID + "/credentials/password")){
-							contentHttpConfigs[currentContentID].credentials.second = getString("Content/JsonSources/" + currentContentID + "/credentials/password");
+						if(settingExists("Content/JsonSources/" + currentContentID + "/httpConfig/credentials/password")){
+							contentHttpConfigs[currentContentID].credentials.second = getString("Content/JsonSources/" + currentContentID + "/httpConfig/credentials/password");
 						}
 					}
 
 					//get proxy setup
-					if(settingExists("Content/JsonSources/" + currentContentID + "/proxy")){
-						contentHttpConfigs[currentContentID].proxyCfg.useProxy = getBool("Content/JsonSources/" + currentContentID + "/proxy/useProxy", false);
-						contentHttpConfigs[currentContentID].proxyCfg.host = getString("Content/JsonSources/" + currentContentID + "/proxy/proxyHost");
-						contentHttpConfigs[currentContentID].proxyCfg.port = getInt("Content/JsonSources/" + currentContentID + "/proxy/proxyPort");
-						contentHttpConfigs[currentContentID].proxyCfg.login = getString("Content/JsonSources/" + currentContentID + "/proxy/proxyUser");
-						contentHttpConfigs[currentContentID].proxyCfg.password = getString("Content/JsonSources/" + currentContentID + "/proxy/proxyPassword");
+					if(settingExists("Content/JsonSources/" + currentContentID + "/httpConfig/proxy")){
+						contentHttpConfigs[currentContentID].proxyCfg.useProxy = getBool("Content/JsonSources/" + currentContentID + "/httpConfig/proxy/useProxy", false);
+						contentHttpConfigs[currentContentID].proxyCfg.host = getString("Content/JsonSources/" + currentContentID + "/httpConfig/proxy/proxyHost");
+						contentHttpConfigs[currentContentID].proxyCfg.port = getInt("Content/JsonSources/" + currentContentID + "/httpConfig/proxy/proxyPort");
+						contentHttpConfigs[currentContentID].proxyCfg.login = getString("Content/JsonSources/" + currentContentID + "/httpConfig/proxy/proxyUser");
+						contentHttpConfigs[currentContentID].proxyCfg.password = getString("Content/JsonSources/" + currentContentID + "/httpConfig/proxy/proxyPassword");
+					}
+
+					//get custom headers setup
+					if(settingExists("Content/JsonSources/" + currentContentID + "/httpConfig/customHeaders")){
+						ofxJSON customHeaders = settings().getJson("Content/JsonSources/" + currentContentID + "/httpConfig/customHeaders");
+						if(customHeaders.isObject()){
+							for( Json::Value::const_iterator itr = customHeaders.begin() ; itr != customHeaders.end() ; itr++ ) {
+								std::string header = itr.key().asString();
+								std::string value = (*itr).asString();
+								contentHttpConfigs[currentContentID].customHeaders[header] = value;
+							}
+						}
 					}
 
 					bool skipPolicyTests = getBool("Content/JsonSources/" + currentContentID + "/shouldSkipObjectPolicyTests");
@@ -1208,6 +1220,7 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 															assetDownloadsHttpCfg.proxyCfg,
 															contentHttpConfigs[currentContentID].credentials,
 															contentHttpConfigs[currentContentID].proxyCfg,
+															contentHttpConfigs[currentContentID].customHeaders,
 															contentParseFuncs[currentContentID],
 															assetDownloadPolicy,
 															assetUsagePolicy,
