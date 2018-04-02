@@ -66,7 +66,7 @@ void App::setup(const map<std::string,ofxApp::ParseFunctions> & cfgs, ofxAppDele
 	pid.close();
 
 	if(!this->delegate){
-		contentCfgs = cfgs;
+		contentParseFuncs = cfgs;
 		this->delegate = delegate;
 		if(!hasLoadedSettings) loadSettings();
 		setupContentData();
@@ -121,7 +121,7 @@ void App::setup(const map<std::string,ofxApp::ParseFunctions> & cfgs, ofxAppDele
 
 void App::setupContentData() {
 	ofLogNotice("ofxApp") << "setupContentData()";
-	for (auto & cfg : contentCfgs) {
+	for (auto & cfg : contentParseFuncs) {
 		contentStorage[cfg.first] = new ofxAppContent();
 		requestedContent.push_back(cfg.first);
 	}
@@ -582,16 +582,14 @@ void App::setupRemoteUI(){
 
 void App::loadModulesSettings(){
 
-	std::pair<std::string,std::string> credentials;
-	credentials.first = getString("Downloads/credentials/username");
-	credentials.second = getString("Downloads/credentials/password");
+	assetDownloadsHttpCfg.credentials.first = getString("Downloads/credentials/username");
+	assetDownloadsHttpCfg.credentials.second = getString("Downloads/credentials/password");
 
-	ofxSimpleHttp::ProxyConfig proxyCfg;
-	proxyCfg.useProxy = getBool("Downloads/proxy/useProxy");
-	proxyCfg.host = getString("Downloads/proxy/proxyHost");
-	proxyCfg.port = getInt("Downloads/proxy/proxyPort");
-	proxyCfg.login = getString("Downloads/proxy/proxyUser");
-	proxyCfg.password = getString("Downloads/proxy/proxyPassword");
+	assetDownloadsHttpCfg.proxyCfg.useProxy = getBool("Downloads/proxy/useProxy");
+	assetDownloadsHttpCfg.proxyCfg.host = getString("Downloads/proxy/proxyHost");
+	assetDownloadsHttpCfg.proxyCfg.port = getInt("Downloads/proxy/proxyPort");
+	assetDownloadsHttpCfg.proxyCfg.login = getString("Downloads/proxy/proxyUser");
+	assetDownloadsHttpCfg.proxyCfg.password = getString("Downloads/proxy/proxyPassword");
 
 	assetDownloadPolicy.fileMissing = getBool("Content/AssetDownloadPolicy/fileMissing");
 	assetDownloadPolicy.fileTooSmall = getBool("Content/AssetDownloadPolicy/fileTooSmall");
@@ -1161,6 +1159,26 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 				if(keyExists){
 					std::string jsonURL = getString("Content/JsonSources/" + currentContentID + "/url");
 					std::string jsonDir = getString("Content/JsonSources/" + currentContentID + "/jsonDownloadDir");
+
+					//get credentials setup
+					if(settingExists("Content/JsonSources/" + currentContentID + "/credentials")){
+						if(settingExists("Content/JsonSources/" + currentContentID + "/credentials/username")){
+							contentHttpConfigs[currentContentID].credentials.first = getString("Content/JsonSources/" + currentContentID + "/credentials/username");
+						}
+						if(settingExists("Content/JsonSources/" + currentContentID + "/credentials/password")){
+							contentHttpConfigs[currentContentID].credentials.second = getString("Content/JsonSources/" + currentContentID + "/credentials/password");
+						}
+					}
+
+					//get proxy setup
+					if(settingExists("Content/JsonSources/" + currentContentID + "/proxy")){
+						contentHttpConfigs[currentContentID].proxyCfg.useProxy = getBool("Content/JsonSources/" + currentContentID + "/proxy/useProxy", false);
+						contentHttpConfigs[currentContentID].proxyCfg.host = getString("Content/JsonSources/" + currentContentID + "/proxy/proxyHost");
+						contentHttpConfigs[currentContentID].proxyCfg.port = getInt("Content/JsonSources/" + currentContentID + "/proxy/proxyPort");
+						contentHttpConfigs[currentContentID].proxyCfg.login = getString("Content/JsonSources/" + currentContentID + "/proxy/proxyUser");
+						contentHttpConfigs[currentContentID].proxyCfg.password = getString("Content/JsonSources/" + currentContentID + "/proxy/proxyPassword");
+					}
+
 					bool skipPolicyTests = getBool("Content/JsonSources/" + currentContentID + "/shouldSkipObjectPolicyTests");
 					
 					int numConcurrentDownloads = getInt("Downloads/maxConcurrentDownloads");
@@ -1186,9 +1204,11 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 															timeOutSecs,
 															skipPolicyTests,
 															idleTimeAfterDl,
-															credentials,
-															proxyCfg,
-															contentCfgs[currentContentID],
+															assetDownloadsHttpCfg.credentials,
+															assetDownloadsHttpCfg.proxyCfg,
+															contentHttpConfigs[currentContentID].credentials,
+															contentHttpConfigs[currentContentID].proxyCfg,
+															contentParseFuncs[currentContentID],
 															assetDownloadPolicy,
 															assetUsagePolicy,
 															objectUsagePolicy,

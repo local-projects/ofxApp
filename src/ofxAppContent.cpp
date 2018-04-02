@@ -21,8 +21,10 @@ void ofxAppContent::setup(	std::string ID,
 							int timeout,
 							bool shouldSkipObjectTests,
 							float idleTimeAfterEachDownload,
-							const std::pair<std::string,std::string> & credentials,
-							const ofxSimpleHttp::ProxyConfig & proxyConfig,
+						    const std::pair<std::string,std::string> & downloaderCredentials,
+						  	const ofxSimpleHttp::ProxyConfig & downloaderProxyConfig,
+							const std::pair<std::string,std::string> & apiEndPointCredentials,
+							const ofxSimpleHttp::ProxyConfig & apiEndpointProxyConfig,
 							const ofxApp::ParseFunctions & contentCfg,
 							const ofxAssets::DownloadPolicy assetDownloadPolicy,
 						  	const ofxAssets::UsagePolicy assetUsagePolicy,
@@ -52,14 +54,14 @@ void ofxAppContent::setup(	std::string ID,
 	dlc.setSpeedLimit(speedLimitKBs);
 	dlc.setTimeOut(timeout);
 	dlc.setIdleTimeAfterEachDownload(idleTimeAfterEachDownload);
-	dlc.setCredentials(credentials.first, credentials.second);
-	dlc.setProxyConfiguration(proxyConfig);
+	dlc.setCredentials(downloaderCredentials.first, downloaderCredentials.second);
+	dlc.setProxyConfiguration(downloaderProxyConfig);
 
 	jsonParser.getHttp().setTimeOut(timeout);
 	jsonParser.getHttp().setSpeedLimit(speedLimitKBs);
-	jsonParser.getHttp().setProxyConfiguration(proxyConfig);
-	if(credentials.first.size() || credentials.second.size()){
-		jsonParser.getHttp().setCredentials(credentials.first, credentials.second);
+	jsonParser.getHttp().setProxyConfiguration(apiEndpointProxyConfig);
+	if(apiEndPointCredentials.first.size() || apiEndPointCredentials.second.size()){
+		jsonParser.getHttp().setCredentials(apiEndPointCredentials.first, apiEndPointCredentials.second);
 	}
 
 	//subscribe to parsing events

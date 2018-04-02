@@ -69,8 +69,12 @@ public:
 			   int timeout,
 			   bool shouldSkipObjectTests,
 			   float idleTimeAfterEachDownload,
-			   const std::pair<std::string,std::string> & credentials,
-			   const ofxSimpleHttp::ProxyConfig & proxyConfig,
+			   //dl configs for asset downloads (imgs, vids)
+			   const std::pair<std::string,std::string> & downloaderCredentials,
+			   const ofxSimpleHttp::ProxyConfig & downloaderProxyConfig,
+				//dl configs for endpoints (JSON)
+			   const std::pair<std::string,std::string> & apiEndPointCredentials,
+			   const ofxSimpleHttp::ProxyConfig & apiEndpointProxyConfig,
 			   const ofxApp::ParseFunctions & contentCfg,
 			   const ofxAssets::DownloadPolicy assetDownloadPolicy,
 			   const ofxAssets::UsagePolicy assetUsagePolicy,

@@ -111,7 +111,7 @@ public:
 	bool&		getBool(const std::string & key, bool defaultVal = true);
 	int&		getInt(const std::string & key, int defaultVal = 0);
 	float&		getFloat(const std::string & key, float defaultVal = 0.0);
-	std::string&		getString(const std::string & key, const std::string & defaultVal = "uninited!");
+	std::string& getString(const std::string & key, const std::string & defaultVal = "uninited!");
 	ofColor&	getColor(const std::string & key, ofColor defaultVal = ofColor::red);
 	bool		settingExists(const std::string & key);
 
@@ -214,8 +214,12 @@ protected:
 	// Settings Values Bundles ///////////////////////////////////////
 
 	//used by ofxSimpleHttp
-	ofxSimpleHttp::ProxyConfig				proxyCfg;
-	std::pair<std::string,std::string>				credentials;
+	struct HttpDownloadConfig{
+		ofxSimpleHttp::ProxyConfig				proxyCfg;
+		std::pair<std::string,std::string>		credentials;
+	};
+
+	HttpDownloadConfig 						assetDownloadsHttpCfg; //config for any assets to download
 
 	//used by ofxAssets
 	ofxAssets::DownloadPolicy				assetDownloadPolicy;
@@ -237,13 +241,15 @@ protected:
 	ofxAppFonts *							fontStorage = nullptr; //keeps all loaded fonts
 
 	map<std::string, ofxAppContent*>				contentStorage; //App contents parser - indexed by contentID
-	map<std::string, ofxApp::ParseFunctions>		contentCfgs; //user supplied custom parsing code - indexed by contentID
+	map<std::string, ofxApp::ParseFunctions>		contentParseFuncs; //user supplied custom parsing code - indexed by contentID
+	map<std::string, HttpDownloadConfig>			contentHttpConfigs; //user supplied custom parsing code - indexed by contentID
+
 
 	ofPtr<ofxSuperLog> *					loggerStorage; //note its a * to an ofPtr - TODO!
 
 	ofxDrawableStateMachine<ofxApp::State>	appState; //ofxApp State Machine to handle all loading stages
-	std::string									errorStateHeader; //holds current error msg header (only applies when state == DEVELOPER_REQUESTED_ERROR_SCREEN)
-	std::string									errorStateBody; //holds current error msg body (only applies when state == DEVELOPER_REQUESTED_ERROR_SCREEN)
+	std::string								errorStateHeader; //holds current error msg header (only applies when state == DEVELOPER_REQUESTED_ERROR_SCREEN)
+	std::string								errorStateBody; //holds current error msg body (only applies when state == DEVELOPER_REQUESTED_ERROR_SCREEN)
 	
 	ofxAppErrorReporter						errorReporterObj; //send live error reports to our CMS over sensu
 	ofxGoogleAnalytics *					gAnalytics = nullptr;
@@ -256,9 +262,9 @@ protected:
 	bool									showMouse;
 	bool									reportErrors;
 
-	std::string									currentContentID; //keep track of which content are we getting
-	vector<std::string>							requestedContent; //complete list of user supplied contentID's
-	vector<std::string>							loadedContent; //user supplied contentID's loaded so far
+	std::string								currentContentID; //keep track of which content are we currently getting
+	vector<std::string>						requestedContent; //complete list of user supplied contentID's
+	vector<std::string>						loadedContent; //user supplied contentID's loaded so far
 
 	ofxAppDelegate *						delegate = nullptr; //this will be the "user"'s app, likely an ofBaseApp subclass
 	

@@ -8,11 +8,11 @@
 		"maxThreads" : 6,
 		"window":{
 			"windowMode" : 8, //see ofxScreenSetup::ScreenMode; windowed=8, fullOneMonitor=1, fullAllMonitors=0
-			"customWidth": 1200, //540
-			"customHeight": 800,
+			"customWidth": 1024, //540
+			"customHeight": 768,
 			"customWindowPosition" : true,
-			"customPositionX" : 70,
-			"customPositionY" : 70
+			"customPositionX" : 120,
+			"customPositionY" : 150
 		},
 		"startupScreenViewport":{ "x":0.0, "y":0.0, "w":1.0, "h":1.0 }, //define what part of the window is used to draw loading screens
 		"renderSize":{ //get it with app.renderSize
@@ -162,7 +162,7 @@
 		"maxTimeSpentLoadingPerFrameMs" : 4.0,//ms
 		"scanlinesPerLoop" : 128,
 		"maxLoadRequestsPerFrame" : 64,
-		"defaultUnloadDelay" : 10.0 //seconds
+		"defaultUnloadDelay": 0
 	},
 
 	"Logging":{
@@ -182,11 +182,6 @@
 		"displayLogTimes" : true,
 		"ThreadSafeLog" : {
 			"alsoPrintToConsole" : true
-		},
-		"logLevelOverrides":{	//override of log level for certain modules
-								//Valid Levels are: [0:Vebose, 1:Notice, 2:Warning, 3:Error, 4:FatalError, 5:Silence]
-			"myModule" : 5,		//ie silence (5) "myModule" logging;
-			"myOtherModule" : 2
 		}
 	},
 	
@@ -220,7 +215,7 @@
 		"port" : 3333
 	},
 
-	"Downloads":{
+	"Downloads":{ //settings for asset downloads
 		"proxy":{
 			"useProxy" : false,
 			"proxyHost": "",
@@ -245,13 +240,26 @@
 
 	"Content":{
 		"JsonSources":{ 
+
 			"CH" : {
 				"url" : "file://testJson/ch_small.json",
 				//"url" : "http://uri.cat/LP/ch_small.json",
 				"jsonDownloadDir": "CH_JsonDownloads",
 				"assetsLocation": "CH_assets",  //all assets will be in that folder, with a sub-folder (named after the object ID) per each content object
-				"shouldSkipObjectPolicyTests" : false  //set this to true to avoid the object cleanup according to the policies defined below
+				"shouldSkipObjectPolicyTests" : false,  //set this to true to avoid the object cleanup according to the policies defined below
+				"credentials":{
+					"username": "",
+					"password": ""
+				},
+				"proxy":{
+					"useProxy" : true,
+					"proxyHost": "",
+					"proxyPort": 8080,
+					"proxyUser" : "",
+					"proxyPassword" : ""
+				}
 			},
+
 			"CWRU" : {
 				"url" : "file://testJson/cwru.json",
 				//"url" : "http://uri.cat/LP/cwru.json",
