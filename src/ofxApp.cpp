@@ -783,7 +783,7 @@ void App::drawStats(){
 
 	//stack up on screen stats
 	int x = 20;
-	int y = 27;
+	int y = 27 + (statsFontSize - 15) * 0.4; //bigger fontsize we start lower to avoid clipping //TODO!
 	int pad = -8;
 	int fontSize = statsFontSize;
 
@@ -1450,8 +1450,8 @@ void App::onKeyPressed(ofKeyEventArgs & a){
 		case 'R': loadDynamicSettings(); RUI_LOG("[ofxApp : keyPress 'R'] Loaded Settings from \"ofxAppSettings.json\""); break;
 		case 'M': mullions->toggle(); RUI_LOG("[ofxApp : keyPress 'M'] Toggled Mullions"); break;
 		case 'D': globalsStorage->debug ^= true; didPress = true; break;
-		case '+': statsFontSize += 2; break;
-		case '-': statsFontSize -= 2; break;
+		case '+': statsFontSize += 2; statsFontSize = MIN(statsFontSize, 60); break;
+		case '-': statsFontSize -= 2; statsFontSize = MAX(statsFontSize, 11); break;
 	}
 	if(didPress){
 		RUI_PUSH_TO_CLIENT();

@@ -265,8 +265,6 @@ protected:
 
 	ofxAppDelegate *						delegate = nullptr; //this will be the "user"'s app, likely an ofBaseApp subclass
 	
-	const int								loadingScreenFontSize = 22; //TODO!
-
 	//loaded from json settings
 	ofVec2f									renderSize;
 	ofRectangle								startupScreenViewport; //loading screen rect area
