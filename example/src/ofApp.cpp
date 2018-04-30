@@ -117,6 +117,7 @@ void ofApp::ofxAppContentUpdate(const std::string & contentID, vector<ContentObj
 		cwruObjects.clear();
 		ofxAppContentIsReady(contentID, objs);
 	}
+	selectedObject = nullptr;
 	deleteScrollViews();
 	setupScrollViews();
 }
