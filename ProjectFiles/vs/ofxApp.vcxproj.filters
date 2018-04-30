@@ -121,30 +121,6 @@
     <ClCompile Include="..\..\..\..\ExternalAddons\ofxAutoTexture\src\ofxAutoTexture.cpp">
       <Filter>local_addons\ofxAutoTexture\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\ExternalAddons\ofxApp\src\ofxApp.cpp">
-      <Filter>local_addons\ofxApp\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\ExternalAddons\ofxApp\src\ofxAppContent.cpp">
-      <Filter>local_addons\ofxApp\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\ExternalAddons\ofxApp\src\ofxAppErrorReporter.cpp">
-      <Filter>local_addons\ofxApp\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\ExternalAddons\ofxApp\src\ofxAppFonts.cpp">
-      <Filter>local_addons\ofxApp\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\ExternalAddons\ofxApp\src\ofxAppStaticTextures.cpp">
-      <Filter>local_addons\ofxApp\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\ExternalAddons\ofxApp\src\ofxAppUtils.cpp">
-      <Filter>local_addons\ofxApp\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\ExternalAddons\ofxMTJsonParser\src\ofxMtJsonParser.cpp">
-      <Filter>local_addons\ofxMTJsonParser\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\ExternalAddons\ofxMTJsonParser\src\ofxMtJsonParserThread.cpp">
-      <Filter>local_addons\ofxMTJsonParser\src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\ExternalAddons\ofxSimpleHttp\src\ofxBatchDownloader.cpp">
       <Filter>local_addons\ofxSimpleHttp\src</Filter>
     </ClCompile>
@@ -183,18 +159,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\ExternalAddons\ofxProgressiveTextureLoad\src\ProgressiveTextureLoadQueue.cpp">
       <Filter>local_addons\ofxProgressiveTextureLoad\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\ExternalAddons\ofxTexturedObject\src\TexturedObject.cpp">
-      <Filter>local_addons\ofxTexturedObject\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\ExternalAddons\ofxTexturedObject\src\TexturedObjectConfig.cpp">
-      <Filter>local_addons\ofxTexturedObject\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\ExternalAddons\ofxTexturedObject\src\TexturedObjectConstants.cpp">
-      <Filter>local_addons\ofxTexturedObject\src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\ExternalAddons\ofxTexturedObject\src\TexturedObjectGC.cpp">
-      <Filter>local_addons\ofxTexturedObject\src</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\ExternalAddons\ofxJsonSettings\src\ofxJsonSettings.cpp">
       <Filter>local_addons\ofxJsonSettings\src</Filter>
@@ -255,6 +219,42 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\ExternalAddons\ofxGoogleAnalytics\src\ofxGoogleAnalytics.cpp">
       <Filter>local_addons\ofxGoogleAnalytics\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ofxTuio\src\ofxTuioClient.cpp">
+      <Filter>local_addons\ofxTuio\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ofxTuio\src\ofxTuioContainer.cpp">
+      <Filter>local_addons\ofxTuio\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ofxTuio\src\ofxTuioCursor.cpp">
+      <Filter>local_addons\ofxTuio\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ofxTuio\src\ofxTuioObject.cpp">
+      <Filter>local_addons\ofxTuio\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ofxTuio\src\ofxTuioPoint.cpp">
+      <Filter>local_addons\ofxTuio\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ofxMTJsonParser\src\ofxMtJsonParser.cpp">
+      <Filter>local_addons\ofxMTJsonParser\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ofxMTJsonParser\src\ofxMtJsonParserThread.cpp">
+      <Filter>local_addons\ofxMTJsonParser\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ofxMTJsonParser\src\ofxMtJsonParserUtils.cpp">
+      <Filter>local_addons\ofxMTJsonParser\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ofxTexturedObject\src\TexturedObject.cpp">
+      <Filter>local_addons\ofxTexturedObject\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ofxTexturedObject\src\TexturedObjectConfig.cpp">
+      <Filter>local_addons\ofxTexturedObject\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ofxTexturedObject\src\TexturedObjectGC.cpp">
+      <Filter>local_addons\ofxTexturedObject\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ofxTexturedObject\src\TexturedObjectStats.cpp">
+      <Filter>local_addons\ofxTexturedObject\src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -539,12 +539,6 @@
     </Filter>
     <Filter Include="local_addons\ofxAutoTexture\src">
       <UniqueIdentifier>{E369A91F-DC40-A172-897C-1904}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="local_addons\ofxApp">
-      <UniqueIdentifier>{F0490C70-A881-BC7B-25A1-52BD}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="local_addons\ofxApp\src">
-      <UniqueIdentifier>{F9686DB7-8C0C-6DBD-C3C0-D0F7}</UniqueIdentifier>
     </Filter>
     <Filter Include="local_addons\ofxMTJsonParser">
       <UniqueIdentifier>{02790627-E44A-0960-14B5-2B0C}</UniqueIdentifier>
@@ -1811,24 +1805,6 @@
     <ClInclude Include="..\..\..\..\ExternalAddons\ofxFontStash2\libs\pugixml\src\pugixml.hpp">
       <Filter>local_addons\ofxFontStash2\libs\pugixml\src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxTuio\src\ofxTuio.h">
-      <Filter>local_addons\ofxTuio\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxTuio\src\ofxTuioClient.h">
-      <Filter>local_addons\ofxTuio\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxTuio\src\ofxTuioContainer.h">
-      <Filter>local_addons\ofxTuio\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxTuio\src\ofxTuioCursor.h">
-      <Filter>local_addons\ofxTuio\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxTuio\src\ofxTuioObject.h">
-      <Filter>local_addons\ofxTuio\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxTuio\src\ofxTuioPoint.h">
-      <Filter>local_addons\ofxTuio\src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\ExternalAddons\ofxJSON\src\ofxJSON.h">
       <Filter>local_addons\ofxJSON\src</Filter>
     </ClInclude>
@@ -1846,54 +1822,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\ExternalAddons\ofxAutoTexture\src\ofxAutoTexture.h">
       <Filter>local_addons\ofxAutoTexture\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxApp\src\ofxApp.h">
-      <Filter>local_addons\ofxApp\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxApp\src\ofxAppColorsBasic.h">
-      <Filter>local_addons\ofxApp\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxApp\src\ofxAppContent.h">
-      <Filter>local_addons\ofxApp\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxApp\src\ofxAppDelegate.h">
-      <Filter>local_addons\ofxApp\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxApp\src\ofxAppErrorReporter.h">
-      <Filter>local_addons\ofxApp\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxApp\src\ofxAppFonts.h">
-      <Filter>local_addons\ofxApp\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxApp\src\ofxAppGlobalsBasic.h">
-      <Filter>local_addons\ofxApp\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxApp\src\ofxAppMacros.h">
-      <Filter>local_addons\ofxApp\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxApp\src\ofxAppStaticTextures.h">
-      <Filter>local_addons\ofxApp\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxApp\src\ofxAppStructs.h">
-      <Filter>local_addons\ofxApp\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxApp\src\ofxAppUtils.h">
-      <Filter>local_addons\ofxApp\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxMTJsonParser\src\ofxMtJsonParsedObject.h">
-      <Filter>local_addons\ofxMTJsonParser\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxMTJsonParser\src\ofxMtJsonParser.h">
-      <Filter>local_addons\ofxMTJsonParser\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxMTJsonParser\src\ofxMtJsonParserConfig.h">
-      <Filter>local_addons\ofxMTJsonParser\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxMTJsonParser\src\ofxMtJsonParserThread.h">
-      <Filter>local_addons\ofxMTJsonParser\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxMTJsonParser\src\ofxMtJsonParserUtils.h">
-      <Filter>local_addons\ofxMTJsonParser\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\ExternalAddons\ofxSimpleHttp\src\ofxBatchDownloader.h">
       <Filter>local_addons\ofxSimpleHttp\src</Filter>
@@ -1951,21 +1879,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\ExternalAddons\ofxProgressiveTextureLoad\src\ProgressiveTextureLoadQueue.h">
       <Filter>local_addons\ofxProgressiveTextureLoad\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxTexturedObject\src\TexturedObject.h">
-      <Filter>local_addons\ofxTexturedObject\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxTexturedObject\src\TexturedObjectConfig.h">
-      <Filter>local_addons\ofxTexturedObject\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxTexturedObject\src\TexturedObjectGC.h">
-      <Filter>local_addons\ofxTexturedObject\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxTexturedObject\src\TexturedObjectSizes.h">
-      <Filter>local_addons\ofxTexturedObject\src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\ExternalAddons\ofxTexturedObject\src\TexturedObjectStats.h">
-      <Filter>local_addons\ofxTexturedObject\src</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\ExternalAddons\ofxMullion\src\ofxMullion.h">
       <Filter>local_addons\ofxMullion\src</Filter>
@@ -2050,6 +1963,48 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\ExternalAddons\ofxGoogleAnalytics\src\ofxGoogleAnalytics.h">
       <Filter>local_addons\ofxGoogleAnalytics\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ofxTuio\src\ofxTuio.h">
+      <Filter>local_addons\ofxTuio\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ofxTuio\src\ofxTuioClient.h">
+      <Filter>local_addons\ofxTuio\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ofxTuio\src\ofxTuioContainer.h">
+      <Filter>local_addons\ofxTuio\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ofxTuio\src\ofxTuioCursor.h">
+      <Filter>local_addons\ofxTuio\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ofxTuio\src\ofxTuioObject.h">
+      <Filter>local_addons\ofxTuio\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ofxTuio\src\ofxTuioPoint.h">
+      <Filter>local_addons\ofxTuio\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ofxMTJsonParser\src\ofxMtJsonParsedObject.h">
+      <Filter>local_addons\ofxMTJsonParser\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ofxMTJsonParser\src\ofxMtJsonParser.h">
+      <Filter>local_addons\ofxMTJsonParser\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ofxMTJsonParser\src\ofxMtJsonParserThread.h">
+      <Filter>local_addons\ofxMTJsonParser\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ofxMTJsonParser\src\ofxMtJsonParserUtils.h">
+      <Filter>local_addons\ofxMTJsonParser\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ofxTexturedObject\src\TexturedObject.h">
+      <Filter>local_addons\ofxTexturedObject\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ofxTexturedObject\src\TexturedObjectConfig.h">
+      <Filter>local_addons\ofxTexturedObject\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ofxTexturedObject\src\TexturedObjectGC.h">
+      <Filter>local_addons\ofxTexturedObject\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ofxTexturedObject\src\TexturedObjectStats.h">
+      <Filter>local_addons\ofxTexturedObject\src</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

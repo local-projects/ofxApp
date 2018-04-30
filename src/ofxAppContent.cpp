@@ -261,7 +261,7 @@ void ofxAppContent::removeExpiredAssets(){
 }
 
 
-bool ofxAppContent::setShouldRemoveExpiredAssets(bool set){
+void ofxAppContent::setShouldRemoveExpiredAssets(bool set){
 	shouldRemoveExpiredAssets = set;
 }
 

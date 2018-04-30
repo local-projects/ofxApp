@@ -68,7 +68,7 @@ public:
 	bool isReadyToFetchContent();
 	void fetchContent(); //start the process here
 
-	bool setShouldRemoveExpiredAssets(bool);
+	void setShouldRemoveExpiredAssets(bool);
 
 	void setJsonDownloadURL(std::string jsonURL);
 	std::string getJsonDownloadURL(){ return jsonURL;};
