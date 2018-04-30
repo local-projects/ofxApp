@@ -11,8 +11,38 @@
 #include "ofxAppMacros.h"
 #include "ofxMtJsonParser.h"
 #include "ofxAssets.h"
+#include "TexturedObject.h"
 
-class ContentObject;
+//all your content objects will have to subclass this class
+class ContentObject : public ParsedObject, public AssetHolder, public TexturedObject{
+
+public:
+
+	ContentObject(){ getNumInstances()++; }
+	virtual ~ContentObject(){
+		getNumInstances()--;
+	};
+
+	// Imposed by TexturedObject //
+	virtual ofVec2f getTextureDimensions(TexturedObjectSize, int){ return ofVec2f(0,0);}
+	virtual std::string getLocalTexturePath(TexturedObjectSize, int){ return "";}
+
+	//this is effectively the destructor of the object - bc of texturedObject loading assets
+	//in secondary threads, we can't use an in-place destructor as you could destruct the object
+	//while a thread is loading it - thus we have this GarbageCollector-like behavior.
+	virtual void deleteWithGC(){}
+
+	//you can at any time during any of the ofxApp::ParseFunctions (parseOneObject, defineObjectAssets, setupTexturedObject)
+	//decide you don't want the object by setting isValid to false.
+	bool isValid = true;
+
+	static int getNumTotalObjects(){return getNumInstances();}
+
+private:
+
+	static int& getNumInstances(){static int numInstances = 0; return numInstances;}
+};
+
 
 namespace ofxApp{
 

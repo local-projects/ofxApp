@@ -16,6 +16,7 @@
 #include "ofxAutoTexture.h"
 #include "ofxAppErrorReporter.h"
 #include "GLFW/glfw3.h"
+#include "ofxTuio.h"
 
 //global var pointing to ofxApp::App so you can reach it from the debugger
 ofxApp::App * global_ofxApp = nullptr;
@@ -79,7 +80,6 @@ void App::setup(const map<std::string,ofxApp::ParseFunctions> & cfgs, ofxAppDele
 		setupErrorReporting();
 		setupGoogleAnalytics();
 		if(pidFileFound){
-
 			if(gAnalytics && gAnalytics->isEnabled()) gAnalytics->sendException("ofxApp - pidFileFound", true);
 		}
 		printSettingsFile();
@@ -305,7 +305,7 @@ void App::setupStateMachine(){
 
 	ofLogNotice("ofxApp") << "setupStateMachine()";
 	//listen to state machine changes
-	ofAddListener(appState.eventStateChanged, this, &App::onStateChanged);
+	ofAddListener(appState.eventStateChanged, this, &App::onSetState);
 	ofAddListener(appState.eventStateError, this, &App::onStateError);
 	ofAddListener(appState.eventDraw, this, &App::onDrawLoadingScreenStatus);
 
@@ -370,11 +370,6 @@ void App::setupGlobalParameters(){
 	#if !defined(OFX_APP_NONAME)
 	RUI_NEW_GROUP(std::string(OFX_APP_STR(OFX_APP_NAME)) + std::string(" Globals"));
 	globals().setupRemoteUIParams();
-	#endif
-	RUI_NEW_GROUP(std::string(OFX_APP_STR(OFX_APP_NAME)) + std::string(" Colors"));
-	colors().ofxAppColorsBasic::setupRemoteUIParams();
-	#if !defined(OFX_APP_NONAME)
-	colors().setupRemoteUIParams();
 	#endif
 
 	//get all params as a string / paragrpah, print out so there's values printed in the logs.
@@ -471,7 +466,7 @@ void App::setupApp(){
 	RUI_PUSH_TO_CLIENT();
 	//RUI_LOAD_FROM_XML();
 	setMouseEvents(enableMouse);
-	ofBackground(colorsStorage.bgColor);
+	ofBackground(globalsStorage->bgColor);
 }
 
 
@@ -672,10 +667,11 @@ void App::setupTuio(){
 	if(getBool("TUIO/enabled")){
 		int port = getInt("TUIO/port");
 		ofLogNotice("ofxApp") << "Listening for TUIO events at port " << port;
-		tuioClient.start(port); //TODO - make sure we do it only once!
-		ofAddListener(tuioClient.cursorAdded, this, &App::tuioAdded);
-		ofAddListener(tuioClient.cursorRemoved, this, &App::tuioRemoved);
-		ofAddListener(tuioClient.cursorUpdated, this, &App::tuioUpdated);
+		tuioClient = new ofxTuioClient();
+		tuioClient->start(port); //TODO - make sure we do it only once!
+		ofAddListener(tuioClient->cursorAdded, this, &App::tuioAdded);
+		ofAddListener(tuioClient->cursorRemoved, this, &App::tuioRemoved);
+		ofAddListener(tuioClient->cursorUpdated, this, &App::tuioUpdated);
 	}
 }
 
@@ -698,11 +694,11 @@ void App::tuioRemoved(ofxTuioCursor & t){
 };
 
 
-#pragma mark - draw
+#pragma mark - Draw
 
 void App::update(ofEventArgs &){
 
-	tuioClient.getMessage();
+	tuioClient->getMessage();
 	for(auto c : contentStorage){
 		c.second->update(dt);
 	}
@@ -788,8 +784,8 @@ void App::drawStats(){
 	//stack up on screen stats
 	int x = 20;
 	int y = 27;
-	int pad = -10;
-	int fontSize = 15;
+	int pad = -8;
+	int fontSize = statsFontSize;
 
 	if(globalsStorage->drawAppRunTime){
 		ofRectangle r = drawMsgInBox("App Runtime: " + ofxApp::utils::secondsToHumanReadable(ofGetElapsedTimef(), 1), x, y, fontSize, ofColor::turquoise);
@@ -819,7 +815,7 @@ void App::drawStats(){
 	}
 	
 	if(globalsStorage->drawGoogleAnalyticsState && gAnalytics && gAnalytics->isEnabled()){
-		ofRectangle r = drawMsgInBox(gAnalytics->getStatusInfoString(), x, y, fontSize, ofColor::cornsilk);
+		ofRectangle r = drawMsgInBox(gAnalytics->getStatusInfoString(), x, y, fontSize, ofColor::yellow);
 		y += r.height + fabs(r.y - y) + pad;
 	}
 	
@@ -840,6 +836,22 @@ void App::drawStats(){
 		currentFrameLog.clear();
 	}
 
+	if(globalsStorage->drawLiveUpdateStatus){
+		string liveUpdateMsg;
+		for(auto & it : liveContentUpdates){
+			const string & contentID = it.first;
+			auto & s = it.second;
+			liveUpdateMsg += "  - \"" + contentID + "\": ";
+			if(s.enabled){
+				if(s.state == LiveUpdateState::IDLE) liveUpdateMsg += "updating in " + ofToString(s.interval - s.timer, 1) + " sec (every " + ofToString(s.interval,1) + "sec)\n";
+				if(s.state == LiveUpdateState::RUNNING) liveUpdateMsg += "Running Live update ...\n";
+			}else{
+				liveUpdateMsg += "live updates disabled\n";
+			}
+		}
+		ofRectangle r = drawMsgInBox("Live Update Status\n" + liveUpdateMsg, x, y, fontSize, ofColor::crimson);
+		y += r.height + fabs(r.y - y) + pad;
+	}
 }
 
 void App::updateAnimatable(float dt) {
@@ -855,6 +867,7 @@ void App::updateAnimatable(float dt) {
 		a.setCustomBounceParams(globalsStorage->TAC_bounceNum, globalsStorage->TAC_bounceElast);
 	}
 }
+
 void App::drawAnimatable() {
 
 	//App::tempAnimCurveInstance
@@ -1004,7 +1017,6 @@ void App::addToCurrentFrameLog(const std::string & str){
 	currentFrameLog += ofxApp::utils::secondsToHumanReadable(ofGetElapsedTimef(), 2) + " - " + str + "\n";
 }
 
-
 #pragma mark State Machine
 
 void App::updateStateMachine(float dt){
@@ -1119,6 +1131,44 @@ void App::updateStateMachine(float dt){
 
 		case State::RUNNING:
 			appState.updateState( -1, "");
+
+			for(auto & it : liveContentUpdates){
+				const string & contentID = it.first;
+				auto & state = it.second;
+
+				if(state.enabled){
+					if(state.state == LiveUpdateState::IDLE){
+						state.timer += ofGetLastFrameTime();
+					}
+
+					if(state.state == LiveUpdateState::RUNNING){
+						if(contentStorage[contentID]->foundError()){ //live update failed!
+							ofLogError("ofxApp") << "Live Content Update for \"" << contentID << "\" failed: " << contentStorage[contentID]->getErrorMsg();
+							state.state = LiveUpdateState::FAILED;
+							delegate->ofxAppContentUpdateFailed(contentID, contentStorage[contentID]->getErrorMsg());
+							state.state = LiveUpdateState::IDLE;
+						}
+						if(contentStorage[contentID]->isContentReady()){
+							ofLogNotice("ofxApp") << "Live Content Update for \"" << contentID << "\" is ready!";
+							state.state = LiveUpdateState::READY;
+							delegate->ofxAppContentUpdate(contentID, contentStorage[contentID]->getParsedObjects());
+							state.state = LiveUpdateState::IDLE;
+							ofLogNotice("ofxApp") << "The total number of ContentObject instances is " << ContentObject::getNumTotalObjects();
+						}
+					}
+
+					if(state.timer > state.interval && state.state == LiveUpdateState::IDLE){
+						ofLogNotice("ofxApp") << "starting Live Content Update for \"" << contentID << "\"";
+						state.timer = 0.0f;
+						state.state = LiveUpdateState::RUNNING;
+						contentStorage[contentID]->setNumThreads(state.maxThreads);
+						contentStorage[contentID]->setMaxConcurrentDownloads(state.maxConcurrentDownloads);
+						string newURL = getUpdatedContentURL(contentID);
+						contentStorage[contentID]->setJsonDownloadURL(newURL);
+						contentStorage[contentID]->fetchContent();
+					}
+				}
+			}
 			break;
 
 		default: break;
@@ -1126,7 +1176,7 @@ void App::updateStateMachine(float dt){
 }
 
 
-void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
+void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 
 	ofLogNotice("ofxApp") 	<< "State Changed from \"" << appState.getNameForState(change.oldState)
 							<< "\" to \"" << appState.getNameForState(change.newState) << "\". Previous State Duration: " << change.timeInPrevState << "sec.";
@@ -1138,14 +1188,15 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 		case State::SETUP_DELEGATE_B4_CONTENT_LOAD:
 			ofLogNotice("ofxApp") << "Start SETUP_DELEGATE_B4_CONTENT_LOAD...";
 			delegate->ofxAppPhaseWillBegin(Phase(State::SETUP_DELEGATE_B4_CONTENT_LOAD));
-		break;
+			break;
 
 		case State::LOAD_STATIC_TEXTURES:
 			startLoadingStaticAssets();
 			break;
 
 		case State::LOAD_JSON_CONTENT:{
-			if(change.oldState != State::LOAD_JSON_CONTENT_FAILED){
+
+			if(change.oldState != State::LOAD_JSON_CONTENT_FAILED){ //1st time we get into LOAD_JSON_CONTENT
 
 				if(gAnalytics && gAnalytics->isEnabled() && change.oldState == State::LOAD_STATIC_TEXTURES){
 					gAnalytics->sendCustomTimeMeasurement("ofxApp", "Load Static Images", change.timeInPrevState * 1000.0f);
@@ -1157,7 +1208,7 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 				bool keyExists = settings().exists("Content/JsonSources/" + currentContentID);
 				
 				if(keyExists){
-					std::string jsonURL = getString("Content/JsonSources/" + currentContentID + "/url");
+					std::string jsonURL = getUpdatedContentURL(currentContentID);
 					std::string jsonDir = getString("Content/JsonSources/" + currentContentID + "/jsonDownloadDir");
 
 					//get credentials setup
@@ -1180,8 +1231,8 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 					}
 
 					//get custom headers setup
-					if(settingExists("Content/JsonSources/" + currentContentID + "/httpConfig/customHeaders")){
-						ofxJSON customHeaders = settings().getJson("Content/JsonSources/" + currentContentID + "/httpConfig/customHeaders");
+					if(settingExists("Content/JsonSources/" + currentContentID + "/httpConfig/customHttpHeaders")){
+						ofxJSON customHeaders = settings().getJson("Content/JsonSources/" + currentContentID + "/httpConfig/customHttpHeaders");
 						if(customHeaders.isObject()){
 							for( Json::Value::const_iterator itr = customHeaders.begin() ; itr != customHeaders.end() ; itr++ ) {
 								std::string header = itr.key().asString();
@@ -1191,8 +1242,22 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 						}
 					}
 
+					bool liveUpdatesExists = settings().exists("Content/JsonSources/" + currentContentID + "/liveUpdates");
+					if(liveUpdatesExists){ //read live update config for this contentSrc
+						bool enabled = getBool("Content/JsonSources/" + currentContentID + "/liveUpdates/enabled", false);
+						LiveUpdateState liState;
+						liState.enabled = enabled;
+						liState.interval = getFloat("Content/JsonSources/" + currentContentID + "/liveUpdates/interval", 300);
+						liState.maxThreads = getFloat("Content/JsonSources/" + currentContentID + "/liveUpdates/maxThreads", 1);
+						liState.maxConcurrentDownloads = getFloat("Content/JsonSources/" + currentContentID + "/liveUpdates/maxConcurrentDownloads", 1);
+						liveContentUpdates[currentContentID] = liState;
+					}else{ //default to disabled live updates
+						LiveUpdateState liState;
+						liState.enabled = false;
+						liveContentUpdates[currentContentID] = liState;
+					}
+
 					bool skipPolicyTests = getBool("Content/JsonSources/" + currentContentID + "/shouldSkipObjectPolicyTests");
-					
 					int numConcurrentDownloads = getInt("Downloads/maxConcurrentDownloads");
 					int numThreads = getInt("App/maxThreads");
 					int timeOutSecs = getInt("Downloads/timeOutSec");
@@ -1253,6 +1318,9 @@ void App::onStateChanged(ofxStateMachine<State>::StateChangedEventArgs& change){
 				if(gAnalytics && gAnalytics->isEnabled()){
 					gAnalytics->sendEvent("ofxApp", "Content Delivered", content.size(), c.first , false);
 				}
+				c.second->setShouldRemoveExpiredAssets(false); //as we already delivered all content,
+				//in case the user wants to run the content download again, lets make sure those runs
+				//dont delte assets that might be in use from the previous runs
 			}
 			ofLogNotice("ofxApp") << "Start Loading Custom User Content...";
 			delegate->ofxAppPhaseWillBegin(Phase(State::DELIVER_CONTENT_LOAD_RESULTS));
@@ -1359,7 +1427,7 @@ void App::onRemoteUINotification(RemoteUIServerCallBackArg &arg){
 				setMouseEvents(arg.param.boolVal);
 			}
 			if(arg.paramName == "bgColor"){
-				ofBackground(colorsStorage.bgColor);
+				ofBackground(globalsStorage->bgColor);
 				RUI_PUSH_TO_CLIENT();
 			}
 			break;
@@ -1382,6 +1450,8 @@ void App::onKeyPressed(ofKeyEventArgs & a){
 		case 'R': loadDynamicSettings(); RUI_LOG("[ofxApp : keyPress 'R'] Loaded Settings from \"ofxAppSettings.json\""); break;
 		case 'M': mullions->toggle(); RUI_LOG("[ofxApp : keyPress 'M'] Toggled Mullions"); break;
 		case 'D': globalsStorage->debug ^= true; didPress = true; break;
+		case '+': statsFontSize += 2; break;
+		case '-': statsFontSize -= 2; break;
 	}
 	if(didPress){
 		RUI_PUSH_TO_CLIENT();
@@ -1405,8 +1475,6 @@ ofRectangle App::getRenderAreaForCurrentWindowSize(){
 ofRectangle App::getRenderRect() {
 	return ofRectangle(0, 0, one().renderSize.x, one().renderSize.y);
 }
-
-
 
 
 ofRectangle App::drawMsgInBox(std::string msg, int x, int y, int fontSize, ofColor fontColor, ofColor bgColor, float edgeGrow) {
@@ -1439,6 +1507,15 @@ ofRectangle App::drawMsgInBox(std::string msg, int x, int y, int fontSize, ofCol
 }
 
 
+string App::getUpdatedContentURL(const string & contentID){
+	string basicJsonURL = getString("Content/JsonSources/" + contentID + "/url");
+	string newURL = delegate->ofxAppWillFetchContentFromURL(contentID, basicJsonURL);
+	if (newURL.size() == 0) newURL = basicJsonURL;
+	if(basicJsonURL != newURL) ofLogNotice("ofxApp") << "user decided to override content URL for \"" << currentContentID << "\" with \"" << newURL << "\"";
+	return newURL;
+}
+
+
 bool App::isJsonContentDifferentFromLastLaunch(std::string contentID, std::string & freshJsonSha1, std::string & oldJsonSha1){
 
 	if(contentStorage.find(contentID) == contentStorage.end()){
@@ -1451,6 +1528,7 @@ bool App::isJsonContentDifferentFromLastLaunch(std::string contentID, std::strin
 	ofLogNotice("ofxApp") << "JSON sha1s for contentID: \"" << contentID << "\" freshJson: \"" << freshJsonSha1 << "\" oldJson: \"" << oldJsonSha1 << "\"";
 	return freshJsonSha1 != oldJsonSha1;
 }
+
 
 ///////////////////// SETTINGS //////////////////////////////////////////////////////////////////////
 #pragma mark Settings

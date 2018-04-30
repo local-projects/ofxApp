@@ -16,6 +16,17 @@ void ofApp::setup(){
 }
 
 
+string ofApp::ofxAppWillFetchContentFromURL(const std::string & contentID, const std::string & jsonURL){
+	//This is your chance to change up the JSON URL from which content will be downloaded from
+	//ofxApp provides you with the URL that you defined in ofxAppSettings.json for that contentID,
+	//This can be used for example to add a timestamp to the query URL (ie url = url+"&time=4324345");
+	//don't forget to return the url updated to ofxApp.
+	string modifiedURL = jsonURL;
+	//if(ofIsStringInString(jsonURL, "http://")) modifiedURL = modifiedURL + "&timeStamp=" + ofToString(ofGetSystemTimeMillis());
+	return modifiedURL;
+}
+
+
 void ofApp::ofxAppPhaseWillBegin(ofxApp::Phase s){
 	phaseStartTime = ofGetElapsedTimef();
 	ofLogNotice("ofApp") << "Start User Process " << ofxApp::toString(s);
@@ -23,6 +34,7 @@ void ofApp::ofxAppPhaseWillBegin(ofxApp::Phase s){
 		case ofxApp::Phase::WILL_LOAD_CONTENT: break;
 		case ofxApp::Phase::DID_DELIVER_CONTENT: break;
 		case ofxApp::Phase::WILL_BEGIN_RUNNING:
+			setupScene();
 			setupScrollViews();
 			break;
 	}
@@ -35,10 +47,6 @@ bool ofApp::ofxAppIsPhaseComplete(ofxApp::Phase){
 	}
 	return false;
 }
-
-
-void ofApp::ofxAppDrawPhaseProgress(ofxApp::Phase, const ofRectangle & r){
-};
 
 
 string ofApp::ofxAppGetStatusString(ofxApp::Phase p){
@@ -84,6 +92,39 @@ void ofApp::ofxAppContentIsReady(const string & contentID, vector<ContentObject*
 		}
 	}
 }
+
+
+void ofApp::ofxAppContentUpdate(const std::string & contentID, vector<ContentObject*>objs){
+
+	ofLogNotice("ofApp") << "got a Live Content Update for \"" << contentID << "\" with " << objs.size() << " objects.";
+
+	//delete all old objects clear the vector. Note we dont directly delete them as they are
+	//TextureObjects, we use deleteWithGC() [GC == GarbageCollector] which will delete it safely
+	//when no textures are being loaded
+	if(contentID == "CH"){
+		for(auto obj: chObjects){
+			obj->deleteWithGC();
+		}
+		chObjects.clear();
+		ofxAppContentIsReady(contentID, objs);
+	}
+
+	//idem as for "CH", remove all content
+	if(contentID == "CWRU"){
+		for(auto obj: cwruObjects){
+			obj->deleteWithGC();
+		}
+		cwruObjects.clear();
+		ofxAppContentIsReady(contentID, objs);
+	}
+	deleteScrollViews();
+	setupScrollViews();
+}
+
+
+void ofApp::ofxAppContentUpdateFailed(const std::string & contentID, const std::string & errorMsg){
+	ofLogError("ofApp") << "Live Content Update for \"" << contentID << "\" failed with this error msg: \"" << errorMsg << "\".";
+};
 
 
 void ofApp::update(){
@@ -151,15 +192,17 @@ void ofApp::draw(){
 
 //////////////////////////////////////////////////////////////////////////////////
 
-
-void ofApp::setupScrollViews(){
-
+void ofApp::setupScene(){
 	//setup ofxInterface
 	scene = new ofxInterface::Node();
 	scene->setPosition(ofVec3f());
 	scene->setSize(ofGetWidth(), ofGetHeight());
 	scene->setName("scene");
 	ofxInterface::TouchManager::one().setup(scene, false);
+}
+
+
+void ofApp::setupScrollViews(){
 
 	float padding = 4;
 	float paddingH = 20;
@@ -213,7 +256,7 @@ void ofApp::setupScrollViews(){
 		}
 	}
 
-	//add cwru content
+	//add CWRU content
 	for(auto cwruObj : cwruObjects){
 		TexturedObjectScrollView::TexturedObjectTexture tex;
 		tex.texObj = cwruObj;
@@ -227,6 +270,15 @@ void ofApp::setupScrollViews(){
 	//finally load the contents
 	scrollView->loadContent(imagesToShow);
 	ofLogNotice("ofApp") << "showing " << imagesToShow.size() << " images.";
+}
+
+
+void ofApp::deleteScrollViews(){
+	//remove listeners to scrollview
+	ofRemoveListener(scrollView->eventTextureClicked, this, &ofApp::onSrollImageClicked);
+	ofRemoveListener(scrollView->eventTileDraw, this, &ofApp::onDrawTile);
+	//remove scrollview from scene, delete it too to avoid leaking.
+	delete scene->removeChild(scrollView);
 }
 
 
@@ -276,6 +328,7 @@ void ofApp::keyPressed(int key){
 	if (key == '1' || key == '2' || key == '3') {
 		OFXAPP_REPORT("testAlert", "testing", key - '1' /* [0..2]*/);
 	}
+
 }
 
 

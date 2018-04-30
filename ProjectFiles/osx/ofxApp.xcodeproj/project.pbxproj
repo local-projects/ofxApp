@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BB7ABA97209675A400B33F7E /* TexturedObjectStats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7ABA96209675A400B33F7E /* TexturedObjectStats.cpp */; };
+		BB7ABA992096797300B33F7E /* ofxMtJsonParserUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7ABA982096797300B33F7E /* ofxMtJsonParserUtils.cpp */; };
+		BB7ABA9B2096980D00B33F7E /* ofxTuioClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7ABA9A2096980D00B33F7E /* ofxTuioClient.cpp */; };
+		BB7ABA9D2096989A00B33F7E /* ofxTuioObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7ABA9C2096989A00B33F7E /* ofxTuioObject.cpp */; };
+		BB7ABA9F209699E800B33F7E /* ofxTuioPoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7ABA9E209699E800B33F7E /* ofxTuioPoint.cpp */; };
+		BB7ABAA120969A5700B33F7E /* ofxTuioCursor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7ABAA020969A5700B33F7E /* ofxTuioCursor.cpp */; };
+		BB7ABAA320969AEB00B33F7E /* ofxTuioContainer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7ABAA220969AEB00B33F7E /* ofxTuioContainer.cpp */; };
 		BB7B1F951FC3E30800CDD710 /* ofxOscParameterSync.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7B1F6D1FC3E30800CDD710 /* ofxOscParameterSync.cpp */; };
 		BB7B1F961FC3E30800CDD710 /* ofxOscMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7B1F6E1FC3E30800CDD710 /* ofxOscMessage.cpp */; };
 		BB7B1F971FC3E30800CDD710 /* ofxOscBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7B1F701FC3E30800CDD710 /* ofxOscBundle.cpp */; };
@@ -80,7 +87,6 @@
 		BBA773F61FC3E7C800DD5B69 /* ofxProgressiveTextureLoad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA773F41FC3E7C800DD5B69 /* ofxProgressiveTextureLoad.cpp */; };
 		BBA774021FC3E7D200DD5B69 /* TexturedObjectGC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA773FA1FC3E7D200DD5B69 /* TexturedObjectGC.cpp */; };
 		BBA774031FC3E7D200DD5B69 /* TexturedObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA773FE1FC3E7D200DD5B69 /* TexturedObject.cpp */; };
-		BBA774041FC3E7D200DD5B69 /* TexturedObjectConstants.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA774001FC3E7D200DD5B69 /* TexturedObjectConstants.cpp */; };
 		BBA774051FC3E7D200DD5B69 /* TexturedObjectConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA774011FC3E7D200DD5B69 /* TexturedObjectConfig.cpp */; };
 		BBA7740D1FC3E7DC00DD5B69 /* ofxJsonSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA7740C1FC3E7DC00DD5B69 /* ofxJsonSettings.cpp */; };
 		BBA774171FC3E7E800DD5B69 /* ofxTimeMeasurements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA774101FC3E7E800DD5B69 /* ofxTimeMeasurements.cpp */; };
@@ -122,6 +128,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		BB7ABA96209675A400B33F7E /* TexturedObjectStats.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TexturedObjectStats.cpp; sourceTree = "<group>"; };
+		BB7ABA982096797300B33F7E /* ofxMtJsonParserUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxMtJsonParserUtils.cpp; sourceTree = "<group>"; };
+		BB7ABA9A2096980D00B33F7E /* ofxTuioClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxTuioClient.cpp; sourceTree = "<group>"; };
+		BB7ABA9C2096989A00B33F7E /* ofxTuioObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxTuioObject.cpp; sourceTree = "<group>"; };
+		BB7ABA9E209699E800B33F7E /* ofxTuioPoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxTuioPoint.cpp; sourceTree = "<group>"; };
+		BB7ABAA020969A5700B33F7E /* ofxTuioCursor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxTuioCursor.cpp; sourceTree = "<group>"; };
+		BB7ABAA220969AEB00B33F7E /* ofxTuioContainer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxTuioContainer.cpp; sourceTree = "<group>"; };
 		BB7B1AB91FC3DD9200CDD710 /* ofxAppDebug.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = ofxAppDebug.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB7B1AC01FC3DDA200CDD710 /* openFrameworksLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openFrameworksLib.xcodeproj; path = ../../../../OpenFrameworks/libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj; sourceTree = "<group>"; };
 		BB7B1F6C1FC3E30800CDD710 /* ofxOscParameterSync.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxOscParameterSync.h; sourceTree = "<group>"; };
@@ -536,7 +549,6 @@
 		BBA773B71FC3E7A500DD5B69 /* ofxMtJsonParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxMtJsonParser.h; sourceTree = "<group>"; };
 		BBA773B81FC3E7A500DD5B69 /* ofxMtJsonParsedObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxMtJsonParsedObject.h; sourceTree = "<group>"; };
 		BBA773B91FC3E7A500DD5B69 /* ofxMtJsonParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxMtJsonParser.cpp; sourceTree = "<group>"; };
-		BBA773BA1FC3E7A500DD5B69 /* ofxMtJsonParserConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxMtJsonParserConfig.h; sourceTree = "<group>"; };
 		BBA773BB1FC3E7A500DD5B69 /* ofxMtJsonParserUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxMtJsonParserUtils.h; sourceTree = "<group>"; };
 		BBA773BC1FC3E7A500DD5B69 /* ofxMtJsonParserThread.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxMtJsonParserThread.cpp; sourceTree = "<group>"; };
 		BBA773C11FC3E7AA00DD5B69 /* ofxSimpleHttp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxSimpleHttp.h; sourceTree = "<group>"; };
@@ -574,10 +586,8 @@
 		BBA773FA1FC3E7D200DD5B69 /* TexturedObjectGC.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TexturedObjectGC.cpp; sourceTree = "<group>"; };
 		BBA773FB1FC3E7D200DD5B69 /* TexturedObjectStats.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TexturedObjectStats.h; sourceTree = "<group>"; };
 		BBA773FC1FC3E7D200DD5B69 /* TexturedObjectGC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TexturedObjectGC.h; sourceTree = "<group>"; };
-		BBA773FD1FC3E7D200DD5B69 /* TexturedObjectSizes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TexturedObjectSizes.h; sourceTree = "<group>"; };
 		BBA773FE1FC3E7D200DD5B69 /* TexturedObject.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TexturedObject.cpp; sourceTree = "<group>"; };
 		BBA773FF1FC3E7D200DD5B69 /* TexturedObjectConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TexturedObjectConfig.h; sourceTree = "<group>"; };
-		BBA774001FC3E7D200DD5B69 /* TexturedObjectConstants.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TexturedObjectConstants.cpp; sourceTree = "<group>"; };
 		BBA774011FC3E7D200DD5B69 /* TexturedObjectConfig.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TexturedObjectConfig.cpp; sourceTree = "<group>"; };
 		BBA774081FC3E7D700DD5B69 /* ofxMullion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxMullion.h; sourceTree = "<group>"; };
 		BBA7740B1FC3E7DC00DD5B69 /* ofxJsonSettings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxJsonSettings.h; sourceTree = "<group>"; };
@@ -1658,10 +1668,15 @@
 			children = (
 				BBA773791FC3E78700DD5B69 /* ofxTuio.h */,
 				BBA7737A1FC3E78700DD5B69 /* ofxTuioObject.h */,
+				BB7ABA9C2096989A00B33F7E /* ofxTuioObject.cpp */,
 				BBA7737B1FC3E78700DD5B69 /* ofxTuioClient.h */,
+				BB7ABA9A2096980D00B33F7E /* ofxTuioClient.cpp */,
 				BBA7737C1FC3E78700DD5B69 /* ofxTuioPoint.h */,
+				BB7ABA9E209699E800B33F7E /* ofxTuioPoint.cpp */,
 				BBA7737D1FC3E78700DD5B69 /* ofxTuioCursor.h */,
+				BB7ABAA020969A5700B33F7E /* ofxTuioCursor.cpp */,
 				BBA7737E1FC3E78700DD5B69 /* ofxTuioContainer.h */,
+				BB7ABAA220969AEB00B33F7E /* ofxTuioContainer.cpp */,
 			);
 			name = src;
 			path = ../../../../ExternalAddons/ofxTuio/src;
@@ -1778,13 +1793,13 @@
 		BBA773B51FC3E7A500DD5B69 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				BBA773B61FC3E7A500DD5B69 /* ofxMtJsonParserThread.h */,
-				BBA773B71FC3E7A500DD5B69 /* ofxMtJsonParser.h */,
 				BBA773B81FC3E7A500DD5B69 /* ofxMtJsonParsedObject.h */,
-				BBA773B91FC3E7A500DD5B69 /* ofxMtJsonParser.cpp */,
-				BBA773BA1FC3E7A500DD5B69 /* ofxMtJsonParserConfig.h */,
-				BBA773BB1FC3E7A500DD5B69 /* ofxMtJsonParserUtils.h */,
+				BBA773B61FC3E7A500DD5B69 /* ofxMtJsonParserThread.h */,
 				BBA773BC1FC3E7A500DD5B69 /* ofxMtJsonParserThread.cpp */,
+				BBA773B71FC3E7A500DD5B69 /* ofxMtJsonParser.h */,
+				BBA773B91FC3E7A500DD5B69 /* ofxMtJsonParser.cpp */,
+				BBA773BB1FC3E7A500DD5B69 /* ofxMtJsonParserUtils.h */,
+				BB7ABA982096797300B33F7E /* ofxMtJsonParserUtils.cpp */,
 			);
 			name = src;
 			path = ../../../../ExternalAddons/ofxMTJsonParser/src;
@@ -1929,13 +1944,12 @@
 			isa = PBXGroup;
 			children = (
 				BBA773F91FC3E7D200DD5B69 /* TexturedObject.h */,
+				BBA773FE1FC3E7D200DD5B69 /* TexturedObject.cpp */,
+				BBA773FC1FC3E7D200DD5B69 /* TexturedObjectGC.h */,
 				BBA773FA1FC3E7D200DD5B69 /* TexturedObjectGC.cpp */,
 				BBA773FB1FC3E7D200DD5B69 /* TexturedObjectStats.h */,
-				BBA773FC1FC3E7D200DD5B69 /* TexturedObjectGC.h */,
-				BBA773FD1FC3E7D200DD5B69 /* TexturedObjectSizes.h */,
-				BBA773FE1FC3E7D200DD5B69 /* TexturedObject.cpp */,
+				BB7ABA96209675A400B33F7E /* TexturedObjectStats.cpp */,
 				BBA773FF1FC3E7D200DD5B69 /* TexturedObjectConfig.h */,
-				BBA774001FC3E7D200DD5B69 /* TexturedObjectConstants.cpp */,
 				BBA774011FC3E7D200DD5B69 /* TexturedObjectConfig.cpp */,
 			);
 			name = src;
@@ -2275,11 +2289,14 @@
 				BBA7734F1FC3E78000DD5B69 /* stb_truetype.c in Sources */,
 				BB7B24051FC3E6A400CDD710 /* ofxXmlSettings.cpp in Sources */,
 				BBA774341FC3E7EF00DD5B69 /* RUIWebBinary.cpp in Sources */,
+				BB7ABA9F209699E800B33F7E /* ofxTuioPoint.cpp in Sources */,
+				BB7ABA992096797300B33F7E /* ofxMtJsonParserUtils.cpp in Sources */,
 				BB7B209F1FC3E62D00CDD710 /* ofxCvFloatImage.cpp in Sources */,
 				BB7B1F9F1FC3E30800CDD710 /* UdpSocket.cpp in Sources */,
 				BBA7743A1FC3E7F400DD5B69 /* ofxHistoryPlot.cpp in Sources */,
 				BBA774051FC3E7D200DD5B69 /* TexturedObjectConfig.cpp in Sources */,
 				BB7B1F9C1FC3E30800CDD710 /* OscReceivedElements.cpp in Sources */,
+				BB7ABAA120969A5700B33F7E /* ofxTuioCursor.cpp in Sources */,
 				BBA7738B1FC3E78C00DD5B69 /* ofxJSON.cpp in Sources */,
 				BBA773BE1FC3E7A500DD5B69 /* ofxMtJsonParserThread.cpp in Sources */,
 				BB7B20A01FC3E62D00CDD710 /* ofxCvGrayscaleImage.cpp in Sources */,
@@ -2290,7 +2307,6 @@
 				BB7B1F991FC3E30800CDD710 /* ofxOscSender.cpp in Sources */,
 				BBA7744B1FC3E7FD00DD5B69 /* ofxAnimatableOfPoint.cpp in Sources */,
 				BBA773761FC3E78300DD5B69 /* ofxfs2_nanovg.c in Sources */,
-				BBA774041FC3E7D200DD5B69 /* TexturedObjectConstants.cpp in Sources */,
 				BBA773501FC3E78000DD5B69 /* fontstash.c in Sources */,
 				BB7B209E1FC3E62D00CDD710 /* ofxCvImage.cpp in Sources */,
 				BB7B1F951FC3E30800CDD710 /* ofxOscParameterSync.cpp in Sources */,
@@ -2327,6 +2343,7 @@
 				BBA773CB1FC3E7AA00DD5B69 /* ofxBatchDownloader.cpp in Sources */,
 				BBA773CC1FC3E7AA00DD5B69 /* ofxChecksum.cpp in Sources */,
 				BBA774481FC3E7FD00DD5B69 /* ofxAnimatable.cpp in Sources */,
+				BB7ABA97209675A400B33F7E /* TexturedObjectStats.cpp in Sources */,
 				BBA773721FC3E78300DD5B69 /* README.md in Sources */,
 				BBA773701FC3E78300DD5B69 /* ofxFontStashParser.cpp in Sources */,
 				BBA773941FC3E79300DD5B69 /* ofxSuperLog.cpp in Sources */,
@@ -2341,8 +2358,11 @@
 				BBA774301FC3E7EF00DD5B69 /* ofxRemoteUIClient.cpp in Sources */,
 				BB7B20B21FC3E67A00CDD710 /* ofxTCPManager.cpp in Sources */,
 				BBA774331FC3E7EF00DD5B69 /* ofxRemoteUIServer.cpp in Sources */,
+				BB7ABAA320969AEB00B33F7E /* ofxTuioContainer.cpp in Sources */,
 				BB7B20B31FC3E67A00CDD710 /* ofxTCPClient.cpp in Sources */,
+				BB7ABA9B2096980D00B33F7E /* ofxTuioClient.cpp in Sources */,
 				BBA7742F1FC3E7EF00DD5B69 /* uriencode.cpp in Sources */,
+				BB7ABA9D2096989A00B33F7E /* ofxTuioObject.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

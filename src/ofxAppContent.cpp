@@ -70,11 +70,11 @@ void ofxAppContent::setup(	std::string ID,
 	}
 
 	//subscribe to parsing events
-	ofAddListener(jsonParser.eventJsonDownloaded, this, 	&ofxAppContent::jsonDownloaded);
-	ofAddListener(jsonParser.eventJsonDownloadFailed, this, &ofxAppContent::jsonDownloadFailed);
-	ofAddListener(jsonParser.eventJsonInitialCheckOK, this, &ofxAppContent::jsonInitialCheckOK);
-	ofAddListener(jsonParser.eventJsonParseFailed, this, 	&ofxAppContent::jsonParseFailed);
-	ofAddListener(jsonParser.eventAllObjectsParsed, this, 	&ofxAppContent::jsonContentReady);
+	ofAddListener(jsonParser.eventJsonDownloaded, this, 	&ofxAppContent::onJsonDownloaded);
+	ofAddListener(jsonParser.eventJsonDownloadFailed, this, &ofxAppContent::onJsonDownloadFailed);
+	ofAddListener(jsonParser.eventJsonInitialCheckOK, this, &ofxAppContent::onJsonInitialCheckOK);
+	ofAddListener(jsonParser.eventJsonParseFailed, this, 	&ofxAppContent::onJsonParseFailed);
+	ofAddListener(jsonParser.eventAllObjectsParsed, this, 	&ofxAppContent::onJsonContentReady);
 }
 
 
@@ -82,6 +82,14 @@ ofxAppContent::~ofxAppContent(){
 	ofLogNotice("ofxAppContent-" + ID) << "~ofxAppContent";
 }
 
+
+void ofxAppContent::setNumThreads(int nThreads){
+	numThreads = MAX(nThreads, 1);
+}
+
+void ofxAppContent::setMaxConcurrentDownloads(int nDownloads){
+	dlc.setMaxConcurrentDownloads(nDownloads);
+}
 
 void ofxAppContent::setJsonDownloadURL(std::string jsonURL){
 	ofLogNotice("ofxAppContent-" + ID) << "updating the JSON Content URL of " << ID << " to '" << jsonURL << "'";
@@ -92,7 +100,10 @@ void ofxAppContent::setJsonDownloadURL(std::string jsonURL){
 void ofxAppContent::fetchContent(){
 	if(state == ContentState::IDLE ||
 	   state == ContentState::JSON_PARSE_FAILED ||
-	   state == ContentState::JSON_DOWNLOAD_FAILED){
+	   state == ContentState::JSON_DOWNLOAD_FAILED ||
+	   state == ContentState::JSON_CONTENT_READY
+	   ){
+		parsedObjects.clear(); //TODO here we are potentially leaking!
 		setState(ContentState::DOWNLOADING_JSON);
 	}else{
 		ofLogError("ofxAppContent-" + ID) << "Can't fetch content now!";
@@ -194,10 +205,12 @@ void ofxAppContent::threadedFunction(){
 			removeExpiredAssets();
 		}break;
 	}
-	ofSleepMillis(45); //this is a shameful workaround to overcome the bug where too-short-lived threads cause expcetions on windows.
+	ofSleepMillis(45); 	//this is a shameful workaround to overcome the bug where too-short-lived threads cause expcetions on windows.
 						//https://github.com/openframeworks/openFrameworks/issues/5262
-						//content with no asset will create this condition. We need to transition out of ofThread asap.
+						//content with no asset will create this condition.
+						//TODO transition out of ofThread into std::thread/async.
 }
+
 
 void ofxAppContent::removeExpiredAssets(){
 
@@ -248,6 +261,11 @@ void ofxAppContent::removeExpiredAssets(){
 }
 
 
+bool ofxAppContent::setShouldRemoveExpiredAssets(bool set){
+	shouldRemoveExpiredAssets = set;
+}
+
+
 void ofxAppContent::setState(ContentState s){
 
 	state = s;
@@ -283,10 +301,10 @@ void ofxAppContent::setState(ContentState s){
 				assetChecker.checkAssets(assetObjs, numThreads);
 			} else {
 				ofLogWarning("ofxAppContent-" + ID) << "There are ZERO parsed objects!";
-				setState(ContentState::REMOVING_EXPIRED_ASSETS);
+				setState(ContentState::JSON_CONTENT_READY);
 			}
 
-		}break;
+			}break;
 
 		case ContentState::REMOVING_EXPIRED_ASSETS:
 			ofLogNotice("ofxAppContent-" + ID) << "Start expired asset removal phase.";
@@ -382,12 +400,12 @@ void ofxAppContent::setState(ContentState s){
 				ofLogWarning("ofxAppContent-" + ID) << "skipping Object Drop Policy Tests!! \"" << ID << "\"";
 			}
 
-		}break;
+			}break;
 
 			
 		case ContentState::SETUP_TEXTURED_OBJECTS:{
 			numSetupTexuredObjects = 0;
-		}break;
+			}break;
 
 
 		case ContentState::FILTER_REJECTED_TEXTURED_OBJECTS:{
@@ -453,7 +471,6 @@ void ofxAppContent::setState(ContentState s){
 
 			//replace the old json with the fresh one
 			jsonFile.moveTo(oldJsonPath, false, true);
-
 			}break;
 
 		default: break;
@@ -511,6 +528,7 @@ float ofxAppContent::getPercentDone(){
 	return p;
 }
 
+
 bool ofxAppContent::isReadyToFetchContent(){
 	return	state == ContentState::IDLE ||
 			state == ContentState::JSON_PARSE_FAILED ||
@@ -533,14 +551,14 @@ bool ofxAppContent::isContentReady(){
 // CALBACKS ////////////////////////////////////////////////////////////////////////////////////
 #pragma mark Callbacks
 
-void ofxAppContent::jsonDownloaded(ofxSimpleHttpResponse & arg){
+void ofxAppContent::onJsonDownloaded(ofxSimpleHttpResponse & arg){
 	ofLogNotice("ofxAppContent-" + ID) << "JSON download OK! \"" << jsonURL << "\"";
 	setState(ContentState::CHECKING_JSON);
 	OFXAPP_REPORT("ofxAppJsonDownloadFailed", "JSON Download OK for '" + ID + "'! \"" + jsonURL + "\"", 0);
 }
 
 
-void ofxAppContent::jsonDownloadFailed(ofxSimpleHttpResponse & arg){
+void ofxAppContent::onJsonDownloadFailed(ofxSimpleHttpResponse & arg){
 	ofLogError("ofxAppContent-" + ID) << "JSON download failed! \"" << jsonURL << "\"";
 	errorMessage = arg.reasonForStatus + " (" + arg.url + ")";
 	OFXAPP_REPORT("ofxAppJsonDownloadFailed", "JSON Download Failed for '" + ID + "'! \"" + jsonURL + "\"\nreason: " + arg.reasonForStatus , 2);
@@ -548,21 +566,22 @@ void ofxAppContent::jsonDownloadFailed(ofxSimpleHttpResponse & arg){
 }
 
 
-void ofxAppContent::jsonInitialCheckOK(){
+void ofxAppContent::onJsonInitialCheckOK(){
 	ofLogNotice("ofxAppContent-" + ID) << "JSON Initial Check OK! \"" << jsonURL << "\"";
 	OFXAPP_REPORT("ofxAppJsonParseFailed", "JSON Parse OK '" + ID + "'! \"" + jsonURL + "\"", 0);
 	setState(ContentState::PARSING_JSON);
 }
 
 
-void ofxAppContent::jsonParseFailed(){
+void ofxAppContent::onJsonParseFailed(){
 	ofLogError("ofxAppContent-" + ID) << "JSON Parse Failed! \"" << jsonURL << "\"";
 	OFXAPP_REPORT("ofxAppJsonParseFailed", "JSON Parse Failed for '" + ID + "'! \"" + jsonURL + "\"" , 2);
+	errorMessage = "Json parse of \"" + jsonURL + "\" failed!";
 	setState(ContentState::JSON_PARSE_FAILED);
 }
 
 
-void ofxAppContent::jsonContentReady(vector<ParsedObject*> &parsedObjects_){
+void ofxAppContent::onJsonContentReady(vector<ParsedObject*> &parsedObjects_){
 	ofLogNotice("ofxAppContent-" + ID) << "JSON Content Ready! " << parsedObjects_.size() << " Objects received.";
 	numIgnoredObjects += jsonParser.getNumEntriesInJson() - parsedObjects_.size();
 	parsedObjects.reserve(parsedObjects_.size());
@@ -577,7 +596,11 @@ void ofxAppContent::jsonContentReady(vector<ParsedObject*> &parsedObjects_){
 
 void ofxAppContent::assetCheckFinished(){
 	ofLogNotice("ofxAppContent-" + ID) << "Asset Check Finished!";
-	setState(ContentState::REMOVING_EXPIRED_ASSETS);
+	if(shouldRemoveExpiredAssets){
+		setState(ContentState::REMOVING_EXPIRED_ASSETS);
+	}else{
+		setState(ContentState::DOWNLOADING_ASSETS);
+	}
 }
 
 

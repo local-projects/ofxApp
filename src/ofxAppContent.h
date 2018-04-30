@@ -14,28 +14,6 @@
 #include "ofxMtJsonParser.h"
 #include "AssetChecker.h"
 #include "ofxAppStructs.h"
-#include "TexturedObject.h"
-
-//all your content objects will have to subclass this class
-class ContentObject : public ParsedObject, public AssetHolder, public TexturedObject{
-
-	public:
-
-		virtual ~ContentObject() {};
-
-		// Imposed by TexturedObject //
-		virtual ofVec2f getTextureDimensions(TexturedObjectSize, int){ return ofVec2f(0,0);}
-		virtual std::string getLocalTexturePath(TexturedObjectSize, int){ return "";}
-
-		//this is effectively the destructor of the object - bc of texturedObject loading assets
- 		//in secondary threads, we can't use an in-place destructor as you could destruct the object
-		//while a thread is loading it - thus we have this GarbageCollector-like behavior.
-		virtual void deleteWithGC(){}
-
-		bool isValid = true; //you can at any time during any of the ofxApp::ParseFunctions (parseOneObject, defineObjectAssets, setupTexturedObject)
-							//decide you don't want the object by setting isValid to false.
-};
-
 
 class ofxAppContent : public ofThread{
 
@@ -84,9 +62,14 @@ public:
 			   bool skipSha1Tests
 			   );
 
+	void setNumThreads(int nThreads);
+	void setMaxConcurrentDownloads(int nDownloads);
+
 	bool isReadyToFetchContent();
 	void fetchContent(); //start the process here
-	
+
+	bool setShouldRemoveExpiredAssets(bool);
+
 	void setJsonDownloadURL(std::string jsonURL);
 	std::string getJsonDownloadURL(){ return jsonURL;};
 
@@ -112,11 +95,11 @@ public:
 
 	// ofxMtJsonParser CALLBACKS ///////////////////////////////////////////////////////////////////
 
-	void jsonDownloaded(ofxSimpleHttpResponse & arg);
-	void jsonDownloadFailed(ofxSimpleHttpResponse & arg);
-	void jsonInitialCheckOK();
-	void jsonParseFailed();
-	void jsonContentReady(vector<ParsedObject*> &parsedObjects);
+	void onJsonDownloaded(ofxSimpleHttpResponse & arg);
+	void onJsonDownloadFailed(ofxSimpleHttpResponse & arg);
+	void onJsonInitialCheckOK();
+	void onJsonParseFailed();
+	void onJsonContentReady(vector<ParsedObject*> &parsedObjects);
 	void assetCheckFinished();
 
 	std::string getNameForState(ofxAppContent::ContentState state);
@@ -146,7 +129,6 @@ protected:
 	ofxAssets::DownloadPolicy assetDownloadPolicy;
 	ofxAssets::UsagePolicy assetUsagePolicy;
 
-
 	vector<ContentObject*> parsedObjects;
 	AssetChecker assetChecker;
 	ofxDownloadCentral dlc;
@@ -166,5 +148,6 @@ protected:
 	std::string newJsonSha1;
 
 	bool shouldSkipSha1Tests = false;
+	bool shouldRemoveExpiredAssets = true;
 };
 

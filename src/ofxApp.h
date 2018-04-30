@@ -19,7 +19,6 @@
 #include "ofxAppStaticTextures.h"
 #include "ofxAppMacros.h"
 #include "ofxJsonSettings.h"
-#include "ofxTuio.h"
 #include "ofxSuperLog.h"
 #include "ofxScreenSetup.h"
 #include "ofxRemoteUIServer.h"
@@ -33,17 +32,16 @@
 	#define OFX_APP_NONAME
 	//#warning You should define an app Name for your app in the preprocessor macros; ie OFX_APP_NAME=MyApp
 	//#define OFX_APP_NAME MyApp /*you define your App's name in your PREPROCESSOR MACROS*/
-	#include "ofxAppColorsBasic.h"
 	#include "ofxAppGlobalsBasic.h"
 #else
-	//some macro magic to include the user defined subclasses of ofxAppColorsBasic, ofxAppFonts, ofxAppGlobalsBasic
-	//it takes the user defined macro (ie OFX_APP_NAME=MyApp) and creates an #include "MyAppColors.h"
-	#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_COLORS_FILENAME) 	//include MyAppColors.h
+	//some macro magic to include the user defined subclasses of ofxAppGlobalsBasic
+	//it takes the user defined macro (ie OFX_APP_NAME=MyApp) and creates an #include "MyAppGlobals.h"
 	#include OFX_APP_INCLUDE(OFX_APP_NAME,OFX_GLOBALS_FILENAME) //include MyAppGlobals.h
 #endif
 
 class ofxGoogleAnalytics;
 class ofxMullion;
+class ofxTuioClient;
 
 namespace ofxApp{
 
@@ -62,7 +60,7 @@ public:
 	const std::string configsDir = "configs";
 	const std::string pidFileName = "ofxApp.pid";
 
-	static App& one(){ //this holds the app instance
+	static App& one(){ //this holds the ofxApp::app instance
 		static App instance;
 		return instance;
 	}
@@ -83,16 +81,13 @@ public:
 
 	// Crazy Macro magic here!! Beware!!
 	// this compounds some classnames to match whatever you decided to name your app;
-	// so "OFX_APP_CLASS_NAME(Colors)" becomes "MyAppColors"
-	// "MyApp" is a macro you MUST define in your pre-processor macros:
-	// OFX_APP_NAME=MyApp
-	// alternativelly, only the default Globals & colors will be defined (ofxAppColorsBasic & ofxAppGlobalsBasic)
-	//so you would have to cast the globals to get access to your projec's globals
+	// so "OFX_APP_CLASS_NAME(Globals)" becomes "MyAppGlobals"
+	// "MyApp" is a macro you MUST define in your pre-processor macros: OFX_APP_NAME=MyApp
+	// alternativelly, only the default Globals & colors will be defined (ofxAppGlobalsBasic)
+	// so you would have to cast the globals to get access to your projec's globals
 	#ifdef OFX_APP_NONAME
-	ofxAppColorsBasic & 			colors(){return colorsStorage;}
 	ofxAppGlobalsBasic & 			globals(){return *globalsStorage;}
 	#else
-	OFX_APP_CLASS_NAME(Colors) & 	colors(){return colorsStorage;}
 	OFX_APP_CLASS_NAME(Globals) & 	globals(){return *globalsStorage;}
 	#endif
 	
@@ -101,7 +96,7 @@ public:
 	ofxAppStaticTextures & 			textures(){return texStorage;}
 	ofPtr<ofxSuperLog> 				logger(){return ofxSuperLog::getLogger();}
 	ofxAppErrorReporter &			errorReporter(){ return errorReporterObj;}
-	ofxTuioClient & 				tuio(){ return tuioClient;}
+	ofxTuioClient * 				tuio(){ return tuioClient;}
 	ofxGoogleAnalytics *			analytics(){ return gAnalytics; }
 	ofxScreenSetup					screenSetup;
 
@@ -190,9 +185,12 @@ protected:
 	//utils
 	void printSettingsFile(); //print JSON settings file to stdout (and logs)
 	void drawStats();
+	int statsFontSize = 15;
 	void drawAnimatable();
 	void drawMaintenanceScreen();
 	void drawErrorScreen();
+
+	string getUpdatedContentURL(const string & contentID); //ask the delegate for the most current contentURL given a contentID
 
 	void updateAnimatable(float dt);
 
@@ -201,13 +199,13 @@ protected:
 	virtual void updateStateMachine(float dt);
 	virtual void onDrawLoadingScreenStatus(ofRectangle & area); //override to customize loading screen
 
-	virtual void onStateChanged(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& change);
+	virtual void onSetState(ofxStateMachine<ofxApp::State>::StateChangedEventArgs& change);
 	virtual void onStateError(ofxStateMachine<ofxApp::State>::ErrorStateEventArgs& error);
 	virtual void onContentManagerStateChanged(std::string&);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
-	ofxTuioClient							tuioClient;
+	ofxTuioClient *						tuioClient = nullptr;
 	ofxAppStaticTextures					texStorage;
 	ofxMullion *							mullions;
 
@@ -230,12 +228,10 @@ protected:
 
 	// ofxApp various user contents ///////////////////////////////////
 
-	#ifdef OFX_APP_NONAME //if the dev didnt define an app name, use default global vars & colors
-		ofxAppColorsBasic					colorsStorage;
+	#ifdef OFX_APP_NONAME //if the dev didnt define an app name, use default global vars
 		ofxAppGlobalsBasic					* globalsStorage = nullptr;
 	#else
 		//crazy macro magic - beware! read a few lines above to see what's going on
-		OFX_APP_CLASS_NAME(Colors)			colorsStorage;
 		OFX_APP_CLASS_NAME(Globals)			* globalsStorage = nullptr;
 	#endif
 
@@ -274,6 +270,19 @@ protected:
 	//loaded from json settings
 	ofVec2f									renderSize;
 	ofRectangle								startupScreenViewport; //loading screen rect area
+
+	// Live Updates tracking content structures
+	struct LiveUpdateState{
+		enum State{ IDLE, RUNNING, READY, FAILED };
+		State state = IDLE;
+		bool enabled = false;
+		float interval = 300; //in seconds
+		float timer = 0;
+		int maxThreads = 1;
+		int maxConcurrentDownloads = 1;
+	};
+
+	map<std::string, LiveUpdateState>		liveContentUpdates;
 
 private:
 
