@@ -32,8 +32,6 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #define GLOB											ofxApp::get().globals()/*(*ofxApp_globals)*/
-#define G_COL											ofxApp::get().colors()
-#define G_COLOR											ofxApp::get().colors()
 
 #define G_TEX(name)										ofxApp::get().textures().getTexture(name)
 

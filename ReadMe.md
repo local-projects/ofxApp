@@ -18,7 +18,7 @@ There are also some (slightly outdated) [Slides](https://github.com/local-projec
 	- [1. How To Use](#1-how-to-use)
 		- [1.1 Setup a project with all the required addons](#11-setup-a-project-with-all-the-required-addons)
 		- [1.2 Define Pre-Processor macro with your project name](#12-define-pre-processor-macro-with-your-project-name)
-		- [1.3 Create files for your Global Variables & Global Colors](#13-create-files-for-your-global-variables-global-colors)
+		- [1.3 Create files for your Global Variables](#13-create-files-for-your-global-variables)
 		- [1.4 Make your ofApp class a subclass of ofxAppDelegate](#14-make-your-ofapp-class-a-subclass-of-ofxappdelegate)
 	- [2. ofxApp Functionality Coverage](#2-ofxapp-functionality-coverage)
 		- [2.1 The Configuration File - "ofxAppSettings.json"](#21-the-configuration-file-ofxappsettingsjson)
@@ -39,7 +39,6 @@ There are also some (slightly outdated) [Slides](https://github.com/local-projec
 		- [2.5 Fonts](#25-fonts)
 		- [2.6 Globals and Parameter Tweaking](#26-globals-and-parameter-tweaking)
 			- [2.6.1 Globals File](#261-globals-file)
-			- [2.6.2 Global Colors File](#262-global-colors-file)
 			- [2.6.3 Tweaking parameters with ofxRemoteUI](#263-tweaking-parameters-with-ofxremoteui)
 		- [2.7 Dynamic Texture Loading](#27-dynamic-texture-loading)
 		- [2.8 Maintenance Mode](#28-maintenance-mode)
@@ -107,17 +106,16 @@ To do so, given the high number of addon dependencies, I suggest you use the Ope
 ```
 OFX_APP_NAME=MyApp
 ```
-This is used to automatically handle your custom Global Variables & Global Colors files. This is so that your Global Vars and Colors classes are automatically included in the _ofxApp_ instance. The whole point of this is to avoid dynamic casting all over the place just to acces your globals; this allows your globals object (`MyAppGlobals`) to be stored inside _ofxApp_ in their native Class, so they can be totally overridden by you and still be included in _ofxApp_ at compile time.
+This is used to automatically handle your custom Global Variables file. This is so that your Global Vars class is automatically included in the _ofxApp_ instance. The whole point of this is to avoid dynamic casting all over the place just to acces your globals; this allows your globals object (`MyAppGlobals`) to be stored inside _ofxApp_ in their native Class, so they can be totally overridden by you and still be included in _ofxApp_ at compile time.
 
-### 1.3 Create files for your Global Variables & Global Colors
+### 1.3 Create files for your Global Variables
 
-These Files must follow this naming convention; and it's where you will place global variables/colors that you might need to access from anywhere. These files are only required if you defined ```OFX_APP_NAME``` in the previous step
+This File must follow this naming convention; and it's where you will place global variables that you might need to access from anywhere. This file is only required if you defined ```OFX_APP_NAME``` in the previous step
 
 ```
 OFX_APP_NAME + Globals.h
-OFX_APP_NAME + Colors.h
 ```
-so, if your app is named MyApp, your files should be named "MyAppGlobals.h" and "MyAppColors.h".
+so, if your app is named MyApp, your file should be named "MyAppGlobals.h".
 
 Those two files should be classes that inherit from a basic set of globals that _ofxApp_ defines for you; you just extend them with your own as your project grows.
 
@@ -1035,31 +1033,7 @@ float mySpeed = GLOB.tileSpeed;
 
 _ofxApp_ will also call the method `setupRemoteUIParams()` on your globals class once the app is starting, so you get a chance to initialize or prepare your globals.
 
-#### 2.6.2 Global Colors File
-
-In a very similar fashion to the Globals file, _ofxApp_ expects you to create a file for Global Colors. It will follow the same pattern:
-
-```c++
-///  MyAppColors.h ///
-
-class MyMuseumWall : public ofxAppColorsBasic{
-public:
-	void setupRemoteUIParams(){};
-
-	//your global colors defined here
-	ofColor myTileColor = ofColor::red;
-};
-```
-
-To retrieve these colors from anywhere within your app, use the macro:
-
-```c++
-ofColor myColor = G_COLOR.myTileColor;
-```
-
-As for the globals above, _ofxApp_ will call the method `setupRemoteUIParams()` on your global colors class once the app is starting, so you get a chance to initialize or prepare your globals.
-
-#### 2.6.3 Tweaking parameters with ofxRemoteUI
+#### 2.6.2 Tweaking parameters with ofxRemoteUI
 
 Now that we have seen how to define and access global variables, let's see how can we tweak them in realtime as the app runs. To do so, _ofxApp_ provides [ofxRemoteUI](http://github.com/armadillu/ofxRemoteUI), but you could use any other means if you are so inclined.
 
@@ -1348,7 +1322,6 @@ _ofxApp_ provides profiling through [ofxTimeMeasurements](https://github.com/arm
 ### ofxApp MACROS
 
 * __```GLOB```__ : direct access to MyAppGlobals
-* __```G_COL | G_COLOR```__ : direct access to MyAppColors
 * __```G_TEX("texName")```__ : direct acces to the ofTexture*
 * __```G_FONT("fontID")```__ : direct acces to the ofxFontStash*
 * __```G_FONT_MONO```__ : direct acces to a monospaced ofxFontStash*
@@ -1367,7 +1340,7 @@ _ofxApp_ provides profiling through [ofxTimeMeasurements](https://github.com/arm
 
 ### Knowns Issues / Future Developments
 
-+ Globals + Colors macro file naming gimmick is not ideal
++ Globals macro file naming gimmick is not ideal
 + unhappy about AppSettings.json sharing "default" options with user-defined-content src options
 + _ofxApp_ assumes the app is using a GLFW window...
 + ```renderSize``` in settings unclear...
