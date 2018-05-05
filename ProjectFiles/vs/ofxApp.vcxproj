@@ -102,7 +102,7 @@
       <WarningLevel>Level3</WarningLevel>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
-      <ObjectFileName>$(IntDir)/$(Platform)/%(Directory)/</ObjectFileName>
+      <ObjectFileName>$(IntDir)/$(Platform)/%(IntDir)/</ObjectFileName>
       <AdditionalOptions>-DPOCO_STATIC</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -123,7 +123,7 @@
       <WarningLevel>Level3</WarningLevel>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
-      <ObjectFileName>$(IntDir)/$(Platform)/%(Directory)/</ObjectFileName>
+      <ObjectFileName>$(IntDir)/$(Platform)/%(IntDir)/</ObjectFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>-DPOCO_STATIC</AdditionalOptions>
     </ClCompile>
@@ -144,7 +144,7 @@
       <WarningLevel>Level3</WarningLevel>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
-      <ObjectFileName>$(IntDir)/$(Platform)/%(Directory)/</ObjectFileName>
+      <ObjectFileName>$(IntDir)/$(Platform)/%(IntDir)/</ObjectFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalOptions>-DPOCO_STATIC</AdditionalOptions>
     </ClCompile>
@@ -168,7 +168,7 @@
       <WarningLevel>Level3</WarningLevel>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src</AdditionalIncludeDirectories>
       <CompileAs>CompileAsCpp</CompileAs>
-      <ObjectFileName>$(IntDir)/$(Platform)/%(Directory)/</ObjectFileName>
+      <ObjectFileName>$(IntDir)/$(Platform)/%(IntDir)/</ObjectFileName>
       <AdditionalOptions>-DPOCO_STATIC</AdditionalOptions>
     </ClCompile>
     <Link>
