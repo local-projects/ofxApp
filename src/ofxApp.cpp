@@ -1130,6 +1130,7 @@ void App::updateStateMachine(float dt){
 			}break;
 
 		case State::RUNNING:
+		case State::DEVELOPER_REQUESTED_ERROR_SCREEN:
 			appState.updateState( -1, "");
 
 			for(auto & it : liveContentUpdates){
