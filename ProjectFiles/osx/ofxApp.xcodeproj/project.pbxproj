@@ -108,6 +108,11 @@
 		BBA774551FC3E80C00DD5B69 /* ofxSensu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA774531FC3E80C00DD5B69 /* ofxSensu.cpp */; };
 		BBA7745C1FC3E81200DD5B69 /* GA_uriencode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA774581FC3E81200DD5B69 /* GA_uriencode.cpp */; };
 		BBA7745D1FC3E81200DD5B69 /* ofxGoogleAnalytics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA7745A1FC3E81200DD5B69 /* ofxGoogleAnalytics.cpp */; };
+		BBF3134D20C9EC0800B279F6 /* Platform.h in Headers */ = {isa = PBXBuildFile; fileRef = BBF3134520C9EC0800B279F6 /* Platform.h */; };
+		BBF3134E20C9EC0800B279F6 /* sha1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBF3134620C9EC0800B279F6 /* sha1.cpp */; };
+		BBF3134F20C9EC0800B279F6 /* sha1.h in Headers */ = {isa = PBXBuildFile; fileRef = BBF3134720C9EC0800B279F6 /* sha1.h */; };
+		BBF3135120C9EC0800B279F6 /* xxhash.c in Sources */ = {isa = PBXBuildFile; fileRef = BBF3134B20C9EC0800B279F6 /* xxhash.c */; };
+		BBF3135220C9EC0800B279F6 /* xxhash.h in Headers */ = {isa = PBXBuildFile; fileRef = BBF3134C20C9EC0800B279F6 /* xxhash.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -638,6 +643,11 @@
 		BBA774591FC3E81200DD5B69 /* ofxGoogleAnalytics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxGoogleAnalytics.h; sourceTree = "<group>"; };
 		BBA7745A1FC3E81200DD5B69 /* ofxGoogleAnalytics.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxGoogleAnalytics.cpp; sourceTree = "<group>"; };
 		BBA7745B1FC3E81200DD5B69 /* GA_uriencode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GA_uriencode.h; sourceTree = "<group>"; };
+		BBF3134520C9EC0800B279F6 /* Platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Platform.h; sourceTree = "<group>"; };
+		BBF3134620C9EC0800B279F6 /* sha1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sha1.cpp; sourceTree = "<group>"; };
+		BBF3134720C9EC0800B279F6 /* sha1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sha1.h; sourceTree = "<group>"; };
+		BBF3134B20C9EC0800B279F6 /* xxhash.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = xxhash.c; sourceTree = "<group>"; };
+		BBF3134C20C9EC0800B279F6 /* xxhash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xxhash.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1808,6 +1818,7 @@
 		BBA773BF1FC3E7AA00DD5B69 /* ofxSimpleHttp */ = {
 			isa = PBXGroup;
 			children = (
+				BBF3134320C9EC0800B279F6 /* libs */,
 				BBA773C01FC3E7AA00DD5B69 /* src */,
 			);
 			name = ofxSimpleHttp;
@@ -2190,6 +2201,35 @@
 			name = LocalAddons;
 			sourceTree = "<group>";
 		};
+		BBF3134320C9EC0800B279F6 /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				BBF3134420C9EC0800B279F6 /* sha1 */,
+				BBF3134820C9EC0800B279F6 /* xxHash */,
+			);
+			name = libs;
+			path = ../../../ofxSimpleHttp/libs;
+			sourceTree = "<group>";
+		};
+		BBF3134420C9EC0800B279F6 /* sha1 */ = {
+			isa = PBXGroup;
+			children = (
+				BBF3134520C9EC0800B279F6 /* Platform.h */,
+				BBF3134620C9EC0800B279F6 /* sha1.cpp */,
+				BBF3134720C9EC0800B279F6 /* sha1.h */,
+			);
+			path = sha1;
+			sourceTree = "<group>";
+		};
+		BBF3134820C9EC0800B279F6 /* xxHash */ = {
+			isa = PBXGroup;
+			children = (
+				BBF3134B20C9EC0800B279F6 /* xxhash.c */,
+				BBF3134C20C9EC0800B279F6 /* xxhash.h */,
+			);
+			path = xxHash;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -2198,6 +2238,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				BB7B35F1207282F100E78F10 /* OscQueryServerMgr.h in Headers */,
+				BBF3134F20C9EC0800B279F6 /* sha1.h in Headers */,
+				BBF3135220C9EC0800B279F6 /* xxhash.h in Headers */,
+				BBF3134D20C9EC0800B279F6 /* Platform.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2291,6 +2334,7 @@
 				BBA774341FC3E7EF00DD5B69 /* RUIWebBinary.cpp in Sources */,
 				BB7ABA9F209699E800B33F7E /* ofxTuioPoint.cpp in Sources */,
 				BB7ABA992096797300B33F7E /* ofxMtJsonParserUtils.cpp in Sources */,
+				BBF3135120C9EC0800B279F6 /* xxhash.c in Sources */,
 				BB7B209F1FC3E62D00CDD710 /* ofxCvFloatImage.cpp in Sources */,
 				BB7B1F9F1FC3E30800CDD710 /* UdpSocket.cpp in Sources */,
 				BBA7743A1FC3E7F400DD5B69 /* ofxHistoryPlot.cpp in Sources */,
@@ -2312,6 +2356,7 @@
 				BB7B1F951FC3E30800CDD710 /* ofxOscParameterSync.cpp in Sources */,
 				BB7B1F9D1FC3E30800CDD710 /* OscPrintReceivedElements.cpp in Sources */,
 				BB7B1F9A1FC3E30800CDD710 /* OscOutboundPacketStream.cpp in Sources */,
+				BBF3134E20C9EC0800B279F6 /* sha1.cpp in Sources */,
 				BB7B35F0207282F100E78F10 /* OscQueryServerMgr.cpp in Sources */,
 				BB7B1F981FC3E30800CDD710 /* ofxOscReceiver.cpp in Sources */,
 				BBA773DD1FC3E7B600DD5B69 /* LoadingScreen.cpp in Sources */,
