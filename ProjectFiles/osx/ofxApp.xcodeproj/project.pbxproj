@@ -108,6 +108,7 @@
 		BBA774551FC3E80C00DD5B69 /* ofxSensu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA774531FC3E80C00DD5B69 /* ofxSensu.cpp */; };
 		BBA7745C1FC3E81200DD5B69 /* GA_uriencode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA774581FC3E81200DD5B69 /* GA_uriencode.cpp */; };
 		BBA7745D1FC3E81200DD5B69 /* ofxGoogleAnalytics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA7745A1FC3E81200DD5B69 /* ofxGoogleAnalytics.cpp */; };
+		BBD5AE1220D4524700E35668 /* ofxNetworkUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBD5AE1120D4524700E35668 /* ofxNetworkUtils.cpp */; };
 		BBF3134D20C9EC0800B279F6 /* Platform.h in Headers */ = {isa = PBXBuildFile; fileRef = BBF3134520C9EC0800B279F6 /* Platform.h */; };
 		BBF3134E20C9EC0800B279F6 /* sha1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBF3134620C9EC0800B279F6 /* sha1.cpp */; };
 		BBF3134F20C9EC0800B279F6 /* sha1.h in Headers */ = {isa = PBXBuildFile; fileRef = BBF3134720C9EC0800B279F6 /* sha1.h */; };
@@ -643,6 +644,7 @@
 		BBA774591FC3E81200DD5B69 /* ofxGoogleAnalytics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxGoogleAnalytics.h; sourceTree = "<group>"; };
 		BBA7745A1FC3E81200DD5B69 /* ofxGoogleAnalytics.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxGoogleAnalytics.cpp; sourceTree = "<group>"; };
 		BBA7745B1FC3E81200DD5B69 /* GA_uriencode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GA_uriencode.h; sourceTree = "<group>"; };
+		BBD5AE1120D4524700E35668 /* ofxNetworkUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxNetworkUtils.cpp; sourceTree = "<group>"; };
 		BBF3134520C9EC0800B279F6 /* Platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Platform.h; sourceTree = "<group>"; };
 		BBF3134620C9EC0800B279F6 /* sha1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sha1.cpp; sourceTree = "<group>"; };
 		BBF3134720C9EC0800B279F6 /* sha1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sha1.h; sourceTree = "<group>"; };
@@ -1293,6 +1295,7 @@
 				BB7B20A71FC3E67A00CDD710 /* ofxUDPManager.cpp */,
 				BB7B20A81FC3E67A00CDD710 /* ofxTCPServer.cpp */,
 				BB7B20A91FC3E67A00CDD710 /* ofxUDPSettings.h */,
+				BBD5AE1120D4524700E35668 /* ofxNetworkUtils.cpp */,
 				BB7B20AA1FC3E67A00CDD710 /* ofxNetworkUtils.h */,
 				BB7B20AB1FC3E67A00CDD710 /* ofxTCPManager.cpp */,
 				BB7B20AC1FC3E67A00CDD710 /* ofxTCPClient.cpp */,
@@ -2373,6 +2376,7 @@
 				BBA774031FC3E7D200DD5B69 /* TexturedObject.cpp in Sources */,
 				BBA773711FC3E78300DD5B69 /* ofxFontStash2.cpp in Sources */,
 				BBA773E91FC3E7BA00DD5B69 /* AssetHolder.cpp in Sources */,
+				BBD5AE1220D4524700E35668 /* ofxNetworkUtils.cpp in Sources */,
 				BBA773E81FC3E7BA00DD5B69 /* AssetChecker.cpp in Sources */,
 				BBA773731FC3E78300DD5B69 /* pugixml.cpp in Sources */,
 				BBA773C91FC3E7AA00DD5B69 /* ofxDownloadCentral.cpp in Sources */,

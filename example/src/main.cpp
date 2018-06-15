@@ -22,8 +22,6 @@ int main( ){
 	#endif
 
 	settings.stencilBits = 0; // 8 for nanovg!
-	settings.width = 1027;
-	settings.height = 768;
 	settings.numSamples = ofxApp::get().getInt("App/numAASamples", 8);
 
 	ofCreateWindow(settings);
