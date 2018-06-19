@@ -337,6 +337,12 @@ void App::startLoadingStaticAssets(){
 		if(settingExists("StaticAssets/forceMipMaps")){
 			textures().setForceMipmaps(getBool("StaticAssets/forceMipMaps"));
 		}
+		if(settingExists("StaticAssets/anisotropyLevel")){
+			textures().setAnisotropy(getFloat("StaticAssets/anisotropyLevel"));
+		}
+		if(settingExists("StaticAssets/mipmapBias")){
+			textures().setMipmapLodBias(getFloat("StaticAssets/mipmapBias"));
+		}
 		textures().loadTexturesInDir(texturesPath, getInt("App/maxThreads"));
 	}else{
 		ofLogWarning("ofxApp") << "App doesnt want to load static Assets!";

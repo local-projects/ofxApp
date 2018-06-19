@@ -116,7 +116,10 @@
 	},
 
 	"StaticAssets":{
-		"textures" : "images" //this is where the static assets live; under "data"
+		"textures" : "images", //this is where the static assets live; under "data"
+		"mipmapBias" : 0.0,
+		"anisotropyLevel" : 16.0,
+		"forceMipMaps": false
 	},
 
 	"RemoteUI":{
