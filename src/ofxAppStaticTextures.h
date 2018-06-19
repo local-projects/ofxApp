@@ -69,7 +69,10 @@ public:
 
 	ofxAppStaticTextures();
 
-	void loadTexturesInDir(const std::string& imgDirPath, int maxThreads = 8);
+	void setMipmapLodBias(float bias);
+	void setAnisotropy(float anisotropy);
+
+	void loadTexturesInDir(const std::string& imgDirPath, int maxThreads = std::thread::hardware_concurrency());
 	ofTexture* getTexture(std::string textureName);
 
 	static float memUse(ofTexture * tex); //in MBytes
@@ -135,4 +138,7 @@ protected:
 	float startLoadTime;
 
 	bool forceMipmapsOnAll = false;
+	float mipmapLodBias = 0.0f;
+	float anisotropy = 0.0f;
+	float maxAnisotropy = 0.0f;
 };
