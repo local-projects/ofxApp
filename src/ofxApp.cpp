@@ -1143,7 +1143,7 @@ void App::updateStateMachine(float dt){
 				const string & contentID = it.first;
 				auto & state = it.second;
 
-				if(state.enabled){
+				if(state.enabled || state.temporaryRequest){
 					if(state.state == LiveUpdateState::IDLE){
 						state.timer += ofGetLastFrameTime();
 					}
@@ -1173,6 +1173,7 @@ void App::updateStateMachine(float dt){
 						string newURL = getUpdatedContentURL(contentID);
 						contentStorage[contentID]->setJsonDownloadURL(newURL);
 						contentStorage[contentID]->fetchContent();
+						if(state.temporaryRequest) state.temporaryRequest = false;
 					}
 				}
 			}
@@ -1358,6 +1359,25 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 			break;
 
 		default: break;
+	}
+}
+
+bool App::forceLiveUpdate(const std::string & contentID){
+
+	auto it = liveContentUpdates.find(contentID);
+	if(it != liveContentUpdates.end()){
+		if(it->second.state == LiveUpdateState::IDLE){
+			it->second.timer = it->second.interval;
+			it->second.temporaryRequest = true;
+			ofLogNotice("ofxApp") << "forceLiveUpdate() for \"" << contentID << "\"; live update will start shortly!";
+			return true;
+		}else{
+			ofLogError("ofxApp") << "Can't forceLiveUpdate() for \"" << contentID << "\"; live update is already running!";
+			return false;
+		}
+	}else{
+		ofLogError("ofxApp") << "Can't forceLiveUpdate() for \"" << contentID << "\"; unknown contentID!";
+		return false;
 	}
 }
 
