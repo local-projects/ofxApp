@@ -41,6 +41,9 @@ void ofxAppStaticTextures::setup(){
 
 void ofxAppStaticTextures::loadTexturesInDir(const std::string& imgDirPath, int maxThreads){
 	if(!isLoading){
+
+		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy); //get HW's max for anisotropy
+
 		//TS_START_NIF("load Textures");
 		startLoadTime = ofGetElapsedTimef();
 		this->maxThreads = maxThreads;
@@ -101,6 +104,15 @@ void ofxAppStaticTextures::loadTexturesInDirectory(const std::string& path, bool
 }
 
 
+void ofxAppStaticTextures::setMipmapLodBias(float bias){
+	mipmapLodBias = bias;
+}
+
+void ofxAppStaticTextures::setAnisotropy(float anisotropy){
+	this->anisotropy = anisotropy;
+}
+
+
 ofxAutoTexture* ofxAppStaticTextures::loadTexture(PreLoadData data){
 	
 	//set OF ARB global state according to file naming
@@ -124,6 +136,18 @@ ofxAutoTexture* ofxAppStaticTextures::loadTexture(PreLoadData data){
 		if(data.createMipmap){
 			data.tex->generateMipmap();
 			data.tex->setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+			data.tex->bind();
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, mipmapLodBias);
+			if(ofGLCheckExtension("GL_EXT_texture_filter_anisotropic")){
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, ofClamp(anisotropy, 0, maxAnisotropy)); //TODO check for hw support!
+			}else{
+				static bool warned = false;
+				if(!warned){
+					ofLogWarning("ofxAppStaticTextures") << "can't set texture anisotropy as it's not supported by the HW.";
+					warned = true;
+				}
+			}
+			data.tex->unbind();
 		}
 
 		std::string memUsedStr = ofxApp::utils::bytesToHumanReadable(memUsedForThisOne * 1024 * 1024, 2);
@@ -164,15 +188,14 @@ ofxAutoTexture* ofxAppStaticTextures::createTexObjForPath(std::string filePath, 
 		}
 	}
 
-	
 	//see if img is treated for transparent pixels
-	const string transparencyOverrideCmd = "_transp";
+	const string & transparencyOverrideCmd = ofxAutoTexture::paintTransparentPixelsCommand;
 	bool transparencyOverride = false;
-	auto it2 = lowercaseFilePath.find(transparencyOverrideCmd);
+	auto it2 = texName.find(transparencyOverrideCmd);
 	
 	if(it2 != std::string::npos){ //found "_transp"
 		transparencyOverride = true;
-		size_t beginOfRemovalSpot = it2 - transparencyOverrideCmd.size();
+		size_t beginOfRemovalSpot = it2;
 		texName = texName.substr(0,beginOfRemovalSpot);
 	}
 	

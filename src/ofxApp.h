@@ -138,14 +138,16 @@ public:
 	void onKeyPressed(ofKeyEventArgs&);
 	void screenSetupChanged(ofxScreenSetup::ScreenSetupArg &arg);
 
-	// retrieve app params that come from settings json
-
+	// Retrieve app params that come from settings json
 	ofRectangle		getRenderAreaForCurrentWindowSize();
 	ofRectangle		getRenderRect();
 	ofRectangle 	getStartupScreenViewport(){return startupScreenViewport;} //loading screen rect area
 	ofVec2f			getRenderSize(){return renderSize;}
 	bool			isWindowSetup(){return windowIsSetup;}
 	bool 			isJsonContentDifferentFromLastLaunch(std::string contentID, std::string & freshJsonSha1, std::string & oldJsonSha1);
+
+	// Live Updates //////////////////////////////////////////////////////////////////////////
+	bool 			forceLiveUpdate(const std::string & contentID);
 
 	//to draw debug msgs
 	ofRectangle		drawMsgInBox(std::string msg, int x, int y, int fontSize, ofColor fontColor, ofColor bgColor = ofColor::black, float edgeGrow = 5);
@@ -274,6 +276,7 @@ protected:
 		enum State{ IDLE, RUNNING, READY, FAILED };
 		State state = IDLE;
 		bool enabled = false;
+		bool temporaryRequest = false;
 		float interval = 300; //in seconds
 		float timer = 0;
 		int maxThreads = 1;

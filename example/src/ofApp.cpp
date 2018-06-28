@@ -330,6 +330,10 @@ void ofApp::keyPressed(int key){
 		OFXAPP_REPORT("testAlert", "testing", key - '1' /* [0..2]*/);
 	}
 
+	if (key == ' ') {
+		ofxApp::get().forceLiveUpdate("CH");
+	}
+
 }
 
 
