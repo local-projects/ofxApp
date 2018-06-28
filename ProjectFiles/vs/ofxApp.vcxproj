@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -22,30 +22,30 @@
     <ProjectGuid>{C86616B9-4761-42AE-B5BB-E0CBF1F1A675}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>ofxApp</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
@@ -184,6 +184,7 @@
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\OpenFrameworks\addons\ofxNetwork\src\ofxNetworkUtils.cpp" />
     <ClCompile Include="..\..\..\..\OpenFrameworks\addons\ofxNetwork\src\ofxTCPClient.cpp" />
     <ClCompile Include="..\..\..\..\OpenFrameworks\addons\ofxNetwork\src\ofxTCPManager.cpp" />
     <ClCompile Include="..\..\..\..\OpenFrameworks\addons\ofxNetwork\src\ofxTCPServer.cpp" />
@@ -260,6 +261,8 @@
     <ClCompile Include="..\..\..\ofxMTJsonParser\src\ofxMtJsonParser.cpp" />
     <ClCompile Include="..\..\..\ofxMTJsonParser\src\ofxMtJsonParserThread.cpp" />
     <ClCompile Include="..\..\..\ofxMTJsonParser\src\ofxMtJsonParserUtils.cpp" />
+    <ClCompile Include="..\..\..\ofxSimpleHttp\libs\sha1\sha1.cpp" />
+    <ClCompile Include="..\..\..\ofxSimpleHttp\libs\xxHash\xxhash.c" />
     <ClCompile Include="..\..\..\ofxTexturedObject\src\TexturedObject.cpp" />
     <ClCompile Include="..\..\..\ofxTexturedObject\src\TexturedObjectConfig.cpp" />
     <ClCompile Include="..\..\..\ofxTexturedObject\src\TexturedObjectGC.cpp" />
@@ -715,6 +718,9 @@
     <ClInclude Include="..\..\..\ofxMTJsonParser\src\ofxMtJsonParser.h" />
     <ClInclude Include="..\..\..\ofxMTJsonParser\src\ofxMtJsonParserThread.h" />
     <ClInclude Include="..\..\..\ofxMTJsonParser\src\ofxMtJsonParserUtils.h" />
+    <ClInclude Include="..\..\..\ofxSimpleHttp\libs\sha1\Platform.h" />
+    <ClInclude Include="..\..\..\ofxSimpleHttp\libs\sha1\sha1.h" />
+    <ClInclude Include="..\..\..\ofxSimpleHttp\libs\xxHash\xxhash.h" />
     <ClInclude Include="..\..\..\ofxTexturedObject\src\TexturedObject.h" />
     <ClInclude Include="..\..\..\ofxTexturedObject\src\TexturedObjectConfig.h" />
     <ClInclude Include="..\..\..\ofxTexturedObject\src\TexturedObjectGC.h" />

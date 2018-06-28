@@ -256,6 +256,15 @@
     <ClCompile Include="..\..\..\ofxTexturedObject\src\TexturedObjectStats.cpp">
       <Filter>local_addons\ofxTexturedObject\src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\OpenFrameworks\addons\ofxNetwork\src\ofxNetworkUtils.cpp">
+      <Filter>addons\ofxNetwork\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ofxSimpleHttp\libs\xxHash\xxhash.c">
+      <Filter>local_addons\ofxSimpleHttp\libs\xxHash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ofxSimpleHttp\libs\sha1\sha1.cpp">
+      <Filter>local_addons\ofxSimpleHttp\libs\sha1</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -641,6 +650,15 @@
     </Filter>
     <Filter Include="local_addons\ofxGoogleAnalytics\src">
       <UniqueIdentifier>{60293D9F-E46A-46CB-D9D4-2352}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="local_addons\ofxSimpleHttp\libs">
+      <UniqueIdentifier>{34c6b93b-b116-47bf-b305-4be65eaffb47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="local_addons\ofxSimpleHttp\libs\xxHash">
+      <UniqueIdentifier>{2499d928-6b65-4b52-8ace-d90326fb6d20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="local_addons\ofxSimpleHttp\libs\sha1">
+      <UniqueIdentifier>{d76de81e-77d7-476a-8f46-e4feea61b88f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -2005,6 +2023,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\ofxTexturedObject\src\TexturedObjectStats.h">
       <Filter>local_addons\ofxTexturedObject\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ofxSimpleHttp\libs\xxHash\xxhash.h">
+      <Filter>local_addons\ofxSimpleHttp\libs\xxHash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ofxSimpleHttp\libs\sha1\Platform.h">
+      <Filter>local_addons\ofxSimpleHttp\libs\sha1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ofxSimpleHttp\libs\sha1\sha1.h">
+      <Filter>local_addons\ofxSimpleHttp\libs\sha1</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
