@@ -126,9 +126,10 @@ ofxAutoTexture* ofxAppStaticTextures::loadTexture(PreLoadData data){
 		}
 	}
 
-	ofSetLogLevel("ofxAutoTexture", OF_LOG_SILENT);
+	auto oldLevel = ofGetLogLevel("ofxAutoTexture");
+	//ofSetLogLevel("ofxAutoTexture", OF_LOG_SILENT);
 	bool loaded = data.tex->loadFromFile(data.filePath);
-	ofSetLogLevel("ofxAutoTexture", OF_LOG_NOTICE);
+	ofSetLogLevel("ofxAutoTexture", oldLevel);
 
 	if(loaded){
 		float memUsedForThisOne = memUse(data.tex);
