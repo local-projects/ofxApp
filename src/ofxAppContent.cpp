@@ -204,6 +204,8 @@ void ofxAppContent::threadedFunction(){
 		case ContentState::REMOVING_EXPIRED_ASSETS:{
 			removeExpiredAssets();
 		}break;
+
+		default: break;
 	}
 	ofSleepMillis(45); 	//this is a shameful workaround to overcome the bug where too-short-lived threads cause expcetions on windows.
 						//https://github.com/openframeworks/openFrameworks/issues/5262

@@ -229,6 +229,7 @@ namespace utils{
 				case OF_LOG_WARNING: ofLogWarning(moduleName) << l; break;
 				case OF_LOG_ERROR: ofLogError(moduleName) << l; break;
 				case OF_LOG_FATAL_ERROR: ofLogFatalError(moduleName) << l; break;
+				default: break;
 			}
 		}
 	}
