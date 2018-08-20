@@ -642,6 +642,7 @@ void App::setupTimeMeasurements(){
 	TIME_SAMPLE_SET_ENABLED(enabled);
 	TIME_SAMPLE_DISABLE_AVERAGE();
 	TIME_SAMPLE_SET_DRAW_LOCATION((ofxTMDrawLocation)(getInt("TimeMeasurements/widgetLocation", 3)));
+	#ifndef TIME_MEASUREMENTS_DISABLED
 	TIME_SAMPLE_GET_INSTANCE()->setDeadThreadTimeDecay(getFloat("TimeMeasurements/threadTimeDecay"));
 	TIME_SAMPLE_GET_INSTANCE()->setUiScale(getFloat("TimeMeasurements/uiScale", 1.0));
 	bool useFontStash = getBool("TimeMeasurements/useFontStash");
@@ -665,6 +666,7 @@ void App::setupTimeMeasurements(){
 	if (settingExists("TimeMeasurements/groupPlots")) {
 		TIME_SAMPLE_GET_INSTANCE()->setDrawAllPlotsOnTopOfEachOther(getBool("TimeMeasurements/groupPlots"));
 	}
+	#endif
 }
 
 
