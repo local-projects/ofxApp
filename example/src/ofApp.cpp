@@ -191,6 +191,12 @@ void ofApp::draw(){
 	}
 }
 
+void ofApp::ofxAppDrawPhaseProgress(ofxApp::Phase, const ofRectangle & r){
+	ofSetColor(255,0,0, 128);
+	ofDrawRectangle(r);
+	ofSetColor(255);
+};
+
 //////////////////////////////////////////////////////////////////////////////////
 
 void ofApp::setupScene(){

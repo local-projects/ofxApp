@@ -34,7 +34,7 @@ public:
 	void	ofxAppPhaseWillBegin(ofxApp::Phase);
 	bool	ofxAppIsPhaseComplete(ofxApp::Phase);
 
-	void	ofxAppDrawPhaseProgress(ofxApp::Phase, const ofRectangle & r){};
+	void	ofxAppDrawPhaseProgress(ofxApp::Phase, const ofRectangle & r);
 	string 	ofxAppGetStatusString(ofxApp::Phase);
 	float	ofxAppGetProgressForPhase(ofxApp::Phase);
 

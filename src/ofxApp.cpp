@@ -999,9 +999,13 @@ void App::onDrawLoadingScreenStatus(ofRectangle & area){
 			float progress = textures().getNumLoadedTextures() / float(textures().getNumTextures());
 			std::string msg = ofToString(textures().getTotalMemUsed(), 1) + " Mb used";
 			appState.updateState(progress, msg);
+			delegate->ofxAppDrawPhaseProgress((Phase)appState.getState(), area);
 		}break;
 
+		case State::SETUP_OFXAPP_INTERNALS:
 		case State::SETUP_DELEGATE_B4_CONTENT_LOAD:
+		case State::LOAD_JSON_CONTENT:
+		case State::LOAD_JSON_CONTENT_FAILED:
 		case State::DELIVER_CONTENT_LOAD_RESULTS:
 		case State::SETUP_DELEGATE_B4_RUNNING:
 			delegate->ofxAppDrawPhaseProgress((Phase)appState.getState(), area);
