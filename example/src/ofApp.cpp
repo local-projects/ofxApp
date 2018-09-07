@@ -192,7 +192,8 @@ void ofApp::draw(){
 }
 
 void ofApp::ofxAppDrawPhaseProgress(ofxApp::Phase, const ofRectangle & r){
-	ofSetColor(255,0,0, 128);
+	//you can override what gets draw at startup in any way you want
+	ofSetColor(255,0,0, 32);
 	ofDrawRectangle(r);
 	ofSetColor(255);
 };
