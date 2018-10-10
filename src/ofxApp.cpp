@@ -296,7 +296,10 @@ void App::setupGoogleAnalytics(){
 	gAnalytics->setSendToGoogleInterval(sendDataIntervalSec);
 	gAnalytics->setFramerateReportInterval(framerateReportInterval);
 	gAnalytics->setUserID("ofxApp"); //todo
-	
+
+	//see if our delegate wants to override any of the params
+	delegate->ofxAppWillSetupGoogleAnalytics(googleID, appName, appVersion, appID, appInstallerID);
+
 	gAnalytics->setup( googleID, appName, appVersion, appID, appInstallerID );
 }
 

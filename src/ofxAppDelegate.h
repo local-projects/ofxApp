@@ -51,6 +51,11 @@ public:
 	//to your linking (ie add a timepstamp, a URL queryParam or whatever you want) and return that
 	virtual string ofxAppWillFetchContentFromURL(const std::string & contentID, const std::string & jsonURL){return jsonURL;};
 
+	//this is your chance to override the ofxAppSettings.json config for ofxGoogleAnalytics, just edit the
+	//string references
+	virtual void ofxAppWillSetupGoogleAnalytics(std::string & googleTrackingID_, std::string & appName,
+												std::string & appVersion, std::string & appID, std::string & appInstallerID){};
+
 	//if you enabled live updates for your content source, you will gett this callback every "interval" seconds
 	//with the new content in that JSON src (with all the assets downloaded, etc)
 	virtual void ofxAppContentUpdate(const std::string & contentID, vector<ContentObject*> ){};
