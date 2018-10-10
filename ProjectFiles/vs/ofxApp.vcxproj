@@ -22,7 +22,6 @@
     <ProjectGuid>{C86616B9-4761-42AE-B5BB-E0CBF1F1A675}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>ofxApp</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
