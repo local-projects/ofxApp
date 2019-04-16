@@ -255,6 +255,7 @@
 				"jsonDownloadDir": "jsonDownloads/CH",
 				"assetsLocation": "assets/CH",  //all assets will be in that folder, with a sub-folder (named after the object ID) per each content object
 				"shouldSkipObjectPolicyTests" : false,  //set this to true to avoid the object cleanup according to the policies defined below
+				"timeOutSec" : 60,
 				"liveUpdates" : { //if enabled, ofxApp will hit that endPoint every "interval seconds" and call ofxAppContentUpdate() on the delegate
 					"enabled" : true,
 					"interval" : 10.0, //seconds
@@ -283,6 +284,7 @@
 				"url" : "file://testJson/cwru.json",
 				//"url" : "file://testJson/cwru_broken.json",
 				"jsonDownloadDir": "jsonDownloads/CWRU",
+				"timeOutSec" : 50,
 				"assetsLocation": "assets/CWRU",  //all assets will be in that folder, with a sub-folder (named after the object ID) per each content object
 				"shouldSkipObjectPolicyTests" : false  //set this to true to avoid the object cleanup according to the policies defined below
 			}

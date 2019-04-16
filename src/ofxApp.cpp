@@ -1278,6 +1278,11 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 					int numConcurrentDownloads = getInt("Downloads/maxConcurrentDownloads");
 					int numThreads = getInt("App/maxThreads");
 					int timeOutSecs = getInt("Downloads/timeOutSec");
+
+					if(settingExists("Content/JsonSources/" + currentContentID + "/timeOutSec")){
+						timeOutSecs = getInt("Content/JsonSources/" + currentContentID + "/timeOutSec");
+					}
+
 					int speedLimitKBs = getInt("Downloads/speedLimitKb");
 					float idleTimeAfterDl = getFloat("Downloads/idleTimeAfterEachDownloadSec");
 					std::string assetDownloadLocation = getString("Content/JsonSources/" + currentContentID + "/assetsLocation");
