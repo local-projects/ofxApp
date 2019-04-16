@@ -44,7 +44,8 @@ public:
 			   int numThreads,
 			   int numConcurrentDownloads,
 			   int speedLimitKBs,
-			   int timeout,
+			   int timeoutDownloads,
+			   int timeoutApiEndpoint,
 			   bool shouldSkipObjectTests,
 			   float idleTimeAfterEachDownload,
 			   //dl configs for asset downloads (imgs, vids)

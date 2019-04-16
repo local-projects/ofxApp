@@ -1278,9 +1278,10 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 					int numConcurrentDownloads = getInt("Downloads/maxConcurrentDownloads");
 					int numThreads = getInt("App/maxThreads");
 					int timeOutSecs = getInt("Downloads/timeOutSec");
+					int timeOutApiEndpointSec = timeOutSecs;
 
 					if(settingExists("Content/JsonSources/" + currentContentID + "/timeOutSec")){
-						timeOutSecs = getInt("Content/JsonSources/" + currentContentID + "/timeOutSec");
+						timeOutApiEndpointSec = getInt("Content/JsonSources/" + currentContentID + "/timeOutSec");
 					}
 
 					int speedLimitKBs = getInt("Downloads/speedLimitKb");
@@ -1301,6 +1302,7 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 															numConcurrentDownloads,
 															speedLimitKBs,
 															timeOutSecs,
+															timeOutApiEndpointSec,
 															skipPolicyTests,
 															idleTimeAfterDl,
 															assetDownloadsHttpCfg.credentials,
