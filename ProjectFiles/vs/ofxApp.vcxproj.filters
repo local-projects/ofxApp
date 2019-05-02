@@ -2033,5 +2033,8 @@
     <ClInclude Include="..\..\..\ofxSimpleHttp\libs\sha1\sha1.h">
       <Filter>local_addons\ofxSimpleHttp\libs\sha1</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\ofxSimpleHttp\libs\xxHash\xxh3.h">
+      <Filter>local_addons\ofxSimpleHttp\libs\xxHash</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
