@@ -55,6 +55,7 @@
 		BB7B24081FC3E6A400CDD710 /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7B24041FC3E6A400CDD710 /* tinyxml.cpp */; };
 		BB7B35F0207282F100E78F10 /* OscQueryServerMgr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7B35EE207282F100E78F10 /* OscQueryServerMgr.cpp */; };
 		BB7B35F1207282F100E78F10 /* OscQueryServerMgr.h in Headers */ = {isa = PBXBuildFile; fileRef = BB7B35EF207282F100E78F10 /* OscQueryServerMgr.h */; };
+		BBA50848227B6F6F006B7C4B /* xxh3.h in Headers */ = {isa = PBXBuildFile; fileRef = BBA50847227B6F6F006B7C4B /* xxh3.h */; };
 		BBA7734E1FC3E78000DD5B69 /* ofxFontStash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA773461FC3E78000DD5B69 /* ofxFontStash.cpp */; };
 		BBA7734F1FC3E78000DD5B69 /* stb_truetype.c in Sources */ = {isa = PBXBuildFile; fileRef = BBA7734A1FC3E78000DD5B69 /* stb_truetype.c */; };
 		BBA773501FC3E78000DD5B69 /* fontstash.c in Sources */ = {isa = PBXBuildFile; fileRef = BBA7734B1FC3E78000DD5B69 /* fontstash.c */; };
@@ -505,6 +506,7 @@
 		BB7B35EF207282F100E78F10 /* OscQueryServerMgr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OscQueryServerMgr.h; sourceTree = "<group>"; };
 		BB8554691FD3510600EFB438 /* ofxAppProject.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = ofxAppProject.xcconfig; sourceTree = "<group>"; };
 		BBA270F71FC4A52A00D461BD /* ofxApp.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = ofxApp.xcconfig; sourceTree = "<group>"; };
+		BBA50847227B6F6F006B7C4B /* xxh3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xxh3.h; sourceTree = "<group>"; };
 		BBA773451FC3E78000DD5B69 /* ofxFontStash.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxFontStash.h; sourceTree = "<group>"; };
 		BBA773461FC3E78000DD5B69 /* ofxFontStash.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFontStash.cpp; sourceTree = "<group>"; };
 		BBA7734A1FC3E78000DD5B69 /* stb_truetype.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = stb_truetype.c; sourceTree = "<group>"; };
@@ -2227,6 +2229,7 @@
 		BBF3134820C9EC0800B279F6 /* xxHash */ = {
 			isa = PBXGroup;
 			children = (
+				BBA50847227B6F6F006B7C4B /* xxh3.h */,
 				BBF3134B20C9EC0800B279F6 /* xxhash.c */,
 				BBF3134C20C9EC0800B279F6 /* xxhash.h */,
 			);
@@ -2240,6 +2243,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BBA50848227B6F6F006B7C4B /* xxh3.h in Headers */,
 				BB7B35F1207282F100E78F10 /* OscQueryServerMgr.h in Headers */,
 				BBF3134F20C9EC0800B279F6 /* sha1.h in Headers */,
 				BBF3135220C9EC0800B279F6 /* xxhash.h in Headers */,
