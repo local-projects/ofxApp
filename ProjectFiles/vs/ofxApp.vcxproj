@@ -719,6 +719,7 @@
     <ClInclude Include="..\..\..\ofxMTJsonParser\src\ofxMtJsonParserUtils.h" />
     <ClInclude Include="..\..\..\ofxSimpleHttp\libs\sha1\Platform.h" />
     <ClInclude Include="..\..\..\ofxSimpleHttp\libs\sha1\sha1.h" />
+    <ClInclude Include="..\..\..\ofxSimpleHttp\libs\xxHash\xxh3.h" />
     <ClInclude Include="..\..\..\ofxSimpleHttp\libs\xxHash\xxhash.h" />
     <ClInclude Include="..\..\..\ofxTexturedObject\src\TexturedObject.h" />
     <ClInclude Include="..\..\..\ofxTexturedObject\src\TexturedObjectConfig.h" />
