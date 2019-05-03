@@ -597,15 +597,15 @@ void App::loadModulesSettings(){
 
 	assetDownloadPolicy.fileMissing = getBool("Content/AssetDownloadPolicy/fileMissing");
 	assetDownloadPolicy.fileTooSmall = getBool("Content/AssetDownloadPolicy/fileTooSmall");
-	assetDownloadPolicy.fileExistsAndNoSha1Provided = getBool("Content/AssetDownloadPolicy/fileExistsAndNoSha1Provided");
-	assetDownloadPolicy.fileExistsAndProvidedSha1Missmatch = getBool("Content/AssetDownloadPolicy/fileExistsAndProvidedSha1Missmatch");
-	assetDownloadPolicy.fileExistsAndProvidedSha1Match = getBool("Content/AssetDownloadPolicy/fileExistsAndProvidedSha1Match");
+	assetDownloadPolicy.fileExistsAndNoChecksumProvided = getBool("Content/AssetDownloadPolicy/fileExistsAndNoChecksumProvided");
+	assetDownloadPolicy.fileExistsAndProvidedChecksumMissmatch = getBool("Content/AssetDownloadPolicy/fileExistsAndProvidedChecksumMissmatch");
+	assetDownloadPolicy.fileExistsAndProvidedChecksumMatch = getBool("Content/AssetDownloadPolicy/fileExistsAndProvidedChecksumMatch");
 
 	assetUsagePolicy.fileMissing = getBool("Content/AssetUsagePolicy/fileMissing");
 	assetUsagePolicy.fileTooSmall = getBool("Content/AssetUsagePolicy/fileTooSmall");
-	assetUsagePolicy.fileExistsAndNoSha1Provided = getBool("Content/AssetUsagePolicy/fileExistsAndNoSha1Provided");
-	assetUsagePolicy.fileExistsAndProvidedSha1Missmatch = getBool("Content/AssetUsagePolicy/fileExistsAndProvidedSha1Missmatch");
-	assetUsagePolicy.fileExistsAndProvidedSha1Match = getBool("Content/AssetUsagePolicy/fileExistsAndProvidedSha1Match");
+	assetUsagePolicy.fileExistsAndNoChecksumProvided = getBool("Content/AssetUsagePolicy/fileExistsAndNoChecksumProvided");
+	assetUsagePolicy.fileExistsAndProvidedChecksumMissmatch = getBool("Content/AssetUsagePolicy/fileExistsAndProvidedChecksumMissmatch");
+	assetUsagePolicy.fileExistsAndProvidedChecksumMatch = getBool("Content/AssetUsagePolicy/fileExistsAndProvidedChecksumMatch");
 
 	objectUsagePolicy.allObjectAssetsAreOK = getBool("Content/ObjectUsagePolicy/allAssetsAreOK");
 	objectUsagePolicy.minNumberOfImageAssets = getBool("Content/ObjectUsagePolicy/minNumberImgAssets");
@@ -1288,12 +1288,27 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 					float idleTimeAfterDl = getFloat("Downloads/idleTimeAfterEachDownloadSec");
 					std::string assetDownloadLocation = getString("Content/JsonSources/" + currentContentID + "/assetsLocation");
 
-					bool skipSha1 = false;
-					if(settings().exists("Content/skipSha1Tests")) skipSha1 = getBool("Content/skipSha1Tests");
-					if(skipSha1){
-						ofxApp::utils::logBanner("Running with \"Content/skipSha1Tests\" : TRUE! -NEVER DO THIS IN PRODUCTION!!\nThis will create trouble if the content in the JSON is not in sync with the media in your filesystem.");
-						RUI_LOG("ofxApp running with \"Content/skipSha1Tests\" : TRUE!");
-						RUI_LOG("Skipping all SHA1 Tests! Beware!");
+					string checksumTypePath = "Content/JsonSources/" + currentContentID + "/checksumType";
+					ofxChecksum::Type checksumType = ofxChecksum::Type::SHA1;
+					if(settingExists(checksumTypePath)){
+						string checksumTypeStr = ofToLower(getString(checksumTypePath));
+						if(checksumTypeStr == "xxhash"){
+							checksumType = ofxChecksum::Type::XX_HASH;
+						}else{
+							if(checksumTypeStr == "sha1"){
+								checksumType = ofxChecksum::Type::SHA1;
+							}else{
+								ofxApp::utils::terminateApp("ofxApp", "Unrecognized checksum type in content ID \"Content/JsonSources/" + currentContentID + "\" (" + checksumTypeStr +")");
+							}
+						}
+					}
+
+					bool skipChecksums = false;
+					if(settings().exists("Content/skipChecksumTests")) skipChecksums = getBool("Content/skipChecksumTests");
+					if(skipChecksums){
+						ofxApp::utils::logBanner("Running with \"Content/skipChecksumTests\" : TRUE! -NEVER DO THIS IN PRODUCTION!!\nThis will create trouble if the content in the JSON is not in sync with the media in your filesystem.");
+						RUI_LOG("ofxApp running with \"Content/skipChecksumTests\" : TRUE!");
+						RUI_LOG("Skipping all Checksum Tests! Beware!");
 					}
 					contentStorage[currentContentID]->setup(currentContentID,
 															jsonURL,
@@ -1306,6 +1321,7 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 															skipPolicyTests,
 															idleTimeAfterDl,
 															assetDownloadsHttpCfg.credentials,
+															checksumType,
 															assetDownloadsHttpCfg.proxyCfg,
 															contentHttpConfigs[currentContentID].credentials,
 															contentHttpConfigs[currentContentID].proxyCfg,
@@ -1315,7 +1331,7 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 															assetUsagePolicy,
 															objectUsagePolicy,
 															assetDownloadLocation,
-															skipSha1
+															skipChecksums
 													  );
 					
 					contentStorage[currentContentID]->fetchContent(); //this starts the ofxAppContent process!

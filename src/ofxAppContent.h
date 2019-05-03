@@ -14,6 +14,7 @@
 #include "ofxMtJsonParser.h"
 #include "AssetChecker.h"
 #include "ofxAppStructs.h"
+#include "ofxChecksum.h"
 
 class ofxAppContent : public ofThread{
 
@@ -50,6 +51,7 @@ public:
 			   float idleTimeAfterEachDownload,
 			   //dl configs for asset downloads (imgs, vids)
 			   const std::pair<std::string,std::string> & downloaderCredentials,
+			   ofxChecksum::Type checksumType,
 			   const ofxSimpleHttp::ProxyConfig & downloaderProxyConfig,
 				//dl configs for endpoints (JSON)
 			   const std::pair<std::string,std::string> & apiEndPointCredentials,
@@ -60,7 +62,7 @@ public:
 			   const ofxAssets::UsagePolicy assetUsagePolicy,
 			   const ofxAssets::ObjectUsagePolicy & objectUsagePolicy,
 			   const std::string & assetsLocationPath,
-			   bool skipSha1Tests
+			   bool skipChecksumTests
 			   );
 
 	void setNumThreads(int nThreads);

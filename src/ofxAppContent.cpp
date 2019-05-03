@@ -23,6 +23,7 @@ void ofxAppContent::setup(	std::string ID,
 							bool shouldSkipObjectTests,
 							float idleTimeAfterEachDownload,
 						    const std::pair<std::string,std::string> & downloaderCredentials,
+						  	ofxChecksum::Type checksumType,
 						  	const ofxSimpleHttp::ProxyConfig & downloaderProxyConfig,
 							const std::pair<std::string,std::string> & apiEndPointCredentials,
 							const ofxSimpleHttp::ProxyConfig & apiEndpointProxyConfig,
@@ -32,7 +33,7 @@ void ofxAppContent::setup(	std::string ID,
 						  	const ofxAssets::UsagePolicy assetUsagePolicy,
 							const ofxAssets::ObjectUsagePolicy & objectUsagePolicy,
 							const std::string & assetsLocationPath,
-						  	bool skipSha1Tests){
+						  	bool skipChecksumTests){
 
 	state = ContentState::IDLE;
 	parsedObjects.clear();
@@ -46,9 +47,9 @@ void ofxAppContent::setup(	std::string ID,
 	this->numThreads = numThreads_;
 	this->shouldSkipObjectTests = shouldSkipObjectTests;
 	this->assetsLocationPath = assetsLocationPath;
-	this->shouldSkipSha1Tests = skipSha1Tests;
-	if(skipSha1Tests){
-		ofLogWarning("ofxAppContent-" + ID) << "Running with skipSha1Tests == TRUE! Never run in this mode in production!";
+	this->shouldSkipSha1Tests = skipChecksumTests;
+	if(skipChecksumTests){
+		ofLogWarning("ofxAppContent-" + ID) << "Running with skipChecksumTests == TRUE! Never run in this mode in production!";
 	}
 
 	//config the http downloader if you need to (proxy, etc)
@@ -58,6 +59,7 @@ void ofxAppContent::setup(	std::string ID,
 	dlc.setIdleTimeAfterEachDownload(idleTimeAfterEachDownload);
 	dlc.setCredentials(downloaderCredentials.first, downloaderCredentials.second);
 	dlc.setProxyConfiguration(downloaderProxyConfig);
+	dlc.setChecksumType(checksumType);
 
 	jsonParser.getHttp().setTimeOut(timeoutApiEndpoint);
 	jsonParser.getHttp().setSpeedLimit(speedLimitKBs);
@@ -480,7 +482,7 @@ void ofxAppContent::setState(ContentState s){
 	}
 
 	std::string info = "\"" + ID + "\" > " + getNameForState(state);
-	if (shouldSkipSha1Tests) info += " - SKIPPING SHA1 TESTS!";
+	if (shouldSkipSha1Tests) info += " - SKIPPING CHECKSUM TESTS!";
 	ofNotifyEvent(eventStateChanged, info);
 }
 

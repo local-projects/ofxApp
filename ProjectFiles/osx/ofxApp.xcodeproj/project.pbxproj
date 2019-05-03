@@ -1833,8 +1833,8 @@
 			isa = PBXGroup;
 			children = (
 				BBA773C11FC3E7AA00DD5B69 /* ofxSimpleHttp.h */,
-				BBA773C21FC3E7AA00DD5B69 /* ofxDownloadCentral.cpp */,
 				BBA773C31FC3E7AA00DD5B69 /* ofxSimpleHttp.cpp */,
+				BBA773C21FC3E7AA00DD5B69 /* ofxDownloadCentral.cpp */,
 				BBA773C41FC3E7AA00DD5B69 /* ofxDownloadCentral.h */,
 				BBA773C51FC3E7AA00DD5B69 /* ofxBatchDownloader.h */,
 				BBA773C61FC3E7AA00DD5B69 /* ofxBatchDownloader.cpp */,

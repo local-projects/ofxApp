@@ -186,10 +186,10 @@
 		"ThreadSafeLog" : {
 			"alsoPrintToConsole" : true
 		},
-		"logLevelOverrides":{	//override of log level for certain modules
+        "logLevelOverrides":{   //override of log level for certain modules
 								//Valid Levels are: [0:Vebose, 1:Notice, 2:Warning, 3:Error, 4:FatalError, 5:Silence]
-			"myModule" : 5,		//ie silence (5) "myModule" logging;
-			"myOtherModule" : 2
+             "myModule" : 5,	//ie silence (5) "myModule" logging;
+             "myOtherModule" : 2
 		}
 	},
 	
@@ -253,12 +253,12 @@
 				//"url" : "http://127.0.0.1:8000/ch_small.json",
 				//"url" : "http://uri.cat/LP/ch_small.json",
 				"jsonDownloadDir": "jsonDownloads/CH",
+				"checksumType" : "sha1", //sha1 or xxhash
 				"assetsLocation": "assets/CH",  //all assets will be in that folder, with a sub-folder (named after the object ID) per each content object
 				"shouldSkipObjectPolicyTests" : false,  //set this to true to avoid the object cleanup according to the policies defined below
-				"timeOutSec" : 60,
 				"liveUpdates" : { //if enabled, ofxApp will hit that endPoint every "interval seconds" and call ofxAppContentUpdate() on the delegate
 					"enabled" : true,
-					"interval" : 10.0, //seconds
+					"interval" : 60.0, //seconds
 					"maxThreads" : 1, //override standard # of threads for live updates, to not drop performance too much while the app is running
 					"maxConcurrentDownloads" : 1 //same as above for bandwidth
 				},
@@ -283,8 +283,8 @@
 			"CWRU" : {
 				"url" : "file://testJson/cwru.json",
 				//"url" : "file://testJson/cwru_broken.json",
+				"checksumType" : "sha1", //sha1 or xxhash
 				"jsonDownloadDir": "jsonDownloads/CWRU",
-				"timeOutSec" : 50,
 				"assetsLocation": "assets/CWRU",  //all assets will be in that folder, with a sub-folder (named after the object ID) per each content object
 				"shouldSkipObjectPolicyTests" : false  //set this to true to avoid the object cleanup according to the policies defined below
 			}
@@ -293,17 +293,17 @@
   		"AssetDownloadPolicy":{ //asset should be downloaded if...
   			"fileMissing" : true,
   			"fileTooSmall" : true,
-  			"fileExistsAndNoSha1Provided" : true,
-  			"fileExistsAndProvidedSha1Missmatch" : true,
-  			"fileExistsAndProvidedSha1Match" : false //no need to re-download if file is on disk and sha1's match
+  			"fileExistsAndNoChecksumProvided" : true,
+  			"fileExistsAndProvidedChecksumMissmatch" : true,
+  			"fileExistsAndProvidedChecksumMatch" : false //no need to re-download if file is on disk and Checksums match
   		},
 
   		"AssetUsagePolicy":{ //asset should be Used if...
   			"fileMissing" : false,
   			"fileTooSmall" : false,
-  			"fileExistsAndNoSha1Provided" : false,
-  			"fileExistsAndProvidedSha1Missmatch" : false,
-  			"fileExistsAndProvidedSha1Match" : true
+  			"fileExistsAndNoChecksumProvided" : false,
+  			"fileExistsAndProvidedChecksumMissmatch" : false,
+  			"fileExistsAndProvidedChecksumMatch" : true
   		},
 
   		"ObjectUsagePolicy":{ //a JSON object should only be used if...

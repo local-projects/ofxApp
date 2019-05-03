@@ -117,7 +117,7 @@
 
 	"StaticAssets":{
 		"textures" : "images", //this is where the static assets live; under "data"
-		"mipmapBias" : 0.0,
+		"mipmapBias" : -0.25,
 		"anisotropyLevel" : 16.0,
 		"forceMipMaps": false
 	},
@@ -252,17 +252,17 @@
   		"AssetDownloadPolicy":{ //asset should be downloaded if...
   			"fileMissing" : true,
   			"fileTooSmall" : true,
-  			"fileExistsAndNoSha1Provided" : true,
-  			"fileExistsAndProvidedSha1Missmatch" : true,
-  			"fileExistsAndProvidedSha1Match" : false //no need to re-download if file is on disk and sha1's match
+  			"fileExistsAndNoChecksumProvided" : true,
+  			"fileExistsAndProvidedChecksumMissmatch" : true,
+  			"fileExistsAndProvidedChecksumMatch" : false //no need to re-download if file is on disk and Checksums match
   		},
 
   		"AssetUsagePolicy":{ //asset should be Used if...
   			"fileMissing" : false,
   			"fileTooSmall" : false,
-  			"fileExistsAndNoSha1Provided" : false,
-  			"fileExistsAndProvidedSha1Missmatch" : false,
-  			"fileExistsAndProvidedSha1Match" : true
+  			"fileExistsAndNoChecksumProvided" : false,
+  			"fileExistsAndProvidedChecksumMissmatch" : false,
+  			"fileExistsAndProvidedChecksumMatch" : true
   		},
 
   		"ObjectUsagePolicy":{ //an JSON object should only be used if...

@@ -78,7 +78,7 @@ ofxAppParsers::ofxAppParsers(){
 		string assetsPath = data.assetsLocation + "/" + cwru->getObjectUUID();
 		cwru->AssetHolder::setup(assetsPath, data.assetUsagePolicy, data.assetDownloadPolicy);
 		if(cwru->imgURL.size()){
-			cwru->imagePath = cwru->AssetHolder::addRemoteAsset(cwru->imgURL, cwru->imgSha1);
+			cwru->imagePath = cwru->AssetHolder::addRemoteAsset(cwru->imgURL, cwru->imgSha1, ofxChecksum::Type::SHA1);
 		}
 	};
 
@@ -212,7 +212,7 @@ ofxAppParsers::ofxAppParsers(){
 			}
 
 			//add N Remote Assets to the object - one per each image it contains
-			i.localAssetPath = cho->AssetHolder::addRemoteAsset(i.url, i.sha1, tags, spec);
+			i.localAssetPath = cho->AssetHolder::addRemoteAsset(i.url, i.sha1, ofxChecksum::Type::SHA1, tags, spec);
 		}
 	};
 
