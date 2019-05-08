@@ -1029,7 +1029,7 @@ void App::clearScreenLog(){
 }
 
 void App::addToCurrentFrameLog(const std::string & str){
-	currentFrameLog += ofxApp::utils::secondsToHumanReadable(ofGetElapsedTimef(), 2) + " - " + str + "\n";
+	currentFrameLog += str + "\n";
 }
 
 #pragma mark State Machine
