@@ -212,7 +212,7 @@ void ofxAppFonts::loadOfxAppFont(const std::string & file, ofxFontStash & font){
 
 	std::string fontFile = file;
 	int atlasSize = 512;
-	float lineH = 1.4;
+	float lineH = 1.2;
 	bool mipmaps = false;
 	int mipMapPadding = 0;
 	float retinaScale = 1.0;
