@@ -54,7 +54,7 @@ Select it, and press `backspace` on your keyboard. This will remove these edits,
 
 ![](ReadMeImages/rmEdits2.PNG)
 
-#### 5. include the ofxApp src within your project.
+#### 5. Include the ofxApp src within your project.
 
 Because ofxApp holds globals that are unique per each project, it needs to be compiled together with your project. Because of that, `ofxApp` itself is not included in the ofxApp.xcodeproj; only its dependencies are.
 
@@ -65,7 +65,7 @@ This is as easy as creating a new group named `ofxApp` within the addons section
 ![](ReadMeImages/ofxAppAddon.PNG)
 
 
-#### 6. your project is ready to use ofxApp.
+#### 6. Your project is ready to use ofxApp.
 
 And more importantly, any new dependencies `ofxApp` might get in future updates, will be automatically handled when you update `ofxApp`, because the `ofxApp` project files are part of the `ofxApp` repo.
 
