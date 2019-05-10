@@ -42,8 +42,8 @@ OFX_APP_HEADERS = $(H_OFX_OSC) $(H_OFX_OPENCV) $(H_OFX_POCO) $(H_OFX_XMLSETTINGS
 //finaly set header search paths for the ofxApp project file
 HEADER_SEARCH_PATHS = $(OF_CORE_HEADERS) $(OFX_APP_HEADERS)
 
-LIB_OFX_APP = "$(EXT_ADDONS_PATH)/ofxApp/ProjectFiles/osx/Build/Products/Debug/ofxAppDebug.a"
-LIB_OFX_APP_DEBUG = "$(EXT_ADDONS_PATH)/ofxApp/ProjectFiles/osx/Build/Products/Release/ofxAppRelease.a"
+LIB_OFX_APP_DEBUG = "$(EXT_ADDONS_PATH)/ofxApp/ProjectFiles/osx/Build/debug/ofxAppDebug.a"
+LIB_OFX_APP = "$(EXT_ADDONS_PATH)/ofxApp/ProjectFiles/osx/Build/release/ofxAppRelease.a"
 
 //Set libs and macros for project
 OTHER_CFLAGS = $(OF_CORE_CFLAGS)
