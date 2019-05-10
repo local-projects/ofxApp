@@ -18,3 +18,4 @@ OFX_APP_MACROS = USE_OFX_FONTSTASH2 NANOVG_GL2_IMPLEMENTATION USE_OFX_FONTSTASH 
 CC = $(OF_PATH)/libs/openFrameworksCompiled/project/osx/ccache-clang.sh
 CXX = $(OF_PATH)/libs/openFrameworksCompiled/project/osx/ccache-clang++.sh
 
+

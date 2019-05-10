@@ -42,7 +42,14 @@ OFX_APP_HEADERS = $(H_OFX_OSC) $(H_OFX_OPENCV) $(H_OFX_POCO) $(H_OFX_XMLSETTINGS
 //finaly set header search paths for the ofxApp project file
 HEADER_SEARCH_PATHS = $(OF_CORE_HEADERS) $(OFX_APP_HEADERS)
 
+LIB_OFX_APP = "$(EXT_ADDONS_PATH)/ofxApp/ProjectFiles/osx/Build/Products/Debug/ofxAppDebug.a"
+LIB_OFX_APP_DEBUG = "$(EXT_ADDONS_PATH)/ofxApp/ProjectFiles/osx/Build/Products/Release/ofxAppRelease.a"
+
 //Set libs and macros for project
-OTHER_CFLAGS =
-OTHER_LDFLAGS = $(OF_CORE_LIBS) $(OF_CORE_FRAMEWORKS)
+OTHER_CFLAGS = $(OF_CORE_CFLAGS)
 GCC_PREPROCESSOR_DEFINITIONS = $(OFX_APP_MACROS)
+
+//link against the right OF and ofxApp static libs on debug, release, etc
+OTHER_LDFLAGS[config=Debug] = $(OF_CORE_LIBS) $(OF_CORE_FRAMEWORKS) $(LIB_OFX_APP_DEBUG) $(LIB_OF_DEBUG)
+OTHER_LDFLAGS[config=Release] = $(OF_CORE_LIBS) $(OF_CORE_FRAMEWORKS) $(LIB_OFX_APP) $(LIB_OF)
+OTHER_LDFLAGS[config=AppStore] = $(OF_CORE_LIBS) $(OF_CORE_FRAMEWORKS) $(LIB_OFX_APP) $(LIB_OF)

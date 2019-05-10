@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BB40BD39228502CE009372F3 /* fontstash.c in Sources */ = {isa = PBXBuildFile; fileRef = BB40BD27228502CD009372F3 /* fontstash.c */; };
+		BB40BD3A228502CE009372F3 /* fontstash.h in Headers */ = {isa = PBXBuildFile; fileRef = BB40BD28228502CD009372F3 /* fontstash.h */; };
+		BB40BD3B228502CE009372F3 /* stb_truetype.c in Sources */ = {isa = PBXBuildFile; fileRef = BB40BD29228502CD009372F3 /* stb_truetype.c */; };
+		BB40BD3C228502CE009372F3 /* stb_truetype.h in Headers */ = {isa = PBXBuildFile; fileRef = BB40BD2A228502CD009372F3 /* stb_truetype.h */; };
+		BB40BD3D228502CE009372F3 /* ofxFontStash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB40BD31228502CD009372F3 /* ofxFontStash.cpp */; };
+		BB40BD3E228502CE009372F3 /* ofxFontStash.h in Headers */ = {isa = PBXBuildFile; fileRef = BB40BD32228502CD009372F3 /* ofxFontStash.h */; };
 		BB7ABA97209675A400B33F7E /* TexturedObjectStats.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7ABA96209675A400B33F7E /* TexturedObjectStats.cpp */; };
 		BB7ABA992096797300B33F7E /* ofxMtJsonParserUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7ABA982096797300B33F7E /* ofxMtJsonParserUtils.cpp */; };
 		BB7ABA9B2096980D00B33F7E /* ofxTuioClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7ABA9A2096980D00B33F7E /* ofxTuioClient.cpp */; };
@@ -56,9 +62,6 @@
 		BB7B35F0207282F100E78F10 /* OscQueryServerMgr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7B35EE207282F100E78F10 /* OscQueryServerMgr.cpp */; };
 		BB7B35F1207282F100E78F10 /* OscQueryServerMgr.h in Headers */ = {isa = PBXBuildFile; fileRef = BB7B35EF207282F100E78F10 /* OscQueryServerMgr.h */; };
 		BBA50848227B6F6F006B7C4B /* xxh3.h in Headers */ = {isa = PBXBuildFile; fileRef = BBA50847227B6F6F006B7C4B /* xxh3.h */; };
-		BBA7734E1FC3E78000DD5B69 /* ofxFontStash.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA773461FC3E78000DD5B69 /* ofxFontStash.cpp */; };
-		BBA7734F1FC3E78000DD5B69 /* stb_truetype.c in Sources */ = {isa = PBXBuildFile; fileRef = BBA7734A1FC3E78000DD5B69 /* stb_truetype.c */; };
-		BBA773501FC3E78000DD5B69 /* fontstash.c in Sources */ = {isa = PBXBuildFile; fileRef = BBA7734B1FC3E78000DD5B69 /* fontstash.c */; };
 		BBA773701FC3E78300DD5B69 /* ofxFontStashParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA773561FC3E78300DD5B69 /* ofxFontStashParser.cpp */; };
 		BBA773711FC3E78300DD5B69 /* ofxFontStash2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA773571FC3E78300DD5B69 /* ofxFontStash2.cpp */; };
 		BBA773721FC3E78300DD5B69 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = BBA7735A1FC3E78300DD5B69 /* README.md */; };
@@ -117,24 +120,13 @@
 		BBF3135220C9EC0800B279F6 /* xxhash.h in Headers */ = {isa = PBXBuildFile; fileRef = BBF3134C20C9EC0800B279F6 /* xxhash.h */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		BB7B1AC31FC3DDA800CDD710 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BB7B1AC01FC3DDA200CDD710 /* openFrameworksLib.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = E4B27C1410CBEB8E00536013;
-			remoteInfo = openFrameworks;
-		};
-		BB7B1AC61FC3DDA800CDD710 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BB7B1AC01FC3DDA200CDD710 /* openFrameworksLib.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = E4B27C1510CBEB8E00536013;
-			remoteInfo = openFrameworks;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
+		BB40BD27228502CD009372F3 /* fontstash.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fontstash.c; sourceTree = "<group>"; };
+		BB40BD28228502CD009372F3 /* fontstash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fontstash.h; sourceTree = "<group>"; };
+		BB40BD29228502CD009372F3 /* stb_truetype.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stb_truetype.c; sourceTree = "<group>"; };
+		BB40BD2A228502CD009372F3 /* stb_truetype.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stb_truetype.h; sourceTree = "<group>"; };
+		BB40BD31228502CD009372F3 /* ofxFontStash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFontStash.cpp; sourceTree = "<group>"; };
+		BB40BD32228502CD009372F3 /* ofxFontStash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxFontStash.h; sourceTree = "<group>"; };
 		BB7ABA96209675A400B33F7E /* TexturedObjectStats.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TexturedObjectStats.cpp; sourceTree = "<group>"; };
 		BB7ABA982096797300B33F7E /* ofxMtJsonParserUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxMtJsonParserUtils.cpp; sourceTree = "<group>"; };
 		BB7ABA9A2096980D00B33F7E /* ofxTuioClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxTuioClient.cpp; sourceTree = "<group>"; };
@@ -143,7 +135,6 @@
 		BB7ABAA020969A5700B33F7E /* ofxTuioCursor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxTuioCursor.cpp; sourceTree = "<group>"; };
 		BB7ABAA220969AEB00B33F7E /* ofxTuioContainer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxTuioContainer.cpp; sourceTree = "<group>"; };
 		BB7B1AB91FC3DD9200CDD710 /* ofxAppDebug.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = ofxAppDebug.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		BB7B1AC01FC3DDA200CDD710 /* openFrameworksLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openFrameworksLib.xcodeproj; path = ../../../../OpenFrameworks/libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj; sourceTree = "<group>"; };
 		BB7B1F6C1FC3E30800CDD710 /* ofxOscParameterSync.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxOscParameterSync.h; sourceTree = "<group>"; };
 		BB7B1F6D1FC3E30800CDD710 /* ofxOscParameterSync.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxOscParameterSync.cpp; sourceTree = "<group>"; };
 		BB7B1F6E1FC3E30800CDD710 /* ofxOscMessage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxOscMessage.cpp; sourceTree = "<group>"; };
@@ -507,12 +498,6 @@
 		BB8554691FD3510600EFB438 /* ofxAppProject.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = ofxAppProject.xcconfig; sourceTree = "<group>"; };
 		BBA270F71FC4A52A00D461BD /* ofxApp.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = ofxApp.xcconfig; sourceTree = "<group>"; };
 		BBA50847227B6F6F006B7C4B /* xxh3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xxh3.h; sourceTree = "<group>"; };
-		BBA773451FC3E78000DD5B69 /* ofxFontStash.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxFontStash.h; sourceTree = "<group>"; };
-		BBA773461FC3E78000DD5B69 /* ofxFontStash.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFontStash.cpp; sourceTree = "<group>"; };
-		BBA7734A1FC3E78000DD5B69 /* stb_truetype.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = stb_truetype.c; sourceTree = "<group>"; };
-		BBA7734B1FC3E78000DD5B69 /* fontstash.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = fontstash.c; sourceTree = "<group>"; };
-		BBA7734C1FC3E78000DD5B69 /* stb_truetype.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stb_truetype.h; sourceTree = "<group>"; };
-		BBA7734D1FC3E78000DD5B69 /* fontstash.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fontstash.h; sourceTree = "<group>"; };
 		BBA773531FC3E78300DD5B69 /* ofxFontStash2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxFontStash2.h; sourceTree = "<group>"; };
 		BBA773541FC3E78300DD5B69 /* ofxFontStashParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxFontStashParser.h; sourceTree = "<group>"; };
 		BBA773551FC3E78300DD5B69 /* ofxFontStashStyle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxFontStashStyle.h; sourceTree = "<group>"; };
@@ -676,14 +661,59 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BB40BD0D228502CD009372F3 /* ofxFontStash */ = {
+			isa = PBXGroup;
+			children = (
+				BB40BD24228502CD009372F3 /* libs */,
+				BB40BD30228502CD009372F3 /* src */,
+			);
+			name = ofxFontStash;
+			path = ../../../ofxFontStash;
+			sourceTree = "<group>";
+		};
+		BB40BD24228502CD009372F3 /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				BB40BD25228502CD009372F3 /* fontstash */,
+			);
+			path = libs;
+			sourceTree = "<group>";
+		};
+		BB40BD25228502CD009372F3 /* fontstash */ = {
+			isa = PBXGroup;
+			children = (
+				BB40BD26228502CD009372F3 /* src */,
+			);
+			path = fontstash;
+			sourceTree = "<group>";
+		};
+		BB40BD26228502CD009372F3 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				BB40BD27228502CD009372F3 /* fontstash.c */,
+				BB40BD28228502CD009372F3 /* fontstash.h */,
+				BB40BD29228502CD009372F3 /* stb_truetype.c */,
+				BB40BD2A228502CD009372F3 /* stb_truetype.h */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		BB40BD30228502CD009372F3 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				BB40BD31228502CD009372F3 /* ofxFontStash.cpp */,
+				BB40BD32228502CD009372F3 /* ofxFontStash.h */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
 		BB7B1AB01FC3DD9200CDD710 = {
 			isa = PBXGroup;
 			children = (
 				BBA270F71FC4A52A00D461BD /* ofxApp.xcconfig */,
 				BB8554691FD3510600EFB438 /* ofxAppProject.xcconfig */,
-				BBA7745E1FC3E82000DD5B69 /* LocalAddons */,
+				BBA7745E1FC3E82000DD5B69 /* ofxAppAddons */,
 				BB7B1AC81FC3DDC400CDD710 /* Addons */,
-				BB7B1AC01FC3DDA200CDD710 /* openFrameworksLib.xcodeproj */,
 				BB7B1ABA1FC3DD9200CDD710 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -692,14 +722,6 @@
 			isa = PBXGroup;
 			children = (
 				BB7B1AB91FC3DD9200CDD710 /* ofxAppDebug.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		BB7B1AC11FC3DDA200CDD710 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				BB7B1AC71FC3DDA800CDD710 /* openFrameworksDebug.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1535,53 +1557,6 @@
 			path = ../../../../OpenFrameworks/addons/ofxXmlSettings/libs;
 			sourceTree = "<group>";
 		};
-		BBA773431FC3E78000DD5B69 /* ofxFontStash */ = {
-			isa = PBXGroup;
-			children = (
-				BBA773441FC3E78000DD5B69 /* src */,
-				BBA773471FC3E78000DD5B69 /* libs */,
-			);
-			name = ofxFontStash;
-			sourceTree = "<group>";
-		};
-		BBA773441FC3E78000DD5B69 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				BBA773451FC3E78000DD5B69 /* ofxFontStash.h */,
-				BBA773461FC3E78000DD5B69 /* ofxFontStash.cpp */,
-			);
-			name = src;
-			path = ../../../../ExternalAddons/ofxFontStash/src;
-			sourceTree = "<group>";
-		};
-		BBA773471FC3E78000DD5B69 /* libs */ = {
-			isa = PBXGroup;
-			children = (
-				BBA773481FC3E78000DD5B69 /* fontstash */,
-			);
-			name = libs;
-			path = ../../../../ExternalAddons/ofxFontStash/libs;
-			sourceTree = "<group>";
-		};
-		BBA773481FC3E78000DD5B69 /* fontstash */ = {
-			isa = PBXGroup;
-			children = (
-				BBA773491FC3E78000DD5B69 /* src */,
-			);
-			path = fontstash;
-			sourceTree = "<group>";
-		};
-		BBA773491FC3E78000DD5B69 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				BBA7734A1FC3E78000DD5B69 /* stb_truetype.c */,
-				BBA7734B1FC3E78000DD5B69 /* fontstash.c */,
-				BBA7734C1FC3E78000DD5B69 /* stb_truetype.h */,
-				BBA7734D1FC3E78000DD5B69 /* fontstash.h */,
-			);
-			path = src;
-			sourceTree = "<group>";
-		};
 		BBA773511FC3E78300DD5B69 /* ofxFontStash2 */ = {
 			isa = PBXGroup;
 			children = (
@@ -2176,10 +2151,10 @@
 			path = ../../../../ExternalAddons/ofxGoogleAnalytics/src;
 			sourceTree = "<group>";
 		};
-		BBA7745E1FC3E82000DD5B69 /* LocalAddons */ = {
+		BBA7745E1FC3E82000DD5B69 /* ofxAppAddons */ = {
 			isa = PBXGroup;
 			children = (
-				BBA773431FC3E78000DD5B69 /* ofxFontStash */,
+				BB40BD0D228502CD009372F3 /* ofxFontStash */,
 				BBA773511FC3E78300DD5B69 /* ofxFontStash2 */,
 				BBA773771FC3E78700DD5B69 /* ofxTuio */,
 				BBA7737F1FC3E78C00DD5B69 /* ofxJSON */,
@@ -2203,7 +2178,7 @@
 				BBA774511FC3E80C00DD5B69 /* ofxSensu */,
 				BBA774561FC3E81200DD5B69 /* ofxGoogleAnalytics */,
 			);
-			name = LocalAddons;
+			name = ofxAppAddons;
 			sourceTree = "<group>";
 		};
 		BBF3134320C9EC0800B279F6 /* libs */ = {
@@ -2244,9 +2219,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				BBA50848227B6F6F006B7C4B /* xxh3.h in Headers */,
+				BB40BD3A228502CE009372F3 /* fontstash.h in Headers */,
 				BB7B35F1207282F100E78F10 /* OscQueryServerMgr.h in Headers */,
 				BBF3134F20C9EC0800B279F6 /* sha1.h in Headers */,
 				BBF3135220C9EC0800B279F6 /* xxhash.h in Headers */,
+				BB40BD3C228502CE009372F3 /* stb_truetype.h in Headers */,
+				BB40BD3E228502CE009372F3 /* ofxFontStash.h in Headers */,
 				BBF3134D20C9EC0800B279F6 /* Platform.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2258,6 +2236,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = BB7B1ABD1FC3DD9200CDD710 /* Build configuration list for PBXNativeTarget "ofxApp" */;
 			buildPhases = (
+				BBD96FD72284B3C2002046CD /* Build OpenFrameworks */,
 				BB7B1AB51FC3DD9200CDD710 /* Sources */,
 				BB7B1AB61FC3DD9200CDD710 /* Frameworks */,
 				BB7B1AB71FC3DD9200CDD710 /* Headers */,
@@ -2265,7 +2244,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				BB7B1AC41FC3DDA800CDD710 /* PBXTargetDependency */,
 			);
 			name = ofxApp;
 			productName = ofxAppPrj;
@@ -2296,12 +2274,6 @@
 			mainGroup = BB7B1AB01FC3DD9200CDD710;
 			productRefGroup = BB7B1ABA1FC3DD9200CDD710 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = BB7B1AC11FC3DDA200CDD710 /* Products */;
-					ProjectRef = BB7B1AC01FC3DDA200CDD710 /* openFrameworksLib.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				BB7B1AB81FC3DD9200CDD710 /* ofxApp */,
@@ -2309,15 +2281,26 @@
 		};
 /* End PBXProject section */
 
-/* Begin PBXReferenceProxy section */
-		BB7B1AC71FC3DDA800CDD710 /* openFrameworksDebug.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = openFrameworksDebug.a;
-			remoteRef = BB7B1AC61FC3DDA800CDD710 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
+/* Begin PBXShellScriptBuildPhase section */
+		BBD96FD72284B3C2002046CD /* Build OpenFrameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Build OpenFrameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "xcodebuild -project \"$OF_PATH/libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj\" -target openFrameworks -configuration \"${CONFIGURATION}\"\n";
 		};
-/* End PBXReferenceProxy section */
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		BB7B1AB51FC3DD9200CDD710 /* Sources */ = {
@@ -2326,6 +2309,7 @@
 			files = (
 				BBA7740D1FC3E7DC00DD5B69 /* ofxJsonSettings.cpp in Sources */,
 				BB7B1F9B1FC3E30800CDD710 /* OscTypes.cpp in Sources */,
+				BB40BD39228502CE009372F3 /* fontstash.c in Sources */,
 				BBA773F51FC3E7C800DD5B69 /* ProgressiveTextureLoadQueue.cpp in Sources */,
 				BB7B1F9E1FC3E30800CDD710 /* NetworkingUtils.cpp in Sources */,
 				BBA773BD1FC3E7A500DD5B69 /* ofxMtJsonParser.cpp in Sources */,
@@ -2333,10 +2317,8 @@
 				BBA7744A1FC3E7FD00DD5B69 /* ofxAnimatableQueue.cpp in Sources */,
 				BB7B209C1FC3E62D00CDD710 /* ofxCvContourFinder.cpp in Sources */,
 				BB7B24071FC3E6A400CDD710 /* tinyxmlerror.cpp in Sources */,
-				BBA7734E1FC3E78000DD5B69 /* ofxFontStash.cpp in Sources */,
 				BBA773DC1FC3E7B600DD5B69 /* ofxStateMachine.cpp in Sources */,
 				BBA774491FC3E7FD00DD5B69 /* ofxAnimatableFloat.cpp in Sources */,
-				BBA7734F1FC3E78000DD5B69 /* stb_truetype.c in Sources */,
 				BB7B24051FC3E6A400CDD710 /* ofxXmlSettings.cpp in Sources */,
 				BBA774341FC3E7EF00DD5B69 /* RUIWebBinary.cpp in Sources */,
 				BB7ABA9F209699E800B33F7E /* ofxTuioPoint.cpp in Sources */,
@@ -2358,7 +2340,6 @@
 				BB7B1F991FC3E30800CDD710 /* ofxOscSender.cpp in Sources */,
 				BBA7744B1FC3E7FD00DD5B69 /* ofxAnimatableOfPoint.cpp in Sources */,
 				BBA773761FC3E78300DD5B69 /* ofxfs2_nanovg.c in Sources */,
-				BBA773501FC3E78000DD5B69 /* fontstash.c in Sources */,
 				BB7B209E1FC3E62D00CDD710 /* ofxCvImage.cpp in Sources */,
 				BB7B1F951FC3E30800CDD710 /* ofxOscParameterSync.cpp in Sources */,
 				BB7B1F9D1FC3E30800CDD710 /* OscPrintReceivedElements.cpp in Sources */,
@@ -2380,6 +2361,7 @@
 				BBA774031FC3E7D200DD5B69 /* TexturedObject.cpp in Sources */,
 				BBA773711FC3E78300DD5B69 /* ofxFontStash2.cpp in Sources */,
 				BBA773E91FC3E7BA00DD5B69 /* AssetHolder.cpp in Sources */,
+				BB40BD3B228502CE009372F3 /* stb_truetype.c in Sources */,
 				BBD5AE1220D4524700E35668 /* ofxNetworkUtils.cpp in Sources */,
 				BBA773E81FC3E7BA00DD5B69 /* AssetChecker.cpp in Sources */,
 				BBA773731FC3E78300DD5B69 /* pugixml.cpp in Sources */,
@@ -2411,6 +2393,7 @@
 				BBA774301FC3E7EF00DD5B69 /* ofxRemoteUIClient.cpp in Sources */,
 				BB7B20B21FC3E67A00CDD710 /* ofxTCPManager.cpp in Sources */,
 				BBA774331FC3E7EF00DD5B69 /* ofxRemoteUIServer.cpp in Sources */,
+				BB40BD3D228502CE009372F3 /* ofxFontStash.cpp in Sources */,
 				BB7ABAA320969AEB00B33F7E /* ofxTuioContainer.cpp in Sources */,
 				BB7B20B31FC3E67A00CDD710 /* ofxTCPClient.cpp in Sources */,
 				BB7ABA9B2096980D00B33F7E /* ofxTuioClient.cpp in Sources */,
@@ -2420,14 +2403,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		BB7B1AC41FC3DDA800CDD710 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = openFrameworks;
-			targetProxy = BB7B1AC31FC3DDA800CDD710 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		BB7B1ABB1FC3DD9200CDD710 /* Debug */ = {
@@ -2521,7 +2496,6 @@
 		};
 		BB7B1ABE1FC3DD9200CDD710 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BBA270F71FC4A52A00D461BD /* ofxApp.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = NO;
 				EXECUTABLE_PREFIX = "";
@@ -2532,7 +2506,6 @@
 		};
 		BB7B1ABF1FC3DD9200CDD710 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BBA270F71FC4A52A00D461BD /* ofxApp.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = NO;
 				EXECUTABLE_PREFIX = "";
