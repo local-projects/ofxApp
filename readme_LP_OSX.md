@@ -10,13 +10,34 @@ Given the number of dependencies, you can alternatively include ofxApp as a Targ
 
 The approach here is to do the same with ofxApp:
 
-#### 1. Create an empty OF project with project generator
+## 1. Create an empty OF project with project generator
 
 It should be at the right folder level, either in the "Sketches" folder, or the "Apps" folder at the root of your LP-Style OpenFrameworks repo.
 
-#### 2. include `ofxAppProject.xcconfig` from your `Project.xcconfig`.
+## 2. Add an ofxApp build step to your project
 
-Following the same pattern that OF uses, open your `Project.xcconfig` and edit it so that it looks like this:
+Open your new project, and select your project from the file browser on the left. Navigate to the `Build Phases` tab. There is a tiny + button on the top left, that allows you to create a new "build phase". 
+
+![](ReadMeImages/build_ofxApp.png)
+
+Press the "+" button, and choose `New Run Script Phase`.
+
+This will create a new entry named "Run Script" at the bottom of the list. Expand it by clicking on the small triangle on the left. Rename it to "build ofxApp", double click on the title to do so. Move this whole new section (via drag & drop) to the third spot on the list. 
+
+We place it in 3rd place because the 2nd entry builds OpenFrameworks. ofxApp can only be built after OpenFrameworks is already built.
+
+You then need to copy and paste this command:
+
+```
+xcodebuild -project "$EXT_ADDONS_PATH/ofxApp/ProjectFiles/osx/ofxApp.xcodeproj" -target ofxApp -configuration "${CONFIGURATION}"
+```
+
+into the text input box. You can leave everything else as it is. From now on, whenever you build your project, ofxApp will be built first.
+
+
+## 3. Update `Project.xcconfig` file to include ofxApp
+
+Open your `Project.xcconfig` and edit it so that it looks like this:
 
 ```c++
 //define the path to OF from within your project
@@ -38,7 +59,7 @@ Make sure it looks exactly like that, and there's nothing else but that in the `
 
 Note that we are including the `ofxApp.xcconfig` from our project's xcconfig, which effectively adds all the `ofxApp` dependency includes to our project's. This is what saves us from having to define all include paths, etc. within our project, bc the `ofxApp` Xcode project already has these defined.
 
-#### 3. Remove "Header Search Path" overrides
+## 4. Remove "Header Search Path" overrides
 
 Navigate to the *"Build Settings"* tab, and look for *"Header Search Paths"*. If its content are rendered in bold type, it means it has been edited, and the edits are overriding the contents of your `Project.xcconfig` file. We don't want that.
 
@@ -46,7 +67,7 @@ Select it, and press `backspace` on your keyboard. This will remove these edits,
 
 ![](ReadMeImages/rmEdits.PNG)
 
-#### 4. Remove "Other Linker Flags" overrides
+## 5. Remove "Other Linker Flags" overrides
 
 Similar as the previous step. Navigate to the *"Build Settings"* tab, and look for *"Other Linker Flags"*. If its content are rendered in bold type, it means it has been edited, and the edits are overriding the contents of your `Project.xcconfig` file. We don't want that.
 
@@ -54,7 +75,7 @@ Select it, and press `backspace` on your keyboard. This will remove these edits,
 
 ![](ReadMeImages/rmEdits2.PNG)
 
-#### 5. Include the ofxApp src within your project.
+## 6. Include the ofxApp src within your project.
 
 Because ofxApp holds globals that are unique per each project, it needs to be compiled together with your project. Because of that, `ofxApp` itself is not included in the ofxApp.xcodeproj; only its dependencies are.
 
@@ -65,7 +86,7 @@ This is as easy as creating a new group named `ofxApp` within the addons section
 ![](ReadMeImages/ofxAppAddon.PNG)
 
 
-#### 6. Your project is ready to use ofxApp.
+## 7. Your project is ready to use ofxApp.
 
 And more importantly, any new dependencies `ofxApp` might get in future updates, will be automatically handled when you update `ofxApp`, because the `ofxApp` project files are part of the `ofxApp` repo.
 
