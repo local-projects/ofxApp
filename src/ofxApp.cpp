@@ -709,7 +709,7 @@ void App::tuioRemoved(ofxTuioCursor & t){
 
 void App::update(ofEventArgs &){
 
-	tuioClient->getMessage();
+	if(tuioClient) tuioClient->getMessage();
 	for(auto c : contentStorage){
 		c.second->update(dt);
 	}
