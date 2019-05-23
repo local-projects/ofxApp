@@ -722,8 +722,10 @@ void App::update(ofEventArgs &){
 void App::exit(ofEventArgs &){
 
 	ofLogWarning("ofxApp") << "OF is exitting!";
-	ofLogWarning("ofxApp") << "Terminate Google Analytics...";
-	if(gAnalytics && gAnalytics->isEnabled()) gAnalytics->sendEvent("ofxApp", "exitApp", 0, "", false);
+	if(gAnalytics && gAnalytics->isEnabled()){
+		ofLogWarning("ofxApp") << "Terminate Google Analytics...";
+		gAnalytics->sendEvent("ofxApp", "exitApp", 0, "", false);
+	}
 	if (gAnalytics) delete gAnalytics;
 
 	//if we are in the download stage, we would crash unless we stop the download threads
@@ -1274,7 +1276,11 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 						liveContentUpdates[currentContentID] = liState;
 					}
 
-					bool skipPolicyTests = getBool("Content/JsonSources/" + currentContentID + "/shouldSkipObjectPolicyTests");
+					string policyPath = "Content/JsonSources/" + currentContentID + "/shouldSkipObjectPolicyTests";
+					bool skipPolicyTests = false;
+					if(settingExists(policyPath)){
+						skipPolicyTests = getBool(policyPath);
+					}
 					int numConcurrentDownloads = getInt("Downloads/maxConcurrentDownloads");
 					int numThreads = getInt("App/maxThreads");
 					int timeOutSecs = getInt("Downloads/timeOutSec");
@@ -1286,7 +1292,12 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 
 					int speedLimitKBs = getInt("Downloads/speedLimitKb");
 					float idleTimeAfterDl = getFloat("Downloads/idleTimeAfterEachDownloadSec");
-					std::string assetDownloadLocation = getString("Content/JsonSources/" + currentContentID + "/assetsLocation");
+
+					string assetLocationPath = "Content/JsonSources/" + currentContentID + "/assetsLocation";
+					std::string assetDownloadLocation;
+					if(settingExists(assetLocationPath)){
+						assetDownloadLocation = getString(assetLocationPath);
+					}
 
 					string checksumTypePath = "Content/JsonSources/" + currentContentID + "/checksumType";
 					ofxChecksum::Type checksumType = ofxChecksum::Type::SHA1;
@@ -1360,7 +1371,7 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 				}
 				c.second->setShouldRemoveExpiredAssets(false); //as we already delivered all content,
 				//in case the user wants to run the content download again, lets make sure those runs
-				//dont delte assets that might be in use from the previous runs
+				//dont delete assets that might be in use from the previous runs
 			}
 			ofLogNotice("ofxApp") << "Start Loading Custom User Content...";
 			delegate->ofxAppPhaseWillBegin(Phase(State::DELIVER_CONTENT_LOAD_RESULTS));

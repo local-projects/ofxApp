@@ -205,7 +205,9 @@ void ofxAppContent::threadedFunction(){
 		}break;
 
 		case ContentState::REMOVING_EXPIRED_ASSETS:{
-			removeExpiredAssets();
+			if(assetsLocationPath.size()){
+				removeExpiredAssets();
+			}
 		}break;
 
 		default: break;
