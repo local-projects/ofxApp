@@ -283,6 +283,8 @@ void ofxAppContent::setState(ContentState s){
 		case ContentState::DOWNLOADING_JSON:{
 
 			//start the download and parse process
+			contentCfg.userData["jsonURL"] = jsonURL;
+			contentCfg.userData["jsonDestinationDir"] = jsonDestinationDir;
 			jsonParser.downloadAndParse(jsonURL,
 										jsonDestinationDir,	//directory where to save
 										numThreads,			//num threads
@@ -369,7 +371,7 @@ void ofxAppContent::setState(ContentState s){
 							<< objectUsagePolicy.minNumberOfImageAssets << ")" ;
 					}
 
-					if(numVideoAssets > objectUsagePolicy.minNumberOfVideoAssets){
+					if(numVideoAssets < objectUsagePolicy.minNumberOfVideoAssets){
 						rejectObject = true;
 						if(rejectionReason.size()) rejectionReason += " | ";
 						rejectionReason += "Not Enough Videos";
@@ -378,7 +380,7 @@ void ofxAppContent::setState(ContentState s){
 						<< objectUsagePolicy.minNumberOfVideoAssets << ")" ;
 					}
 
-					if(numAudioAssets > objectUsagePolicy.minNumberOfAudioAssets){
+					if(numAudioAssets < objectUsagePolicy.minNumberOfAudioAssets){
 						rejectObject = true;
 						if(rejectionReason.size()) rejectionReason += " | ";
 						rejectionReason += "Not Enough AudioFiles";
