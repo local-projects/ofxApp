@@ -152,7 +152,7 @@ void ofxAppContent::update(float dt){
 			}break;
 
 		case ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS:
-			if(timeInState > (numIgnoredObjects > 0 ? 4.0 : 0.0)){ //show this on screen for a sec if we are dropping objects
+			if(timeInState > (numIgnoredObjects > 0 ? 1.0 : 0.0)){ //show this on screen for a sec if we are dropping objects
 				setState(ContentState::SETUP_TEXTURED_OBJECTS);
 			}
 			break;
@@ -172,7 +172,7 @@ void ofxAppContent::update(float dt){
 			}break;
 
 		case ContentState::FILTER_REJECTED_TEXTURED_OBJECTS:{
-			if(timeInState > (numIgnoredObjects > 0 ? 4.0 : 0.0)){ //show this on screen for a sec if we are dropping objects
+			if(timeInState > (numIgnoredObjects > 0 ? 1.0 : 0.0)){ //show this on screen for a sec if we are dropping objects
 				setState(ContentState::JSON_CONTENT_READY);
 			}
 		}
