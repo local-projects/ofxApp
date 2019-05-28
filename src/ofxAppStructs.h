@@ -58,8 +58,8 @@ namespace ofxApp{
 	struct ParseFunctions{
 		std::function<void (ofxMtJsonParserThread::JsonStructureData &)> pointToObjects;
 		std::function<void (ofxMtJsonParserThread::SingleObjectParseData &)> parseOneObject;
-		std::function<void (ofxApp::CatalogAssetsData &)> defineObjectAssets;
-		std::function<void (ContentObject*)> setupTexturedObject;
+		std::function<void (ofxApp::CatalogAssetsData &)> defineObjectAssets = [](ofxApp::CatalogAssetsData &){;};
+		std::function<void (ContentObject*)> setupTexturedObject = [](ContentObject*){;};
 		ofxJSON userData;
 	};
 
