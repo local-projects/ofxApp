@@ -62,7 +62,8 @@ public:
 			   const ofxAssets::UsagePolicy assetUsagePolicy,
 			   const ofxAssets::ObjectUsagePolicy & objectUsagePolicy,
 			   const std::string & assetsLocationPath,
-			   bool skipChecksumTests
+			   bool skipChecksumTests,
+			   float assetErrorsScreenReportTimeSeconds
 			   );
 
 	void setNumThreads(int nThreads);
@@ -152,5 +153,6 @@ protected:
 
 	bool shouldSkipSha1Tests = false;
 	bool shouldRemoveExpiredAssets = true;
+	float assetErrorsScreenReportTimeSeconds = 0.0; //if there are asset download / policy errors, show on screen for how many seconds?
 };
 

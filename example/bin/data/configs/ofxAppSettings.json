@@ -183,6 +183,7 @@
 		"visibleAtStartup" : false,
 		"syncronizedLogging" : false,
 		"displayLogTimes" : true,
+		"assetErrorsScreenReportTimeSeconds" : 1.0,
 		"ThreadSafeLog" : {
 			"alsoPrintToConsole" : true
 		},

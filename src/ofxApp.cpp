@@ -1321,6 +1321,13 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 						RUI_LOG("ofxApp running with \"Content/skipChecksumTests\" : TRUE!");
 						RUI_LOG("Skipping all Checksum Tests! Beware!");
 					}
+
+					string contentErrorScreenShowTimeKey = "Logging/assetErrorsScreenReportTimeSeconds";
+					float assetErrorsScreenReportTimeSeconds = 0.0;
+					if(settings().exists(contentErrorScreenShowTimeKey)){
+						assetErrorsScreenReportTimeSeconds = settings().getFloat(contentErrorScreenShowTimeKey);
+					}
+
 					contentStorage[currentContentID]->setup(currentContentID,
 															jsonURL,
 															jsonDir,
@@ -1342,7 +1349,8 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 															assetUsagePolicy,
 															objectUsagePolicy,
 															assetDownloadLocation,
-															skipChecksums
+															skipChecksums,
+															assetErrorsScreenReportTimeSeconds
 													  );
 					
 					contentStorage[currentContentID]->fetchContent(); //this starts the ofxAppContent process!

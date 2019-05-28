@@ -33,11 +33,13 @@ void ofxAppContent::setup(	std::string ID,
 						  	const ofxAssets::UsagePolicy assetUsagePolicy,
 							const ofxAssets::ObjectUsagePolicy & objectUsagePolicy,
 							const std::string & assetsLocationPath,
-						  	bool skipChecksumTests){
+						  	bool skipChecksumTests,
+						  	float assetErrorsScreenReportTimeSeconds){
 
 	state = ContentState::IDLE;
 	parsedObjects.clear();
 	this->ID = ID;
+	this->assetErrorsScreenReportTimeSeconds = assetErrorsScreenReportTimeSeconds;
 	this->jsonURL = jsonSrc;
 	this->contentCfg = contentCfg;
 	this->assetDownloadPolicy = assetDownloadPolicy;
@@ -152,7 +154,7 @@ void ofxAppContent::update(float dt){
 			}break;
 
 		case ContentState::FILTER_OBJECTS_WITH_BAD_ASSETS:
-			if(timeInState > (numIgnoredObjects > 0 ? 1.0 : 0.0)){ //show this on screen for a sec if we are dropping objects
+			if(timeInState > (numIgnoredObjects > 0 ? assetErrorsScreenReportTimeSeconds : 0.0)){ //show this on screen for a sec if we are dropping objects
 				setState(ContentState::SETUP_TEXTURED_OBJECTS);
 			}
 			break;
@@ -172,7 +174,7 @@ void ofxAppContent::update(float dt){
 			}break;
 
 		case ContentState::FILTER_REJECTED_TEXTURED_OBJECTS:{
-			if(timeInState > (numIgnoredObjects > 0 ? 1.0 : 0.0)){ //show this on screen for a sec if we are dropping objects
+			if(timeInState > (numIgnoredObjects > 0 ? assetErrorsScreenReportTimeSeconds : 0.0)){ //show this on screen for a sec if we are dropping objects
 				setState(ContentState::JSON_CONTENT_READY);
 			}
 		}
