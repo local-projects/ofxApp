@@ -1083,9 +1083,21 @@ void App::updateStateMachine(float dt){
 							gAnalytics->sendCustomTimeMeasurement("ofxApp", "Load Content " + currentContentID, appState.getElapsedTimeInCurrentState() * 1000.0f);
 						}
 
+						//deliver loaded content to app
+						auto content = contentStorage[currentContentID]->getParsedObjects();
+						delegate->ofxAppContentIsReady(currentContentID, content);
+						if(gAnalytics && gAnalytics->isEnabled()){
+							gAnalytics->sendEvent("ofxApp", "Content Delivered", content.size(), currentContentID , false);
+						}
+						contentStorage[currentContentID]->setShouldRemoveExpiredAssets(false); //as we already delivered all content,
+						//in case the user wants to run the content download again, lets make sure those runs
+						//dont delete assets that might be in use from the previous runs
+
+
 						if(loadedContent.size() == contentStorage.size()){ //done loading ALL the JSON contents!
 							appState.setState(State::DELIVER_CONTENT_LOAD_RESULTS);
 						}else{ //load the next json
+
 							currentContentID = requestedContent[loadedContent.size()];
 							appState.setState(State::LOAD_JSON_CONTENT);
 						}
@@ -1371,16 +1383,6 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 			break;
 
 		case State::DELIVER_CONTENT_LOAD_RESULTS:
-			for(auto c : contentStorage){
-				auto content = c.second->getParsedObjects();
-				delegate->ofxAppContentIsReady(c.first, content);
-				if(gAnalytics && gAnalytics->isEnabled()){
-					gAnalytics->sendEvent("ofxApp", "Content Delivered", content.size(), c.first , false);
-				}
-				c.second->setShouldRemoveExpiredAssets(false); //as we already delivered all content,
-				//in case the user wants to run the content download again, lets make sure those runs
-				//dont delete assets that might be in use from the previous runs
-			}
 			ofLogNotice("ofxApp") << "Start Loading Custom User Content...";
 			delegate->ofxAppPhaseWillBegin(Phase(State::DELIVER_CONTENT_LOAD_RESULTS));
 			break;
