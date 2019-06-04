@@ -140,7 +140,7 @@ ofxAutoTexture* ofxAppStaticTextures::loadTexture(PreLoadData data){
 			data.tex->bind();
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, mipmapLodBias);
 			if(ofGLCheckExtension("GL_EXT_texture_filter_anisotropic")){
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, ofClamp(anisotropy, 0, maxAnisotropy)); //TODO check for hw support!
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, ofClamp(anisotropy, 0, maxAnisotropy)); //FIXME: check for hw support!
 			}else{
 				static bool warned = false;
 				if(!warned){

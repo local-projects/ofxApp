@@ -112,7 +112,7 @@ public:
 
 	void		loadSettings(); //load JSON settings (data/configs/ofxAppSettings.json)
 	void		loadDynamicSettings(); //load and update values that can be changed while the app runs (call this with 'R' key);
-	void		saveSettings();//not really used / tested! TODO!
+	void		saveSettings();//FIXME: not really used / tested!
 	void		setupLogLevelModuleOverrides(bool dynamicLoad);
 
 	//State Machine
@@ -244,7 +244,7 @@ protected:
 	map<std::string, HttpDownloadConfig>			contentHttpConfigs; //user supplied custom parsing code - indexed by contentID
 
 
-	ofPtr<ofxSuperLog> *					loggerStorage; //note its a * to an ofPtr - TODO!
+	ofPtr<ofxSuperLog> *					loggerStorage; //FIXME: note its a * to an ofPtr 
 
 	ofxDrawableStateMachine<ofxApp::State>	appState; //ofxApp State Machine to handle all loading stages
 	std::string								errorStateHeader; //holds current error msg header (only applies when state == DEVELOPER_REQUESTED_ERROR_SCREEN)

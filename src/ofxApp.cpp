@@ -317,7 +317,7 @@ void App::setupStateMachine(){
 	appState.setup(boldFontPath, "", ofColor(0,0,0,0), ofColor::white);
 	float dark = 0.25;
 
-	//TODO some color consitency here please? or at least uniformity
+	//FIXME: some color consitency here please? or at least uniformity
 	//this creates std::strings for each of the ENUM states
 	appState.setNameAndBarColorForState(State::SETUP_OFXAPP_INTERNALS, toString(State::SETUP_OFXAPP_INTERNALS), ofColor(0,0,255), ofColor(0,0,128));
 	appState.setNameAndBarColorForState(State::SETUP_DELEGATE_B4_CONTENT_LOAD, toString(Phase::WILL_LOAD_CONTENT), ofColor::magenta, ofColor::magenta * dark);
@@ -679,7 +679,7 @@ void App::setupTuio(){
 		int port = getInt("TUIO/port");
 		ofLogNotice("ofxApp") << "Listening for TUIO events at port " << port;
 		tuioClient = new ofxTuioClient();
-		tuioClient->start(port); //TODO - make sure we do it only once!
+		tuioClient->start(port); //FIXME: make sure we do it only once!
 		ofAddListener(tuioClient->cursorAdded, this, &App::tuioAdded);
 		ofAddListener(tuioClient->cursorRemoved, this, &App::tuioRemoved);
 		ofAddListener(tuioClient->cursorUpdated, this, &App::tuioUpdated);

@@ -197,7 +197,7 @@ namespace utils{
 			tex.setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 			tex.bind();
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, bias);
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy); //TODO check for hw support!
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy); //FIXME: check for hw support!
 			tex.unbind();
 			ofLogError("ofxApp") << "Failed to load texture at \"" << path << "\"";
 		}else{

@@ -108,7 +108,7 @@ void ofxAppContent::fetchContent(){
 	   state == ContentState::JSON_DOWNLOAD_FAILED ||
 	   state == ContentState::JSON_CONTENT_READY
 	   ){
-		parsedObjects.clear(); //TODO here we are potentially leaking!
+		parsedObjects.clear(); //FIXME: here we are potentially leaking!
 		setState(ContentState::DOWNLOADING_JSON);
 	}else{
 		ofLogError("ofxAppContent-" + ID) << "Can't fetch content now!";
@@ -217,7 +217,7 @@ void ofxAppContent::threadedFunction(){
 	ofSleepMillis(45); 	//this is a shameful workaround to overcome the bug where too-short-lived threads cause expcetions on windows.
 						//https://github.com/openframeworks/openFrameworks/issues/5262
 						//content with no asset will create this condition.
-						//TODO transition out of ofThread into std::thread/async.
+						//FIXME: transition out of ofThread into std::thread/async.
 }
 
 
