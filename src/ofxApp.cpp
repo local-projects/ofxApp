@@ -49,11 +49,18 @@ App::~App(){
 
 void App::setup(ofxAppDelegate * delegate){
 	map<std::string,ofxApp::ParseFunctions> emptyLambas;
-	setup(emptyLambas, delegate);
+	map<int, std::string> emptyOrder;
+	setup(emptyLambas, emptyOrder, delegate);
 }
 
-
 void App::setup(const map<std::string,ofxApp::ParseFunctions> & cfgs, ofxAppDelegate * delegate){
+	map<int, std::string> emptyOrder;
+	setup(cfgs, emptyOrder, delegate);
+}
+
+void App::setup(	const map<std::string, ofxApp::ParseFunctions> & cfgs,
+				const map<int, std::string> & contentOrder,
+				ofxAppDelegate * delegate){
 
 	ofLogNotice("ofxApp") << "setup()";
 
@@ -68,6 +75,7 @@ void App::setup(const map<std::string,ofxApp::ParseFunctions> & cfgs, ofxAppDele
 
 	if(!this->delegate){
 		contentParseFuncs = cfgs;
+		contentStorageOrder = contentOrder;
 		this->delegate = delegate;
 		if(!hasLoadedSettings) loadSettings();
 		setupContentData();
@@ -120,10 +128,30 @@ void App::setup(const map<std::string,ofxApp::ParseFunctions> & cfgs, ofxAppDele
 
 
 void App::setupContentData() {
+
+	if(contentStorageOrder.size() == contentParseFuncs.size()){
+		map<int, std::string> order; //make sure the order map is filled with ints [0..N]
+		for(auto it : contentStorageOrder){
+			order[order.size()] = it.second;
+		}
+		contentStorageOrder = order;
+	}else{
+		if(contentStorageOrder.size() != 0){
+			ofLogError("ofxApp") << "providing the wrong number of items in the contentOrder map<>! ignoring";
+			contentStorageOrder.clear();
+		}
+		for(auto it : contentParseFuncs){
+			contentStorageOrder[contentStorageOrder.size()] = it.first;
+		}
+	}
+
 	ofLogNotice("ofxApp") << "setupContentData()";
-	for (auto & cfg : contentParseFuncs) {
-		contentStorage[cfg.first] = new ofxAppContent();
-		requestedContent.push_back(cfg.first);
+	ofLogNotice("ofxApp") << "Content will be gathered in this order:";
+	for (auto & it : contentStorageOrder) {
+		string key = it.second;
+		contentStorage[key] = new ofxAppContent();
+		requestedContent.push_back(key);
+		ofLogNotice("ofxApp") << "    \"" << key << "\"";
 	}
 	if(requestedContent.size()){
 		currentContentID = requestedContent[0];
