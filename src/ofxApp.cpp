@@ -131,7 +131,7 @@ void App::setupContentData() {
 
 	if(contentStorageOrder.size() == contentParseFuncs.size()){
 		map<int, std::string> order; //make sure the order map is filled with ints [0..N]
-		for(auto it : contentStorageOrder){
+		for(auto & it : contentStorageOrder){
 			order[order.size()] = it.second;
 		}
 		contentStorageOrder = order;
@@ -140,7 +140,7 @@ void App::setupContentData() {
 			ofLogError("ofxApp") << "providing the wrong number of items in the contentOrder map<>! ignoring";
 			contentStorageOrder.clear();
 		}
-		for(auto it : contentParseFuncs){
+		for(auto & it : contentParseFuncs){
 			contentStorageOrder[contentStorageOrder.size()] = it.first;
 		}
 	}
