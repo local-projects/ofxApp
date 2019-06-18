@@ -1364,12 +1364,28 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 
 					string contentErrorScreenShowTimeKey = "Logging/assetErrorsScreenReportTimeSeconds";
 					float assetErrorsScreenReportTimeSeconds = 0.0;
-					if(settings().exists(contentErrorScreenShowTimeKey)){
+					if(settingExists(contentErrorScreenShowTimeKey)){
 						assetErrorsScreenReportTimeSeconds = settings().getFloat(contentErrorScreenShowTimeKey);
 					}
 
-					contentStorage[currentContentID]->setup(currentContentID,
-															jsonURL,
+					//see if the user wants to getting live CMS data and use old cached API responses instead:
+					bool useOfflineJson = false;
+					if(settingExists("Content/useOfflineJson") && getBool("Content/useOfflineJson")){
+						useOfflineJson = true;
+					}
+					string offlineJsonPath = "Content/JsonSources/" + currentContentID + "/useOfflineJson";
+					if(settingExists(offlineJsonPath)){
+						useOfflineJson = getBool(offlineJsonPath);
+					}
+					if(useOfflineJson){
+						RUI_LOG("JSON Source \"%s\" using CACHED OFFLINE data! See ofxAppSettings.json", currentContentID.c_str());
+						ofLogWarning("ofxApp") << "JSON source \"" << currentContentID << "\" loading JSON data from CACHED file! See ofxAppSettings.json!";
+					}
+
+					std::string knownGoodJSON = "file://" + jsonDir + "/knownGood/" + currentContentID + ".json";
+
+					contentStorage[currentContentID]->setup(	currentContentID,
+															useOfflineJson ? knownGoodJSON : jsonURL, //where to get the JSON from? file:// or http:// URL
 															jsonDir,
 															numThreads,
 															numConcurrentDownloads,

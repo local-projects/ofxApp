@@ -248,8 +248,13 @@
 	},
 
 	"Content":{
+		
+		"useOfflineJson" : false, //set to true to ignore the live CMS, and use the last valid data from a previous session instead
+
 		"JsonSources":{
+			
 			"CH" : {
+
 				"url" : "file://testJson/ch_small.json",
 				//"url" : "http://127.0.0.1:8000/ch_small.json",
 				//"url" : "http://uri.cat/LP/ch_small.json",
@@ -257,6 +262,7 @@
 				"checksumType" : "sha1", //sha1 or xxhash
 				"assetsLocation": "assets/CH",  //all assets will be in that folder, with a sub-folder (named after the object ID) per each content object
 				"shouldSkipObjectPolicyTests" : false,  //set this to true to avoid the object cleanup according to the policies defined below
+				"useOfflineJson" : false, //if true: ignore the live URL and use a local cache of the last version of the API response for this endpoint
 				"liveUpdates" : { //if enabled, ofxApp will hit that endPoint every "interval seconds" and call ofxAppContentUpdate() on the delegate
 					"enabled" : true,
 					"interval" : 60.0, //seconds
@@ -281,6 +287,7 @@
 					}
 				}
 			},
+
 			"CWRU" : {
 				"url" : "file://testJson/cwru.json",
 				//"url" : "file://testJson/cwru_broken.json",
