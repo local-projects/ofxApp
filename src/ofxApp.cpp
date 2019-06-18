@@ -404,8 +404,8 @@ void App::setupTextureLoader(){
 
 void App::setupGlobalParameters(){
 	bool createExtraParams = false;
-	if(settingExists("createPrototypingRuiParams")){
-		createExtraParams = getBool("createPrototypingRuiParams");
+	if(settingExists("App/createPrototypingRuiParams")){
+		createExtraParams = getBool("App/createPrototypingRuiParams");
 	}
 	globals().ofxAppGlobalsBasic::setShouldCreateExtraTestingParams(createExtraParams);
 	globals().ofxAppGlobalsBasic::setupRemoteUIParams();
