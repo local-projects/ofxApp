@@ -403,6 +403,11 @@ void App::setupTextureLoader(){
 
 
 void App::setupGlobalParameters(){
+	bool createExtraParams = false;
+	if(settingExists("createPrototypingRuiParams")){
+		createExtraParams = getBool("createPrototypingRuiParams");
+	}
+	globals().ofxAppGlobalsBasic::setShouldCreateExtraTestingParams(createExtraParams);
 	globals().ofxAppGlobalsBasic::setupRemoteUIParams();
 	#if !defined(OFX_APP_NONAME)
 	RUI_NEW_GROUP(std::string(OFX_APP_STR(OFX_APP_NAME)) + std::string(" Globals"));

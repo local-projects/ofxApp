@@ -24,6 +24,7 @@
 			"numY" : 4,
 			"visibleAtStartup" : false
 		},
+		"createPrototypingRuiParams" : false,
 		"MaintenanceMode":{
 			"enabled" : false,
 			"layout" : {

@@ -19,6 +19,8 @@ public:
 	virtual void setupRemoteUIParams();
 	virtual ~ofxAppGlobalsBasic() {};
 
+	void setShouldCreateExtraTestingParams(bool d){createTestingExtraParams = d;}
+
 public:
 
 	ofColor bgColor = ofColor(22);
@@ -55,5 +57,8 @@ public:
 	AnimCurve tempAnimCurve2 = EXPONENTIAL_SIGMOID_PARAM;
 
 	ofxAnimatableFloat tempAnimCurveInstance;
+
+	//
+	bool createTestingExtraParams = true;
 };
 
