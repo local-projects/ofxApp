@@ -2300,6 +2300,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "xcodebuild -project \"$OF_PATH/libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj\" -target openFrameworks -configuration \"${CONFIGURATION}\"\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -2500,6 +2501,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = NO;
 				CONFIGURATION_BUILD_DIR = "$(SRCROOT)/Build/debug/";
+				CONFIGURATION_TEMP_DIR = "$(SRCROOT)/Build/debug/";
 				EXECUTABLE_PREFIX = "";
 				LINK_WITH_STANDARD_LIBRARIES = NO;
 				OBJROOT = "$(SRCROOT)/Build/debug/";
@@ -2512,6 +2514,7 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = NO;
 				CONFIGURATION_BUILD_DIR = "$(SRCROOT)/Build/release/";
+				CONFIGURATION_TEMP_DIR = "$(SRCROOT)/Build/release";
 				EXECUTABLE_PREFIX = "";
 				LINK_WITH_STANDARD_LIBRARIES = NO;
 				OBJROOT = "$(SRCROOT)/Build/release/";

@@ -561,7 +561,7 @@ void App::setupLogging(){
 	ofxSuperLog::getLogger()->setDisplayWidth(panelW);
 
 	//asset manager uses this separate logger to create an "asset report"  file after every launch
- 	//stating status of every downloaded asset (ie missing sha1, sha1 missmatch, etc)
+ 	//stating status of every downloaded asset (ie missing sha1, sha1 mismatch, etc)
 	ofxThreadSafeLog::one()->setPrintToConsole(getBool("Logging/ThreadSafeLog/alsoPrintToConsole"));
 	
 	//allow user to silence / change log levels from ofxAppSettings.json file
