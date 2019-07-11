@@ -56,6 +56,13 @@ void ofxAppStaticTextures::loadTexturesInDir(const std::string& imgDirPath, int 
 		#endif
 
 		ofDirectory dir(imgDirPath);
+		dir.allowExt("png");
+		dir.allowExt("jpeg");
+		dir.allowExt("jpg");
+		dir.allowExt("tif");
+		dir.allowExt("tiff");
+		dir.allowExt("gif");
+		dir.allowExt("tga");
 		dir.listDir();
 		if (dir.size() == 0) { //if no images, proceed now.
 			ofNotifyEvent(eventAllTexturesLoaded, this);
