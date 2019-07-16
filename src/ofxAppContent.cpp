@@ -242,7 +242,7 @@ void ofxAppContent::removeExpiredAssets(){
 
 		assetsDir.listDir(assetsLocationPath);
 		for(int i = 0; i < assetsDir.numFiles(); i++){
-			if(assetsDir.getFile(i).isDirectory()){
+			if(assetsDir.getFile(i).isDirectory()){ //if each objectID has its assets in a dir
 				ofDirectory objDir;
 				objDir.listDir(assetsDir.getPath(i));
 				if(objDir.numFiles() == 0){
@@ -252,6 +252,8 @@ void ofxAppContent::removeExpiredAssets(){
 						allFilesOnAssetFolder.push_back(ofToDataPath(objDir.getPath(j), true));
 					}
 				}
+			}else{ //all assets from all objects mixed in the assets dir
+				allFilesOnAssetFolder.push_back(ofToDataPath(assetsDir.getPath(i), true));
 			}
 		}
 
