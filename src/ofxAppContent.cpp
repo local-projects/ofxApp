@@ -65,6 +65,7 @@ void ofxAppContent::setup(	std::string ID,
 
 	jsonParser.getHttp().setTimeOut(timeoutApiEndpoint);
 	jsonParser.getHttp().setSpeedLimit(speedLimitKBs);
+	jsonParser.getHttp().setCopyBufferSize(128);
 	jsonParser.getHttp().setProxyConfiguration(apiEndpointProxyConfig);
 	if(apiEndPointCredentials.first.size() || apiEndPointCredentials.second.size()){
 		jsonParser.getHttp().setCredentials(apiEndPointCredentials.first, apiEndPointCredentials.second);
