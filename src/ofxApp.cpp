@@ -148,7 +148,7 @@ void App::setupContentData() {
 	ofLogNotice("ofxApp") << "setupContentData()";
 	ofLogNotice("ofxApp") << "Content will be gathered in this order:";
 	for (auto & it : contentStorageOrder) {
-		string key = it.second;
+		std::string key = it.second;
 		contentStorage[key] = new ofxAppContent();
 		requestedContent.push_back(key);
 		ofLogNotice("ofxApp") << "    \"" << key << "\"";
@@ -521,7 +521,7 @@ void App::setupLogLevelModuleOverrides(bool dynamicLoad){
 				std::string moduleName = itr.key().asString();
 				ofLogLevel logLevel = ofLogLevel((*itr).asInt());
 				ofSetLogLevel(moduleName, logLevel);
-				string msg = "Setting ofLogLevel( " + ofxApp::utils::toString(logLevel) + " ) for module \"" + moduleName + "\"";
+				std::string msg = "Setting ofLogLevel( " + ofxApp::utils::toString(logLevel) + " ) for module \"" + moduleName + "\"";
 				ofLogNotice("ofxApp") << msg;
 				if(dynamicLoad) RUI_LOG(msg);
 			}
@@ -883,7 +883,7 @@ void App::drawStats(){
 	}
 
 	if(globalsStorage->drawLiveUpdateStatus){
-		string liveUpdateMsg;
+		std::string liveUpdateMsg;
 		for(auto & it : liveContentUpdates){
 			const string & contentID = it.first;
 			auto & s = it.second;
@@ -1130,7 +1130,6 @@ void App::updateStateMachine(float dt){
 						if(loadedContent.size() == contentStorage.size()){ //done loading ALL the JSON contents!
 							appState.setState(State::DELIVER_CONTENT_LOAD_RESULTS);
 						}else{ //load the next json
-
 							currentContentID = requestedContent[loadedContent.size()];
 							appState.setState(State::LOAD_JSON_CONTENT);
 						}
@@ -1226,7 +1225,7 @@ void App::updateStateMachine(float dt){
 						state.state = LiveUpdateState::RUNNING;
 						contentStorage[contentID]->setNumThreads(state.maxThreads);
 						contentStorage[contentID]->setMaxConcurrentDownloads(state.maxConcurrentDownloads);
-						string newURL = getUpdatedContentURL(contentID);
+						std::string newURL = getUpdatedContentURL(contentID);
 						contentStorage[contentID]->setJsonDownloadURL(newURL);
 						contentStorage[contentID]->fetchContent();
 						if(state.temporaryRequest) state.temporaryRequest = false;
@@ -1262,162 +1261,201 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 
 			if(change.oldState != State::LOAD_JSON_CONTENT_FAILED){ //1st time we get into LOAD_JSON_CONTENT
 
-				if(gAnalytics && gAnalytics->isEnabled() && change.oldState == State::LOAD_STATIC_TEXTURES){
-					gAnalytics->sendCustomTimeMeasurement("ofxApp", "Load Static Images", change.timeInPrevState * 1000.0f);
-				}
+				if (delegate->ofxAppShouldFetchContent(currentContentID)) {
 
-				if(timeSampleOfxApp) TS_START_NIF("ofxApp LoadContent " + currentContentID);
-				ofxApp::utils::logBanner("Start Loading Content  \"" + currentContentID + "\"");
-				
-				bool keyExists = settings().exists("Content/JsonSources/" + currentContentID);
-				
-				if(keyExists){
-					std::string jsonURL = getUpdatedContentURL(currentContentID);
-					std::string jsonDir = getString("Content/JsonSources/" + currentContentID + "/jsonDownloadDir");
-
-					//get credentials setup
-					if(settingExists("Content/JsonSources/" + currentContentID + "/httpConfig")){
-						if(settingExists("Content/JsonSources/" + currentContentID + "/httpConfig/credentials/username")){
-							contentHttpConfigs[currentContentID].credentials.first = getString("Content/JsonSources/" + currentContentID + "/httpConfig/credentials/username");
-						}
-						if(settingExists("Content/JsonSources/" + currentContentID + "/httpConfig/credentials/password")){
-							contentHttpConfigs[currentContentID].credentials.second = getString("Content/JsonSources/" + currentContentID + "/httpConfig/credentials/password");
-						}
+					if(gAnalytics && gAnalytics->isEnabled() && change.oldState == State::LOAD_STATIC_TEXTURES){
+						gAnalytics->sendCustomTimeMeasurement("ofxApp", "Load Static Images", change.timeInPrevState * 1000.0f);
 					}
 
-					//get proxy setup
-					if(settingExists("Content/JsonSources/" + currentContentID + "/httpConfig/proxy")){
-						contentHttpConfigs[currentContentID].proxyCfg.useProxy = getBool("Content/JsonSources/" + currentContentID + "/httpConfig/proxy/useProxy", false);
-						contentHttpConfigs[currentContentID].proxyCfg.host = getString("Content/JsonSources/" + currentContentID + "/httpConfig/proxy/proxyHost");
-						contentHttpConfigs[currentContentID].proxyCfg.port = getInt("Content/JsonSources/" + currentContentID + "/httpConfig/proxy/proxyPort");
-						contentHttpConfigs[currentContentID].proxyCfg.login = getString("Content/JsonSources/" + currentContentID + "/httpConfig/proxy/proxyUser");
-						contentHttpConfigs[currentContentID].proxyCfg.password = getString("Content/JsonSources/" + currentContentID + "/httpConfig/proxy/proxyPassword");
-					}
+					if(timeSampleOfxApp) TS_START_NIF("ofxApp LoadContent " + currentContentID);
+					ofxApp::utils::logBanner("Start Loading Content  \"" + currentContentID + "\"");
 
-					//get custom headers setup
-					if(settingExists("Content/JsonSources/" + currentContentID + "/httpConfig/customHttpHeaders")){
-						ofxJSON customHeaders = settings().getJson("Content/JsonSources/" + currentContentID + "/httpConfig/customHttpHeaders");
-						if(customHeaders.isObject()){
-							for( Json::Value::const_iterator itr = customHeaders.begin() ; itr != customHeaders.end() ; itr++ ) {
-								std::string header = itr.key().asString();
-								std::string value = (*itr).asString();
-								contentHttpConfigs[currentContentID].customHeaders[header] = value;
+					bool keyExists = settings().exists("Content/JsonSources/" + currentContentID);
+
+					if(keyExists){
+
+						std::string jsonURL = getUpdatedContentURL(currentContentID);
+						std::string jsonDir = getString("Content/JsonSources/" + currentContentID + "/jsonDownloadDir");
+
+						//get credentials setup
+						if(settingExists("Content/JsonSources/" + currentContentID + "/httpConfig")){
+							if(settingExists("Content/JsonSources/" + currentContentID + "/httpConfig/credentials/username")){
+								contentHttpConfigs[currentContentID].credentials.first = getString("Content/JsonSources/" + currentContentID + "/httpConfig/credentials/username");
+							}
+							if(settingExists("Content/JsonSources/" + currentContentID + "/httpConfig/credentials/password")){
+								contentHttpConfigs[currentContentID].credentials.second = getString("Content/JsonSources/" + currentContentID + "/httpConfig/credentials/password");
 							}
 						}
-					}
 
-					bool liveUpdatesExists = settings().exists("Content/JsonSources/" + currentContentID + "/liveUpdates");
-					if(liveUpdatesExists){ //read live update config for this contentSrc
-						bool enabled = getBool("Content/JsonSources/" + currentContentID + "/liveUpdates/enabled", false);
-						LiveUpdateState liState;
-						liState.enabled = enabled;
-						liState.interval = getFloat("Content/JsonSources/" + currentContentID + "/liveUpdates/interval", 300);
-						liState.maxThreads = getFloat("Content/JsonSources/" + currentContentID + "/liveUpdates/maxThreads", 1);
-						liState.maxConcurrentDownloads = getFloat("Content/JsonSources/" + currentContentID + "/liveUpdates/maxConcurrentDownloads", 1);
-						liveContentUpdates[currentContentID] = liState;
-					}else{ //default to disabled live updates
-						LiveUpdateState liState;
-						liState.enabled = false;
-						liveContentUpdates[currentContentID] = liState;
-					}
+						//get proxy setup
+						if(settingExists("Content/JsonSources/" + currentContentID + "/httpConfig/proxy")){
+							contentHttpConfigs[currentContentID].proxyCfg.useProxy = getBool("Content/JsonSources/" + currentContentID + "/httpConfig/proxy/useProxy", false);
+							contentHttpConfigs[currentContentID].proxyCfg.host = getString("Content/JsonSources/" + currentContentID + "/httpConfig/proxy/proxyHost");
+							contentHttpConfigs[currentContentID].proxyCfg.port = getInt("Content/JsonSources/" + currentContentID + "/httpConfig/proxy/proxyPort");
+							contentHttpConfigs[currentContentID].proxyCfg.login = getString("Content/JsonSources/" + currentContentID + "/httpConfig/proxy/proxyUser");
+							contentHttpConfigs[currentContentID].proxyCfg.password = getString("Content/JsonSources/" + currentContentID + "/httpConfig/proxy/proxyPassword");
+						}
 
-					string policyPath = "Content/JsonSources/" + currentContentID + "/shouldSkipObjectPolicyTests";
-					bool skipPolicyTests = false;
-					if(settingExists(policyPath)){
-						skipPolicyTests = getBool(policyPath);
-					}
-					int numConcurrentDownloads = getInt("Downloads/maxConcurrentDownloads");
-					int numThreads = getInt("App/maxThreads");
-					int timeOutSecs = getInt("Downloads/timeOutSec");
-					int timeOutApiEndpointSec = timeOutSecs;
+						//parse variables for JSON content sources
+						map<string,string> contentSourceVariables;
+						if(settingExists("Content/JsonSourcesVariables")){
+							ofxJSON vars = settings().getJson("Content/JsonSourcesVariables");
+							if(vars.size()){
+								ofLogNotice("ofxApp") << "Json Sources Variables:";
+								for( auto itr = vars.begin(); itr != vars.end(); itr++){
+									const std::string & varName = itr.key().asString();
+									const std::string & varValue = (*itr).asString();
+									contentSourceVariables[varName] = varValue;
+									ofLogNotice("ofxApp") << "   \"" << varName << "\" = \"" << varValue << "\"";
+								}
+							}
+						}
 
-					if(settingExists("Content/JsonSources/" + currentContentID + "/timeOutSec")){
-						timeOutApiEndpointSec = getInt("Content/JsonSources/" + currentContentID + "/timeOutSec");
-					}
+						//search and replace for user defined variables
+						string oldJsonURL = jsonURL;
+						for(auto it : contentSourceVariables){
+							string varName = "$" + it.first;
+							const string & varValue = it.second;
+							ofStringReplace(jsonURL, varName, varValue);
+						}
+						if(jsonURL != oldJsonURL){
+							ofLogNotice("ofxApp") << "after applying JsonSourcesVariables, the resulting URL for \"" << currentContentID << "\" is \"" << jsonURL << "\"";
+						}
 
-					int speedLimitKBs = getInt("Downloads/speedLimitKb");
-					float idleTimeAfterDl = getFloat("Downloads/idleTimeAfterEachDownloadSec");
+						//get custom headers setup
+						if(settingExists("Content/JsonSources/" + currentContentID + "/httpConfig/customHttpHeaders")){
+							ofxJSON customHeaders = settings().getJson("Content/JsonSources/" + currentContentID + "/httpConfig/customHttpHeaders");
+							if(customHeaders.isObject()){
+								for( Json::Value::const_iterator itr = customHeaders.begin() ; itr != customHeaders.end() ; itr++ ) {
+									std::string header = itr.key().asString();
+									std::string value = (*itr).asString();
+									contentHttpConfigs[currentContentID].customHeaders[header] = value;
+								}
+							}
+						}
 
-					string assetLocationPath = "Content/JsonSources/" + currentContentID + "/assetsLocation";
-					std::string assetDownloadLocation;
-					if(settingExists(assetLocationPath)){
-						assetDownloadLocation = getString(assetLocationPath);
-					}
+						bool liveUpdatesExists = settings().exists("Content/JsonSources/" + currentContentID + "/liveUpdates");
+						if(liveUpdatesExists){ //read live update config for this contentSrc
+							bool enabled = getBool("Content/JsonSources/" + currentContentID + "/liveUpdates/enabled", false);
+							LiveUpdateState liState;
+							liState.enabled = enabled;
+							liState.interval = getFloat("Content/JsonSources/" + currentContentID + "/liveUpdates/interval", 300);
+							liState.maxThreads = getFloat("Content/JsonSources/" + currentContentID + "/liveUpdates/maxThreads", 1);
+							liState.maxConcurrentDownloads = getFloat("Content/JsonSources/" + currentContentID + "/liveUpdates/maxConcurrentDownloads", 1);
+							liveContentUpdates[currentContentID] = liState;
+						}else{ //default to disabled live updates
+							LiveUpdateState liState;
+							liState.enabled = false;
+							liveContentUpdates[currentContentID] = liState;
+						}
 
-					string checksumTypePath = "Content/JsonSources/" + currentContentID + "/checksumType";
-					ofxChecksum::Type checksumType = ofxChecksum::Type::SHA1;
-					if(settingExists(checksumTypePath)){
-						string checksumTypeStr = ofToLower(getString(checksumTypePath));
-						if(checksumTypeStr == "xxhash"){
-							checksumType = ofxChecksum::Type::XX_HASH;
-						}else{
-							if(checksumTypeStr == "sha1"){
-								checksumType = ofxChecksum::Type::SHA1;
+						std::string policyPath = "Content/JsonSources/" + currentContentID + "/shouldSkipObjectPolicyTests";
+						bool skipPolicyTests = false;
+						if(settingExists(policyPath)){
+							skipPolicyTests = getBool(policyPath);
+						}
+						int numConcurrentDownloads = getInt("Downloads/maxConcurrentDownloads");
+						int numThreads = getInt("App/maxThreads");
+						int timeOutSecs = getInt("Downloads/timeOutSec");
+						int timeOutApiEndpointSec = timeOutSecs;
+
+						if(settingExists("Content/JsonSources/" + currentContentID + "/timeOutSec")){
+							timeOutApiEndpointSec = getInt("Content/JsonSources/" + currentContentID + "/timeOutSec");
+						}
+
+						int speedLimitKBs = getInt("Downloads/speedLimitKb");
+						float idleTimeAfterDl = getFloat("Downloads/idleTimeAfterEachDownloadSec");
+
+						std::string assetLocationPath = "Content/JsonSources/" + currentContentID + "/assetsLocation";
+						std::string assetDownloadLocation;
+						if(settingExists(assetLocationPath)){
+							assetDownloadLocation = getString(assetLocationPath);
+						}
+
+						std::string checksumTypePath = "Content/JsonSources/" + currentContentID + "/checksumType";
+						ofxChecksum::Type checksumType = ofxChecksum::Type::SHA1;
+						if(settingExists(checksumTypePath)){
+							std::string checksumTypeStr = ofToLower(getString(checksumTypePath));
+							if(checksumTypeStr == "xxhash"){
+								checksumType = ofxChecksum::Type::XX_HASH;
 							}else{
-								ofxApp::utils::terminateApp("ofxApp", "Unrecognized checksum type in content ID \"Content/JsonSources/" + currentContentID + "\" (" + checksumTypeStr +")");
+								if(checksumTypeStr == "sha1"){
+									checksumType = ofxChecksum::Type::SHA1;
+								}else{
+									ofxApp::utils::terminateApp("ofxApp", "Unrecognized checksum type in content ID \"Content/JsonSources/" + currentContentID + "\" (" + checksumTypeStr +")");
+								}
 							}
 						}
-					}
 
-					bool skipChecksums = false;
-					if(settings().exists("Content/skipChecksumTests")) skipChecksums = getBool("Content/skipChecksumTests");
-					if(skipChecksums){
-						ofxApp::utils::logBanner("Running with \"Content/skipChecksumTests\" : TRUE! -NEVER DO THIS IN PRODUCTION!!\nThis will create trouble if the content in the JSON is not in sync with the media in your filesystem.");
-						RUI_LOG("ofxApp running with \"Content/skipChecksumTests\" : TRUE!");
-						RUI_LOG("Skipping all Checksum Tests! Beware!");
-					}
+						bool skipChecksums = false;
+						if(settings().exists("Content/skipChecksumTests")) skipChecksums = getBool("Content/skipChecksumTests");
+						if(skipChecksums){
+							ofxApp::utils::logBanner("Running with \"Content/skipChecksumTests\" : TRUE! -NEVER DO THIS IN PRODUCTION!!\nThis will create trouble if the content in the JSON is not in sync with the media in your filesystem.");
+							RUI_LOG("ofxApp running with \"Content/skipChecksumTests\" : TRUE!");
+							RUI_LOG("Skipping all Checksum Tests! Beware!");
+						}
 
-					string contentErrorScreenShowTimeKey = "Logging/assetErrorsScreenReportTimeSeconds";
-					float assetErrorsScreenReportTimeSeconds = 0.0;
-					if(settingExists(contentErrorScreenShowTimeKey)){
-						assetErrorsScreenReportTimeSeconds = settings().getFloat(contentErrorScreenShowTimeKey);
-					}
+						std::string contentErrorScreenShowTimeKey = "Logging/assetErrorsScreenReportTimeSeconds";
+						float assetErrorsScreenReportTimeSeconds = 0.0;
+						if(settingExists(contentErrorScreenShowTimeKey)){
+							assetErrorsScreenReportTimeSeconds = settings().getFloat(contentErrorScreenShowTimeKey);
+						}
 
-					//see if the user wants to getting live CMS data and use old cached API responses instead:
-					bool useOfflineJson = false;
-					if(settingExists("Content/useOfflineJson") && getBool("Content/useOfflineJson")){
-						useOfflineJson = true;
-					}
-					string offlineJsonPath = "Content/JsonSources/" + currentContentID + "/useOfflineJson";
-					if(settingExists(offlineJsonPath)){
-						useOfflineJson = getBool(offlineJsonPath);
-					}
-					if(useOfflineJson){
-						RUI_LOG("JSON Source \"%s\" using CACHED OFFLINE data! See ofxAppSettings.json", currentContentID.c_str());
-						ofLogWarning("ofxApp") << "JSON source \"" << currentContentID << "\" loading JSON data from CACHED file! See ofxAppSettings.json!";
-					}
+						//see if the user wants to getting live CMS data and use old cached API responses instead:
+						bool useOfflineJson = false;
+						if(settingExists("Content/useOfflineJson") && getBool("Content/useOfflineJson")){
+							useOfflineJson = true;
+						}
+						std::string offlineJsonPath = "Content/JsonSources/" + currentContentID + "/useOfflineJson";
+						if(settingExists(offlineJsonPath)){
+							useOfflineJson = getBool(offlineJsonPath);
+						}
+						if(useOfflineJson){
+							RUI_LOG("JSON Source \"%s\" using CACHED OFFLINE data! See ofxAppSettings.json", currentContentID.c_str());
+							ofLogWarning("ofxApp") << "JSON source \"" << currentContentID << "\" loading JSON data from CACHED file! See ofxAppSettings.json!";
+						}
 
-					std::string knownGoodJSON = "file://" + jsonDir + "/knownGood/" + currentContentID + ".json";
+						std::string knownGoodJSON = "file://" + jsonDir + "/knownGood/" + currentContentID + ".json";
 
-					contentStorage[currentContentID]->setup(	currentContentID,
-															useOfflineJson ? knownGoodJSON : jsonURL, //where to get the JSON from? file:// or http:// URL
-															jsonDir,
-															numThreads,
-															numConcurrentDownloads,
-															speedLimitKBs,
-															timeOutSecs,
-															timeOutApiEndpointSec,
-															skipPolicyTests,
-															idleTimeAfterDl,
-															assetDownloadsHttpCfg.credentials,
-															checksumType,
-															assetDownloadsHttpCfg.proxyCfg,
-															contentHttpConfigs[currentContentID].credentials,
-															contentHttpConfigs[currentContentID].proxyCfg,
-															contentHttpConfigs[currentContentID].customHeaders,
-															contentParseFuncs[currentContentID],
-															assetDownloadPolicy,
-															assetUsagePolicy,
-															objectUsagePolicy,
-															assetDownloadLocation,
-															skipChecksums,
-															assetErrorsScreenReportTimeSeconds
-													  );
-					
-					contentStorage[currentContentID]->fetchContent(); //this starts the ofxAppContent process!
-					
+						contentStorage[currentContentID]->setup(	currentContentID,
+																useOfflineJson ? knownGoodJSON : jsonURL, //where to get the JSON from? file:// or http:// URL
+																jsonDir,
+																numThreads,
+																numConcurrentDownloads,
+																speedLimitKBs,
+																timeOutSecs,
+																timeOutApiEndpointSec,
+																skipPolicyTests,
+																idleTimeAfterDl,
+																assetDownloadsHttpCfg.credentials,
+																checksumType,
+																assetDownloadsHttpCfg.proxyCfg,
+																contentHttpConfigs[currentContentID].credentials,
+																contentHttpConfigs[currentContentID].proxyCfg,
+																contentHttpConfigs[currentContentID].customHeaders,
+																contentParseFuncs[currentContentID],
+																assetDownloadPolicy,
+																assetUsagePolicy,
+																objectUsagePolicy,
+																assetDownloadLocation,
+																skipChecksums,
+																assetErrorsScreenReportTimeSeconds
+														  );
+
+						contentStorage[currentContentID]->fetchContent(); //this starts the ofxAppContent process!
+
+					}else{
+						ofxApp::utils::terminateApp("ofxApp", "Requested content ID \"Content/JsonSources/" + currentContentID + "\" not found in \"" + settingsFile + "\"");
+					}
 				}else{
-					ofxApp::utils::terminateApp("ofxApp", "Requested content ID \"Content/JsonSources/" + currentContentID + "\" not found in \"" + settingsFile + "\"");
+					ofLogError("ofxApp") << "skipping content fetch \"" << currentContentID << "\" because user asked to!";
+					loadedContent.push_back(currentContentID); //noting it it as "loaded" but we skipped it
+					if(loadedContent.size() == contentStorage.size()){ //done loading ALL the JSON contents!
+						appState.setState(State::DELIVER_CONTENT_LOAD_RESULTS);
+					}else{
+						currentContentID = requestedContent[loadedContent.size()];
+						appState.setState(State::LOAD_JSON_CONTENT);
+					}
 				}
 
 			}else{ //We are retrying to download with a known good json! we already swapped the JSON URL to a local older JSON
@@ -1534,7 +1572,9 @@ ofxApp::Phase App::getPhase(){
 
 void App::onStaticTexturesLoaded(){
 	ofLogNotice("ofxApp")<< "All Static Textures Loaded!";
+
 	if(timeSampleOfxApp) TS_STOP_NIF("ofxApp Load Static Textures");
+
 	if(contentStorage.size()){
 		appState.setState(State::LOAD_JSON_CONTENT);
 	}else{
@@ -1637,8 +1677,8 @@ ofRectangle App::drawMsgInBox(std::string msg, int x, int y, int fontSize, ofCol
 
 
 string App::getUpdatedContentURL(const string & contentID){
-	string basicJsonURL = getString("Content/JsonSources/" + contentID + "/url");
-	string newURL = delegate->ofxAppWillFetchContentFromURL(contentID, basicJsonURL);
+	std::string basicJsonURL = getString("Content/JsonSources/" + contentID + "/url");
+	std::string newURL = delegate->ofxAppWillFetchContentFromURL(contentID, basicJsonURL);
 	if (newURL.size() == 0) newURL = basicJsonURL;
 	if(basicJsonURL != newURL) ofLogNotice("ofxApp") << "user decided to override content URL for \"" << currentContentID << "\" with \"" << newURL << "\"";
 	return newURL;

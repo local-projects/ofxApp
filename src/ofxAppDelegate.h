@@ -43,6 +43,8 @@ public:
 	virtual std::string ofxAppGetLogString(ofxApp::Phase){return "";}; //override the text message above the progress bar (ie for showing script logs)
 	virtual float ofxAppGetProgressForPhase(ofxApp::Phase){return -1;} //return [0..1] to report progressbar; -1 for indeterminate
 
+	virtual bool ofxAppShouldFetchContent(const std::string & contentID){return true;}
+
 	//this is how your app gets all the parsed objects - up to you how you store them
 	virtual void ofxAppContentIsReady(const std::string & contentID, vector<ContentObject*> ) = 0;
 
