@@ -414,9 +414,8 @@ void ofxAppContent::setState(ContentState s){
 			}else{
 				ofLogWarning("ofxAppContent-" + ID) << "skipping Object Drop Policy Tests!! \"" << ID << "\"";
 			}
-
 			}break;
-
+			
 			
 		case ContentState::SETUP_TEXTURED_OBJECTS:{
 			numSetupTexuredObjects = 0;
@@ -451,9 +450,9 @@ void ofxAppContent::setState(ContentState s){
 
 			objectsWithBadAssets += "Setup Textured Object Statge\n\nRemoved " + ofToString(badObjects.size()) + " \"" + ID + "\" objects:\n\n" + log;
 
-			ofLogWarning("ofxAppContent-" + ID) << "Removed a total of " << numIgnoredObjects << " objects for content type \"" << ID << "\" due to various rasons. Check 'logs/assetStatus.log' for more info.";
-			if(numIgnoredObjects > 0) ofLogWarning("ofxAppContent-" + ID) << objectsWithBadAssets;
 			if(numIgnoredObjects > 0){
+				ofLogWarning("ofxAppContent-" + ID) << objectsWithBadAssets;
+				ofLogWarning("ofxAppContent-" + ID) << "Removed a total of " << numIgnoredObjects << " objects for content type \"" << ID << "\" due to various rasons. Check 'logs/assetStatus.log' for more info.";
 				auto a = ofxApp::get().analytics();
 				if(a && a->isEnabled()){
 					a->sendException("ofxApp - Content '" + ID + "' - rejected " + ofToString(numIgnoredObjects) + " objects.", false);
@@ -465,7 +464,9 @@ void ofxAppContent::setState(ContentState s){
 			}else{
 				pct = 0.0f;
 			}
-			ofLogWarning("ofxAppContent-" + ID) << "Ignored " << ofToString(pct,2) << "% of the objects defined in the \"" << ID << "\" JSON.";
+			if(pct > 0.0f){
+				ofLogWarning("ofxAppContent-" + ID) << "Ignored " << ofToString(pct,2) << "% of the objects defined in the \"" << ID << "\" JSON.";
+			}
 
 		}break;
 
