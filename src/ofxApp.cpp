@@ -445,6 +445,7 @@ void App::loadDynamicSettings() {
 	fonts().reloadFontStash2Styles();
 	setupTextureLoader();
 	setupLogLevelModuleOverrides(true);
+	ofSetLogLevel(ofLogLevel(getInt("Logging/logLevel")));
 	setupRuiWatches();
 }
 
