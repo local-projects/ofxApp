@@ -1415,6 +1415,7 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 							RUI_LOG("JSON Source \"%s\" using CACHED OFFLINE data! See ofxAppSettings.json", currentContentID.c_str());
 							ofLogWarning("ofxApp") << "JSON source \"" << currentContentID << "\" loading JSON data from CACHED file! See ofxAppSettings.json!";
 						}
+						usingOfflineJson = useOfflineJson;
 
 						std::string knownGoodJSON = "file://" + jsonDir + "/knownGood/" + currentContentID + ".json";
 

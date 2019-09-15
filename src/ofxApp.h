@@ -70,14 +70,11 @@ public:
 	App(App const&) = delete; //cant copy construct, or assign
 	void operator=(App const&) = delete;
 
-	//static App * get(){return theApp;}
-
 	void setup(ofxAppDelegate * delegate); //if your app has no content ; no lambdas needed
 	void setup(const map<std::string,ofxApp::ParseFunctions> & cfgs, ofxAppDelegate * delegate); //if you dont care about content gather order
 	void setup(const map<std::string,ofxApp::ParseFunctions> & cfgs, //if you want to override content gather order (defaults to alphabetical by contentID)
 			   const map<int, std::string> & contentOrder,
 			   ofxAppDelegate * delegate);
-
 
 	void update(ofEventArgs &);
 	void exit(ofEventArgs &);
@@ -100,19 +97,19 @@ public:
 	ofxAppStaticTextures & 			textures(){return texStorage;}
 	ofPtr<ofxSuperLog> 				logger(){return ofxSuperLog::getLogger();}
 	ofxAppErrorReporter &			errorReporter(){ return errorReporterObj;}
-	ofxTuioClient * 					tuio(){ return tuioClient;}
-	ofxGoogleAnalytics *				analytics(){ return gAnalytics; }
+	ofxTuioClient * 				tuio(){ return tuioClient;}
+	ofxGoogleAnalytics *			analytics(){ return gAnalytics; }
 	ofxScreenSetup					screenSetup;
 
 	// SETTINGS /////////////////////////////////////////////////////////////////////////////
 	// Convenience methods to easily get values from "data/configs/ofxAppSettings.json"
 
 	bool&			getBool(const std::string & key, bool defaultVal = true);
-	int&				getInt(const std::string & key, int defaultVal = 0);
+	int&			getInt(const std::string & key, int defaultVal = 0);
 	float&			getFloat(const std::string & key, float defaultVal = 0.0);
 	std::string& 	getString(const std::string & key, const std::string & defaultVal = "uninited!");
-	ofColor&			getColor(const std::string & key, ofColor defaultVal = ofColor::red);
-	bool				settingExists(const std::string & key);
+	ofColor&		getColor(const std::string & key, ofColor defaultVal = ofColor::red);
+	bool			settingExists(const std::string & key);
 
 	void		loadSettings(); //load JSON settings (data/configs/ofxAppSettings.json)
 	void		loadDynamicSettings(); //load and update values that can be changed while the app runs (call this with 'R' key);
@@ -145,10 +142,12 @@ public:
 	// Retrieve app params that come from settings json
 	ofRectangle		getRenderAreaForCurrentWindowSize();
 	ofRectangle		getRenderRect();
-	ofRectangle 		getStartupScreenViewport(){return startupScreenViewport;} //loading screen rect area
+	ofRectangle 	getStartupScreenViewport(){return startupScreenViewport;} //loading screen rect area
 	ofVec2f			getRenderSize(){return renderSize;}
-	bool				isWindowSetup(){return windowIsSetup;}
+	bool			isWindowSetup(){return windowIsSetup;}
 	bool 			isJsonContentDifferentFromLastLaunch(std::string contentID, std::string & freshJsonSha1, std::string & oldJsonSha1);
+	bool			getIsUsingOfflineJson(){return usingOfflineJson;}
+
 
 	// Live Updates //////////////////////////////////////////////////////////////////////////
 	bool 			forceLiveUpdate(const std::string & contentID);
@@ -243,34 +242,35 @@ protected:
 
 	ofxAppFonts *							fontStorage = nullptr; //keeps all loaded fonts
 
-	map<std::string, ofxAppContent*>				contentStorage; //App contents parser - indexed by contentID
+	map<std::string, ofxAppContent*>			contentStorage; //App contents parser - indexed by contentID
 	map<int, std::string>						contentStorageOrder; //order in which to load content, starts at 0
-	map<std::string, ofxApp::ParseFunctions>		contentParseFuncs; //user supplied custom parsing code - indexed by contentID
-	map<std::string, HttpDownloadConfig>			contentHttpConfigs; //user supplied custom parsing code - indexed by contentID
+	map<std::string, ofxApp::ParseFunctions>	contentParseFuncs; //user supplied custom parsing code - indexed by contentID
+	map<std::string, HttpDownloadConfig>		contentHttpConfigs; //user supplied custom parsing code - indexed by contentID
 
 
-	ofPtr<ofxSuperLog> *						loggerStorage; //FIXME: note its a * to an ofPtr
+	ofPtr<ofxSuperLog> *					loggerStorage; //FIXME: note its a * to an ofPtr
 
 	ofxDrawableStateMachine<ofxApp::State>	appState; //ofxApp State Machine to handle all loading stages
 	std::string								errorStateHeader; //holds current error msg header (only applies when state == DEVELOPER_REQUESTED_ERROR_SCREEN)
 	std::string								errorStateBody; //holds current error msg body (only applies when state == DEVELOPER_REQUESTED_ERROR_SCREEN)
 	
 	ofxAppErrorReporter						errorReporterObj; //send live error reports to our CMS over sensu
-	ofxGoogleAnalytics *						gAnalytics = nullptr;
+	ofxGoogleAnalytics *					gAnalytics = nullptr;
 
-	bool										windowIsSetup = false; //will only be true once the window exists.
+	bool									windowIsSetup = false; //will only be true once the window exists.
 	float									dt; //inited based on app target framerate settings - used to update some internal objects
-	bool										hasLoadedSettings = false;
-	bool										timeSampleOfxApp = false; //internal benchmark of ofxApp timings, usually false
+	bool									hasLoadedSettings = false;
+	bool									timeSampleOfxApp = false; //internal benchmark of ofxApp timings, usually false
 	bool 									enableMouse;
-	bool										showMouse;
-	bool										reportErrors;
+	bool									showMouse;
+	bool									reportErrors;
+	bool									usingOfflineJson = false; //is the content we are using not fresh? (setting in ofxApp.json)
 
 	std::string								currentContentID; //keep track of which content are we currently getting
 	vector<std::string>						requestedContent; //complete list of user supplied contentID's
 	vector<std::string>						loadedContent; //user supplied contentID's loaded so far
 
-	ofxAppDelegate *							delegate = nullptr; //this will be the "user"'s app, likely an ofBaseApp subclass
+	ofxAppDelegate *						delegate = nullptr; //this will be the "user"'s app, likely an ofBaseApp subclass
 	
 	//loaded from json settings
 	ofVec2f									renderSize;
