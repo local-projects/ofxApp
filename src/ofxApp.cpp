@@ -880,8 +880,8 @@ void App::drawStats(){
 	if(globalsStorage->drawScreenLogs && currentFrameLog.size()){
 		ofRectangle r = drawMsgInBox("### Current Frame Log ###\n" + currentFrameLog, x, y, fontSize, ofColor::springGreen);
 		y += r.height + fabs(r.y - y) + pad;
-		currentFrameLog.clear();
 	}
+	currentFrameLog.clear();
 
 	if(globalsStorage->drawLiveUpdateStatus){
 		std::string liveUpdateMsg;
