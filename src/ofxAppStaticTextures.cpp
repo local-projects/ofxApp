@@ -57,6 +57,7 @@ void ofxAppStaticTextures::loadTexturesInDir(const std::string& imgDirPath, int 
 
 		ofDirectory dir(imgDirPath);
 		dir.allowExt("png");
+		dir.allowExt("psd");
 		dir.allowExt("jpeg");
 		dir.allowExt("jpg");
 		dir.allowExt("tif");
