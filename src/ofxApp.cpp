@@ -1210,6 +1210,7 @@ void App::updateStateMachine(float dt){
 							state.state = LiveUpdateState::FAILED;
 							delegate->ofxAppContentUpdateFailed(contentID, contentStorage[contentID]->getErrorMsg());
 							state.state = LiveUpdateState::IDLE;
+							if(state.temporaryRequest) state.temporaryRequest = false;
 						}
 						if(contentStorage[contentID]->isContentReady()){
 							ofLogNotice("ofxApp") << "Live Content Update for \"" << contentID << "\" is ready!";
@@ -1217,6 +1218,7 @@ void App::updateStateMachine(float dt){
 							delegate->ofxAppContentUpdate(contentID, contentStorage[contentID]->getParsedObjects());
 							state.state = LiveUpdateState::IDLE;
 							ofLogNotice("ofxApp") << "The total number of ContentObject instances is " << ContentObject::getNumTotalObjects();
+							if(state.temporaryRequest) state.temporaryRequest = false;
 						}
 					}
 
@@ -1229,7 +1231,6 @@ void App::updateStateMachine(float dt){
 						std::string newURL = getUpdatedContentURL(contentID);
 						contentStorage[contentID]->setJsonDownloadURL(newURL);
 						contentStorage[contentID]->fetchContent();
-						if(state.temporaryRequest) state.temporaryRequest = false;
 					}
 				}
 			}
