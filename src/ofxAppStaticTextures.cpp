@@ -168,7 +168,7 @@ ofxAutoTexture* ofxAppStaticTextures::loadTexture(PreLoadData data){
 	}else{
 		delete data.tex;
 		std::string msg = "FAILED to load tex from \"" + data.filePath + "\"" ;
-		OFXAPP_REPORT("ofxAppStaticTexturesFailLoad", msg, 1);
+		OFXAPP_REPORT("ofxAppStaticTexturesFailLoad", msg, 2);
 		ofLogError("ofxAppStaticTextures") << msg;
 		return NULL;
 	}

@@ -71,4 +71,7 @@ public:
 	//screen setup changed callback
 	virtual void screenSetupChanged(ofxScreenSetup::ScreenSetupArg &arg){};
 
+	//error report
+	virtual void ofxAppErrorReported(ofxApp::ErrorReportData & data){};
+
 };

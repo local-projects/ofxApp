@@ -127,6 +127,9 @@ public:
 	bool exitErrorState(); //goes back to RUNNING
 	bool isInDevInducedErrorState(){return appState.getState() == State::DEVELOPER_REQUESTED_ERROR_SCREEN;}
 
+	void reportError(const string & alertID, const string & msg, int severity);
+	void reportErrorWithFile(const string & alertID, const string & msg, int severity, const string & filePath);
+
 	// RETRIEVE POLICIES /////////////////////////////////////////////////////////////////////
 	// Those are cfgs coming from the main config file
 	const ofxAssets::DownloadPolicy &	getAssetDownloadPolicy(){ return assetDownloadPolicy; }

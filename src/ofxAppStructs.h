@@ -63,6 +63,13 @@ namespace ofxApp{
 		ofxJSON userData;
 	};
 
+	struct ErrorReportData{
+		string alertID;
+		string msg;
+		int severity;
+		string filePath;
+	};
+
 	enum class State : int{ //internal states used by an ofxApp app
 		SETUP_OFXAPP_INTERNALS,
 		SETUP_DELEGATE_B4_CONTENT_LOAD,
@@ -114,7 +121,6 @@ namespace ofxApp{
 		ofLogError("ofxApp") << "unknown ofxApp Phase!";
 		return "unknown ofxApp Phase";
 	}
-
 };
 
 

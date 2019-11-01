@@ -1785,3 +1785,23 @@ bool App::settingExists(const std::string & key){
 }
 
 //////////////////////////////////////////////////////////////////////////
+
+
+void App::reportError(const string & alertID, const string & msg, int severity){
+	errorReporterObj.send(alertID,msg,severity);
+	ofxApp::ErrorReportData data;
+	data.alertID = alertID;
+	data.msg = msg;
+	data.severity = severity;
+	delegate->ofxAppErrorReported(data);
+}
+
+void App::reportErrorWithFile(const string & alertID, const string & msg, int severity, const string & filePath){
+	errorReporterObj.send(alertID, msg, severity, filePath);
+	ofxApp::ErrorReportData data;
+	data.alertID = alertID;
+	data.msg = msg;
+	data.severity = severity;
+	data.filePath = filePath;
+	delegate->ofxAppErrorReported(data);
+}
