@@ -43,8 +43,8 @@
 #define G_FSTYLE(S)										ofxApp::get().fonts().getFontStyle(S)
 
 
-#define OFXAPP_REPORT(alertID,msg,severity)						ofxApp::get().errorReporter().send(alertID,msg,severity)
-#define OFXAPP_REPORT_FILE(alertID,msg,severity,fileToSend)		ofxApp::get().errorReporter().send(alertID,msg,severity,fileToSend)
+#define OFXAPP_REPORT(alertID,msg,severity)						ofxApp::get().reportError(alertID,msg,severity)
+#define OFXAPP_REPORT_FILE(alertID,msg,severity,fileToSend)	ofxApp::get().reportErrorWithFile(alertID,msg,severity,fileToSend)
 
 #define OFXAPP_ANALYTICS()										ofxApp::get().analytics()
 
