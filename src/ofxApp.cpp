@@ -156,6 +156,20 @@ void App::setupContentData() {
 	if(requestedContent.size()){
 		currentContentID = requestedContent[0];
 	}
+
+	//parse variables for JSON content sources
+	if(settingExists("Content/JsonSourcesVariables")){
+		ofxJSON vars = settings().getJson("Content/JsonSourcesVariables");
+		if(vars.size()){
+			ofLogNotice("ofxApp") << "Json Sources Variables:";
+			for( auto itr = vars.begin(); itr != vars.end(); itr++){
+				const std::string & varName = itr.key().asString();
+				const std::string & varValue = (*itr).asString();
+				contentSourceVariables[varName] = varValue;
+				ofLogNotice("ofxApp") << "   \"" << varName << "\" = \"" << varValue << "\"";
+			}
+		}
+	}
 }
 
 
@@ -1298,32 +1312,6 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 							contentHttpConfigs[currentContentID].proxyCfg.password = getString("Content/JsonSources/" + currentContentID + "/httpConfig/proxy/proxyPassword");
 						}
 
-						//parse variables for JSON content sources
-						map<string,string> contentSourceVariables;
-						if(settingExists("Content/JsonSourcesVariables")){
-							ofxJSON vars = settings().getJson("Content/JsonSourcesVariables");
-							if(vars.size()){
-								ofLogNotice("ofxApp") << "Json Sources Variables:";
-								for( auto itr = vars.begin(); itr != vars.end(); itr++){
-									const std::string & varName = itr.key().asString();
-									const std::string & varValue = (*itr).asString();
-									contentSourceVariables[varName] = varValue;
-									ofLogNotice("ofxApp") << "   \"" << varName << "\" = \"" << varValue << "\"";
-								}
-							}
-						}
-
-						//search and replace for user defined variables
-						string oldJsonURL = jsonURL;
-						for(auto it : contentSourceVariables){
-							string varName = "$" + it.first;
-							const string & varValue = it.second;
-							ofStringReplace(jsonURL, varName, varValue);
-						}
-						if(jsonURL != oldJsonURL){
-							ofLogNotice("ofxApp") << "after applying JsonSourcesVariables, the resulting URL for \"" << currentContentID << "\" is \"" << jsonURL << "\"";
-						}
-
 						//get custom headers setup
 						if(settingExists("Content/JsonSources/" + currentContentID + "/httpConfig/customHttpHeaders")){
 							ofxJSON customHeaders = settings().getJson("Content/JsonSources/" + currentContentID + "/httpConfig/customHttpHeaders");
@@ -1342,8 +1330,18 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 							LiveUpdateState liState;
 							liState.enabled = enabled;
 							liState.interval = getFloat("Content/JsonSources/" + currentContentID + "/liveUpdates/interval", 300);
-							liState.maxThreads = getFloat("Content/JsonSources/" + currentContentID + "/liveUpdates/maxThreads", 1);
-							liState.maxConcurrentDownloads = getFloat("Content/JsonSources/" + currentContentID + "/liveUpdates/maxConcurrentDownloads", 1);
+							const string maxThreadKey = "Content/JsonSources/" + currentContentID + "/maxThreads";
+							if(settings().exists(maxThreadKey)){
+								liState.maxThreads = getInt(maxThreadKey, 1);
+							}else{
+								liState.maxThreads = 1;
+							}
+							const string maxConcDownKey = "Content/JsonSources/" + currentContentID + "/maxConcurrentDownloads";
+							if(settings().exists(maxConcDownKey)){
+								liState.maxConcurrentDownloads = getInt(maxConcDownKey, 1);
+							}else{
+								liState.maxConcurrentDownloads = 1;
+							}
 							liveContentUpdates[currentContentID] = liState;
 						}else{ //default to disabled live updates
 							LiveUpdateState liState;
@@ -1680,10 +1678,23 @@ ofRectangle App::drawMsgInBox(std::string msg, int x, int y, int fontSize, ofCol
 
 
 string App::getUpdatedContentURL(const string & contentID){
-	std::string basicJsonURL = getString("Content/JsonSources/" + contentID + "/url");
-	std::string newURL = delegate->ofxAppWillFetchContentFromURL(contentID, basicJsonURL);
-	if (newURL.size() == 0) newURL = basicJsonURL;
-	if(basicJsonURL != newURL) ofLogNotice("ofxApp") << "user decided to override content URL for \"" << currentContentID << "\" with \"" << newURL << "\"";
+
+	//get URL from ofxAppSettings.json
+	std::string jsonURL = getString("Content/JsonSources/" + contentID + "/url");
+
+	//search and replace for user defined variables
+	string oldJsonURL = jsonURL;
+	for(auto it : contentSourceVariables){
+		string varName = "$" + it.first;
+		const string & varValue = it.second;
+		ofStringReplace(jsonURL, varName, varValue);
+	}
+
+	if(jsonURL != oldJsonURL) ofLogNotice("ofxApp") << "After applying JsonSourcesVariables, the resulting URL for \"" << currentContentID << "\" is \"" << jsonURL << "\"";
+
+	std::string newURL = delegate->ofxAppWillFetchContentFromURL(contentID, jsonURL);
+	if (newURL.size() == 0) newURL = jsonURL;
+	if(jsonURL != newURL) ofLogNotice("ofxApp") << "User decided to override content URL for \"" << currentContentID << "\" with \"" << newURL << "\"";
 	return newURL;
 }
 

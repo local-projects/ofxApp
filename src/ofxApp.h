@@ -249,7 +249,7 @@ protected:
 	map<int, std::string>						contentStorageOrder; //order in which to load content, starts at 0
 	map<std::string, ofxApp::ParseFunctions>	contentParseFuncs; //user supplied custom parsing code - indexed by contentID
 	map<std::string, HttpDownloadConfig>		contentHttpConfigs; //user supplied custom parsing code - indexed by contentID
-
+	map<string,string> 							contentSourceVariables; //used to modify / combine URLs in the "JsonSources"
 
 	ofPtr<ofxSuperLog> *					loggerStorage; //FIXME: note its a * to an ofPtr
 
