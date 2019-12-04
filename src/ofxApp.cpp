@@ -1293,6 +1293,13 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 						std::string jsonURL = getUpdatedContentURL(currentContentID);
 						std::string jsonDir = getString("Content/JsonSources/" + currentContentID + "/jsonDownloadDir");
 
+						bool shouldRemoveUnusedAssets = false;
+						string removeAssetsKey = "Content/JsonSources/" + currentContentID + "/removeUnusedAssets";
+						if(settingExists(removeAssetsKey)){
+							shouldRemoveUnusedAssets = getBool(removeAssetsKey);
+							if(shouldRemoveUnusedAssets == false) ofLogWarning("ofxApp") << "Content Source \"" << currentContentID << "\" setup NOT TO REMOVE unused assets! Asset leak may occur!";
+						}
+
 						//get credentials setup
 						if(settingExists("Content/JsonSources/" + currentContentID + "/httpConfig")){
 							if(settingExists("Content/JsonSources/" + currentContentID + "/httpConfig/credentials/username")){
@@ -1442,6 +1449,7 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 																skipChecksums,
 																assetErrorsScreenReportTimeSeconds
 														  );
+						contentStorage[currentContentID]->setShouldRemoveExpiredAssets(shouldRemoveUnusedAssets);
 
 						contentStorage[currentContentID]->fetchContent(); //this starts the ofxAppContent process!
 
