@@ -89,7 +89,7 @@ public:
 	#ifdef OFX_APP_NONAME
 	ofxAppGlobalsBasic & 			globals(){return *globalsStorage;}
 	#else
-	OFX_APP_CLASS_NAME(Globals) & 	globals(){return *globalsStorage;}
+	OFX_APP_CLASS_NAME(Globals) & 	globals(){return *globalsStorage;} //deprecated! this will be removed in a near future
 	#endif
 	
 	ofxAppFonts &					fonts(){return *fontStorage;}
@@ -97,21 +97,21 @@ public:
 	ofxAppStaticTextures & 			textures(){return texStorage;}
 	ofPtr<ofxSuperLog> 				logger(){return ofxSuperLog::getLogger();}
 	ofxAppErrorReporter &			errorReporter(){ return errorReporterObj;}
-	ofxTuioClient * 				tuio(){ return tuioClient;}
-	ofxGoogleAnalytics *			analytics(){ return gAnalytics; }
+	ofxTuioClient * 					tuio(){ return tuioClient;}
+	ofxGoogleAnalytics *				analytics(){ return gAnalytics; }
 	ofxScreenSetup					screenSetup;
 
 	// SETTINGS /////////////////////////////////////////////////////////////////////////////
 	// Convenience methods to easily get values from "data/configs/ofxAppSettings.json"
 
 	bool&			getBool(const std::string & key, bool defaultVal = true);
-	int&			getInt(const std::string & key, int defaultVal = 0);
+	int&				getInt(const std::string & key, int defaultVal = 0);
 	float&			getFloat(const std::string & key, float defaultVal = 0.0);
 	std::string& 	getString(const std::string & key, const std::string & defaultVal = "uninited!");
-	ofColor&		getColor(const std::string & key, ofColor defaultVal = ofColor::red);
-	bool			settingExists(const std::string & key);
+	ofColor&			getColor(const std::string & key, ofColor defaultVal = ofColor::red);
+	bool				settingExists(const std::string & key);
 
-	void 		setSettingsFilePath(const std::string & ofxAppSettingsJsonPath);
+	void 	setSettingsFilePath(const std::string & ofxAppSettingsJsonPath);
 	void		loadSettings(); //load JSON settings (data/configs/ofxAppSettings.json)
 	void		loadDynamicSettings(); //load and update values that can be changed while the app runs (call this with 'R' key);
 	void		saveSettings();//FIXME: not really used / tested!
@@ -146,11 +146,11 @@ public:
 	// Retrieve app params that come from settings json
 	ofRectangle		getRenderAreaForCurrentWindowSize();
 	ofRectangle		getRenderRect();
-	ofRectangle 	getStartupScreenViewport(){return startupScreenViewport;} //loading screen rect area
+	ofRectangle 		getStartupScreenViewport(){return startupScreenViewport;} //loading screen rect area
 	ofVec2f			getRenderSize(){return renderSize;}
-	bool			isWindowSetup(){return windowIsSetup;}
+	bool				isWindowSetup(){return windowIsSetup;}
 	bool 			isJsonContentDifferentFromLastLaunch(std::string contentID, std::string & freshJsonSha1, std::string & oldJsonSha1);
-	bool			getIsUsingOfflineJson(){return usingOfflineJson;}
+	bool				getIsUsingOfflineJson(){return usingOfflineJson;}
 
 
 	// Live Updates //////////////////////////////////////////////////////////////////////////
