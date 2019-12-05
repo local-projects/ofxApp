@@ -161,7 +161,7 @@ void App::setupContentData() {
 	if(settingExists("Content/JsonSourcesVariables")){
 		ofxJSON vars = settings().getJson("Content/JsonSourcesVariables");
 		if(vars.size()){
-			ofLogNotice("ofxApp") << "Json Sources Variables:";
+			ofLogNotice("ofxApp") << "#### Json Sources Variables ###################################################";
 			for( auto itr = vars.begin(); itr != vars.end(); itr++){
 				const std::string & varName = itr.key().asString();
 				const std::string & varValue = (*itr).asString();
@@ -445,16 +445,7 @@ void App::setupGlobalParameters(){
 
 void App::loadDynamicSettings() {
 	
-	bool ok = settings().load(ofToDataPath(settingsFile, true));
-	hasLoadedSettings = true;
-	if(!ok){
-		ofxApp::utils::terminateApp("ofxApp", "Could not load settings from \"" + ofToDataPath(settingsFile, true) + "\"");
-	}
-
-	startupScreenViewport.x = getFloat("App/startupScreenViewport/x", 0);
-	startupScreenViewport.y = getFloat("App/startupScreenViewport/y", 0);
-	startupScreenViewport.width = getFloat("App/startupScreenViewport/w", 0);
-	startupScreenViewport.height = getFloat("App/startupScreenViewport/h", 0);
+	loadSettings();
 
 	fonts().reloadFontStash2Styles();
 	setupTextureLoader();
@@ -1258,7 +1249,7 @@ void App::updateStateMachine(float dt){
 void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 
 	ofLogNotice("ofxApp") 	<< "State Changed from \"" << appState.getNameForState(change.oldState)
-							<< "\" to \"" << appState.getNameForState(change.newState) << "\". Previous State Duration: " << change.timeInPrevState << "sec.";
+	<< "\" to \"" << appState.getNameForState(change.newState) << "\". Previous State Duration: " << ofxApp::utils::secondsToHumanReadable(change.timeInPrevState, 2);
 
 	appState.setProgressBarExtraInfo("");
 
