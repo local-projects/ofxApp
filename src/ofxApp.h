@@ -55,7 +55,7 @@ class App{
 
 public:
 
-	const std::string settingsFile = "configs/ofxAppSettings.json";
+	const std::string getset(){return settingsFile;} //path to the settings file
 	const std::string LogsDir = "logs";
 	const std::string configsDir = "configs";
 	const std::string pidFileName = "ofxApp.pid";
@@ -111,6 +111,7 @@ public:
 	ofColor&		getColor(const std::string & key, ofColor defaultVal = ofColor::red);
 	bool			settingExists(const std::string & key);
 
+	void 		setSettingsFilePath(const std::string & ofxAppSettingsJsonPath);
 	void		loadSettings(); //load JSON settings (data/configs/ofxAppSettings.json)
 	void		loadDynamicSettings(); //load and update values that can be changed while the app runs (call this with 'R' key);
 	void		saveSettings();//FIXME: not really used / tested!
@@ -267,7 +268,7 @@ protected:
 	bool 									enableMouse;
 	bool									showMouse;
 	bool									reportErrors;
-	bool									usingOfflineJson = false; //is the content we are using not fresh? (setting in ofxApp.json)
+	bool									usingOfflineJson = false; //is the content we are using not fresh? (setting in the content section inside ofxAppSettings.json)
 
 	std::string								currentContentID; //keep track of which content are we currently getting
 	vector<std::string>						requestedContent; //complete list of user supplied contentID's
@@ -300,6 +301,8 @@ private:
 	//temp log thingies
 	std::string currentFrameLog; //this log is a bit different, its cleared every frame
 	std::string currentScreenLog; //this log is user controlled, user can add at any time, and clear at any time
+
+	std::string settingsFile = "configs/ofxAppSettings.json"; //path to the settings file, can be overriden
 	
 };
 

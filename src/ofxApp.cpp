@@ -454,6 +454,14 @@ void App::loadDynamicSettings() {
 	setupRuiWatches();
 }
 
+void App::setSettingsFilePath(const std::string & ofxAppSettingsJsonPath){
+	if(!hasLoadedSettings){
+		ofLogWarning("ofxApp") << "Overriding the default path for the \"ofxAppSettings.json\" file to \"" << ofxAppSettingsJsonPath << "\"";
+	}else{
+		ofLogWarning("ofxApp") << "Overriding the default path for the \"ofxAppSettings.json\" file to \"" << ofxAppSettingsJsonPath << "\" but the settings have already been loaded!";
+	}
+	settingsFile = ofxAppSettingsJsonPath;
+}
 
 void App::loadSettings(){
 
