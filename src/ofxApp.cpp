@@ -388,7 +388,12 @@ void App::startLoadingStaticAssets(){
 		if(settingExists("StaticAssets/mipmapBias")){
 			textures().setMipmapLodBias(getFloat("StaticAssets/mipmapBias"));
 		}
+		if(settingExists("StaticAssets/disableAutoreload")){
+			textures().setDisableAutoreload(getBool("StaticAssets/disableAutoreload"));
+		}
 		textures().loadTexturesInDir(texturesPath, getInt("App/maxThreads"));
+
+
 	}else{
 		ofLogWarning("ofxApp") << "App doesnt want to load static Assets!";
 		onStaticTexturesLoaded();

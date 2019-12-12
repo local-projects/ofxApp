@@ -78,6 +78,8 @@ public:
 	static float memUse(ofTexture * tex); //in MBytes
 	void setForceMipmaps(bool f){forceMipmapsOnAll = f;}
 
+	void setDisableAutoreload(bool doDisable);
+
 	int getNumTextures(){ return textures.size();}
 	int getNumLoadedTextures(){ return loaded.size();}
 
@@ -141,4 +143,5 @@ protected:
 	float mipmapLodBias = 0.0f;
 	float anisotropy = 0.0f;
 	float maxAnisotropy = 0.0f;
+	bool disableAutoReload = false;
 };

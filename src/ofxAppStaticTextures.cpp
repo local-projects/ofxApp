@@ -77,6 +77,10 @@ void ofxAppStaticTextures::loadTexturesInDir(const std::string& imgDirPath, int 
 	}
 }
 
+void ofxAppStaticTextures::setDisableAutoreload(bool doDisable){
+	disableAutoReload = doDisable;
+}
+
 
 void ofxAppStaticTextures::loadTexturesInDirectory(const std::string& path, bool recursive){
 
@@ -164,6 +168,10 @@ ofxAutoTexture* ofxAppStaticTextures::loadTexture(PreLoadData data){
 		ofLogNotice("ofxAppStaticTextures") << ofxApp::utils::getAsciiHeader("Loaded \"" + data.filePath +"\"", '#', 4, 120);
 		ofLogNotice("ofxAppStaticTextures")	<< "     Name:\"" << data.texName << "\"  " << "[" << data.tex->getWidth() << "x" << data.tex->getHeight() << "]" <<
 		"  Mipmap:" << data.createMipmap << "  Format:" << ofGetGlInternalFormatName(data.tex->getTextureData().glInternalFormat) << "  Mem: " << memUsedStr ;
+
+		if(disableAutoReload){
+			data.tex->disableAutoReload();
+		}
 		return data.tex;
 	}else{
 		delete data.tex;
