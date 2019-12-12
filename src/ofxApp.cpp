@@ -557,11 +557,12 @@ void App::setupLogging(){
 	}
 	bool logToConsole = getBool("Logging/toConsole");
 	bool logToScreen = getBool("Logging/toScreen");
+	bool logToFile = getBool("Logging/toFile");
 	ofSetLogLevel(ofLogLevel(getInt("Logging/logLevel")));
 	//lets keep a ref to the logger counter around so that we can control when it gets deleted
 	
 	loggerStorage = new ofPtr<ofxSuperLog>(); //note this 2* madness is to avoid the logger being delete b4 the app is finished logging
-	*loggerStorage = ofxSuperLog::getLogger(logToConsole, logToScreen, LogsDir);
+	*loggerStorage = ofxSuperLog::getLogger(logToConsole, logToScreen, string(logToFile ? LogsDir : ""));
 	ofSetLoggerChannel(*loggerStorage);
 	bool visible = getBool("Logging/visibleAtStartup");
 	(*loggerStorage)->setScreenLoggingEnabled(visible);
