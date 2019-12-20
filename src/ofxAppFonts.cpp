@@ -219,7 +219,7 @@ void ofxAppFonts::loadOfxAppFont(const std::string & file, ofxFontStash & font){
 
 	ofxApp::utils::assertFileExists(fontFile);
 
-	ofLogNotice("ofxAppFonts") << "Loading ofxApp Font'" << fontFile << "'";
+	ofLogNotice("ofxAppFonts") << "Loading ofxApp Font '" << fontFile << "'";
 	font.setup(	fontFile,
 				lineH, 		//line height
 				atlasSize, 		//tex atlas size
