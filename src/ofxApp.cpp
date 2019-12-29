@@ -576,6 +576,9 @@ void App::setupLogging(){
 		(*loggerStorage)->setConsoleShouldShowTimestamps(getBool("Logging/consoleShouldShowTimestamps"));
 	}
 
+	if(settings().exists("Logging/ScreenLog/fontSize")){
+		statsFontSize = getInt("Logging/ScreenLog/fontSize");
+	}
 
 	float panelW = getFloat("Logging/screenLogPanelWidth");
 	ofxSuperLog::getLogger()->setDisplayWidth(panelW);
@@ -1633,8 +1636,8 @@ void App::onKeyPressed(ofKeyEventArgs & a){
 		case 'R': loadDynamicSettings(); RUI_LOG("[ofxApp : keyPress 'R'] Loaded Settings from \"ofxAppSettings.json\""); break;
 		case 'M': mullions->toggle(); RUI_LOG("[ofxApp : keyPress 'M'] Toggled Mullions"); break;
 		case 'D': globalsStorage->debug ^= true; didPress = true; break;
-		case '+': statsFontSize += 2; statsFontSize = MIN(statsFontSize, 60); break;
-		case '-': statsFontSize -= 2; statsFontSize = MAX(statsFontSize, 11); break;
+		case '+': statsFontSize += 1; statsFontSize = MIN(statsFontSize, 60); break;
+		case '-': statsFontSize -= 1; statsFontSize = MAX(statsFontSize, 9); break;
 	}
 	if(didPress){
 		RUI_PUSH_TO_CLIENT();
