@@ -1235,11 +1235,10 @@ void App::updateStateMachine(float dt){
 							if(state.temporaryRequest) state.temporaryRequest = false;
 						}
 						if(contentStorage[contentID]->isContentReady()){
-							ofLogNotice("ofxApp") << "Live Content Update for \"" << contentID << "\" is ready!";
 							state.state = LiveUpdateState::READY;
 							delegate->ofxAppContentUpdate(contentID, contentStorage[contentID]->getParsedObjects());
 							state.state = LiveUpdateState::IDLE;
-							ofLogNotice("ofxApp") << "The total number of ContentObject instances is " << ContentObject::getNumTotalObjects();
+							ofLogNotice("ofxApp") << "Live Content Update for \"" << contentID << "\" is ready! " << "# ContentObject instances is " << ContentObject::getNumTotalObjects();;
 							if(state.temporaryRequest) state.temporaryRequest = false;
 						}
 					}
