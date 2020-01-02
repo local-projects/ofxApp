@@ -1131,7 +1131,7 @@ void App::updateStateMachine(float dt){
 				}else{
 					
 					if(contentStorage[currentContentID]->isContentReady()){ //see if we are done
-						ofxApp::utils::logBanner("JSON content \"" + currentContentID + "\" loaded! " + ofToString(contentStorage[currentContentID]->getNumParsedObjects()) + " objects. Total Duration: " + ofxApp::utils::secondsToHumanReadable(contentStorage[currentContentID]->getRunDuration(), 2) );
+						ofxApp::utils::logBanner("End Loading Content \"" + currentContentID + "\"! " + ofToString(contentStorage[currentContentID]->getNumParsedObjects()) + " objects. Total Duration: " + ofxApp::utils::secondsToHumanReadable(contentStorage[currentContentID]->getRunDuration(), 2) );
 						loadedContent.push_back(currentContentID);
 						if(timeSampleOfxApp) TS_STOP_NIF("ofxApp LoadContent " + currentContentID);
 
@@ -1292,7 +1292,7 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 					}
 
 					if(timeSampleOfxApp) TS_START_NIF("ofxApp LoadContent " + currentContentID);
-					ofxApp::utils::logBanner("Start Loading Content  \"" + currentContentID + "\"");
+					ofxApp::utils::logBanner("Start Loading Content \"" + currentContentID + "\"");
 
 					bool keyExists = settings().exists("Content/JsonSources/" + currentContentID);
 
