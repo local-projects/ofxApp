@@ -112,6 +112,7 @@ void ofxAppContent::fetchContent(){
 	   ){
 		parsedObjects.clear(); //FIXME: here we are potentially leaking!
 		setState(ContentState::DOWNLOADING_JSON);
+		startTimestamp = ofGetElapsedTimef();
 	}else{
 		ofLogError("ofxAppContent-" + ID) << "Can't fetch content now!";
 	}
@@ -487,6 +488,7 @@ void ofxAppContent::setState(ContentState s){
 
 			//replace the old json with the fresh one
 			jsonFile.moveTo(oldJsonPath, false, true);
+			totalDuration = ofGetElapsedTimef() - startTimestamp;
 			}break;
 
 		default: break;

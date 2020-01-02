@@ -110,6 +110,7 @@ public:
 
 	std::string getFreshJsonSha1(){return newJsonSha1;}
 	std::string getOldJsonSha1(){return oldJsonSha1;}
+	float getRunDuration(){return totalDuration;};
 
 	// EVENTS //////////////////////////////////////////////////////////////////////////////////////
 
@@ -151,6 +152,8 @@ protected:
 	std::string oldJsonSha1;
 	std::string newJsonSha1;
 
+	float startTimestamp = 0;
+	float totalDuration = 0;
 	bool shouldSkipSha1Tests = false;
 	bool shouldRemoveExpiredAssets = true;
 	float assetErrorsScreenReportTimeSeconds = 0.0; //if there are asset download / policy errors, show on screen for how many seconds?

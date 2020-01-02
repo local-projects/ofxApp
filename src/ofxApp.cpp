@@ -1131,7 +1131,7 @@ void App::updateStateMachine(float dt){
 				}else{
 					
 					if(contentStorage[currentContentID]->isContentReady()){ //see if we are done
-						ofxApp::utils::logBanner("JSON content \"" + currentContentID + "\" loaded! " + ofToString(contentStorage[currentContentID]->getNumParsedObjects()) + " objects.");
+						ofxApp::utils::logBanner("JSON content \"" + currentContentID + "\" loaded! " + ofToString(contentStorage[currentContentID]->getNumParsedObjects()) + " objects. Total Duration: " + ofxApp::utils::secondsToHumanReadable(contentStorage[currentContentID]->getRunDuration(), 2) );
 						loadedContent.push_back(currentContentID);
 						if(timeSampleOfxApp) TS_STOP_NIF("ofxApp LoadContent " + currentContentID);
 
