@@ -174,10 +174,13 @@ void App::setupContentData() {
 
 
 void App::setupOF(){
+
 	ofLogNotice("ofxApp") << "setupOF()";
 	ofSetFrameRate(getInt("App/frameRate"));
+	if(settings().exists("App/verticalSync")){
+		ofSetVerticalSync(getBool("App/verticalSync"));
+	}
 	ofBackground(22);
-	dt = 1.0f / ofGetTargetFrameRate();
 
 	bool showMouse = getBool("App/showMouse");
 	if(showMouse) ofShowCursor();
@@ -764,6 +767,8 @@ void App::tuioRemoved(ofxTuioCursor & t){
 #pragma mark - Draw
 
 void App::update(ofEventArgs &){
+
+	dt = 1.0f / ofGetTargetFrameRate();
 
 	if(tuioClient) tuioClient->getMessage();
 	for(auto c : contentStorage){

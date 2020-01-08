@@ -2,6 +2,7 @@
 
 	"App":{		
 		"frameRate" : 60,
+		"verticalSync" : true,
 		"numAASamples" : 8,
 		"showMouse" : true,
 		"enableMouse" : true,
