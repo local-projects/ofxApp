@@ -294,6 +294,24 @@ void App::setupWindow(){
 	windowIsSetup = true;
 }
 
+bool App::areKeyEventsEnabled(){
+	return areKeyEventsEnabled_;
+}
+
+void App::disableKeyEvents(){
+	if(areKeyEventsEnabled_){
+		ofRemoveListener(ofEvents().keyPressed, this, &App::onKeyPressed);
+		areKeyEventsEnabled_ = false;
+	}
+}
+
+void App::enableKeyEvents(){
+	if(!areKeyEventsEnabled_){
+		ofAddListener(ofEvents().keyPressed, this, &App::onKeyPressed);
+		areKeyEventsEnabled_ = true;
+	}
+}
+
 
 void App::setupListeners(){
 
@@ -306,11 +324,10 @@ void App::setupListeners(){
 	}
 
 	ofAddListener(ofEvents().keyPressed, this, &App::onKeyPressed);
+	areKeyEventsEnabled_ = true;
 	ofAddListener(ofEvents().draw, this, &App::draw, OF_EVENT_ORDER_AFTER_APP);
 	ofAddListener(textures().eventAllTexturesLoaded, this, &App::onStaticTexturesLoaded);
-
 	ofAddListener(screenSetup.setupChanged, this, &App::screenSetupChanged);
-
 }
 
 

@@ -169,6 +169,10 @@ public:
 	
 	void addToCurrentFrameLog(const std::string & string);
 
+	bool areKeyEventsEnabled();
+	void disableKeyEvents();
+	void enableKeyEvents();
+
 protected:
 
 	void setupListeners();
@@ -269,6 +273,9 @@ protected:
 	bool									showMouse;
 	bool									reportErrors;
 	bool									usingOfflineJson = false; //is the content we are using not fresh? (setting in the content section inside ofxAppSettings.json)
+
+	bool 								areKeyEventsEnabled_ = false; //os ofxApp reposnding to key events (ie 'L' for logs, etc)
+
 
 	std::string								currentContentID; //keep track of which content are we currently getting
 	vector<std::string>						requestedContent; //complete list of user supplied contentID's
