@@ -654,9 +654,12 @@ void App::setupRemoteUI(){
 		RUI_GET_INSTANCE()->setEnabled(enabled);
 	}
 
+	if (settingExists("RemoteUI/broadcastServerAddress")) {
+		RUI_GET_INSTANCE()->setShouldBroadcastServerAddress(getBool("RemoteUI/broadcastServerAddress"));
+	}
+
 	ofAddListener(RUI_GET_OF_EVENT(), this, &App::onRemoteUINotification);
 	RUI_SETUP();
-
 }
 
 

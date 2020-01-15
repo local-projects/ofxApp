@@ -127,6 +127,7 @@
 
 	"RemoteUI":{
 		"enabled" : true,
+		"broadcastServerAddress" : true,
 		"columnWidth" : 400,
 		"uiScale" : 1.0,
 		"useFontStash" : true,
@@ -253,24 +254,34 @@
 		
 		"useOfflineJson" : false, //set to true to ignore the live CMS, and use the last valid data from a previous session instead
 
+		"JsonSourcesVariables" : { //use this to quickly change CMS server			
+			"ServerA" : "http://serverA.com",
+			"ServerB" : "http://serverB.com",		
+			"currentServer" : "http://serverB.com" //this is the data source
+		},
+
+
 		"JsonSources":{
 			
 			"CH" : {
 
 				"url" : "file://testJson/ch_small.json",
+				//"url" : "$currentServer/ch_small.json",
 				//"url" : "http://127.0.0.1:8000/ch_small.json",
-				//"url" : "http://uri.cat/LP/ch_small.json",
+
 				"jsonDownloadDir": "jsonDownloads/CH",
 				"checksumType" : "sha1", //sha1 or xxhash
 				"assetsLocation": "assets/CH",  //all assets will be in that folder, with a sub-folder (named after the object ID) per each content object
 				"shouldSkipObjectPolicyTests" : false,  //set this to true to avoid the object cleanup according to the policies defined below
 				"useOfflineJson" : false, //if true: ignore the live URL and use a local cache of the last version of the API response for this endpoint
+				"removeUnusedAssets" : true, //if false, ofxApp will not do cleanup and keep assets in disk even if they disappear from the content JSON (for this countent source)
 				"liveUpdates" : { //if enabled, ofxApp will hit that endPoint every "interval seconds" and call ofxAppContentUpdate() on the delegate
 					"enabled" : true,
 					"interval" : 60.0, //seconds
 					"maxThreads" : 1, //override standard # of threads for live updates, to not drop performance too much while the app is running
 					"maxConcurrentDownloads" : 1 //same as above for bandwidth
 				},
+				
 				"httpConfig":{ //if you need to specify proxy, auth, or custom headers, fill in this data here (per content source)
 					"credentials":{
 						"username": "",
@@ -294,6 +305,7 @@
 				"url" : "file://testJson/cwru.json",
 				//"url" : "file://testJson/cwru_broken.json",
 				"checksumType" : "sha1", //sha1 or xxhash
+				"removeUnusedAssets" : true,
 				"jsonDownloadDir": "jsonDownloads/CWRU",
 				"assetsLocation": "assets/CWRU",  //all assets will be in that folder, with a sub-folder (named after the object ID) per each content object
 				"shouldSkipObjectPolicyTests" : false  //set this to true to avoid the object cleanup according to the policies defined below
