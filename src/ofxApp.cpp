@@ -933,14 +933,12 @@ void App::drawStats(){
 	if(globalsStorage->drawLiveUpdateStatus){
 		std::string liveUpdateMsg;
 		for(auto & it : liveContentUpdates){
-			const string & contentID = it.first;
 			auto & s = it.second;
-			liveUpdateMsg += "  - \"" + contentID + "\": ";
 			if(s.enabled){
+				const string & contentID = it.first;
+				liveUpdateMsg += "  - \"" + contentID + "\": ";
 				if(s.state == LiveUpdateState::IDLE) liveUpdateMsg += "updating in " + ofToString(s.interval - s.timer, 1) + " sec (every " + ofToString(s.interval,1) + "sec)\n";
 				if(s.state == LiveUpdateState::RUNNING) liveUpdateMsg += "Running Live update ...\n";
-			}else{
-				liveUpdateMsg += "live updates disabled\n";
 			}
 		}
 		ofRectangle r = drawMsgInBox("Live Update Status\n" + liveUpdateMsg, x, y, fontSize, ofColor::crimson);
