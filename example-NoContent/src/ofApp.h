@@ -32,7 +32,7 @@ public:
 	string 	ofxAppGetLogString(ofxApp::Phase); //long status (ie log / script output) above the progress bar
 	float	ofxAppGetProgressForPhase(ofxApp::Phase);
 
-	void	ofxAppContentIsReady(const string & contentID, vector<ContentObject*>){};
+	void	ofxAppContentIsReady(const string & contentID, const vector<ContentObject*> &){};
 
 	float phaseStartTime;
 };

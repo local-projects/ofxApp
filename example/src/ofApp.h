@@ -39,7 +39,7 @@ public:
 	float	ofxAppGetProgressForPhase(ofxApp::Phase);
 
 	//at 1st launch, we get all the content b4 the app start
-	void	ofxAppContentIsReady(const string & contentID, vector<ContentObject*>);
+	void	ofxAppContentIsReady(const string & contentID, const vector<ContentObject*> &s);
 
 	//if live Updates are enabled, you will periodically also get an updated list of content objects
 	void	ofxAppContentUpdate(const std::string & contentID, vector<ContentObject*>);

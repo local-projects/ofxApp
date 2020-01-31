@@ -66,7 +66,7 @@ float ofApp::ofxAppGetProgressForPhase(ofxApp::Phase){
 }
 
 
-void ofApp::ofxAppContentIsReady(const string & contentID, vector<ContentObject*> objs){
+void ofApp::ofxAppContentIsReady(const string & contentID, const vector<ContentObject*> & objs){
 
 	ofLogNotice("ofApp") << "Content '" << contentID << "' is ready! " << objs.size() << " objects!";
 
