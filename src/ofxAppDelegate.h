@@ -46,7 +46,7 @@ public:
 	virtual bool ofxAppShouldFetchContent(const std::string & contentID){return true;}
 
 	//this is how your app gets all the parsed objects - up to you how you store them
-	virtual void ofxAppContentIsReady(const std::string & contentID, vector<ContentObject*> ) = 0;
+	virtual void ofxAppContentIsReady(const std::string & contentID, const vector<ContentObject*> & objs) = 0;
 
 	//this is your chance to override where the content will be downloaded from;
 	//ofxApp will provide the JsonURL you defined in ofxAppSettings.json, and you can modify it
@@ -60,7 +60,7 @@ public:
 
 	//if you enabled live updates for your content source, you will gett this callback every "interval" seconds
 	//with the new content in that JSON src (with all the assets downloaded, etc)
-	virtual void ofxAppContentUpdate(const std::string & contentID, vector<ContentObject*> ){};
+	virtual void ofxAppContentUpdate(const std::string & contentID, const vector<ContentObject*> & objs ){};
 	virtual void ofxAppContentUpdateFailed(const std::string & contentID, const std::string & errorMsg){};
 
 	//tuio callbacks
