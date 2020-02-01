@@ -1145,9 +1145,9 @@ void App::updateStateMachine(float dt){
 						gAnalytics->sendException("ofxApp - Content '" + currentContentID + "' give up on fetching JSON", false);
 					}
 					OFXAPP_REPORT(	"ofxAppJsonContentGiveUp", "Giving up on fetching JSON for '" + currentContentID +
-							 		"'!\nJsonSrc: \"" + contentStorage[currentContentID]->getJsonDownloadURL() +
-								 	"\"\nStatus: " + contentStorage[currentContentID]->getStatus() +
-								 	"\"ErrorMsg: \"" + contentStorage[currentContentID]->getErrorMsg(),
+							 		"'!\n    JsonSrc: \"" + contentStorage[currentContentID]->getJsonDownloadURL() +
+								 	"\"\n    Status: " + contentStorage[currentContentID]->getStatus() +
+								 	"\"\n    ErrorMsg: \"" + contentStorage[currentContentID]->getErrorMsg(),
 								 	2);
 					break;
 					

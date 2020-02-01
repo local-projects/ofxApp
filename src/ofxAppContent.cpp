@@ -314,7 +314,8 @@ void ofxAppContent::setState(ContentState s){
 					assetObjs.push_back(dynamic_cast<AssetHolder*>(parsedObjects[i]));
 				}
 				ofAddListener(assetChecker.eventFinishedCheckingAllAssets, this, &ofxAppContent::assetCheckFinished);
-				assetChecker.checkAssets(assetObjs, numThreads);
+				//assetChecker.checkAssets(assetObjs, numThreads);
+				assetChecker.checkAssets(assetObjs, std::thread::hardware_concurrency());
 			} else {
 				ofLogWarning("ofxAppContent-" + ID) << "There are ZERO parsed objects!";
 				setState(ContentState::JSON_CONTENT_READY);
