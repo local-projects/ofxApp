@@ -1393,8 +1393,18 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 						}
 						int numConcurrentDownloads = getInt("Downloads/maxConcurrentDownloads");
 						int numThreads = getInt("App/maxThreads");
+
 						int timeOutSecs = getInt("Downloads/timeOutSec");
 						int timeOutApiEndpointSec = timeOutSecs;
+						int maxDlRetries = 3;
+						if(settingExists("Downloads/maxNumRetries")){
+							maxDlRetries = getInt("Downloads/maxNumRetries");
+						}
+
+						int copyBufferSizeKb = 64;
+						if(settingExists("Downloads/copyBufferSizeKb")){
+							copyBufferSizeKb = getInt("Downloads/copyBufferSizeKb");
+						}
 
 						if(settingExists("Content/JsonSources/" + currentContentID + "/timeOutSec")){
 							timeOutApiEndpointSec = getInt("Content/JsonSources/" + currentContentID + "/timeOutSec");
@@ -1466,6 +1476,8 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 																useOfflineJson, //where to get the JSON from? file:// or http:// URL
 																jsonDir,
 																numThreads,
+																maxDlRetries,
+																copyBufferSizeKb,
 																numConcurrentDownloads,
 																speedLimitKBs,
 																timeOutSecs,

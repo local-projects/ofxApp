@@ -18,6 +18,8 @@ void ofxAppContent::setup(	const std::string &  ID,
 						  	bool useOfflineJson,
 							const std::string &  jsonDestinationDir_,
 							int numThreads_,
+						  	int maxDlRetries,
+						  	int copyBufferSizeKb,
 							int numConcurrentDownloads,
 							int speedLimitKBs,
 							int timeoutDownloads,
@@ -61,7 +63,8 @@ void ofxAppContent::setup(	const std::string &  ID,
 	//config the http downloader if you need to (proxy, etc)
 	dlc.setMaxConcurrentDownloads(numConcurrentDownloads);
 	dlc.setSpeedLimit(speedLimitKBs);
-	dlc.setCopyBufferSize(512);
+	dlc.setCopyBufferSize(copyBufferSizeKb);
+	dlc.setMaxRetries(maxDlRetries);
 	dlc.setTimeOut(timeoutDownloads);
 	dlc.setIdleTimeAfterEachDownload(idleTimeAfterEachDownload);
 	dlc.setCredentials(downloaderCredentials.first, downloaderCredentials.second);
@@ -70,7 +73,7 @@ void ofxAppContent::setup(	const std::string &  ID,
 
 	jsonParser.getHttp().setTimeOut(timeoutApiEndpoint);
 	jsonParser.getHttp().setSpeedLimit(speedLimitKBs);
-	jsonParser.getHttp().setCopyBufferSize(512); //kb
+	jsonParser.getHttp().setCopyBufferSize(copyBufferSizeKb); //kb
 	jsonParser.getHttp().setProxyConfiguration(apiEndpointProxyConfig);
 	if(apiEndPointCredentials.first.size() || apiEndPointCredentials.second.size()){
 		jsonParser.getHttp().setCredentials(apiEndPointCredentials.first, apiEndPointCredentials.second);

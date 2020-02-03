@@ -45,6 +45,8 @@ public:
 				bool useOfflineJson, //are we supposed to use offline?
 			   	const std::string &  jsonDestinationDir_,
 			   	int numThreads,
+			   	int maxDlRetries,
+			   	int copyBufferSizeKb,
 			   	int numConcurrentDownloads,
 			   	int speedLimitKBs,
 			   	int timeoutDownloads,

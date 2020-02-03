@@ -247,7 +247,9 @@
 		"userAgent" : "", //not implemented
 		"timeOutSec" : 20,
 		"speedLimitKb" : 0, //per download - 0 means no limit
-		"idleTimeAfterEachDownloadSec" : 0.0
+		"idleTimeAfterEachDownloadSec" : 0.0,
+		"copyBufferSize" : 32, //Kb
+		"maxNumRetries": 5 //if a file download fails, how many times to retry b4 giving up
 	},
 
 	"Content":{
@@ -274,6 +276,7 @@
 				"assetsLocation": "assets/CH",  //all assets will be in that folder, with a sub-folder (named after the object ID) per each content object
 				"shouldSkipObjectPolicyTests" : false,  //set this to true to avoid the object cleanup according to the policies defined below
 				"useOfflineJson" : false, //if true: ignore the live URL and use a local cache of the last version of the API response for this endpoint
+				"skipChecksumTests" : false, //if true, ofxApp will not check local asset status, leading to a faster boot, but potentially incorrect state. Never use in production
 				"removeUnusedAssets" : true, //if false, ofxApp will not do cleanup and keep assets in disk even if they disappear from the content JSON (for this countent source)
 				"liveUpdates" : { //if enabled, ofxApp will hit that endPoint every "interval seconds" and call ofxAppContentUpdate() on the delegate
 					"enabled" : true,
