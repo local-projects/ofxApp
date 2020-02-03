@@ -1426,6 +1426,11 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 
 						bool skipChecksums = false;
 						if(settings().exists("Content/skipChecksumTests")) skipChecksums = getBool("Content/skipChecksumTests");
+
+						string skipKey = "Content/JsonSources/" + currentContentID + "/skipChecksumTests";
+						if(settings().exists(skipKey)){
+							skipChecksums |= getBool(skipKey);
+						}
 						if(skipChecksums){
 							ofxApp::utils::logBanner("Running with \"Content/skipChecksumTests\" : TRUE! -NEVER DO THIS IN PRODUCTION!!\nThis will create trouble if the content in the JSON is not in sync with the media in your filesystem.");
 							RUI_LOG("ofxApp running with \"Content/skipChecksumTests\" : TRUE!");
