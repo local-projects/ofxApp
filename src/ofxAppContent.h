@@ -39,31 +39,31 @@ public:
 
 	~ofxAppContent();
 
-	void setup(std::string ID,
-			   std::string jsonSrc,
-			   std::string jsonDestinationDir_,
-			   int numThreads,
-			   int numConcurrentDownloads,
-			   int speedLimitKBs,
-			   int timeoutDownloads,
-			   int timeoutApiEndpoint,
-			   bool shouldSkipObjectTests,
-			   float idleTimeAfterEachDownload,
-			   //dl configs for asset downloads (imgs, vids)
-			   const std::pair<std::string,std::string> & downloaderCredentials,
-			   ofxChecksum::Type checksumType,
-			   const ofxSimpleHttp::ProxyConfig & downloaderProxyConfig,
-				//dl configs for endpoints (JSON)
-			   const std::pair<std::string,std::string> & apiEndPointCredentials,
-			   const ofxSimpleHttp::ProxyConfig & apiEndpointProxyConfig,
-			   const map<std::string, std::string> customHeaders,
-			   const ofxApp::ParseFunctions & contentCfg,
-			   const ofxAssets::DownloadPolicy assetDownloadPolicy,
-			   const ofxAssets::UsagePolicy assetUsagePolicy,
-			   const ofxAssets::ObjectUsagePolicy & objectUsagePolicy,
-			   const std::string & assetsLocationPath,
-			   bool skipChecksumTests,
-			   float assetErrorsScreenReportTimeSeconds
+	void setup(	const std::string &  ID,
+				const std::string &  jsonSrc, //the URL where the live content lives
+				const std::string &  jsonSrc_offline, //the offline (local file) copy of the json
+				bool useOfflineJson, //are we supposed to use offline?
+			   	const std::string &  jsonDestinationDir_,
+			   	int numThreads,
+			   	int numConcurrentDownloads,
+			   	int speedLimitKBs,
+			   	int timeoutDownloads,
+			   	int timeoutApiEndpoint,
+			   	bool shouldSkipObjectTests,
+			   	float idleTimeAfterEachDownload,
+			   	const std::pair<std::string,std::string> & downloaderCredentials, //dl configs for asset downloads (imgs, vids)
+			   	ofxChecksum::Type checksumType,
+			   	const ofxSimpleHttp::ProxyConfig & downloaderProxyConfig,
+			   	const std::pair<std::string,std::string> & apiEndPointCredentials, //dl configs for endpoints (JSON)
+			   	const ofxSimpleHttp::ProxyConfig & apiEndpointProxyConfig,
+			   	const map<std::string, std::string> customHeaders,
+			   	const ofxApp::ParseFunctions & contentCfg,
+			   	const ofxAssets::DownloadPolicy assetDownloadPolicy,
+			   	const ofxAssets::UsagePolicy assetUsagePolicy,
+			   	const ofxAssets::ObjectUsagePolicy & objectUsagePolicy,
+			   	const std::string & assetsLocationPath,
+			   	bool skipChecksumTests,
+			   	float assetErrorsScreenReportTimeSeconds
 			   );
 
 	void setNumThreads(int nThreads);
@@ -74,7 +74,7 @@ public:
 
 	void setShouldRemoveExpiredAssets(bool);
 
-	void setJsonDownloadURL(std::string jsonURL);
+	void setJsonDownloadURL(std::string jsonURL, bool itsOfflineJson);
 	std::string getJsonDownloadURL(){ return jsonURL;};
 
 	void update(float dt);
@@ -108,8 +108,8 @@ public:
 
 	std::string getNameForState(ofxAppContent::ContentState state);
 
-	std::string getFreshJsonSha1(){return newJsonSha1;}
-	std::string getOldJsonSha1(){return oldJsonSha1;}
+	std::string getFreshJsonSha1(){return newJsonChecksum;}
+	std::string getoldJsonChecksum(){return oldJsonChecksum;}
 	float getRunDuration(){return totalDuration;};
 
 	// EVENTS //////////////////////////////////////////////////////////////////////////////////////
@@ -139,6 +139,11 @@ protected:
 	ofxDownloadCentral dlc;
 
 	std::string jsonURL;
+	std::string jsonURL_offline;
+	bool useOfflineJson = false;
+
+	std::string getAdaptativeJsonUrl();
+
 	std::string jsonDestinationDir; //where the json will be downloaded to
 	std::string errorMessage;
 	int numThreads = 4;
@@ -149,8 +154,8 @@ protected:
 	int numIgnoredObjects = 0; //total # of obj that are in json but are not used for one reason or another
 	int numSetupTexuredObjects = 0;
 
-	std::string oldJsonSha1;
-	std::string newJsonSha1;
+	std::string oldJsonChecksum; //
+	std::string newJsonChecksum;
 
 	float startTimestamp = 0;
 	float totalDuration = 0;

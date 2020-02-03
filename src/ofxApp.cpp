@@ -1205,7 +1205,7 @@ void App::updateStateMachine(float dt){
 		case State::LOAD_JSON_CONTENT_FAILED:{
 			if(contentStorage[currentContentID]->isReadyToFetchContent()){
 				std::string knownGoodJSON = "file://" + contentStorage[currentContentID]->getLastKnownGoodJsonPath();
-				contentStorage[currentContentID]->setJsonDownloadURL(knownGoodJSON); //lets try from a known good json
+				contentStorage[currentContentID]->setJsonDownloadURL(knownGoodJSON, true); //lets try from a known good json
 				appState.setState(State::LOAD_JSON_CONTENT, false);
 			}else{
 				if(appState.getElapsedTimeInCurrentState() < 0.016){
@@ -1273,7 +1273,7 @@ void App::updateStateMachine(float dt){
 						contentStorage[contentID]->setNumThreads(state.maxThreads);
 						contentStorage[contentID]->setMaxConcurrentDownloads(state.maxConcurrentDownloads);
 						std::string newURL = getUpdatedContentURL(contentID);
-						contentStorage[contentID]->setJsonDownloadURL(newURL);
+						contentStorage[contentID]->setJsonDownloadURL(newURL, false);
 						contentStorage[contentID]->fetchContent();
 					}
 				}
@@ -1429,7 +1429,7 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 
 						string skipKey = "Content/JsonSources/" + currentContentID + "/skipChecksumTests";
 						if(settings().exists(skipKey)){
-							skipChecksums |= getBool(skipKey);
+							skipChecksums = getBool(skipKey);
 						}
 						if(skipChecksums){
 							ofxApp::utils::logBanner("Running with \"Content/skipChecksumTests\" : TRUE! -NEVER DO THIS IN PRODUCTION!!\nThis will create trouble if the content in the JSON is not in sync with the media in your filesystem.");
@@ -1458,10 +1458,12 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 						}
 						usingOfflineJson = useOfflineJson;
 
-						std::string knownGoodJSON = "file://" + jsonDir + "/knownGood/" + currentContentID + ".json";
+						std::string knownGoodJjsonUrl = "file://" + jsonDir + "/knownGood/" + currentContentID + ".json";
 
-						contentStorage[currentContentID]->setup(	currentContentID,
-																useOfflineJson ? knownGoodJSON : jsonURL, //where to get the JSON from? file:// or http:// URL
+						contentStorage[currentContentID]->setup(currentContentID,
+																jsonURL,
+																knownGoodJjsonUrl,
+																useOfflineJson, //where to get the JSON from? file:// or http:// URL
 																jsonDir,
 																numThreads,
 																numConcurrentDownloads,
@@ -1742,17 +1744,17 @@ string App::getUpdatedContentURL(const string & contentID){
 }
 
 
-bool App::isJsonContentDifferentFromLastLaunch(std::string contentID, std::string & freshJsonSha1, std::string & oldJsonSha1){
+bool App::isJsonContentDifferentFromLastLaunch(std::string contentID, std::string & freshJsonSha1, std::string & oldJsonChecksum){
 
 	if(contentStorage.find(contentID) == contentStorage.end()){
 		ofLogError("ofxApp") << "cant find content matching this contentID \"" << contentID << "\"";
 		return false;
 	}
 	freshJsonSha1 = contentStorage[contentID]->getFreshJsonSha1();
-	oldJsonSha1 = contentStorage[contentID]->getOldJsonSha1();
+	oldJsonChecksum = contentStorage[contentID]->getoldJsonChecksum();
 
-	ofLogNotice("ofxApp") << "JSON sha1s for contentID: \"" << contentID << "\" freshJson: \"" << freshJsonSha1 << "\" oldJson: \"" << oldJsonSha1 << "\"";
-	return freshJsonSha1 != oldJsonSha1;
+	ofLogNotice("ofxApp") << "JSON sha1s for contentID: \"" << contentID << "\" freshJson: \"" << freshJsonSha1 << "\" oldJson: \"" << oldJsonChecksum << "\"";
+	return freshJsonSha1 != oldJsonChecksum;
 }
 
 

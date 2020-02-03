@@ -12,9 +12,11 @@
 #include "ofxAppErrorReporter.h"
 #include "ofxGoogleAnalytics.h"
 
-void ofxAppContent::setup(	std::string ID,
-							std::string jsonSrc,
-							std::string jsonDestinationDir_,
+void ofxAppContent::setup(	const std::string &  ID,
+							const std::string &  jsonSrc,
+						  	const std::string &  jsonSrc_offline,
+						  	bool useOfflineJson,
+							const std::string &  jsonDestinationDir_,
 							int numThreads_,
 							int numConcurrentDownloads,
 							int speedLimitKBs,
@@ -41,6 +43,8 @@ void ofxAppContent::setup(	std::string ID,
 	this->ID = ID;
 	this->assetErrorsScreenReportTimeSeconds = assetErrorsScreenReportTimeSeconds;
 	this->jsonURL = jsonSrc;
+	this->jsonURL_offline = jsonSrc_offline;
+	this->useOfflineJson = useOfflineJson;
 	this->contentCfg = contentCfg;
 	this->assetDownloadPolicy = assetDownloadPolicy;
 	this->assetUsagePolicy = assetUsagePolicy;
@@ -98,9 +102,16 @@ void ofxAppContent::setMaxConcurrentDownloads(int nDownloads){
 	dlc.setMaxConcurrentDownloads(nDownloads);
 }
 
-void ofxAppContent::setJsonDownloadURL(std::string jsonURL){
-	ofLogNotice("ofxAppContent-" + ID) << "updating the JSON Content URL of " << ID << " to '" << jsonURL << "'";
-	this->jsonURL = jsonURL;
+void ofxAppContent::setJsonDownloadURL(std::string newJsonURL, bool itsOfflineJson){
+	if(itsOfflineJson){
+		useOfflineJson = true;
+		this->jsonURL_offline = newJsonURL;
+		ofLogNotice("ofxAppContent-" + ID) << "updating the Offline JSON Content URL of " << ID << " to '" << newJsonURL << "' and setting to use offline";
+	}else{
+		ofLogNotice("ofxAppContent-" + ID) << "updating the LIVE JSON Content URL of " << ID << " to '" << newJsonURL << "' and setting to use online";
+		useOfflineJson = false;
+		this->jsonURL = newJsonURL;
+	}
 };
 
 
@@ -290,9 +301,9 @@ void ofxAppContent::setState(ContentState s){
 		case ContentState::DOWNLOADING_JSON:{
 
 			//start the download and parse process
-			contentCfg.userData["jsonURL"] = jsonURL;
+			contentCfg.userData["jsonURL"] = jsonURL; //always use the live json URL for media download
 			contentCfg.userData["jsonDestinationDir"] = jsonDestinationDir;
-			jsonParser.downloadAndParse(jsonURL,
+			jsonParser.downloadAndParse(getAdaptativeJsonUrl(),
 										jsonDestinationDir,	//directory where to save
 										numThreads,			//num threads
 										contentCfg.pointToObjects,
@@ -482,9 +493,9 @@ void ofxAppContent::setState(ContentState s){
 			std::string oldJsonPath = dir + "/knownGood/" + ID + ".json";
 
 			//calc sha1 for the last konwn json, and the fresh one
-			newJsonSha1 = ofxChecksum::calcSha1(jsonParser.getJsonLocalPath());
+			newJsonChecksum = ofxChecksum::calcSha1(jsonParser.getJsonLocalPath());
 			if(ofFile::doesFileExist(oldJsonPath)){
-				oldJsonSha1 = ofxChecksum::calcSha1(oldJsonPath);
+				oldJsonChecksum = ofxChecksum::calcSha1(oldJsonPath);
 			}
 
 			//replace the old json with the fresh one
@@ -571,31 +582,31 @@ bool ofxAppContent::isContentReady(){
 #pragma mark Callbacks
 
 void ofxAppContent::onJsonDownloaded(ofxSimpleHttpResponse & arg){
-	ofLogNotice("ofxAppContent-" + ID) << "JSON download OK! \"" << jsonURL << "\"";
+	ofLogNotice("ofxAppContent-" + ID) << "JSON download OK! \"" << getAdaptativeJsonUrl() << "\"";
 	setState(ContentState::CHECKING_JSON);
-	OFXAPP_REPORT("ofxAppJsonDownloadFailed", "JSON Download OK for '" + ID + "'! \"" + jsonURL + "\"", 0);
+	OFXAPP_REPORT("ofxAppJsonDownloadFailed", "JSON Download OK for '" + ID + "'! \"" + getAdaptativeJsonUrl() + "\"", 0);
 }
 
 
 void ofxAppContent::onJsonDownloadFailed(ofxSimpleHttpResponse & arg){
-	ofLogError("ofxAppContent-" + ID) << "JSON download failed! \"" << jsonURL << "\"";
+	ofLogError("ofxAppContent-" + ID) << "JSON download failed! \"" << getAdaptativeJsonUrl() << "\"";
 	errorMessage = arg.reasonForStatus + " (" + arg.url + ")";
-	OFXAPP_REPORT("ofxAppJsonDownloadFailed", "JSON Download Failed for '" + ID + "'! \"" + jsonURL + "\"\nreason: " + arg.reasonForStatus , 2);
+	OFXAPP_REPORT("ofxAppJsonDownloadFailed", "JSON Download Failed for '" + ID + "'! \"" + getAdaptativeJsonUrl() + "\"\nreason: " + arg.reasonForStatus , 2);
 	setState(ContentState::JSON_DOWNLOAD_FAILED);
 }
 
 
 void ofxAppContent::onJsonInitialCheckOK(){
-	ofLogNotice("ofxAppContent-" + ID) << "JSON Initial Check OK! \"" << jsonURL << "\"";
-	OFXAPP_REPORT("ofxAppJsonParseFailed", "JSON Parse OK '" + ID + "'! \"" + jsonURL + "\"", 0);
+	ofLogNotice("ofxAppContent-" + ID) << "JSON Initial Check OK! \"" << getAdaptativeJsonUrl() << "\"";
+	OFXAPP_REPORT("ofxAppJsonParseFailed", "JSON Parse OK '" + ID + "'! \"" + getAdaptativeJsonUrl() + "\"", 0);
 	setState(ContentState::PARSING_JSON);
 }
 
 
 void ofxAppContent::onJsonParseFailed(){
-	ofLogError("ofxAppContent-" + ID) << "JSON Parse Failed! \"" << jsonURL << "\"";
-	OFXAPP_REPORT("ofxAppJsonParseFailed", "JSON Parse Failed for '" + ID + "'! \"" + jsonURL + "\"" , 2);
-	errorMessage = "Json parse of \"" + jsonURL + "\" failed!";
+	ofLogError("ofxAppContent-" + ID) << "JSON Parse Failed! \"" << getAdaptativeJsonUrl() << "\"";
+	OFXAPP_REPORT("ofxAppJsonParseFailed", "JSON Parse Failed for '" + ID + "'! \"" + getAdaptativeJsonUrl() + "\"" , 2);
+	errorMessage = "Json parse of \"" + getAdaptativeJsonUrl() + "\" failed!";
 	setState(ContentState::JSON_PARSE_FAILED);
 }
 
@@ -612,6 +623,10 @@ void ofxAppContent::onJsonContentReady(vector<ParsedObject*> &parsedObjects_){
 	setState(ContentState::CATALOG_ASSETS);
 }
 
+
+std::string ofxAppContent::getAdaptativeJsonUrl(){
+	return useOfflineJson ? jsonURL_offline : jsonURL;
+}
 
 void ofxAppContent::assetCheckFinished(){
 	ofLogNotice("ofxAppContent-" + ID) << "Asset Check Finished!";

@@ -149,7 +149,7 @@ public:
 	ofRectangle 		getStartupScreenViewport(){return startupScreenViewport;} //loading screen rect area
 	ofVec2f			getRenderSize(){return renderSize;}
 	bool				isWindowSetup(){return windowIsSetup;}
-	bool 			isJsonContentDifferentFromLastLaunch(std::string contentID, std::string & freshJsonSha1, std::string & oldJsonSha1);
+	bool 			isJsonContentDifferentFromLastLaunch(std::string contentID, std::string & freshJsonSha1, std::string & oldJsonChecksum);
 	bool				getIsUsingOfflineJson(){return usingOfflineJson;}
 
 
