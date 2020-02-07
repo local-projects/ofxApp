@@ -40,6 +40,7 @@ public:
     void setup();
     void setup( int port );
     void setup( std::vector<int> ports );
+    void setup( std::vector<int> ports, std::map<int, glm::vec2> offsets, int screenWidth, int screenHeight);
     glm::vec2 getConvertedCoord( CursorAtPort& cursor );
     void update();
     
@@ -87,11 +88,11 @@ public:
     static bool FLIP_X;
     static bool FLIP_Y;
 
-    static int WIDTH;
-    static int HEIGHT;
+    static int width;
+    static int height;
 
-    static std::vector<int> PORTS;
-    static std::map<int, glm::vec2> OFFSETS;
+    static std::vector<int> ports;
+    static std::map<int, glm::vec2> offsets;
 
 private:
     ofxAppTuioManager() {}
