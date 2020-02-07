@@ -18,6 +18,7 @@
 #include "ofxAppFonts.h"
 #include "ofxAppStaticTextures.h"
 #include "ofxAppMacros.h"
+#include "ofxAppTuioManager.h"
 #include "ofxJsonSettings.h"
 #include "ofxSuperLog.h"
 #include "ofxScreenSetup.h"
@@ -163,6 +164,10 @@ public:
 	void tuioRemoved(ofxTuioCursor & tuioCursor);
 	void tuioUpdated(ofxTuioCursor & tuioCursor);
 	
+    void multiportTuioAdded(TouchAtPort& t);
+    void multiportTuioRemoved(TouchAtPort& t);
+    void multiportTuioUpdated(TouchAtPort& t);
+    
 	//debug log functionality
 	void addToScreenLog(const std::string & str);
 	void clearScreenLog();
@@ -194,6 +199,7 @@ protected:
 	void setMouseEvents(bool enabled);
 	void loadModulesSettings();
 	void setupGoogleAnalytics();
+    void setupMultiportTuio();
 
 	//utils
 	void printSettingsFile(); //print JSON settings file to stdout (and logs)

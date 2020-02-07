@@ -111,7 +111,8 @@ void App::setup(	const map<std::string, ofxApp::ParseFunctions> & cfgs,
 		setupListeners();
 		setupGlobalParameters();
 		textures().setup();
-		setupTuio();
+//		setupTuio();
+        setupMultiportTuio();
 
 		if(timeSampleOfxApp) TS_START_NIF("ofxApp Load Static Textures");
 
@@ -759,26 +760,58 @@ void App::setupTuio(){
 		ofLogNotice("ofxApp") << "Listening for TUIO events at port " << port;
 		tuioClient = new ofxTuioClient();
 		tuioClient->start(port); //FIXME: make sure we do it only once!
+        
 		ofAddListener(tuioClient->cursorAdded, this, &App::tuioAdded);
 		ofAddListener(tuioClient->cursorRemoved, this, &App::tuioRemoved);
 		ofAddListener(tuioClient->cursorUpdated, this, &App::tuioUpdated);
 	}
 }
 
+void App::setupMultiportTuio(){
+    ofLogNotice("ofxApp") << "setupMultiportTuio()";
+//    if(getBool("MultiportTUIO/enabled")){
+        ofxAppTuioManager::get().setup();
+        
+        ofAddListener(ofxAppTuioManager::get().onAddTouchAtPort, this, &App::multiportTuioAdded);
+        ofAddListener(ofxAppTuioManager::get().onRemoveTouchAtPort, this, &App::multiportTuioRemoved);
+        ofAddListener(ofxAppTuioManager::get().onUpdateTouchAtPort, this, &App::multiportTuioUpdated);
+//    }
+}
+
+//what do i do with these jawns now
+void App::multiportTuioAdded(TouchAtPort& t){
+    ofMouseEventArgs a = ofMouseEventArgs(ofMouseEventArgs::Pressed, t.pos.x, t.pos.y, OF_MOUSE_BUTTON_LEFT);
+    ofxSuperLog::getLogger()->getDisplayLogger().mousePressed(a);
+    delegate->multiportTuioAdded(t);
+}
+
+void App::multiportTuioRemoved(TouchAtPort& t){
+    ofMouseEventArgs a = ofMouseEventArgs(ofMouseEventArgs::Released, t.pos.x, t.pos.y, OF_MOUSE_BUTTON_LEFT);
+    ofxSuperLog::getLogger()->getDisplayLogger().mouseReleased(a);
+    delegate->multiportTuioRemoved(t);
+}
+
+void App::multiportTuioUpdated(TouchAtPort& t){
+   ofMouseEventArgs a = ofMouseEventArgs(ofMouseEventArgs::Moved,  t.pos.x,  t.pos.y, OF_MOUSE_BUTTON_LEFT);
+   ofxSuperLog::getLogger()->getDisplayLogger().mouseDragged(a);
+    delegate->multiportTuioUpdated(t);
+}
+
+//ofxTuioManager should call these jawns
 void App::tuioAdded(ofxTuioCursor & t){
-	ofMouseEventArgs a = ofMouseEventArgs(ofMouseEventArgs::Pressed, t.getX() * ofGetWidth(), t.getY() * ofGetHeight(), OF_MOUSE_BUTTON_LEFT);
+	ofMouseEventArgs a = ofMouseEventArgs(ofMouseEventArgs::Pressed, t.getX(), t.getY(), OF_MOUSE_BUTTON_LEFT);
 	ofxSuperLog::getLogger()->getDisplayLogger().mousePressed(a);
 	delegate->tuioAdded(t);
 };
 
 void App::tuioUpdated(ofxTuioCursor & t){
-	ofMouseEventArgs a = ofMouseEventArgs(ofMouseEventArgs::Moved, t.getX() * ofGetWidth(), t.getY() * ofGetHeight(), OF_MOUSE_BUTTON_LEFT);
+	ofMouseEventArgs a = ofMouseEventArgs(ofMouseEventArgs::Moved, t.getX(), t.getY(), OF_MOUSE_BUTTON_LEFT);
 	ofxSuperLog::getLogger()->getDisplayLogger().mouseDragged(a);
 	delegate->tuioUpdated(t);
 };
 
 void App::tuioRemoved(ofxTuioCursor & t){
-	ofMouseEventArgs a = ofMouseEventArgs(ofMouseEventArgs::Released, t.getX() * ofGetWidth(), t.getY() * ofGetHeight(), OF_MOUSE_BUTTON_LEFT);
+	ofMouseEventArgs a = ofMouseEventArgs(ofMouseEventArgs::Released, t.getX(), t.getY(), OF_MOUSE_BUTTON_LEFT);
 	ofxSuperLog::getLogger()->getDisplayLogger().mouseReleased(a);
 	delegate->tuioRemoved(t);
 };
@@ -794,6 +827,10 @@ void App::update(ofEventArgs &){
 	for(auto c : contentStorage){
 		c.second->update(dt);
 	}
+    
+    //Cameron: should have a conditional of some sort?
+    ofxAppTuioManager::get().update();
+    
 	updateStateMachine(dt);
 	updateAnimatable(dt);
 	if(gAnalytics) gAnalytics->update();

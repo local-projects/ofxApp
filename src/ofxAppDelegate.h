@@ -11,6 +11,7 @@
 #include "ofxAppStructs.h"
 #include "ofxTuio.h"
 #include "ofxScreenSetup.h"
+#include "ofxAppTuioManager.h"
 
 //to use ofxApp, your app must follow this protocol, so make sure your app
 //is a subclass of ofxAppDelegate
@@ -64,9 +65,13 @@ public:
 	virtual void ofxAppContentUpdateFailed(const std::string & contentID, const std::string & errorMsg){};
 
 	//tuio callbacks
-	virtual void tuioAdded(ofxTuioCursor & tuioCursor){};
-	virtual void tuioRemoved(ofxTuioCursor & tuioCursor){};
-	virtual void tuioUpdated(ofxTuioCursor & tuioCursor){};
+	virtual void multiportTuioAdded(TouchAtPort& t){};
+	virtual void multiportTuioRemoved(TouchAtPort& t){};
+	virtual void multiportTuioUpdated(TouchAtPort& t){};
+    
+    virtual void tuioAdded(ofxTuioCursor & tuioCursor){};
+    virtual void tuioRemoved(ofxTuioCursor & tuioCursor){};
+    virtual void tuioUpdated(ofxTuioCursor & tuioCursor){};
 
 	//screen setup changed callback
 	virtual void screenSetupChanged(ofxScreenSetup::ScreenSetupArg &arg){};
