@@ -668,6 +668,18 @@ void App::loadModulesSettings(){
 	assetDownloadsHttpCfg.credentials.first = getString("Downloads/credentials/username");
 	assetDownloadsHttpCfg.credentials.second = getString("Downloads/credentials/password");
 
+    //CAMERON
+    //possible this is unnecessary
+    //oauth credentials just for the assets downloads.
+    bool tokenURLExists = settings().exists("Downloads/oauthCredentials/tokenURL");
+    bool clientIDExists = settings().exists("Downloads/oauthCredentials/clientID");
+    bool clientSecretExists = settings().exists("Downloads/oauthCredentials/clientSecret");
+    if(tokenURLExists && clientIDExists && clientSecretExists){
+        assetDownloadsHttpCfg.tokenURL = getString("Downloads/oauthCredentials/tokenURL");
+        assetDownloadsHttpCfg.clientAndSecret.first = getString("Downloads/oauthCredentials/clientID");
+        assetDownloadsHttpCfg.clientAndSecret.second = getString("Downloads/oauthCredentials/clientSecret");
+    }
+    
 	assetDownloadsHttpCfg.proxyCfg.useProxy = getBool("Downloads/proxy/useProxy");
 	assetDownloadsHttpCfg.proxyCfg.host = getString("Downloads/proxy/proxyHost");
 	assetDownloadsHttpCfg.proxyCfg.port = getInt("Downloads/proxy/proxyPort");
@@ -695,7 +707,6 @@ void App::loadModulesSettings(){
 	renderSize.y = getInt("App/renderSize/height");
 	timeSampleOfxApp = getBool("App/TimeSampleOfxApp");
 }
-
 
 void App::setupRuiWatches(){
 
@@ -1297,6 +1308,8 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 
 		case State::LOAD_JSON_CONTENT:{
 
+            //CAMERON LOAD WEB STUFF HERE
+            
 			if(change.oldState != State::LOAD_JSON_CONTENT_FAILED){ //1st time we get into LOAD_JSON_CONTENT
 
 				if (delegate->ofxAppShouldFetchContent(currentContentID)) {
@@ -1331,7 +1344,18 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 								contentHttpConfigs[currentContentID].credentials.second = getString("Content/JsonSources/" + currentContentID + "/httpConfig/credentials/password");
 							}
 						}
-
+                        
+                        //CAMERON
+                        //oauth credentials just for the assets downloads.
+                        bool tokenURLExists = settingExists("Content/JsonSources/" + currentContentID + "/oauthCredentials/tokenURL");
+                        bool clientIDExists = settingExists("Content/JsonSources/" + currentContentID + "/oauthCredentials/clientID");
+                        bool clientSecretExists = settingExists("Content/JsonSources/" + currentContentID + "/oauthCredentials/clientSecret");
+                        if(tokenURLExists && clientIDExists && clientSecretExists){
+                            contentHttpConfigs[currentContentID].tokenURL = getString("Content/JsonSources/" + currentContentID + "/oauthCredentials/tokenURL");
+                            contentHttpConfigs[currentContentID].clientAndSecret.first = getString("Content/JsonSources/" + currentContentID + "/oauthCredentials/clientID");
+                            contentHttpConfigs[currentContentID].clientAndSecret.second = getString("Content/JsonSources/" + currentContentID + "/oauthCredentials/clientSecret");
+                        }
+                        
 						//get proxy setup
 						if(settingExists("Content/JsonSources/" + currentContentID + "/httpConfig/proxy")){
 							contentHttpConfigs[currentContentID].proxyCfg.useProxy = getBool("Content/JsonSources/" + currentContentID + "/httpConfig/proxy/useProxy", false);
@@ -1476,10 +1500,10 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 																timeOutApiEndpointSec,
 																skipPolicyTests,
 																idleTimeAfterDl,
-																assetDownloadsHttpCfg.credentials,
+																assetDownloadsHttpCfg.credentials, //"downloader" credentials
 																checksumType,
 																assetDownloadsHttpCfg.proxyCfg,
-																contentHttpConfigs[currentContentID].credentials,
+																contentHttpConfigs[currentContentID].credentials, //"api" credentials
 																contentHttpConfigs[currentContentID].proxyCfg,
 																contentHttpConfigs[currentContentID].customHeaders,
 																contentParseFuncs[currentContentID],
@@ -1492,6 +1516,17 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 														  );
 						contentStorage[currentContentID]->setShouldRemoveExpiredAssets(shouldRemoveUnusedAssets);
 
+                        //CAMERON should do token stuff here
+                        //this won't work because our oauth token stuff is global, basically
+                        string tokenURL = contentHttpConfigs[currentContentID].tokenURL;
+                        string clientID = contentHttpConfigs[currentContentID].clientAndSecret.first;
+                        string clientSecret = contentHttpConfigs[currentContentID].clientAndSecret.second;
+                        
+                        contentStorage[currentContentID]->setupJsonOAuth(tokenURL, clientID, clientSecret);
+                        
+                        //should possibly also do a //setupDownloaderOAuth()
+                        
+                        //CAMERON content fetched
 						contentStorage[currentContentID]->fetchContent(); //this starts the ofxAppContent process!
 
 					}else{

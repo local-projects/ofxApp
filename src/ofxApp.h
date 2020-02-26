@@ -194,7 +194,8 @@ protected:
 	void setMouseEvents(bool enabled);
 	void loadModulesSettings();
 	void setupGoogleAnalytics();
-
+    void setupOAuth();
+    
 	//utils
 	void printSettingsFile(); //print JSON settings file to stdout (and logs)
 	void drawStats();
@@ -229,6 +230,11 @@ protected:
 		ofxSimpleHttp::ProxyConfig				proxyCfg;
 		std::pair<std::string,std::string>		credentials;
 		std::map<std::string,std::string>		customHeaders;
+        
+        //CAMERON oauth token stuff
+        //maybe can delete?
+        std::pair<std::string, std::string>     clientAndSecret;
+        std::string                             tokenURL;
 	};
 
 	HttpDownloadConfig 						assetDownloadsHttpCfg; //config for any assets to download
