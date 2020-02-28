@@ -778,7 +778,7 @@ void App::setupTuio(){
 
 void App::setupMultiportTuio(){
     ofLogNotice("ofxApp") << "setupMultiportTuio()";
-    if(getBool("MultiportTUIO/enabled")){
+    if(settingExists("MultiportTUIO/enabled") && getBool("MultiportTUIO/enabled")){
         ofLogNotice("ofxApp") << "setupMultiportTuio()";
           
         //width and height should be easy
