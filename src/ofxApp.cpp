@@ -111,7 +111,8 @@ void App::setup(	const map<std::string, ofxApp::ParseFunctions> & cfgs,
 		setupListeners();
 		setupGlobalParameters();
 		textures().setup();
-		setupTuio();
+//		setupTuio();
+        setupMultiportTuio();
 
 		if(timeSampleOfxApp) TS_START_NIF("ofxApp Load Static Textures");
 
@@ -768,26 +769,109 @@ void App::setupTuio(){
 		ofLogNotice("ofxApp") << "Listening for TUIO events at port " << port;
 		tuioClient = new ofxTuioClient();
 		tuioClient->start(port); //FIXME: make sure we do it only once!
+        
 		ofAddListener(tuioClient->cursorAdded, this, &App::tuioAdded);
 		ofAddListener(tuioClient->cursorRemoved, this, &App::tuioRemoved);
 		ofAddListener(tuioClient->cursorUpdated, this, &App::tuioUpdated);
 	}
 }
 
+void App::setupMultiportTuio(){
+    ofLogNotice("ofxApp") << "setupMultiportTuio()";
+    if(getBool("MultiportTUIO/enabled")){
+        ofLogNotice("ofxApp") << "setupMultiportTuio()";
+          
+        //width and height should be easy
+        float width = getInt("MultiportTUIO/screenWidth");
+        float height = getInt("MultiportTUIO/screenHeight");
+        std::cout << "multi tuio screen width " << width << std::endl;
+
+        //ports should be a little more spicy
+        vector<int> ports;
+        ofxJSON portsJson = settings().getJson("MultiportTUIO/ports");
+        if(portsJson.isArray()){
+          std::cout << "ports parsed as an array" << std::endl;
+          for( Json::ValueIterator itr = portsJson.begin(); itr != portsJson.end(); itr++){
+              int port = (*itr).asInt();
+              ports.push_back(port);
+          }
+        }
+        
+        vector<int> xOffsets;
+        ofxJSON xOffsetsJson = settings().getJson("MultiportTUIO/xOffsets");
+        if(xOffsetsJson.isArray()){
+          std::cout << "xOffsets parsed as an array" << std::endl;
+          for( Json::ValueIterator itr = xOffsetsJson.begin(); itr != xOffsetsJson.end(); itr++){
+              int xOffset = (*itr).asInt();
+              xOffsets.push_back(xOffset);
+          }
+        }
+        
+        vector<int> yOffsets;
+        ofxJSON yOffsetsJson = settings().getJson("MultiportTUIO/yOffsets");
+        if(yOffsetsJson.isArray()){
+          std::cout << "yOffsets parsed as an array" << std::endl;
+          for( Json::ValueIterator itr = yOffsetsJson.begin(); itr != yOffsetsJson.end(); itr++){
+              int xOffset = (*itr).asInt();
+              yOffsets.push_back(xOffset);
+          }
+        }
+        
+        if(ports.size() == xOffsets.size() && xOffsets.size() == yOffsets.size()){
+            std::map<int, glm::vec2> offsets = {};
+            
+            for(int i = 0; i < ports.size(); i++){
+                offsets[ports[i]] = glm::vec2{xOffsets[i], yOffsets[i]};
+            }
+            
+            ofxAppTuioManager::get().setup(ports, offsets, width, height);
+            
+            ofAddListener(ofxAppTuioManager::get().onAddTouchAtPort, this, &App::multiportTuioAdded);
+            ofAddListener(ofxAppTuioManager::get().onRemoveTouchAtPort, this, &App::multiportTuioRemoved);
+            ofAddListener(ofxAppTuioManager::get().onUpdateTouchAtPort, this, &App::multiportTuioUpdated);
+            
+            std::cout << "multi tuio ports: " << ports.size() << std::endl;
+            for(auto port : ports){
+              std::cout << "tuio port: " << port << std::endl;
+            }
+        }
+    }
+}
+
+//what do i do with these jawns now
+void App::multiportTuioAdded(TouchAtPort& t){
+    ofMouseEventArgs a = ofMouseEventArgs(ofMouseEventArgs::Pressed, t.pos.x, t.pos.y, OF_MOUSE_BUTTON_LEFT);
+    ofxSuperLog::getLogger()->getDisplayLogger().mousePressed(a);
+    delegate->multiportTuioAdded(t);
+}
+
+void App::multiportTuioRemoved(TouchAtPort& t){
+    ofMouseEventArgs a = ofMouseEventArgs(ofMouseEventArgs::Released, t.pos.x, t.pos.y, OF_MOUSE_BUTTON_LEFT);
+    ofxSuperLog::getLogger()->getDisplayLogger().mouseReleased(a);
+    delegate->multiportTuioRemoved(t);
+}
+
+void App::multiportTuioUpdated(TouchAtPort& t){
+   ofMouseEventArgs a = ofMouseEventArgs(ofMouseEventArgs::Moved,  t.pos.x,  t.pos.y, OF_MOUSE_BUTTON_LEFT);
+   ofxSuperLog::getLogger()->getDisplayLogger().mouseDragged(a);
+    delegate->multiportTuioUpdated(t);
+}
+
+//ofxTuioManager should call these jawns
 void App::tuioAdded(ofxTuioCursor & t){
-	ofMouseEventArgs a = ofMouseEventArgs(ofMouseEventArgs::Pressed, t.getX() * ofGetWidth(), t.getY() * ofGetHeight(), OF_MOUSE_BUTTON_LEFT);
+	ofMouseEventArgs a = ofMouseEventArgs(ofMouseEventArgs::Pressed, t.getX(), t.getY(), OF_MOUSE_BUTTON_LEFT);
 	ofxSuperLog::getLogger()->getDisplayLogger().mousePressed(a);
 	delegate->tuioAdded(t);
 };
 
 void App::tuioUpdated(ofxTuioCursor & t){
-	ofMouseEventArgs a = ofMouseEventArgs(ofMouseEventArgs::Moved, t.getX() * ofGetWidth(), t.getY() * ofGetHeight(), OF_MOUSE_BUTTON_LEFT);
+	ofMouseEventArgs a = ofMouseEventArgs(ofMouseEventArgs::Moved, t.getX(), t.getY(), OF_MOUSE_BUTTON_LEFT);
 	ofxSuperLog::getLogger()->getDisplayLogger().mouseDragged(a);
 	delegate->tuioUpdated(t);
 };
 
 void App::tuioRemoved(ofxTuioCursor & t){
-	ofMouseEventArgs a = ofMouseEventArgs(ofMouseEventArgs::Released, t.getX() * ofGetWidth(), t.getY() * ofGetHeight(), OF_MOUSE_BUTTON_LEFT);
+	ofMouseEventArgs a = ofMouseEventArgs(ofMouseEventArgs::Released, t.getX(), t.getY(), OF_MOUSE_BUTTON_LEFT);
 	ofxSuperLog::getLogger()->getDisplayLogger().mouseReleased(a);
 	delegate->tuioRemoved(t);
 };
@@ -803,6 +887,10 @@ void App::update(ofEventArgs &){
 	for(auto c : contentStorage){
 		c.second->update(dt);
 	}
+    
+    //Cameron: should have a conditional of some sort?
+    ofxAppTuioManager::get().update();
+    
 	updateStateMachine(dt);
 	updateAnimatable(dt);
 	if(gAnalytics) gAnalytics->update();
