@@ -231,8 +231,6 @@ protected:
 		std::pair<std::string,std::string>		credentials;
 		std::map<std::string,std::string>		customHeaders;
         
-        //CAMERON oauth token stuff
-        //maybe can delete?
         std::pair<std::string, std::string>     clientAndSecret;
         std::string                             tokenURL;
 	};

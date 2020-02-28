@@ -668,8 +668,6 @@ void App::loadModulesSettings(){
 	assetDownloadsHttpCfg.credentials.first = getString("Downloads/credentials/username");
 	assetDownloadsHttpCfg.credentials.second = getString("Downloads/credentials/password");
 
-    //CAMERON
-    //possible this is unnecessary
     //oauth credentials just for the assets downloads.
     bool tokenURLExists = settings().exists("Downloads/oauthCredentials/tokenURL");
     bool clientIDExists = settings().exists("Downloads/oauthCredentials/clientID");
@@ -1307,9 +1305,6 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 			break;
 
 		case State::LOAD_JSON_CONTENT:{
-
-            //CAMERON LOAD WEB STUFF HERE
-            
 			if(change.oldState != State::LOAD_JSON_CONTENT_FAILED){ //1st time we get into LOAD_JSON_CONTENT
 
 				if (delegate->ofxAppShouldFetchContent(currentContentID)) {
@@ -1345,8 +1340,7 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 							}
 						}
                         
-                        //CAMERON
-                        //oauth credentials just for the assets downloads.
+                        //oauth credentials for content downloads
                         bool tokenURLExists = settingExists("Content/JsonSources/" + currentContentID + "/oauthCredentials/tokenURL");
                         bool clientIDExists = settingExists("Content/JsonSources/" + currentContentID + "/oauthCredentials/clientID");
                         bool clientSecretExists = settingExists("Content/JsonSources/" + currentContentID + "/oauthCredentials/clientSecret");
@@ -1483,7 +1477,15 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 							ofLogWarning("ofxApp") << "JSON source \"" << currentContentID << "\" loading JSON data from CACHED file! See ofxAppSettings.json!";
 						}
 						usingOfflineJson = useOfflineJson;
-
+                        
+                        //a data source could have a base url for assets, load it here
+                        string assetsBaseURLKey = "Content/JsonSources/" + currentContentID + "/assetsBaseURL";
+                        if(settingExists(assetsBaseURLKey)){
+                            ofxJSON userData;
+                            userData["assetsBaseURL"] = getString(assetsBaseURLKey);
+                            contentParseFuncs[currentContentID].userData = userData;
+                        }
+                       
 						std::string knownGoodJjsonUrl = "file://" + jsonDir + "/knownGood/" + currentContentID + ".json";
 
 						contentStorage[currentContentID]->setup(currentContentID,
@@ -1516,17 +1518,24 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 														  );
 						contentStorage[currentContentID]->setShouldRemoveExpiredAssets(shouldRemoveUnusedAssets);
 
-                        //CAMERON should do token stuff here
-                        //this won't work because our oauth token stuff is global, basically
-                        string tokenURL = contentHttpConfigs[currentContentID].tokenURL;
-                        string clientID = contentHttpConfigs[currentContentID].clientAndSecret.first;
-                        string clientSecret = contentHttpConfigs[currentContentID].clientAndSecret.second;
+                        //setup for content https token
+                        string contentTokenURL = contentHttpConfigs[currentContentID].tokenURL;
+                        string contentClientID = contentHttpConfigs[currentContentID].clientAndSecret.first;
+                        string contentClientSecret = contentHttpConfigs[currentContentID].clientAndSecret.second;
+                        if(contentTokenURL.size() && contentClientID.size() && contentClientSecret.size()){
+                            contentStorage[currentContentID]->setupJsonOAuth(contentTokenURL, contentClientID, contentClientSecret);
+                        }
+                                     
+                        //setup for assets https token
+                        //untested because Squidex doesn't need authenticate asset calls
+                        string assetsTokenURL = assetDownloadsHttpCfg.tokenURL;
+                        string assetsClientID = assetDownloadsHttpCfg.clientAndSecret.first;
+                        string assetsClientSecret = assetDownloadsHttpCfg.clientAndSecret.second;
                         
-                        contentStorage[currentContentID]->setupJsonOAuth(tokenURL, clientID, clientSecret);
-                        
-                        //should possibly also do a //setupDownloaderOAuth()
-                        
-                        //CAMERON content fetched
+                        if(assetsTokenURL.size() && assetsClientID.size() && assetsClientSecret.size()){
+                            contentStorage[currentContentID]->setupAssetsOAuth(assetsTokenURL, assetsClientID, assetsClientSecret);
+                        }
+
 						contentStorage[currentContentID]->fetchContent(); //this starts the ofxAppContent process!
 
 					}else{

@@ -68,6 +68,7 @@ public:
 			   	float assetErrorsScreenReportTimeSeconds
 			   );
     void setupJsonOAuth(string tokenURL, string clientID, string clientSecret);
+    void setupAssetsOAuth(string tokenURL, string clientID, string clientSecret);
     
 	void setNumThreads(int nThreads);
 	void setMaxConcurrentDownloads(int nDownloads);

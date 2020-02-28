@@ -71,8 +71,6 @@ void ofxAppContent::setup(	const std::string &  ID,
 	dlc.setProxyConfiguration(downloaderProxyConfig);
 	dlc.setChecksumType(checksumType);
     
-    //CAMERON may need to do oauth stuff for download central too
-
 	jsonParser.getHttp().setTimeOut(timeoutApiEndpoint);
 	jsonParser.getHttp().setSpeedLimit(speedLimitKBs);
 	jsonParser.getHttp().setCopyBufferSize(copyBufferSizeKb); //kb
@@ -94,8 +92,16 @@ void ofxAppContent::setup(	const std::string &  ID,
 }
 
 void ofxAppContent::setupJsonOAuth(string tokenURL, string clientID, string clientSecret){
-    string token = jsonParser.getHttp().makeGetOauthTokenRequest(tokenURL, clientID, clientSecret);
-    jsonParser.getHttp().setOauthToken(token);
+    string token = jsonParser.getHttp().makeGetOAuthTokenRequest(tokenURL, clientID, clientSecret);
+    jsonParser.getHttp().setOAuthToken(token);
+}
+
+void ofxAppContent::setupAssetsOAuth(string tokenURL, string clientID, string clientSecret){
+    
+    //just gonna steal the json parser's simpleHTTP to make the token request
+    //ofxDownloadCentral uses that under the hood anyway.
+    string token = jsonParser.getHttp().makeGetOAuthTokenRequest(tokenURL, clientID, clientSecret);
+    dlc.setOAuthToken(token);
 }
 
 ofxAppContent::~ofxAppContent(){
@@ -312,16 +318,6 @@ void ofxAppContent::setState(ContentState s){
 			//start the download and parse process
 			contentCfg.userData["jsonURL"] = jsonURL; //always use the live json URL for media download
 			contentCfg.userData["jsonDestinationDir"] = jsonDestinationDir;
-            
-            //CAMERON more downloading calls
-            //THIS RIGHT HERE IS WHERE YOU GET THE TOKEN
-            //should be getting these from the config or something
-            string tokenURL = "https://cloud.squidex.io/identity-server/connect/token";
-            string clientID = "lptest1:ofxapp-test-client";
-            string clientSecret = "wneesi0nbko1uc38o4t2ykryxvu2sv6icmlcps0rrvyx";
-            
-            string token = jsonParser.getHttp().makeGetOauthTokenRequest(tokenURL, clientID, clientSecret);
-            jsonParser.getHttp().setOauthToken(token);
             
 			jsonParser.downloadAndParse(getAdaptativeJsonUrl(),
 										jsonDestinationDir,	//directory where to save
