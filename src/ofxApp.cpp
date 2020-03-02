@@ -262,7 +262,6 @@ void App::setupWindow(){
 	ofLogNotice("ofxApp") << "setupWindow()";
 	ofxScreenSetup::ScreenMode mode = ofxScreenSetup::ScreenMode((int)getInt("App/window/windowMode"));
 	screenSetup.setup(getInt("App/window/customWidth"), getInt("App/window/customHeight"), mode);
-	
 
 	bool customPosition = getBool("App/window/customWindowPosition");
 	int customX = getInt("App/window/customPositionX");
@@ -282,14 +281,10 @@ void App::setupWindow(){
 	//trying to get the window to "show up" in the 1st frame - to show terminateApp() in the 1st frame
 	GLFWwindow* glfwWindow = (GLFWwindow*)ofGetWindowPtr()->getWindowContext();
 	glfwShowWindow(glfwWindow);
-	//ofGetWindowPtr()->setFullscreen(true);
-	//ofSetWindowPosition(0,0);
 	ofGetWindowPtr()->makeCurrent();
 	ofGetGLRenderer()->startRender();
 	ofGetGLRenderer()->setupScreen();
 	ofGetGLRenderer()->finishRender();
-//	ofGetWindowPtr()->update();
-//	ofGetWindowPtr()->draw();
 	ofGetMainLoop()->pollEvents();
 	windowIsSetup = true;
 }
@@ -328,6 +323,7 @@ void App::setupListeners(){
 	ofAddListener(ofEvents().draw, this, &App::draw, OF_EVENT_ORDER_AFTER_APP);
 	ofAddListener(textures().eventAllTexturesLoaded, this, &App::onStaticTexturesLoaded);
 	ofAddListener(screenSetup.setupChanged, this, &App::screenSetupChanged);
+	ofAddListener(ofEvents().windowResized, this, &App::onWindowResized);
 }
 
 
@@ -412,7 +408,6 @@ void App::startLoadingStaticAssets(){
 			textures().setDisableAutoreload(getBool("StaticAssets/disableAutoreload"));
 		}
 		textures().loadTexturesInDir(texturesPath, getInt("App/maxThreads"));
-
 
 	}else{
 		ofLogWarning("ofxApp") << "App doesnt want to load static Assets!";
@@ -1677,8 +1672,31 @@ void App::onKeyPressed(ofKeyEventArgs & a){
 	}
 }
 
+
 void App::screenSetupChanged(ofxScreenSetup::ScreenSetupArg &arg){
 	if(delegate) delegate->screenSetupChanged(arg);
+}
+
+
+void App::onWindowResized(ofResizeEventArgs & args){
+
+	ofLogNotice("ofxApp") << "onWindowResized() " << args.width << " x " << args.height;
+	if(settingExists("App/window/enforce")){
+		bool shouldForceWindowSize = getBool("App/window/enforce");
+		if(shouldForceWindowSize){
+			ofLogWarning("ofxApp") << "enforcing originally set window size and position!";
+			ofxScreenSetup::ScreenMode mode = ofxScreenSetup::ScreenMode((int)getInt("App/window/windowMode"));
+			screenSetup.setScreenMode(mode);
+
+			bool customPosition = getBool("App/window/customWindowPosition");
+			if(customPosition){
+				int customX = getInt("App/window/customPositionX");
+				int customY = getInt("App/window/customPositionY");
+				ofLogNotice("ofxApp") << "Setting a custom window position [" << customX << " , " << customY << "]";
+				ofSetWindowPosition(customX, customY);
+			}
+		}
+	}
 }
 
 #pragma mark Utils
