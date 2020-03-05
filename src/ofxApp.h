@@ -143,6 +143,7 @@ public:
 	void onStaticTexturesLoaded();
 	void onKeyPressed(ofKeyEventArgs&);
 	void screenSetupChanged(ofxScreenSetup::ScreenSetupArg &arg);
+	void onWindowResized(ofResizeEventArgs & args);
 
 	// Retrieve app params that come from settings json
 	ofRectangle		getRenderAreaForCurrentWindowSize();
