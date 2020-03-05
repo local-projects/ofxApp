@@ -17,6 +17,7 @@ struct TouchAtPort
 {
     glm::vec2 pos;
     int port;
+    int sid;
 };
 
 struct CursorAtPort
@@ -52,7 +53,7 @@ public:
     //
     inline void addCursorAtPort( CursorAtPort& e )
     {
-        auto touch = TouchAtPort{getConvertedCoord( e ), e.port};
+        auto touch = TouchAtPort{getConvertedCoord( e ), e.port, e.cursor.getSessionId()};
         ofNotifyEvent( onAddTouchAtPort, touch );
 
         m_touches.emplace( getCursorId( e.port, e.cursor.getSessionId() ), touch );
@@ -60,7 +61,7 @@ public:
 
     inline void updateCursorAtPort( CursorAtPort& e )
     {
-        auto touch = TouchAtPort{getConvertedCoord( e ), e.port};
+        auto touch = TouchAtPort{getConvertedCoord( e ), e.port, e.cursor.getSessionId() };
         ofNotifyEvent( onUpdateTouchAtPort, touch );
 
         m_touches[getCursorId( e.port, e.cursor.getSessionId() )] = touch;
@@ -68,7 +69,7 @@ public:
 
     inline void removeCursorAtPort( CursorAtPort& e )
     {
-        auto touch = TouchAtPort{getConvertedCoord( e ), e.port};
+        auto touch = TouchAtPort{getConvertedCoord( e ), e.port, e.cursor.getSessionId() };
         ofNotifyEvent( onRemoveTouchAtPort, touch );
 
         m_touches.erase( getCursorId( e.port, e.cursor.getSessionId() ) );
