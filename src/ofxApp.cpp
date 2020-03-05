@@ -777,15 +777,15 @@ void App::setupMultiportTuio(){
         ofLogNotice("ofxApp") << "setupMultiportTuio()";
           
         //width and height should be easy
-        float width = getInt("MultiportTUIO/screenWidth");
-        float height = getInt("MultiportTUIO/screenHeight");
-        std::cout << "multi tuio screen width " << width << std::endl;
+        int width = getInt("MultiportTUIO/screenWidth");
+        int height = getInt("MultiportTUIO/screenHeight");
+        ofLogNotice("ofxApp") << "multiport tuio screen dimensions: " << width << ", " << height;
 
         //ports should be a little more spicy
         vector<int> ports;
         ofxJSON portsJson = settings().getJson("MultiportTUIO/ports");
         if(portsJson.isArray()){
-          std::cout << "ports parsed as an array" << std::endl;
+			ofLogNotice("ofxApp") << "ports parsed as an array";
           for( Json::ValueIterator itr = portsJson.begin(); itr != portsJson.end(); itr++){
               int port = (*itr).asInt();
               ports.push_back(port);
@@ -795,7 +795,7 @@ void App::setupMultiportTuio(){
         vector<int> xOffsets;
         ofxJSON xOffsetsJson = settings().getJson("MultiportTUIO/xOffsets");
         if(xOffsetsJson.isArray()){
-          std::cout << "xOffsets parsed as an array" << std::endl;
+			ofLogNotice("ofxApp") << "xOffsets parsed as an array";
           for( Json::ValueIterator itr = xOffsetsJson.begin(); itr != xOffsetsJson.end(); itr++){
               int xOffset = (*itr).asInt();
               xOffsets.push_back(xOffset);
@@ -805,7 +805,7 @@ void App::setupMultiportTuio(){
         vector<int> yOffsets;
         ofxJSON yOffsetsJson = settings().getJson("MultiportTUIO/yOffsets");
         if(yOffsetsJson.isArray()){
-          std::cout << "yOffsets parsed as an array" << std::endl;
+			ofLogNotice("ofxApp") << "yOffsets parsed as an array";
           for( Json::ValueIterator itr = yOffsetsJson.begin(); itr != yOffsetsJson.end(); itr++){
               int xOffset = (*itr).asInt();
               yOffsets.push_back(xOffset);
@@ -816,7 +816,7 @@ void App::setupMultiportTuio(){
             std::map<int, glm::vec2> offsets = {};
             
             for(int i = 0; i < ports.size(); i++){
-                offsets[ports[i]] = glm::vec2{xOffsets[i], yOffsets[i]};
+                offsets[ports[i]] = glm::vec2{xOffsets[i] * width, yOffsets[i] * height};
             }
             
             ofxAppTuioManager::get().setup(ports, offsets, width, height);
@@ -825,9 +825,9 @@ void App::setupMultiportTuio(){
             ofAddListener(ofxAppTuioManager::get().onRemoveTouchAtPort, this, &App::multiportTuioRemoved);
             ofAddListener(ofxAppTuioManager::get().onUpdateTouchAtPort, this, &App::multiportTuioUpdated);
             
-            std::cout << "multi tuio ports: " << ports.size() << std::endl;
+			ofLogNotice("ofxApp") << "multi tuio ports: " << ports.size();
             for(auto port : ports){
-              std::cout << "tuio port: " << port << std::endl;
+				ofLogNotice("ofxApp") << "tuio port: " << port;
             }
         }
     }
