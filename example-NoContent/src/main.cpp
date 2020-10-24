@@ -4,18 +4,27 @@
 #include "ofxApp.h"
 
 //========================================================================
-int main( ){
+int main(){
 
-	ofxApp::get().loadSettings(); //ofxApp settings loaded here!
+	ofxApp::get().loadSettings(); //ofxApp settings loaded early here.
+								//usually they are loaded automatically when you call app.setup();
+								//but in this case we need to read some settings b4 the app launches
+								//and the openGL context is created (AA samples)
 
 	ofGLFWWindowSettings settings;
-	#ifdef NANOVG_GL2_IMPLEMENTATION
-	settings.setGLVersion(2, 1);  // Fixed pipeline
+
+	#ifdef TARGET_OPENGLES
+		settings.setGLESVersion(2); 
+	#else
+		#ifdef NANOVG_GL2_IMPLEMENTATION
+		settings.setGLVersion(2, 1);  // Fixed pipeline
+		#endif
+
+		#ifdef NANOVG_GL3_IMPLEMENTATION
+		settings.setGLVersion(3, 2);  // Programmable pipeline >> you need to define GL_VERSION_3 in you pre-processor macros!
+		#endif
 	#endif
 
-	#ifdef NANOVG_GL3_IMPLEMENTATION
-	settings.setGLVersion(3, 2);  // Programmable pipeline >> you need to define GL_VERSION_3 in you pre-processor macros!
-	#endif
 
 	settings.stencilBits = 0; // 8 for nanovg!
 	settings.numSamples = ofxApp::get().getInt("App/numAASamples", 8);

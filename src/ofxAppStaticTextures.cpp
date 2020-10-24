@@ -150,7 +150,7 @@ ofxAutoTexture* ofxAppStaticTextures::loadTexture(PreLoadData data){
 			data.tex->generateMipmap();
 			data.tex->setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
 			data.tex->bind();
-			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, mipmapLodBias);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS_EXT, mipmapLodBias);
 			if(ofGLCheckExtension("GL_EXT_texture_filter_anisotropic")){
 				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, ofClamp(anisotropy, 0, maxAnisotropy)); //FIXME: check for hw support!
 			}else{
@@ -281,13 +281,18 @@ float ofxAppStaticTextures::memUse(ofTexture * tex){
 
 	if(tex && tex->isAllocated()){
 		int w, h;
-		if(tex->texData.textureTarget == GL_TEXTURE_RECTANGLE_ARB){
-			w = ofNextPow2(tex->getWidth());
-			h = ofNextPow2(tex->getHeight());
-		}else{
-			w = tex->getWidth();
-			h = tex->getHeight();
-		}
+		#ifndef TARGET_OPENGLES
+			if(tex->texData.textureTarget == GL_TEXTURE_RECTANGLE_ARB){
+				w = ofNextPow2(tex->getWidth());
+				h = ofNextPow2(tex->getHeight());
+			}else{
+				w = tex->getWidth();
+				h = tex->getHeight();
+			}
+		#else
+				w = tex->getWidth();
+				h = tex->getHeight();
+		#endif
 
 		int numC = ofGetNumChannelsFromGLFormat(ofGetGLFormatFromInternal(tex->texData.glInternalFormat));
 		float mem = w * h * numC;
