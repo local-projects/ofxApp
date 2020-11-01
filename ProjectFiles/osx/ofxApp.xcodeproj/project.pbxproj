@@ -113,6 +113,9 @@
 		BBA7745C1FC3E81200DD5B69 /* GA_uriencode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA774581FC3E81200DD5B69 /* GA_uriencode.cpp */; };
 		BBA7745D1FC3E81200DD5B69 /* ofxGoogleAnalytics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA7745A1FC3E81200DD5B69 /* ofxGoogleAnalytics.cpp */; };
 		BBD5AE1220D4524700E35668 /* ofxNetworkUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBD5AE1120D4524700E35668 /* ofxNetworkUtils.cpp */; };
+		BBE1415C254E36FD00A6D969 /* ofxRemoteUISimpleNotifications.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBE1415B254E36FD00A6D969 /* ofxRemoteUISimpleNotifications.cpp */; };
+		BBE1415E254E371D00A6D969 /* ofExistsTest.h in Headers */ = {isa = PBXBuildFile; fileRef = BBE1415D254E371D00A6D969 /* ofExistsTest.h */; };
+		BBE14160254E373200A6D969 /* RemoteParam.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBE1415F254E373200A6D969 /* RemoteParam.cpp */; };
 		BBF3134D20C9EC0800B279F6 /* Platform.h in Headers */ = {isa = PBXBuildFile; fileRef = BBF3134520C9EC0800B279F6 /* Platform.h */; };
 		BBF3134E20C9EC0800B279F6 /* sha1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBF3134620C9EC0800B279F6 /* sha1.cpp */; };
 		BBF3134F20C9EC0800B279F6 /* sha1.h in Headers */ = {isa = PBXBuildFile; fileRef = BBF3134720C9EC0800B279F6 /* sha1.h */; };
@@ -632,6 +635,9 @@
 		BBA7745A1FC3E81200DD5B69 /* ofxGoogleAnalytics.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxGoogleAnalytics.cpp; sourceTree = "<group>"; };
 		BBA7745B1FC3E81200DD5B69 /* GA_uriencode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GA_uriencode.h; sourceTree = "<group>"; };
 		BBD5AE1120D4524700E35668 /* ofxNetworkUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxNetworkUtils.cpp; sourceTree = "<group>"; };
+		BBE1415B254E36FD00A6D969 /* ofxRemoteUISimpleNotifications.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxRemoteUISimpleNotifications.cpp; sourceTree = "<group>"; };
+		BBE1415D254E371D00A6D969 /* ofExistsTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofExistsTest.h; sourceTree = "<group>"; };
+		BBE1415F254E373200A6D969 /* RemoteParam.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RemoteParam.cpp; sourceTree = "<group>"; };
 		BBF3134520C9EC0800B279F6 /* Platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Platform.h; sourceTree = "<group>"; };
 		BBF3134620C9EC0800B279F6 /* sha1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sha1.cpp; sourceTree = "<group>"; };
 		BBF3134720C9EC0800B279F6 /* sha1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sha1.h; sourceTree = "<group>"; };
@@ -2024,25 +2030,28 @@
 		BBA774191FC3E7EF00DD5B69 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				BBE1415D254E371D00A6D969 /* ofExistsTest.h */,
 				BBA7741A1FC3E7EF00DD5B69 /* ofxRemoteUI.h */,
 				BBA7741B1FC3E7EF00DD5B69 /* ofxRemoteUIWebServer.h */,
 				BBA7741C1FC3E7EF00DD5B69 /* ofxRemoteUIWebServer.cpp */,
 				BBA7741D1FC3E7EF00DD5B69 /* ofxRemoteUIServer.h */,
 				BBA7741E1FC3E7EF00DD5B69 /* uriencode.cpp */,
-				BBA7741F1FC3E7EF00DD5B69 /* ofxRemoteUINeigbors.h */,
 				BBA774201FC3E7EF00DD5B69 /* uriencode.h */,
 				BBA774211FC3E7EF00DD5B69 /* dirent_vs.h */,
 				BBA774221FC3E7EF00DD5B69 /* ofxRemoteUIClient.cpp */,
 				BBA774231FC3E7EF00DD5B69 /* ofxRemoteUISimpleNotifications.h */,
+				BBE1415B254E36FD00A6D969 /* ofxRemoteUISimpleNotifications.cpp */,
 				BBA774241FC3E7EF00DD5B69 /* ofxRemoteUIofParamaterSync.cpp */,
 				BBA774251FC3E7EF00DD5B69 /* ofxRemoteUI.cpp */,
 				BBA774261FC3E7EF00DD5B69 /* ofxRemoteUIServer.cpp */,
 				BB7B35EE207282F100E78F10 /* OscQueryServerMgr.cpp */,
 				BB7B35EF207282F100E78F10 /* OscQueryServerMgr.h */,
 				BBA774271FC3E7EF00DD5B69 /* RUIWebBinary.cpp */,
+				BBA7741F1FC3E7EF00DD5B69 /* ofxRemoteUINeigbors.h */,
 				BBA774281FC3E7EF00DD5B69 /* ofxRemoteUINeigbors.cpp */,
 				BBA774291FC3E7EF00DD5B69 /* ofxRemoteUIServerMacros.h */,
 				BBA7742A1FC3E7EF00DD5B69 /* RemoteParam.h */,
+				BBE1415F254E373200A6D969 /* RemoteParam.cpp */,
 				BBA7742B1FC3E7EF00DD5B69 /* ofxRemoteUIVars.h */,
 				BBA7742C1FC3E7EF00DD5B69 /* ofxRemoteUIofParamaterSync.h */,
 				BBA7742D1FC3E7EF00DD5B69 /* ofxRemoteUIClient.h */,
@@ -2218,6 +2227,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BBE1415E254E371D00A6D969 /* ofExistsTest.h in Headers */,
 				BBA50848227B6F6F006B7C4B /* xxh3.h in Headers */,
 				BB40BD3A228502CE009372F3 /* fontstash.h in Headers */,
 				BB7B35F1207282F100E78F10 /* OscQueryServerMgr.h in Headers */,
@@ -2351,6 +2361,7 @@
 				BB7B1F981FC3E30800CDD710 /* ofxOscReceiver.cpp in Sources */,
 				BBA773DD1FC3E7B600DD5B69 /* LoadingScreen.cpp in Sources */,
 				BBA774551FC3E80C00DD5B69 /* ofxSensu.cpp in Sources */,
+				BBE1415C254E36FD00A6D969 /* ofxRemoteUISimpleNotifications.cpp in Sources */,
 				BB7B23F11FC3E69C00CDD710 /* ofxXmlPoco.cpp in Sources */,
 				BBA773DB1FC3E7B600DD5B69 /* ProgressBar.cpp in Sources */,
 				BBA773991FC3E79800DD5B69 /* ofxAutoTexture.cpp in Sources */,
@@ -2375,6 +2386,7 @@
 				BBA774471FC3E7FD00DD5B69 /* ofxAnimatableOfColor.cpp in Sources */,
 				BBA7745C1FC3E81200DD5B69 /* GA_uriencode.cpp in Sources */,
 				BBA773F61FC3E7C800DD5B69 /* ofxProgressiveTextureLoad.cpp in Sources */,
+				BBE14160254E373200A6D969 /* RemoteParam.cpp in Sources */,
 				BB7B209D1FC3E62D00CDD710 /* ofxCvHaarFinder.cpp in Sources */,
 				BBA773751FC3E78300DD5B69 /* README.md in Sources */,
 				BBA773CB1FC3E7AA00DD5B69 /* ofxBatchDownloader.cpp in Sources */,
