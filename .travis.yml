@@ -54,6 +54,12 @@ matrix:
     cache: ccache
     compiler: clang
     env: TARGET="osx" OF_BRANCH="feature/uri.cat"
+    addons:
+      homebrew:
+        packages:
+          -gdb
+          -coreutils
+          -ccache
 
 # OSX, OF stable:  Not supported yet
 #  - os: osx
