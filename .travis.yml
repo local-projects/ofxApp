@@ -56,10 +56,6 @@ matrix:
     env: TARGET="osx" OF_BRANCH="main"
     addons:
       homebrew:
-        packages:
-          -gdb
-          -coreutils
-          -ccache
 
 # OSX, OF stable:  Not supported yet
 #  - os: osx
