@@ -19,7 +19,7 @@ meta:
 	ADDON_DESCRIPTION = Addon Conglomerate to act as an interactive CMS driven wall boilerplate
 	ADDON_AUTHOR = Oriol Ferrer Mesià
 	ADDON_TAGS = "CMS" "Wall" "boilerplate"
-	ADDON_URL = http://github.com/local-projects/ofxApp
+	ADDON_URL = http://github.com/armadillu/ofxApp
 
 common:
 	# dependencies with other addons, a list of them separated by spaces 
