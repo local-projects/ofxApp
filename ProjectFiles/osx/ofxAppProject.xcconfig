@@ -47,7 +47,7 @@ LIB_OFX_APP = "$(EXT_ADDONS_PATH)/ofxApp/ProjectFiles/osx/Build/release/ofxAppRe
 
 //Set libs and macros for project
 OTHER_CFLAGS = $(OF_CORE_CFLAGS)
-GCC_PREPROCESSOR_DEFINITIONS = $(OFX_APP_MACROS)
+GCC_PREPROCESSOR_DEFINITIONS = $(OFX_APP_MACROS) $(OFX_APP_EXTRA_MACROS)
 
 //link against the right OF and ofxApp static libs on debug, release, etc
 OTHER_LDFLAGS[config=Debug] = $(OF_CORE_LIBS) $(OF_CORE_FRAMEWORKS) $(LIB_OFX_APP_DEBUG) $(LIB_OF_DEBUG)
