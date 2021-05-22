@@ -61,9 +61,6 @@
 		BB7B24081FC3E6A400CDD710 /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7B24041FC3E6A400CDD710 /* tinyxml.cpp */; };
 		BB7B35F0207282F100E78F10 /* OscQueryServerMgr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB7B35EE207282F100E78F10 /* OscQueryServerMgr.cpp */; };
 		BB7B35F1207282F100E78F10 /* OscQueryServerMgr.h in Headers */ = {isa = PBXBuildFile; fileRef = BB7B35EF207282F100E78F10 /* OscQueryServerMgr.h */; };
-		BB970B3C2558BDDF00C3D252 /* MinimalTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB970B392558BDDF00C3D252 /* MinimalTree.cpp */; };
-		BB970B3D2558BDDF00C3D252 /* ofxTimeMeasurementsScoped.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BB970B3A2558BDDF00C3D252 /* ofxTimeMeasurementsScoped.cpp */; };
-		BB970B3E2558BDDF00C3D252 /* MinimalTree.h in Headers */ = {isa = PBXBuildFile; fileRef = BB970B3B2558BDDF00C3D252 /* MinimalTree.h */; };
 		BBA50848227B6F6F006B7C4B /* xxh3.h in Headers */ = {isa = PBXBuildFile; fileRef = BBA50847227B6F6F006B7C4B /* xxh3.h */; };
 		BBA773701FC3E78300DD5B69 /* ofxFontStashParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA773561FC3E78300DD5B69 /* ofxFontStashParser.cpp */; };
 		BBA773711FC3E78300DD5B69 /* ofxFontStash2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBA773571FC3E78300DD5B69 /* ofxFontStash2.cpp */; };
@@ -502,9 +499,6 @@
 		BB7B35EE207282F100E78F10 /* OscQueryServerMgr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OscQueryServerMgr.cpp; sourceTree = "<group>"; };
 		BB7B35EF207282F100E78F10 /* OscQueryServerMgr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OscQueryServerMgr.h; sourceTree = "<group>"; };
 		BB8554691FD3510600EFB438 /* ofxAppProject.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = ofxAppProject.xcconfig; sourceTree = "<group>"; };
-		BB970B392558BDDF00C3D252 /* MinimalTree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MinimalTree.cpp; sourceTree = "<group>"; };
-		BB970B3A2558BDDF00C3D252 /* ofxTimeMeasurementsScoped.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxTimeMeasurementsScoped.cpp; sourceTree = "<group>"; };
-		BB970B3B2558BDDF00C3D252 /* MinimalTree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MinimalTree.h; sourceTree = "<group>"; };
 		BBA270F71FC4A52A00D461BD /* ofxApp.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = ofxApp.xcconfig; sourceTree = "<group>"; };
 		BBA50847227B6F6F006B7C4B /* xxh3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xxh3.h; sourceTree = "<group>"; };
 		BBA773531FC3E78300DD5B69 /* ofxFontStash2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxFontStash2.h; sourceTree = "<group>"; };
@@ -2004,10 +1998,7 @@
 		BBA7740F1FC3E7E800DD5B69 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				BB970B392558BDDF00C3D252 /* MinimalTree.cpp */,
-				BB970B3B2558BDDF00C3D252 /* MinimalTree.h */,
 				BBA774141FC3E7E800DD5B69 /* ofxTimeMeasurementsScoped.h */,
-				BB970B3A2558BDDF00C3D252 /* ofxTimeMeasurementsScoped.cpp */,
 				BBA774101FC3E7E800DD5B69 /* ofxTimeMeasurements.cpp */,
 				BBA774111FC3E7E800DD5B69 /* ofxTimeMeasurementsMacros.h */,
 				BBA774121FC3E7E800DD5B69 /* ofxTimeMeasurements.h */,
@@ -2233,7 +2224,6 @@
 				BBF3135220C9EC0800B279F6 /* xxhash.h in Headers */,
 				BB40BD3C228502CE009372F3 /* stb_truetype.h in Headers */,
 				BB40BD3E228502CE009372F3 /* ofxFontStash.h in Headers */,
-				BB970B3E2558BDDF00C3D252 /* MinimalTree.h in Headers */,
 				BBF3134D20C9EC0800B279F6 /* Platform.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2319,7 +2309,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				BBA7740D1FC3E7DC00DD5B69 /* ofxJsonSettings.cpp in Sources */,
-				BB970B3D2558BDDF00C3D252 /* ofxTimeMeasurementsScoped.cpp in Sources */,
 				BB7B1F9B1FC3E30800CDD710 /* OscTypes.cpp in Sources */,
 				BB40BD39228502CE009372F3 /* fontstash.c in Sources */,
 				BBA773F51FC3E7C800DD5B69 /* ProgressiveTextureLoadQueue.cpp in Sources */,
@@ -2366,7 +2355,6 @@
 				BBA773DB1FC3E7B600DD5B69 /* ProgressBar.cpp in Sources */,
 				BBA773991FC3E79800DD5B69 /* ofxAutoTexture.cpp in Sources */,
 				BBA774351FC3E7EF00DD5B69 /* ofxRemoteUINeigbors.cpp in Sources */,
-				BB970B3C2558BDDF00C3D252 /* MinimalTree.cpp in Sources */,
 				BBA773CA1FC3E7AA00DD5B69 /* ofxSimpleHttp.cpp in Sources */,
 				BB7B20B11FC3E67A00CDD710 /* ofxTCPServer.cpp in Sources */,
 				BB7B209A1FC3E62D00CDD710 /* ofxCvColorImage.cpp in Sources */,
