@@ -23,7 +23,8 @@ matrix:
   - os: linux
     dist: trusty
     sudo: required
-    env: TARGET="linux64" OF_BRANCH="master"
+    cache: ccache
+    env: TARGET="linux64" OF_BRANCH="main"
     addons:
       apt:
         sources:
@@ -50,8 +51,11 @@ matrix:
 # OSX, OF master
   - os: osx
     osx_image: xcode9.4
+    cache: ccache
     compiler: clang
-    env: TARGET="osx" OF_BRANCH="master"
+    env: TARGET="osx" OF_BRANCH="main"
+    addons:
+      homebrew:
 
 # OSX, OF stable:  Not supported yet
 #  - os: osx
@@ -181,19 +185,29 @@ matrix:
 #        - ~/android-ndk-r12b
 
 
-  # Exclude the default build that would otherwise be generated
-  # see https://github.com/travis-ci/travis-ci/issues/1228
-  exclude:
-    - compiler: gcc
 
 install:
   - cd ~
-  - git clone --depth=1 --branch=$OF_BRANCH https://github.com/openframeworks/openFrameworks
+  #edit addon config.mk to add a mandatory implementation option (NANOVG_GL2_IMPLEMENTATION | GL3 | GLES) so at least one path is compiled and tested 
+  - sed -i -e 's/ADDON_CFLAGS =/ADDON_CFLAGS = -DNANOVG_GL2_IMPLEMENTATION/g' build/armadillu/ofxApp/addon_config.mk
+  - cat build/armadillu/ofxApp/addon_config.mk
+  - git clone --depth=1 --branch=feature/uri.cat https://github.com/armadillu/openFrameworks
   - cd openFrameworks
-  - travis_wait 30 scripts/ci/addons/install.sh
+  - travis_wait 45 scripts/ci/addons/install.sh
 
 script:
+  - ccache -z
+  - ccache -s
+  - if [ "$TARGET" = "osx" ]; then
+      CXX="ccache clang++";
+      CC="ccache clang";
+    else
+      CXX="ccache g++";
+      CC="ccache gcc";
+    fi
   - travis_wait 30 scripts/ci/addons/build.sh
+  - ccache -s
+
 
 git:
   depth: 10

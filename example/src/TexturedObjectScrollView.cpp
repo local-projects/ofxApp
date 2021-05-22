@@ -72,7 +72,11 @@ void TexturedObjectScrollView::setup(const ofRectangle& r, ScrollViewConfig cfg)
 	fboSettings.width = r.width;
 	fboSettings.height = r.height;
 	fboSettings.useDepth = false;
+	#ifndef TARGET_OPENGLES
 	fboSettings.textureTarget = GL_TEXTURE_RECTANGLE_ARB; //mipmaps!
+	#else
+	//fboSettings.textureTarget = GL_TEXTURE_RECTANGLE_ARB; //mipmaps!
+	#endif
 	fboSettings.internalformat = config.internalFormat;
 	fboSettings.numSamples = config.numFboSamples;
 	fboSettings.numColorbuffers = 1;

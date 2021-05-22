@@ -9,7 +9,7 @@ export OF_ADDONS=$OF_ROOT/addons
 pwd;
 echo "OF_ADDONS: $OF_ADDONS"
 
-ADDONS="local-projects/ofxFontStash local-projects/ofxFontStash2 local-projects/ofxTuio local-projects/ofxJSON local-projects/ofxSuperLog local-projects/ofxAutoTexture local-projects/ofxMTJsonParser local-projects/ofxSimpleHttp local-projects/ofxTagSystem local-projects/ofxStateMachine local-projects/ofxAssets local-projects/ofxThreadSafeLog local-projects/ofxProgressiveTextureLoad local-projects/ofxTexturedObject local-projects/ofxMullion local-projects/ofxJsonSettings local-projects/ofxTimeMeasurements local-projects/ofxRemoteUI local-projects/ofxHistoryPlot local-projects/ofxAnimatable local-projects/ofxScreenSetup local-projects/ofxSensu local-projects/ofxGoogleAnalytics local-projects/ofxInterface"
+ADDONS="armadillu/ofxFontStash armadillu/ofxFontStash2 armadillu/ofxTuio armadillu/ofxJSON armadillu/ofxSuperLog armadillu/ofxAutoTexture armadillu/ofxMTJsonParser armadillu/ofxSimpleHttp armadillu/ofxTagSystem armadillu/ofxStateMachine armadillu/ofxAssets armadillu/ofxThreadSafeLog armadillu/ofxProgressiveTextureLoad armadillu/ofxTexturedObject armadillu/ofxMullion armadillu/ofxJsonSettings armadillu/ofxTimeMeasurements armadillu/ofxRemoteUI armadillu/ofxHistoryPlot armadillu/ofxAnimatable armadillu/ofxScreenSetup armadillu/ofxSensu armadillu/ofxGoogleAnalytics armadillu/ofxInterface"
 
 
 cd $OF_ADDONS

@@ -1416,7 +1416,15 @@ void App::onSetState(ofxStateMachine<State>::StateChangedEventArgs& change){
 								if(checksumTypeStr == "sha1"){
 									checksumType = ofxChecksum::Type::SHA1;
 								}else{
-									ofxApp::utils::terminateApp("ofxApp", "Unrecognized checksum type in content ID \"Content/JsonSources/" + currentContentID + "\" (" + checksumTypeStr +")");
+									if(checksumTypeStr == "xxHash3_64"){
+										checksumType = ofxChecksum::Type::XX_HASH3_64;
+									}else{
+										if(checksumTypeStr == "xxHash3_128"){
+											checksumType = ofxChecksum::Type::XX_HASH3_128;
+										}else{
+											ofxApp::utils::terminateApp("ofxApp", "Unrecognized checksum type in content ID \"Content/JsonSources/" + currentContentID + "\" (" + checksumTypeStr +")");
+										}
+									}
 								}
 							}
 						}
