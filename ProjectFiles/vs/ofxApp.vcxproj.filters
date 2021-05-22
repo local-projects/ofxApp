@@ -265,6 +265,12 @@
     <ClCompile Include="..\..\..\ofxSimpleHttp\libs\sha1\sha1.cpp">
       <Filter>local_addons\ofxSimpleHttp\libs\sha1</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\ofxRemoteUI\src\ofxRemoteUISimpleNotifications.cpp">
+      <Filter>local_addons\ofxRemoteUI\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\ofxRemoteUI\src\RemoteParam.cpp">
+      <Filter>local_addons\ofxRemoteUI\src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -2035,6 +2041,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\ofxSimpleHttp\libs\xxHash\xxh3.h">
       <Filter>local_addons\ofxSimpleHttp\libs\xxHash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\ofxRemoteUI\src\ofExistsTest.h">
+      <Filter>local_addons\ofxRemoteUI\src</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

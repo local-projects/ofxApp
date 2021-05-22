@@ -260,6 +260,8 @@
     <ClCompile Include="..\..\..\ofxMTJsonParser\src\ofxMtJsonParser.cpp" />
     <ClCompile Include="..\..\..\ofxMTJsonParser\src\ofxMtJsonParserThread.cpp" />
     <ClCompile Include="..\..\..\ofxMTJsonParser\src\ofxMtJsonParserUtils.cpp" />
+    <ClCompile Include="..\..\..\ofxRemoteUI\src\ofxRemoteUISimpleNotifications.cpp" />
+    <ClCompile Include="..\..\..\ofxRemoteUI\src\RemoteParam.cpp" />
     <ClCompile Include="..\..\..\ofxSimpleHttp\libs\sha1\sha1.cpp" />
     <ClCompile Include="..\..\..\ofxSimpleHttp\libs\xxHash\xxhash.c" />
     <ClCompile Include="..\..\..\ofxTexturedObject\src\TexturedObject.cpp" />
@@ -717,6 +719,7 @@
     <ClInclude Include="..\..\..\ofxMTJsonParser\src\ofxMtJsonParser.h" />
     <ClInclude Include="..\..\..\ofxMTJsonParser\src\ofxMtJsonParserThread.h" />
     <ClInclude Include="..\..\..\ofxMTJsonParser\src\ofxMtJsonParserUtils.h" />
+    <ClInclude Include="..\..\..\ofxRemoteUI\src\ofExistsTest.h" />
     <ClInclude Include="..\..\..\ofxSimpleHttp\libs\sha1\Platform.h" />
     <ClInclude Include="..\..\..\ofxSimpleHttp\libs\sha1\sha1.h" />
     <ClInclude Include="..\..\..\ofxSimpleHttp\libs\xxHash\xxh3.h" />
